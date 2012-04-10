@@ -42,7 +42,7 @@ Overview
   (presumably that will be in our own JQuery)
  
 
-  :Question: I would like to POST module changes to the server.  That is
+  Question: I would like to POST module changes to the server.  That is
   any change to a module is an entirley new copy, stored ala git/hg
   This has many issues but I think is best approach. (Discuss issues)
 
@@ -54,7 +54,7 @@ Overview
   REST API - POST -> create a hash, store it in repo.  The new URL is
   the hash....
 
-  :Question: I would like to discuss treating each module change as a
+  Question: I would like to discuss treating each module change as a
   seperate hashable object.  Its a fairly good idea, but has some
   implications that need to be thought through.  However its almost
   perfect to decouple services with.
