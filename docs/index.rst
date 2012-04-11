@@ -33,7 +33,7 @@ I recommend this - its worth the 30 bucks or so.  Especially watching the raw fo
 
 
 .. automodule:: ednamode.e2server.flask_POST_tunnel
-   :members:
+
 
 Here I am attaching my own middleware to the wsgi flow - it will look for a trigger 
 element in the form, and then replace the POST method in the CGI environ variables with 
