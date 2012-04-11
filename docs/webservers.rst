@@ -31,6 +31,7 @@ Creating a WSGI wrapper in Flask
 
 We want to be able to handle two kinds of HTTP request.
 
-1. Genuine - a HTTP header is sent with ::
+1. Genuine - a HTTP header is sent correctly
+2. Tunneled - we use some flag in POST request and convert to that flag before processing on server.  See flask_POST_tunnel
 
-  dfdfd
+
