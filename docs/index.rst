@@ -32,7 +32,7 @@ I have the server there, and the other development laptop is running firefox wit
 I recommend this - its worth the 30 bucks or so.  Especially watching the raw forms.
 
 
-.. automodule:: ednamode.e2server.flask_POST_tunnel
+.. automodule:: e2server.flask_POST_tunnel
 
 
 Here I am attaching my own middleware to the wsgi flow - it will look for a trigger 
@@ -53,7 +53,7 @@ we are aiming for git style unique references for every change to every module,
 or if a module is to be a fixed named resource, and we track the versions of the module.
 (Begging question when does it stop being a named module...  my gut feeling is take the DVCS / git approach.  But it has issues.
 
-.. automodule:: ednamode.e2repo.repolib
+.. automodule:: e2repo.repolib
    :members:
 
 
