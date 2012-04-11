@@ -5,3 +5,4 @@ Dev guidelines
 
 1.a. This has an implication for testing.  The first division in tests is not unit vs functional, but internal to the 'service' and external.  Internal tests are allowed to know something about the inner workings, allowed to go peak at the disk to see if the file actually got written.  External ones, no.  Just use the API and test what comes back.. Test it hard. Throw horrible edge cases, drop connections.  But no peaking.
 
+2. document what is there, what has been done.  Not document what you hope to do - unlesss you label it bluesky.

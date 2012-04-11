@@ -29,6 +29,8 @@ So I have two solutions, ready
 Creating a WSGI wrapper in Flask
 --------------------------------
 
-Flask
+We want to be able to handle two kinds of HTTP request.
 
-Want to hack a bit to handle GET POST PUT DELETE
+1. Genuine - a HTTP header is sent with ::
+
+  dfdfd
