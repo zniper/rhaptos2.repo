@@ -1,11 +1,3 @@
-from flask import Flask, request,  url_for, make_response
-import flask
-import datetime
-import copy
-import random
-
-app = Flask(__name__)
-
 
 def dict2table(d):
 
@@ -28,19 +20,18 @@ def obj2table(obj):
     return s + '</table>'
 
 
-def obj2table(obj):
+def obj2txt(obj):
     '''use getattr() and getitem and dir to nab as much as possible.  be brutal at first '''
+
     l = [attr for attr in dir(obj) if attr.find('__') != 0]
     s = ''
     row = '%s'
 
     for attr in l:
         s += row % '%s::%s\n' % (attr, getattr(obj, attr))
-
-
     return s
 
-
+'''
 @app.route("/simple")
 def simple():
     print 'somple'
@@ -65,7 +56,7 @@ def hello2():
     print 'got here2'
     print request.args
     print request.form
-    s =  '''<ratings><average>%s</average><count>1234567</count></ratings>''' % random.randint(1,100)
+    s =  '<ratings><average>%s</average><count>1234567</count></ratings>' % random.randint(1,100)
     resp = flask.make_response(s)
     #resp.headers["Content-Type"] = "text/xml"
 
@@ -76,3 +67,4 @@ def hello2():
 if __name__ == "__main__":
     app.debug = True
     app.run(host='0.0.0.0')
+'''
