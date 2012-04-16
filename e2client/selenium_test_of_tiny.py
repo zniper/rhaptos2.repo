@@ -15,32 +15,31 @@ import time
 driver = webdriver.Firefox()
 
 # go to the google home page
-driver.get("http://localhost/tinydemo.html")
+driver.get("http://hadrian/frozone/demostrawman.html")
 
-print 'slleping'
+print 'sleeping'
 import time
 time.sleep(5)
 
-print 'find elem'
-#driver.type("dom=document.getElementById('tiny1').contentDocument.body", 'ffff')
-inputElement = driver.find_element_by_id('content_ifr')
-print 'sendkeys'
 
-# type in the search
-inputElement.send_keys("Cheese!")
+#tinymce stores the actual editor in a iframe.  It seems to have a sensible name - append _ifr to id
+driver.switch_to_frame('e2textarea_ifr')
+#the next makes a big assumption about what is active, but by default it will  be when first open
+e = driver.switch_to_active_element() 
+#send in text - however not wiping out first lot ...
+e.send_keys('Cheese Monkeys')
 
-# submit the form (although google automatically searches now without submitting)
-inputElement.submit()
+driver.switch_to_default_content()
+
+post = driver.find_element_by_id('radio_post').click()
+c1 = driver.find_element_by_id('click1').click()
+#at this point we shoudl POST to e2server
+now results shoudl say
+ 
 
 # the page is ajaxy so the title is originally this:
-print driver.title
 
-try:
-    # we have to wait for the page to refresh, the last thing that seems to be updated is the title
-    WebDriverWait(driver, 10).until(lambda driver : driver.title.lower().startswith("cheese!"))
+response=  driver.find_element_by_id('responsearea').html() 
+assert response.find('Cheese Monkeys') >= 0
 
-    # You should see "cheese! - Google Search"
-    print driver.title
 
-finally:
-    driver.quit()
