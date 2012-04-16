@@ -7,10 +7,11 @@ Start Here
 .. toctree::
    :maxdepth: 2
 
-   weeklyreports
 
+   roadmap
    install
    overview
+   
    requirements
    development_guidelines
    webservers
@@ -18,4 +19,4 @@ Start Here
    weirdbugs
    
 
-
+   weeklyreports
