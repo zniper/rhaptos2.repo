@@ -13,7 +13,7 @@ cd $srcdir
 #nginx
 sudo cp /usr/local/etc/nginx/nginx.conf /tmp/nginx.paranoid
 sudo cp e2server/nginx.conf /usr/local/etc/nginx/
-sudo cp e2client/test.html \
+sudo cp e2client/strawman.html \
         e2client/mikadosoftware-cnx.js \
         e2client/tinydemo.html $wwwdir
 
