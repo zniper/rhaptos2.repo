@@ -2,41 +2,49 @@
 Roadmap
 =======
 
-Roadmap for project frozone - new editor for Cnx.org
+This is a draft roadmap for project Frozone - the new editor component for cnx.org.
+It will be continuously changing, as will much of the documentation here, and I apologise in
+advance for half-formed thoughts slipping in.
 
-* architecture
-* devops 
-* build/deploy
-* development
-* server farm
-* testing
 
-For week three I propose a focus on infrastructure.
 
 Architecture
 ------------
 
 
 A big focus on decoupling services and providing resilience, 'do-one-thing-well' approach.
+
 This will throw up unusual issues. The first is already with us.  I decided to have two 
+
 1. REST 
 2. Message Queues.
 
-I am epxecting there will be pyRESTServers - a complete, scalable up and down chunk consisting of
+PyRESTServers
+~~~~~~~~~~~~~
+
+I need a better name, but the concept is simple - a defined, stand alone, cluster-able set of 
+services that work together to provide some REST based server, that will do (one) thing well.
+
 
 * http transparent cache (Varnish)
 * webserver (Flask in uWSGI wrapper)
 * message queue to handle asynchonicity (RabbitMQ)
-* dont expect a data response in the same request / response cycle, expect a redirect to a GET.
 
+If I can put the architecture I would like to see in one sentence it would be::
 
+  Dont expect a *data* response in the same cycle as your request - instead expect a link to a new URL.
 
+If we can build our *clients* this way (building servers this way is fairly simple) we can 
+expect to solve a lot of our decoupling issues.  I think we shall need two AJAX client libraries 
+one in Python, one in JQuery that have this as their heart.  
 
+Repo/server split.  I have intuitively split the backend into two - e2server and e2repo.  e2server is 
+where the AJAX client talks, and e2repo is what the e2server calls down to for POST, GET of the actual modules.
 
-python-rest-library
+But it is not a clean split - for example what is the canonical URI for a module now.  e2server/module/123 or e2repo/module/123 ?  But if we use e2server, then the repo is not easy to replace with new technology.
 
-* The repo/server split has thrown up an important issue.  We need to (find/build) a robust 
-  library for 
+Needs some thought.
+
 
 Development
 -----------
