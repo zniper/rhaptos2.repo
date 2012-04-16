@@ -13,3 +13,4 @@ _mailinglist
 #*.*#
 *.html
 */_build/*
+*thirdparty*

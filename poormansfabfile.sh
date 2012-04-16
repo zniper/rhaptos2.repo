@@ -10,9 +10,17 @@ flaskdir_server='/usr/local/www/flask/e2server/'
 #git pull...
 cd $srcdir
 
-#client
+#nginx
+sudo cp /usr/local/etc/nginx/nginx.conf /tmp/nginx.paranoid
 sudo cp e2server/nginx.conf /usr/local/etc/nginx/
-sudo cp e2client/test.html e2client/mikadosoftware-cnx.js $wwwdir
+sudo cp e2client/test.html \
+        e2client/mikadosoftware-cnx.js \
+        e2client/tinydemo.html $wwwdir
+
+
+sudo cp -r thirdparty/tinymce  $wwwdir/
+
+
 
 
 #server(s)
