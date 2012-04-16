@@ -9,11 +9,12 @@ def gettime():
 
 @app.route("/module/", methods=['POST'])
 def modulePOST():
-#    return 'You POSTed, this data: %s @ %s' %  (1, gettime()) 
     app.logger.info('test')
-    return 'You POSTed, this data: %s @ %s' %  (reflector.dict2table(request.form), gettime()) 
+    importantbit = request.form['moduletxt']
+    open('/tmp/654321','w').write(importantbit)
+    return 'repo response: new module txt of %s saved id: 654321' % importantbit  
 
-@app.route("/module/<modulehash>", methods=['GET', 'POST'])
+@app.route("/module/<modulehash>", methods=['GET'])
 def moduleGET(modulehash):
     return 'this is text of %s.' % modulehash    
 

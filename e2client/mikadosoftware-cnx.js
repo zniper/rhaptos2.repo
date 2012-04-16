@@ -40,7 +40,7 @@
          var TGTURL="http://hadrian/e2server/module/";
 
          var requestmethod = $('input:radio[name=method]:checked').val();
-         var payload = {'editortxt':  get_textarea_html5()}; 
+         var payload = {'moduletxt':  get_textarea_html5()}; 
 
 	 var menuId = 42;
 	 var request = $.ajax({

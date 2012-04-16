@@ -1,6 +1,7 @@
 from flask import Flask, request,  url_for
 import datetime
 import reflector
+import ajaxlib
 
 app = Flask(__name__)
 
@@ -11,7 +12,14 @@ def gettime():
 def modulePOST():
 #    return 'You POSTed, this data: %s @ %s' %  (1, gettime()) 
     app.logger.info('test')
-    return 'You POSTed, this data: %s @ %s' %  (reflector.dict2table(request.form), gettime()) 
+    #get the txt, and send it on to repo for storage
+    moduletxt = request.form['moduletxt']
+    reporesp = ajaxlib.sendajax({'moduletxt': moduletxt, 'appid': 1, 'user': 'fred', 'auth':'12345'},
+                                'http://hadrian/e2repo/module/', 'POST')
+    
+    return 'You POSTed, this data: %s @ %s.  \
+            This was the response from repo %s' %  (reflector.dict2table(request.form), \
+                                                     gettime(), reporesp) 
 
 @app.route("/module/", methods=['GET'])
 def moduleGET():

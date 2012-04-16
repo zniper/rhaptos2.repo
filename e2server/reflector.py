@@ -31,6 +31,7 @@ def obj2txt(obj):
         s += row % '%s::%s\n' % (attr, getattr(obj, attr))
     return s
 
+
 '''
 @app.route("/simple")
 def simple():
