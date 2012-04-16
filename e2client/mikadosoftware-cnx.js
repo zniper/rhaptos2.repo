@@ -8,9 +8,12 @@
 
 
     function logout(msg){
-        // write to a textarea in html
-        var txt = $("#logarea").html();
-        $("#logarea").html(txt + "<li> " + msg);
+        //TOtally assumes existence of firebug.
+
+        // write to a textarea in html if not firebug - Nah !!!
+//        var txt = $("#logarea").html();
+//        $("#logarea").html(txt + "<li> " + msg);
+        console.log(msg);
     };
 
     function get_textarea_html5(){
@@ -23,6 +26,14 @@
         txtarea = get_textarea_html5();
         logout(txtarea);
     };
+
+    function load_textarea(html5text){
+        html5text = '<h1>hello world</h1>';
+        $('#e2textarea').tinymce().setContent(html5text);
+        logout('loaded text area with ...' + html5text);
+
+    };
+
 
     function sendajax(){
 	 //constants
@@ -61,6 +72,9 @@ $(document).ready(function() {
 
     //bind various clicks
     $("#clickShowTextArea").click(function(e){display_textarea(); 
+                                              e.preventDefault()});
+
+    $("#clickLoadTextArea").click(function(e){load_textarea();
                                               e.preventDefault()});
 
     logout('AJAX will fire at ' + TGTURL);    
