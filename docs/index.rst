@@ -10,6 +10,7 @@ Start Here
 
    roadmap
    install
+   install-os
    overview
    
    requirements
