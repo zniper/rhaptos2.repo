@@ -9,11 +9,11 @@ server in a nice cube chassis.  I am using this as the host server for
 all virtualised Ubuntu servers.  This is how I set it up and keep it
 running.
 
-.. figure:: hpcube.jpg
-   :scale: 25%
-   
-   :file:`It ain't a gleaming colo centre is it now ?`
+.. image:: hpcube.jpg
+   :width: 20%
+   :align: right
 
+ 
 
 OS Install
 ==========
