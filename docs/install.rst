@@ -71,3 +71,17 @@ The nginx.conf file will be supplied as part of e2server
     
     if you gt valid reples the nginx proxing is working.
 
+
+5. THese docs need rewriting now we have moved to fabric
+
+In essence run :
+
+   <setup lxc containers - see install-os.rst>
+
+   $ fab -f fab-sys.py -H cnx1  ubuntu_sys_install
+   
+   $ fab -f fab-app-frozone.py -H cnx1 prep
+
+.. note:: It works on my machine :-) WIll get it working on fillet asap
+
+   
