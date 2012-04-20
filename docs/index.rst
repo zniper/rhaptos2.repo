@@ -1,8 +1,7 @@
-Welcome to ednamode's documentation!
-====================================
+Welcome to frozone's documentation!
+===================================
 
-
-Start Here
+index page 
 
 .. toctree::
    :maxdepth: 2
