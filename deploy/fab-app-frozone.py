@@ -13,15 +13,29 @@ flaskdir_repo='/usr/local/www/flask/e2repo/'
 flaskdir_server='/usr/local/www/flask/e2server/'
 
 
-def prep():
-    sudo('cd %s' % srcdir)
-    sudo('git pull origin develop')
+#ubuntu
+srcdir='/home/deployagent/frozone'
+stagingdir='/tmp/staging'
+wwwdir='/usr/share/www/nginx/frozone/'
+flaskdir_repo='/usr/share/www/flask/e2repo/'
+flaskdir_server='/usr/share/www/flask/e2server/'
 
+
+def prep():
+
+    sudo('mkdir -p %s' % srcdir)
+    sudo('cd %s' % srcdir)
     try:
-        sudo('cp /usr/local/etc/nginx/nginx.conf /tmp/nginx.paranoid')
-    except: 
-        pass
-    sudo('cp e2server/nginx.conf /usr/local/etc/nginx/nginx.conf')
+        sudo('git pull origin develop')
+    except:
+        sudo('git clone git@github.com:lifeisstillgood/frozone.git')
+        sudo('git checkout develop')
+
+
+    #mkdir -p /usr/share/flask/www/e2repo
+    #mkdir -p /usr/share/flask/www/e2repo
+
+    sudo('cp %s/e2server/nginx.conf /etc/nginx/nginx.conf' % stagingdir)
 
     sudo('cp e2client/strawman.html \
            e2client/mikadosoftware-cnx.js \

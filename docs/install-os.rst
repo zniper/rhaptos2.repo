@@ -13,6 +13,38 @@ running.
    :width: 20%
    :align: right
 
+* Philosophy
+
+  I think this is more appropriate in the development how to notes.
+  ::
+
+      It's easier to re-provision than it is to repair
+
+* Terminology
+
+
+  Host and VMHost
+   Host is the host OS that is closest to the bare metal. VMHost is a clearer alias.
+
+  VHost
+   Virtual Host is the virtual machine running on top of the VMHost
+
+We have hierarchical three levels of deployment - OS, System and Application
+
+  OS
+   The OS.
+
+  System
+   A third-party program, supported by someone not us.  Think Apache, Nginx.
+
+  Application
+   A program or set of programs that are written / supported by us.  
+
+I used to think there were 3 *actions* to take at each level, (Build,
+Deploy, COnfigure) It is sort of true, but, only ion complex builds is
+it worth splitting out Nginx build from nginx deploy - we think of it
+as one block
+
  
 
 OS Install
@@ -32,34 +64,6 @@ with upgrades.
 
 However 11.10 is sufficient for now, plus the migration will be a good test.
 
-
-* Terminology
-
-
-  Host and VMHost
-   Host is the host OS that is closest to the bare metal. VMHost is a clearer alias.
-
-  VHost
-   Virtual Host is the virtual machine running on top of the VMHost
-
-  Server
-   A program, running on VMHost or VHost that performs a specific, usually network related function.
-   It is considered a third-party program, supported by someone not us.  Think Apache, Nginx.
-
-  Application
-   A program or set of programs that are written / supported by us.  
-
-
-
-  Build
-   building an OS, VHosts, Servers ready for the Application to be deployed
-
-  Deploy
-   applying the code from our Application to the approcpriate VHosts.
-
-  Configure 
-   part of both Build and Deploy
-   
 
 * Policy on backports, out of date applications etc.
 
@@ -100,24 +104,8 @@ partition layout:
 
 
 
-Keeping up to date
-------------------
-
-Patch day?
-:todo: Automated review of each machine to see where we are aligned and not.
-
-
-
-3. install base pkgs
-~~~~~~~~~~~~~~~~~~~~
-::
-    sudo apt-get install lxc debootstrap bridge-utils
-    sudo apt-get install emacs
-    # because you know you have to have emacs because editing with pico is a joke...
-
-
-4. setting up networking statically
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setting up networking statically
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ..   seems the linux curse strikes - debian has /etc/networking/interfaces, but u=buntu has /etc/network/interfaces
 
@@ -138,6 +126,29 @@ Usually we would set up ethernet by adjusting the :file:`/etc/network/interfaces
          netmask 255.255.255.0
 
      
+
+
+
+Keeping up to date
+------------------
+
+Patch day?
+:todo: Automated review of each machine to see where we are aligned and not.
+
+
+
+install base pkgs
+~~~~~~~~~~~~~~~~~
+::
+
+    sudo apt-get -y install lxc debootstrap bridge-utils emacs
+
+    # because you know you have to have emacs because editing with pico is a joke...
+
+
+Setting up networks statically -pt 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 However, we now want to introduce a bridged network - think of this is
 a wrapper around the eth0 network card.  The bridge will be able to
 add and remove ethernet packets off eth0 in software.  To any virtual
@@ -146,9 +157,8 @@ to eth0 it will seem as if they are on a unusually busy ring.
 
 
 
-
-
-bridge network:
+bridge networking
+~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -158,12 +168,12 @@ bridge network:
 
     # The primary network interface
     auto eth0
-    iface eth0 inet manual
+    iface eth0 inet manual     <---- we changed to manual, which means the bridge will cope with eth0.
 
 
     auto br0
     iface br0 inet static
-	address 10.0.0.103
+	address 10.0.0.10    
 	network 10.0.0.0
 	netmask 255.255.255.0
 	gateway 10.0.0.1
@@ -172,17 +182,42 @@ bridge network:
 	bridge_fd 0
 	bridge_maxwait 0
 
-    now restart networking ::
+Now restart networking ::
 
       sudo /etc/init.d/networking restart
 
-    We should then have a successful bridged adaptor - br0 is wrapping eth0 as it were.
+We should then have a successful bridged adaptor - br0 is wrapping eth0 as it were.
+
+::
+
+    pbrian@hpcube:~$ brctl show
+    bridge name     bridge id           STP     enabledinterfaces
+    br0             8000.3cd92b0c2332   no      eth0
+						vethMSgJ2C       <--- not here at first, but after a lxc, its the virtual nic being 'bridged' to
 
 
-6. control groups
+    pbrian@hpcube:~$ ifconfig
+    br0       Link encap:Ethernet  HWaddr 3c:d9:2b:0c:23:32  
+	      inet addr:10.0.0.103  Bcast:0.0.0.0  Mask:255.255.255.0
+              ...
+   
+    eth0      Link encap:Ethernet  HWaddr 3c:d9:2b:0c:23:32  
+	      UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+              ...
 
-   it seems that this script, run on boot,will mount cgroups sensibly
-   This is part of teh lxc install above.
+    vethMSgJ2C Link encap:Ethernet  HWaddr 6e:94:48:0b:46:e7  
+	      inet6 addr: fe80::6c94:48ff:fe0b:46e7/64 Scope:Link
+	      UP BROADCAST RUNNING PROMISC MULTICAST  MTU:1500  Metric:1
+              ...
+
+
+
+
+control groups
+--------------
+
+it seems that this script, run on boot,will mount cgroups sensibly
+This is part of teh lxc install above.
 
 ::
 
@@ -213,8 +248,8 @@ bridge network:
 
 
 
-7. create a container
-~~~~~~~~~~~~~~~~~~~~~
+Finally, create a container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 What is a container?  *L*inu*X* *C*ontainers are the Linux version of
 the lightweight jails coming from the Solaris Zones and FreeBSD Jails 
@@ -291,9 +326,36 @@ I recommend reading the lxc-create script
     'ubuntu' template installed
     'cnx01' created
 
+    real5m30.625s
+
+2.5 Create deployagent on VMHost
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   sudo useradd  -d /home/deployagent -g sudo -m -s /bin/bash deployagent
+   sudo sh -c "echo deployagent:deployagent | chpasswd"
+
+   We use this user on all vhosts, as means of coralling the deploy rights.  
+   I should use ssh keys but passwords will do for today.
+
+
 
 3. setup networking on container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+(we now have fab files to do this.)
+
+::
+
+   assuming the VMHOST has had deployagent set up (user plus sudoers)
+   
+   fab -f fab-configlxcinstance.py -H hpcube preboot:vhostname=cnx1,vhostid=11
+
+   this will connect to vmhost, kerslunk the files under rootfs, start the instance, then login as root and fix a few things.
+    
 
 It defaults to DHCP (see the lxc-create script)
 
@@ -362,10 +424,33 @@ Refer to the examples in /usr/lib/lxc/templates
 biblio
 ~~~~~~
 
-http://lxc.teegra.net/#_setup_of_the_controlling_host
-https://help.ubuntu.com/community/KVM/Networking
-http://wiki.debian.org/NetworkConfiguration#The_resolv.conf_configuration_file
-http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge#Bridging_and_Firewalling
- 
+* http://lxc.teegra.net/#_setup_of_the_controlling_host
+* https://help.ubuntu.com/community/KVM/Networking
+* http://wiki.debian.org/NetworkConfiguration#The_resolv.conf_configuration_file
+* http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge#Bridging_and_Firewalling
+* http://blog.controltier.com/2009/04/new-whitepaper-achieving-fully.html 
 
 
+Known Issues
+============
+
+::
+
+    perl: warning: Setting locale failed.
+    perl: warning: Please check that your locale settings:
+    LANGUAGE = "en_GB:en",
+    LC_ALL = (unset),
+    LANG = "en_GB.UTF-8"
+	are supported and installed on your system.
+    perl: warning: Falling back to the standard locale ("C").
+    locale: Cannot set LC_CTYPE to default locale: No such file or directory
+    locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+    locale: Cannot set LC_ALL to default locale: No such file or directory
+    Can not write log, openpty() failed (/dev/pts not mounted?)
+
+
+
+ALso
+
+1. Seems weird - lxc seems only to respond to outside pings once an internal connection has been made out.  like ping google.
+2. ssh timeouts? Or is that the above?

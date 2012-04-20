@@ -138,7 +138,7 @@ def put_sudoers(vhostname, vhostid):
     ''' '''
     tgtpath = '/var/lib/lxc/%s/rootfs/etc/sudoers' % vhostname
     fabric.contrib.files.append(tgtpath, 
-                                '\nfabdeploy ALL=NOPASSWD:ALL\n\n',
+                                '\ndeployagent ALL=NOPASSWD:ALL\n\n',
                                 use_sudo=True)
     
 
