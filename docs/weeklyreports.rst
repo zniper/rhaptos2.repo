@@ -5,6 +5,32 @@ This is an area for my evaluation of the week just gone.
 
 I hope it will reflect honestly the value you guys are getting.  Of course, Ed's report may look quite different ! :-)
 
+
+Week 3 April 16-20
+------------------
+
+Of the three things I aimed at - deployments, tests and logging only
+deployments really worked.  We now use the / an industry standard
+deployment tool (fabric) and have a (well) tested virtual server
+environment
+
+I have got a fabric deploy for rolloing out Linux COntainers - I did
+have 100 virtual servers installed on my box and it took it quite well
+as a test.
+
+But that means we have the space and flexibility to design and develop
+the same architecture at every stage of the development process,
+increasing our confidence that when we go for QA or go live, things
+will work.
+
+
+Next week : 
+
+* smoother deployments with Jenkins CI
+* some tests for Jenkins to run
+* logging. 
+
+
 Week 2 April 9 -13
 ------------------
 
