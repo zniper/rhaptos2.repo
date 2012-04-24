@@ -2,8 +2,16 @@ from flask import Flask, request,  url_for
 import datetime
 import reflector
 import ajaxlib
+import flask
 
 app = Flask(__name__)
+
+def qlog(msg):
+    fo = open('q.log','a')
+    fo.write(msg + "\n")
+    fo.close()
+
+
 
 def gettime():
     return datetime.datetime.today().isoformat()
@@ -11,15 +19,20 @@ def gettime():
 @app.route("/module/", methods=['POST'])
 def modulePOST():
 #    return 'You POSTed, this data: %s @ %s' %  (1, gettime()) 
+    qlog('startpost')
     app.logger.info('test')
     #get the txt, and send it on to repo for storage
     moduletxt = request.form['moduletxt']
     reporesp = ajaxlib.sendajax({'moduletxt': moduletxt, 'appid': 1, 'user': 'fred', 'auth':'12345'},
-                                'http://e2repo.office.mikadosoftware.com/e2repo/module/', 'POST')
-    
-    return 'You POSTed, this data: %s @ %s.  \
+                                'http://e2repo/e2repo/module/', 'POST')
+    qlog(repr(reporesp))
+     
+    s =  'You POSTed, this data: %s @ %s.  \
             This was the response from repo %s' %  (reflector.dict2table(request.form), \
                                                      gettime(), reporesp) 
+    resp = flask.make_response(s)
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp 
 
 @app.route("/module/", methods=['GET'])
 def moduleGET():
@@ -40,4 +53,4 @@ if __name__ == "__main__":
     from logging import FileHandler
     fh = FileHandler(filename='/tmp/myapp.log')
     app.logger.addHandler(fh)
-    app.run()
+    app.run(host="0.0.0.0", debug=True)
