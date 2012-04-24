@@ -1,14 +1,22 @@
- <html>                                                                  
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+                                                                  
  <head> 
 
+    <title>Connexions - Frozone Development</title>
+    <link rel="stylesheet" type="text/css" href="frozone.css" />
+
+
+<!-- JQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js"></script>
-
-<script type="text/javascript" src="mikadosoftware-cnx.js"></script>
-                                                                 
-<!-- Load jQuery build -->
+<!-- TinyMCE and the TinyMCE JQuery helper-->
 <script type="text/javascript" src="http://devassets.office.mikadosoftware.com/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript" src="http://devassets.office.mikadosoftware.com/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
+<!-- Frozone client -->
+<script type="text/javascript" src="conf.js"></script>
+<script type="text/javascript" src="frozone_client.js"></script>
+
 
 <script type="text/javascript">
 tinyMCE.init({
@@ -50,12 +58,11 @@ tinyMCE.init({
 
 <body>                                                                  
 
-<a href="" id="click1">send textarea to REST</a>
-<a href="" id="clickShowTextArea">display textarea</a>
-<a href="" id="clickLoadTextArea">load textarea</a>
+<table>
+<tr><td><img src="http://cnx.org/support-cnx.png"></td></tr>
 
-
-
+<tr><td>Text Editor:</td> 
+ <td>
  <form name="fakeeditor" id="form1">
 
     <input  type="radio" name="method" value="PUT">PUT
@@ -65,6 +72,17 @@ tinyMCE.init({
     
     <textarea id="e2textarea">This is the module text</textarea> 
  </form>
+  </td> </tr>
+
+<tr><td>msgs:</td> 
+<td>
+
+<a href="" id="click1">send textarea to REST</a>
+<a href="" id="clickShowTextArea">display textarea</a>
+<a href="" id="clickLoadTextArea">load textarea</a>
+
+
+
 
 <hr/>
 
@@ -74,6 +92,10 @@ tinyMCE.init({
 <div id="logarea"></div>
 
 
+
+</td></tr>
+
+</table>
 
  </body>                                                                 
  </html>

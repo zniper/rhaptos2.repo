@@ -4,11 +4,18 @@ import reflector
 
 app = Flask(__name__)
 
+def qlog(msg):
+    fo = open('q.log','a')
+    fo.write(msg + "\n")
+    fo.close()
+
+
 def gettime():
     return datetime.datetime.today().isoformat()
 
 @app.route("/module/", methods=['POST'])
 def modulePOST():
+    qlog('postcall')
     app.logger.info('test')
     importantbit = request.form['moduletxt']
     open('/tmp/654321','w').write(importantbit)
@@ -16,6 +23,7 @@ def modulePOST():
 
 @app.route("/module/<modulehash>", methods=['GET'])
 def moduleGET(modulehash):
+    qlog('getcall')
     return 'this is text of %s.' % modulehash    
 
 @app.route("/module/", methods=['DELETE'])
