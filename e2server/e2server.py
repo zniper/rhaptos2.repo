@@ -15,7 +15,7 @@ def modulePOST():
     #get the txt, and send it on to repo for storage
     moduletxt = request.form['moduletxt']
     reporesp = ajaxlib.sendajax({'moduletxt': moduletxt, 'appid': 1, 'user': 'fred', 'auth':'12345'},
-                                'http://hadrian/e2repo/module/', 'POST')
+                                'http://e2repo.office.mikadosoftware.com/e2repo/module/', 'POST')
     
     return 'You POSTed, this data: %s @ %s.  \
             This was the response from repo %s' %  (reflector.dict2table(request.form), \

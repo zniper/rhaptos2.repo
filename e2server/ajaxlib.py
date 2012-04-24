@@ -22,3 +22,7 @@ def sendajax(datadict, tgturl, method='POST'):
 
 
      
+if __name__ == '__main__':
+#    print sendajax({'moduletxt': '<P>this is text</p>'}, 'http://e2server.office.mikadosoftware.com/e2server/module/')
+    print sendajax({'moduletxt': '<P>this is text</p>'}, 'http://cnx1:5000/module/')
+
