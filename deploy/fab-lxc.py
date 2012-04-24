@@ -51,7 +51,7 @@ import random
 import pprint
 import copy
 import sys
-from cnxfab import *
+
 import  time
 
 import fabpass
@@ -173,7 +173,13 @@ def useradd(username=None, passwd=None):
     #sudo sh -c "echo test1:pass1 | chpasswd"
 
 
+def lxc_start(vhostname):
+    '''
+    TODO: getting results back??
+    '''
 
+    fabric.api.sudo('lxc-start -d -n %s' % vhostname)
+    
 
 if __name__ == "__main__":
     import doctest
