@@ -12,3 +12,12 @@ JQuery - broken pipes on AJAX calls.  usually this is because the browser, which
 
 This is such a common issue we need to build in solutions.  Assume it will always happen.  Use httplib and do a good test too.
 
+* ImportError: No module named site
+  Caused by trying to run (uwsgi) in a virtualenv when there is not one.
+  --home arg is not what it said :-)
+
+* http://lists.unbit.it/pipermail/uwsgi/2010-March/000188.html
+  invalid request block size: 21573
+
+  ET as little endian is 21573, but GET sent by HTTP *to* a wsgi server is going to be funny - cos wsgi servers are not http servers...
+

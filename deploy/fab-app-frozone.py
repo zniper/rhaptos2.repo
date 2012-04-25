@@ -72,6 +72,10 @@ def prep():
 def install_e2client():
     '''need to be a nginx server. '''
       
+        #bleahhh
+        sudo('mkdir /usr/share/www/nginx/repo')
+        sudo('chmod 0777 -R /usr/share/www/nginx/repo ')
+
         sudo('cp e2server/nginx.conf /etc/nginx/nginx.conf')
 
         run('cp e2client/strawman.html \
