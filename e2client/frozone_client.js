@@ -4,7 +4,7 @@
 
 
 // when document is loaded, run this root function, that lisp style will call everything else.... OK.
-var TGTURL="http://" + FROZONE.e2serverFQDN + "/e2server/module/";
+var TGTURL="http://" + FROZONE.e2repoFQDN + "/e2repo/module/";
 
 
     function logout(msg){
@@ -27,11 +27,29 @@ var TGTURL="http://" + FROZONE.e2serverFQDN + "/e2server/module/";
         logout(txtarea);
     };
 
-    function load_textarea(html5text){
-        html5text = '<h1>hello world</h1>';
-        $('#e2textarea').tinymce().setContent(html5text);
-        logout('loaded text area with ...' + html5text);
+    function load_textarea(){
+        //mhash box should have right id in it.
+        mhashid = $('#mhash').val()
+        
+        var request =$.ajax({
+	    url: TGTURL + mhashid,
+            type: 'GET'
+        });
+	request.done(function(data) {
+	    //$("#responsearea").html(data);      
+	    logout(data + 'done a success');
+            $('#e2textarea').tinymce().setContent(data);
+	});
 
+	request.fail(function(jqXHR, textStatus, err) {
+	    logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
+	});
+
+	request.always(function(jqXHR, textStatus){
+	    logout(textStatus);
+	});
+
+                
     };
 
 
@@ -44,13 +62,13 @@ var TGTURL="http://" + FROZONE.e2serverFQDN + "/e2server/module/";
          var payload = {'moduletxt':  get_textarea_html5()}; 
 
 	 var menuId = 42;
-        alert(TGTURL);
+
 	 var request = $.ajax({
 	     url: TGTURL,
 	     type: requestmethod,
              data: payload
 	 });
-        alert(request.statusCode());
+
 	 request.done(function(data) {
 	     //$("#responsearea").html(data);      
 	     logout(data + 'done a success');
