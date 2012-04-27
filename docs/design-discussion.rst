@@ -23,3 +23,10 @@ Logging and debugging
 http://www.drdobbs.com/article/print?articleID=196802787&dept_url=/dept/debug/
 Todo: Setup centralised logging server
 
+
+Client side application
+=======================
+
+http://lucumr.pocoo.org/2011/11/15/modern-web-applications-are-here/
+http://lucumr.pocoo.org/2011/7/27/the-pluggable-pipedream/
+

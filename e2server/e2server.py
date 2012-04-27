@@ -3,14 +3,16 @@ import datetime
 import reflector
 import ajaxlib
 import flask
+import datetime
 
 app = Flask(__name__)
 
-def qlog(msg):
-    fo = open('q.log','a')
-    fo.write(msg + "\n")
-    fo.close()
 
+def qlog(msg):
+    d = gettime()
+    fo = open('/tmp/e2server.log','a')
+    fo.write('%s %s \n' % (d, msg))
+    fo.close()
 
 
 def gettime():
@@ -20,11 +22,14 @@ def gettime():
 def modulePOST():
 #    return 'You POSTed, this data: %s @ %s' %  (1, gettime()) 
     qlog('startpost')
-    app.logger.info('test')
     #get the txt, and send it on to repo for storage
+
     moduletxt = request.form['moduletxt']
+    qlog('found ... %s' % moduletxt)
+
     reporesp = ajaxlib.sendajax({'moduletxt': moduletxt, 'appid': 1, 'user': 'fred', 'auth':'12345'},
-                                'http://e2repo/e2repo/module/', 'POST')
+                                'http://cnx1/e2repo/module/', 'POST')
+    
     qlog(repr(reporesp))
      
     s =  'You POSTed, this data: %s @ %s.  \
