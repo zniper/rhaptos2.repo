@@ -1,7 +1,7 @@
 
 import fabric
 import fabpass
-
+from fabric.operations import put
 from fabric.api import sudo, run, local
 import os
 
@@ -111,9 +111,9 @@ def install_cdn():
     '''Static server '''
 
     put(prepend('conf.d/nginx.conf'), 
-                '/etc/nginx/nginx.conf', True, True, False, '0777')
+                '/etc/nginx/nginx.conf', use_sudo=True, mode=0755)
     put(prepend('conf.d/cdn.conf'), 
-                '/etc/nginx/conf.d/', True, True, False, '0777')
+                '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/cdn')
     sudo('chown -R www-data:www-data /usr/share/www/nginx/cdn')
@@ -130,13 +130,13 @@ def install_e2client():
 
 
     put(prepend('www/*'), 
-                wwwdir, True, True, False, '0777')
+                wwwdir, use_sudo=True, mode=0755)
     put(prepend('e2server/*.py'), 
-                flaskdir_server, True, True, False, '0777')
+                flaskdir_server, use_sudo=True, mode=0755)
     put(prepend('e2server/reflector.py'), 
-                flaskdir_repo, True, True, False, '0777')
+                flaskdir_repo, use_sudo=True, mode=0755)
     put(prepend('e2repo/*.py'), 
-                flaskdir_repo, True, True, False, '0777')
+                flaskdir_repo, use_sudo=True, mode=0755)
 
 
     restart_nginx()
