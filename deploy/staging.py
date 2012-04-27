@@ -67,20 +67,14 @@ def searchreplace(f, contextdict):
 
 
 
-rackspace_context = {'<<AAA>>': 'replacedAAwithBB',
-                     '<<BBB>>': 'replacedBBBwithCC',
+rackspace_context = {'<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
+                     '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
                      }
 
 office_context = {
 
 '<<CDN-SERVER-NAME>>' : {'office': 'cdn.office.mikadosoftware.com', 
                          'rackspace': 'cdn.frozone.mikadosoftware.com',}
-
-
-,'<<CDN-SERVER-ROOT>>': {'rackspace': '/usr/share/www/nginx/cdn'}
-
-
-
 }
 
 
