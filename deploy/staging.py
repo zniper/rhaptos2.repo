@@ -87,9 +87,11 @@ office_context = {
         
 
 def main():
-    clone_and_clean('/usr/home/pbrian/foo/bar', '/usr/home/pbrian/foo/bar2')
 
-#    overwrite(rackspace_context, '/usr/home/pbrian/foo/bar', '/usr/home/pbrian/foo/bar2')
+     
+     src, tgt = sys.argv[1:]
+     print '@@@@@', src, tgt
+     overwrite(rackspace_context, src, tgt)
 
 
 
