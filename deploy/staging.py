@@ -16,7 +16,7 @@ test location???
 
 import fabric
 from fabric.api import local
-import os
+import os, sys
 
 def clone_and_clean(localgitrepodir, localstagingdir):
     '''This is a means to do a SVN EXPORT
@@ -47,7 +47,7 @@ def overwrite(contextdict, local_git_repo,local_staging_dir):
     '''
     #prep dir
     clone_and_clean(local_git_repo, local_staging_dir)
-    OKsuffix = ['.py', '.js']
+    OKsuffix = ['.py', '.js', '.conf']
     for root, dirs, files in os.walk(local_staging_dir):
         okfiles = [os.path.join(root,f) for f in files if os.path.splitext(f)[-1] in OKsuffix]
         for f in okfiles:
