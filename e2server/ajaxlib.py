@@ -2,7 +2,7 @@
 
 import httplib
 import urllib
-
+import common
 
 def sendajax(datadict, tgturl, method='POST'):
 
@@ -12,13 +12,17 @@ def sendajax(datadict, tgturl, method='POST'):
 
     '''
 
+
     params = urllib.urlencode(datadict)
     # adjust headers etc.  Need finer control
+
+    common.qlog('starting ajax client %s ' % datadict)
     dt = urllib.urlopen(tgturl, params).read()  
-
-
-
+    common.qlog('results ajax client %s ' % dt)  
     return dt
 
 
+
      
+if __name__ == '__main__':
+    print sendajax({'moduletxt':'test'}, 'http://localhost:8002')

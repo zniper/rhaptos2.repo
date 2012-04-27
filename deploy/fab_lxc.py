@@ -31,11 +31,11 @@ for each lxc
 
 #preboot
 
-  fab -H hpcube preboot:vhostname=cnx02,vhostid=105
+  fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx02,vhostid=105
 
 #rootboot
 
-  fab -H <lxc> useradd:username=<name>,passwd=<pass>
+  fab -f fab-lxc.py -H <lxc> useradd:username=<name>,passwd=<pass>
 
 THen a uer fabdeploy has sudo privileges and can do normal deploy stuff
 

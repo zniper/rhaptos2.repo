@@ -421,6 +421,32 @@ config is stored here - and the docs reflect the commands seen::
 
 Refer to the examples in /usr/lib/lxc/templates
 
+
+
+Using Fabric
+============
+
+The above is good, however we have migrated to using fabric (and then Jenkins) for the deployments.
+
+
+
+Managing Ubuntu
+===============
+
+1. ufw 
+
+   /etc/services will map www > 80
+
+::
+
+   ufw allow ssh/tcp
+   ufw allow www/tcp
+   ufw enable
+   ufw status
+
+
+
+
 biblio
 ~~~~~~
 
