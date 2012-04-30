@@ -10,14 +10,8 @@ import os
 
 Provides: 
 
-  prep() - prepare a newly created lxc for being one of the
-           e2client/server/repo boxes, or other required boxes
- 
-  install_e2client()
-
-  install_e2server()
-
-  install_e2repo()
+  install_cdn
+  install_www
 
 
 I believe the only realistic way to do this is to have a set of box types 
@@ -122,7 +116,7 @@ def install_cdn():
     #TODO: wget to grabr tinymce??? scp ???
 
 
-def install_e2client():
+def install_www():
     '''need to be a nginx server. '''
 
     #0777 !!!! anyway -p stops failing if already there
