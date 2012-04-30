@@ -31,11 +31,11 @@ for each lxc
 
 #preboot
 
-  fab -H hpcube preboot:vhostname=cnx02,vhostid=105
+  fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx02,vhostid=105
 
 #rootboot
 
-  fab -H <lxc> useradd:username=<name>,passwd=<pass>
+  fab -f fab-lxc.py -H <lxc> useradd:username=<name>,passwd=<pass>
 
 THen a uer fabdeploy has sudo privileges and can do normal deploy stuff
 
@@ -51,7 +51,7 @@ import random
 import pprint
 import copy
 import sys
-from cnxfab import *
+
 import  time
 
 import fabpass
@@ -173,7 +173,13 @@ def useradd(username=None, passwd=None):
     #sudo sh -c "echo test1:pass1 | chpasswd"
 
 
+def lxc_start(vhostname):
+    '''
+    TODO: getting results back??
+    '''
 
+    fabric.api.sudo('lxc-start -d -n %s' % vhostname)
+    
 
 if __name__ == "__main__":
     import doctest

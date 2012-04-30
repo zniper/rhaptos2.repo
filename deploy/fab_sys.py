@@ -1,6 +1,6 @@
 import fabric
 from fab_ostypes import UBUNTU, FREEBSD, WIN, OSX
-
+from fabconf import SUPERVISORDIR
 
 import fabpass
 
@@ -47,6 +47,11 @@ def sys_install_pythonenv_ubuntu():
     fabric.api.sudo('easy_install pip') 
     fabric.api.sudo('apt-get install -y build-essential python-dev libxml2-dev')
     fabric.api.sudo('pip install uwsgi')
+    fabric.api.sudo('pip install supervisor')
+
+    #setup supervisor
+    fabric.api.run('mkdir %s' % SUPERVISORDIR)
+    
 
 
 def sys_install_nginx_ubuntu():

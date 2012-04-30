@@ -1,22 +1,71 @@
 from flask import Flask, request,  url_for
 import datetime
 import reflector
+import datetime
+import md5, random
+import os
+import flask
 
 app = Flask(__name__)
+
+REPO='/usr/share/www/nginx/repo'
+
+from logging import FileHandler
+fh = FileHandler(filename=os.path.join(REPO, 'myapp.log'))
+app.logger.addHandler(fh)
+
+
+def getfilehash(moduletxt):
+    '''from a html5 string get some sort of hash '''
+    h = random.randint(1,1000)
+    return h
+
+
+
+
+def qlog(msg):
+    d = datetime.datetime.today().isoformat()
+    fo = open('/tmp/e2repo.log','a')
+    fo.write('%s %s \n' % (d, msg))
+    fo.close()
+
+
+def asjson(pyobj):
+    '''just placeholder '''
+    return 'JSON:: %s' % repr(pyobj)
 
 def gettime():
     return datetime.datetime.today().isoformat()
 
 @app.route("/module/", methods=['POST'])
 def modulePOST():
+    qlog('postcall here')
     app.logger.info('test')
-    importantbit = request.form['moduletxt']
-    open('/tmp/654321','w').write(importantbit)
-    return 'repo response: new module txt of %s saved id: 654321' % importantbit  
+    try:
 
-@app.route("/module/<modulehash>", methods=['GET'])
-def moduleGET(modulehash):
-    return 'this is text of %s.' % modulehash    
+        html5 = request.form['moduletxt']
+        myhash = getfilehash(html5)
+        open(os.path.join(REPO, str(myhash)),'w').write(html5)
+
+    except Exception, e:
+        qlog(str(e))
+        raise(e)
+
+    s = asjson(myhash)
+    resp = flask.make_response(s)    
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+    return resp
+
+  
+
+@app.route("/module/<mhash>", methods=['GET'])
+def moduleGET(mhash):
+    qlog('getcall %s' % mhash)
+    try:
+        html5 = open(os.path.join(REPO, str(mhash))).read()
+    except Exception, e:
+        raise e
+    return  asjson(html5)
 
 @app.route("/module/", methods=['DELETE'])
 def moduleDELETE():
@@ -33,4 +82,4 @@ if __name__ == "__main__":
     from logging import FileHandler
     fh = FileHandler(filename='/tmp/myapp.log')
     app.logger.addHandler(fh)
-    app.run()
+    app.run(host='0.0.0.0', debug=True)
