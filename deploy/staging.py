@@ -1,95 +1,100 @@
+#!/usr/local/bin/python
 
 
 '''
-run over a given set of files in a given location, and replace certain tags with required conf 
+
+This is the main function side of staginglib.
+It expects a call like ::
 
 
-useage::
+    staging.py --context=rackspace --src=/home/paul/code/frozone --tgt=/tmp/frozone --branch=fobar
 
-  overwrite(contextdir, local_git_repo, local_staging_dir)
+And it will 'extract' code from the git repo in 
 
 
 
-test location???
+
 
 '''
-
+#batteries
+import os, sys
+import optparse
+#3rd party
 import fabric
 from fabric.api import local
-import os, sys
-
-def clone_and_clean(localgitrepodir, localstagingdir):
-    '''This is a means to do a SVN EXPORT
-    
-    ''' 
-    #first, clean up the tgt folder.
-    if os.path.isdir(localstagingdir) is True:
-        local('rm -rf %s' % localstagingdir) 
-        local('mkdir -p -m 0755 %s' % localstagingdir) 
-
-    local('git clone %s %s' % (localgitrepodir, localstagingdir))    
-    local('rm -rf %s' % os.path.join(localstagingdir,'.git')) 
+#app
+import frozoneErrors
+import staginglib
 
 
-def overwrite(contextdict, local_git_repo,local_staging_dir):
-    '''take src from one location, copy it out to tgt and replace 
+def stage_repo(contextdict, local_git_repo, local_staging_dir, branch):
+    '''the main call if you will 
 
-    1. clone src repo, del .git dir 
-    2. run the overwriter over it
-    
+    'export' a git repo to a local folder
+    now do simple token replace acorss all the files.
 
-    overwriter
-    1. walk the tree from the local_staging_dir
-    2. at each point identify right files via a glob
-    3. for each file, open, replace, close.
-
+    I am sure it will gt more complex over time
 
     '''
-    #prep dir
-    clone_and_clean(local_git_repo, local_staging_dir)
-    OKsuffix = ['.py', '.js', '.conf']
-    for root, dirs, files in os.walk(local_staging_dir):
-        okfiles = [os.path.join(root,f) for f in files if os.path.splitext(f)[-1] in OKsuffix]
-        for f in okfiles:
-            searchreplace(f, contextdict)
-        
-def searchreplace(f, contextdict):
-    ''' I *should* use a regex to find all <<xx>> and error if we find one that is not in context.
-    Wow this is a dumb replace. I woudl not pass this as code review
-
-    '''
-    txt_orig = open(f).read()
-    txt_new = txt_orig
-
-    for k in contextdict:
-        txt_new = txt_new.replace(k, contextdict[k])
-    open(f,'w').write(txt_new)
+    
+    staginglib.clone_and_clean(local_git_repo, local_staging_dir, branch) 
+    staginglib.overwrite(contextdict, local_git_repo, local_staging_dir)
 
 
 
-rackspace_context = {'<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
-                     '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
+def main(argv=None):
+
+
+     if argv is None:
+         argv = sys.argv
+
+     parser = optparse.OptionParser()
+     parser.add_option('-s', '--src', dest='src', 
+                       help='The folder where the git repo is.')
+     parser.add_option('-t', '--tgt', dest='tgt', 
+                       help='The folder where the git repo will be \
+                       "exported" to and then manipulated i.e. sed.')
+     parser.add_option('-b', '--branch', dest='branch', 
+                       help='The branch to clone out of repo.')
+     parser.add_option('-c', '--context', dest='context', 
+                       help='The dict, kept in this file, that will \
+                       be used when replacing tokens in files in \
+                       tgt folder.')
+
+     (options, args) = parser.parse_args(args=argv[1:])
+
+     thiscontext = staginglib.CONTEXT_MAP[options.context]
+     stage_repo(thiscontext, options.src, options.tgt)
+
+
+
+# CONSTANTS
+rackspace_context = {
+ '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
+ '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
                      }
 
 office_context = {
+ '<<CDN-SERVER-NAME>>': 'cdn.office.mikadosoftware.com',
+ '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
+                     }
 
-'<<CDN-SERVER-NAME>>' : {'office': 'cdn.office.mikadosoftware.com', 
-                         'rackspace': 'cdn.frozone.mikadosoftware.com',}
+fillet_context = {
+ '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
+ '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
+                     }
+
+
+CONTEXT_MAP = {
+
+    'office':office_context,
+    'rackspace':rackspace_context,
+    'fillet':fillet_context,
 }
-
-
-        
-
-def main():
-
-     
-     src, tgt = sys.argv[1:]
-     print '@@@@@', src, tgt
-     overwrite(rackspace_context, src, tgt)
-
 
 
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
+
