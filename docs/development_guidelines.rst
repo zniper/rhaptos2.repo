@@ -47,9 +47,6 @@ Basic workflow for a Frozone developer.
   
 
 1. Create an Issue in github based on the story card in Trello
-  
-   :: 
-
    I have created #4-stagingstep_needs_optparse.
 
 2. Accept that issue, and create a feature branch based on the issue::
@@ -64,6 +61,7 @@ Basic workflow for a Frozone developer.
 
 3. do the development work we want...
 
+
 4. commit the changes, back to git hub::
 
     git add ...
@@ -74,11 +72,26 @@ Basic workflow for a Frozone developer.
 
 5. initiate a pull request from branch \#4-stagingstep_needs_optparse TO master
 
+   ::
+
+    Look at https://github.com/lifeisstillgood/frozone/pull/5
+
+
 
 6. Someone reviews the pull request, and a discussion ensures on github
 
+   ::
+
+    Look at https://github.com/lifeisstillgood/frozone/pull/5
+
+
 
 7. When the changes are approved, merge into master.  THat can now go live.
+
+   ::
+
+    Look at https://github.com/lifeisstillgood/frozone/pull/5
+
 
 
 Line Length
