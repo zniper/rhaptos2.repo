@@ -49,4 +49,7 @@ remote-start-supervisor:
 	echo $(TBC)
 
 #make host=cnx1 fabfile=deploy/fab_app_frozone.py branch=master context=office
+
 oneinstall: clean-local stage-local clean-remote remote-install-cdn remote-install-e2repo
+
+stageonly: clean-local stage-local 

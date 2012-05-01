@@ -62,7 +62,7 @@ def overwrite(contextdict, local_staging_dir):
     '''
     #prep dir
 
-    OKsuffix = ['.py', '.js', '.conf']
+    OKsuffix = ['.py', '.js', '.conf', '.html']
     for root, dirs, files in os.walk(local_staging_dir):
         okfiles = [os.path.join(root,f) for f in files 
                      if os.path.splitext(f)[-1] in OKsuffix]

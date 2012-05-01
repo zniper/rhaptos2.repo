@@ -14,6 +14,21 @@ Provides:
   install_www
 
 
+This expects to be called through a fab call that is itself called
+through Make, giving a horror of argument passing.
+
+::
+   
+  make host=cnx1 fabfile=deploy/fab_app_frozone.py context=office clean-local
+  -> generates ...
+  fab -H cnx1 -f fab_app_frozone.py clean_local:context=office
+  -> which calls
+  fab_app_frozone.clean_local(context,...)
+
+
+
+
+
 I believe the only realistic way to do this is to have a set of box types 
 and versions, and store those in text file on the box - so we always know 
 what version/type the box we are on actually is.  
