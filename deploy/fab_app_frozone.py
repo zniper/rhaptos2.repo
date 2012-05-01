@@ -32,44 +32,73 @@ prep box first
 '''
 
 
-#ubuntu
-srcdir='/home/deployagent/frozone'
+####### DEFAULT VALUES HERE #######
+####### PUT THESE DEFAULTS IN THE Makefile ...
 
 
-localhomedir = '/tmp/home'
-localfrozonegit = os.path.join(localhomedir, 'frozone')
+TINYMCE_STORE='/usr/home/pbrian/frozone/thirdparty/tinymce'
+
+localhomedir = '/tmp/frozone'
+localgitrepo = os.path.join(localhomedir, 'frozone')
 localstagingdir = os.path.join(localhomedir, 'staging')
+remote_git_repo = 'git://github.com/lifeisstillgood/frozone.git'
 
-wwwdir='/usr/share/www/nginx/cdn/'
-flaskdir_repo='/usr/share/www/flask/e2repo/'
-flaskdir_server='/usr/share/www/flask/e2server/'
+remote_wwwd='/usr/share/www/nginx/cdn/'
+remote_e2repo='/usr/share/www/flask/e2repo/'
+remote_e2server='/usr/share/www/flask/e2server/'
 homedir = '/home/deployagent'
-
+remote_supervisor = os.path.join(homedir, 'supervisor')
 
 def gitpull():
     with fabric.context_managers.cd(localgitdir):
         local('git checkout feature/cleanforjenkins && git pull')
 
-def local_init():
-
-    for d in (localstagingdir, localhomedir, localfrozonegit):
-        local('mkdir -p -m 0777 %s' % d)
-
-    local('rm -rf %s' % localfrozonegit)
-    local('git clone git://github.com/lifeisstillgood/frozone.git %s' % localfrozonegit)
-        
-
-def local_clone_overwrite(localgitrepo=localfrozonegit, localstagingdir=localstagingdir):
+def clean_local():
     ''' '''
 
-    local('cd %s && git checkout feature/cleanforjenkins && git pull' % localgitrepo)
-    local('python %s/deploy/staging.py %s %s' % ('/home/pbrian/frozone', localgitrepo, localstagingdir)) 
+    for d in (localstagingdir, localhomedir, localgitrepo):
+        local('mkdir -p -m 0777 %s' % d)
+
+    local('rm -rf %s' % localgitrepo)
+    local('rm -rf %s' % localstagingdir)
+        
+
+def stage_local(remote_git_repo,
+                localgit,
+                localstaging, 
+                branch, 
+                context):
+    ''' Download git repo, extract a known branch to staging, 
+        do search replace on staging
+
+    expect to be called through the Makefile::
+
+        stage_local('git://github.com/lifeisstillgood/frozone.git',
+                    '/tmp/frozone/git',
+                    '/tmp/frozone/stage',
+                    'master',
+                    'rackspace')
+
+    I then call directly to the staging.py script provided.
+
+    '''
+
+    clean_local()
+    local('python deploy/staging.py \
+          --context=%s \
+          --src=%s \
+          --tgt=%s \
+          --branch=%s' % (context, 
+                          remote_git_repo,
+                          localstaging,
+                          branch )) 
     
 
-def remote_init():
+def remote_init(): 
 
-    for d in (srcdir, wwwdir, flaskdir_repo, flaskdir_server):
+    for d in (remote_wwwd, remote_e2repo, remote_e2server, remote_supervisor):
         sudo('mkdir -p -m 0777 %s' % d)
+        
 
     #need a put here
         
@@ -109,11 +138,12 @@ def install_cdn():
     put(prepend('conf.d/cdn.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
+
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/cdn')
     sudo('chown -R www-data:www-data /usr/share/www/nginx/cdn')
+    put(TINYMCE_STORE, '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
     restart_nginx()
 
-    #TODO: wget to grabr tinymce??? scp ???
 
 
 def install_www():
@@ -124,13 +154,13 @@ def install_www():
 
 
     put(prepend('www/*'), 
-                wwwdir, use_sudo=True, mode=0755)
+                remote_wwwd, use_sudo=True, mode=0755)
     put(prepend('e2server/*.py'), 
-                flaskdir_server, use_sudo=True, mode=0755)
+                remote_e2server, use_sudo=True, mode=0755)
     put(prepend('e2server/reflector.py'), 
-                flaskdir_repo, use_sudo=True, mode=0755)
+                remote_e2repo, use_sudo=True, mode=0755)
     put(prepend('e2repo/*.py'), 
-                flaskdir_repo, use_sudo=True, mode=0755)
+                remote_e2repo, use_sudo=True, mode=0755)
 
 
     restart_nginx()
@@ -145,7 +175,7 @@ def restart_nginx():
 def install_supervisor():
     ''' '''
 
-    sudo('mkdir -p -m 0777 /home/deployagent/supervisor')
+    sudo('mkdir -p -m 0777 %s' % remote_supervisor)
     put(prepend('conf.d/supervisord.conf'), 
                 '/home/deployagent/supervisor')
     
