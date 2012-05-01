@@ -29,7 +29,7 @@ import frozoneErrors
 
 
 
-def clone_and_clean(localgitrepodir, localstagingdir, branch):
+def clone_and_clean(remotegitrepo, localstagingdir, branch):
     '''This is a means to do a SVN EXPORT
     
     ''' 
@@ -39,14 +39,14 @@ def clone_and_clean(localgitrepodir, localstagingdir, branch):
         local('mkdir -p -m 0755 %s' % localstagingdir) 
 
     local('git clone -b %s %s %s' % (branch, 
-                                  localgitrepodir, 
+                                  remotegitrepo, 
                                   localstagingdir))    
 
     local('rm -rf %s' % os.path.join(localstagingdir,'.git')) 
 
 
 
-def overwrite(contextdict, local_git_repo, local_staging_dir):
+def overwrite(contextdict, local_staging_dir):
     '''take src from one location, copy it out to tgt and replace 
 
     1. clone src repo, del .git dir 
@@ -62,11 +62,14 @@ def overwrite(contextdict, local_git_repo, local_staging_dir):
     '''
     #prep dir
 
-    OKsuffix = ['.py', '.js', '.conf']
+    OKsuffix = ['.py', '.js', '.conf', '.html']
     for root, dirs, files in os.walk(local_staging_dir):
         okfiles = [os.path.join(root,f) for f in files 
                      if os.path.splitext(f)[-1] in OKsuffix]
+        print
+        print root,  
         for f in okfiles:
+            print '.',
             searchreplace(f, contextdict)
         
 def searchreplace(f, contextdict):
