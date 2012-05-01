@@ -12,7 +12,7 @@ Introduction
 ------------
 
 I have been asked to provide a working, documented and tested
-implementation of what I am calling Edna Mode. [#]_ It is intended to
+implementation of what I am calling Frozone. [#]_ It is intended to
 encompass all the requirements set out in `CNX Rewrite Requirements
 <https://docs.google.com/spreadsheet/ccc?key=0ArvuSYeGW6GpdHJmNVJVWjBWOGVGM0RmMWJqdDRpeWc#gid=0>`_
 
