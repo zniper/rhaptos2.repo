@@ -4,24 +4,48 @@
 Install and Admin of development servers
 ========================================
 
-My 'Setup' includes a HP ProLiant MicroServer - basically a simple
-server in a nice cube chassis.  I am using this as the host server for
-all virtualised Ubuntu servers.  This is how I set it up and keep it
-running.
+This box is currently the main development server, and hosts 
+around a dozen ubuntu instances.
+
 
 .. image:: hpcube.jpg
    :width: 20%
    :align: right
 
-* Philosophy
+tl;dr
+=====
 
-  I think this is more appropriate in the development how to notes.
-  ::
+1. Install Ubunutu 11.10 (soon to be 12.04 LTS) on your box
+2. Create a bridge network so >1 server can share the real NIC
+3. Add in LXC support to ubuntu
+
+1. create a new container::
+   
+    sudo lxc-create -t ubuntu -f /etc/lxc/lxc.conf -n cnx01
+
+2. change its networking ::
+
+    fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx02,vhostid=105
+
+3. add in deploy user::
+
+    fab -f fab-lxc.py -H <lxc> useradd:username=<name>,passwd=<pass>
+
+4. ssh into the box, you can now use fab scripts to add the frozone development branch::
+
+    sh deploylatest.sh
+
+    
+
+.. warning::
+
+     Our basic philosophy here:
 
       It's easier to re-provision than it is to repair
 
-* Terminology
 
+Terminology
+-----------
 
   Host and VMHost
    Host is the host OS that is closest to the bare metal. VMHost is a clearer alias.
@@ -40,12 +64,6 @@ We have hierarchical three levels of deployment - OS, System and Application
   Application
    A program or set of programs that are written / supported by us.  
 
-I used to think there were 3 *actions* to take at each level, (Build,
-Deploy, COnfigure) It is sort of true, but, only ion complex builds is
-it worth splitting out Nginx build from nginx deploy - we think of it
-as one block
-
- 
 
 OS Install
 ==========

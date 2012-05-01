@@ -3,12 +3,15 @@ Build and configure a host server
 =================================
 
 
-I am expecting to parameterise these configs, based on FreeBSD / Ubuntu, versions thereof,
-and whether things are virtualised.  I am leaving that extra complexity alone for now, and 
-focusing on ubunut containers.
 
-The configuration and server setup (network on VHost, installing 3rd party packages) is to be controlled
-thorugh fabric for now.  
+
+I am expecting to parameterise these configs, based on FreeBSD /
+Ubuntu, versions thereof, and whether things are virtualised.  I am
+leaving that extra complexity alone for now, and focusing on ubunut
+containers.
+
+The configuration and server setup (network on VHost, installing 3rd
+party packages) is to be controlled thorugh fabric for now.
 
 
 basic notes
@@ -65,8 +68,3 @@ Moniotring Virtual Hosts
 
 
 
-
-Known issues
-------------
-
-Its getting pretty convuloited - but this has always been so for me and VHosts.  Maybe its me.
