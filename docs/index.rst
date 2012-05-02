@@ -4,7 +4,7 @@ Welcome to frozone's documentation!
 index page 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
 
    roadmap
