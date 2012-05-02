@@ -69,31 +69,7 @@ def main(argv=None):
     stage_repo(thiscontext, options.src, options.tgt, options.branch)
 
 
-
-# CONSTANTS
-rackspace_context = {
- '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
- '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
-
- '<<REPO-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
-                     }
-
-office_context = {
- '<<CDN-SERVER-NAME>>': 'cdn.office.mikadosoftware.com',
- '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
- '<<REPO-SERVER-NAME>>': 'repo.office.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'repo.office.mikadosoftware.com',
-
-                     }
-
-fillet_context = {
- '<<CDN-SERVER-NAME>>': 'cdn.fillet.mikadosoftware.com',
- '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
- '<<REPO-SERVER-NAME>>': 'repo.fillet.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'repo.fillet.mikadosoftware.com',
-
-                     }
+from frozone._config.staging_conf import rackspace_context, office_context, fillet_context
 
 
 CONTEXT_MAP = {
@@ -107,5 +83,6 @@ CONTEXT_MAP = {
 
 
 if __name__ == '__main__':
+
     sys.exit(main())
 

@@ -131,7 +131,10 @@ fillet_context = {
 def write_stagingconf():
     tgtf = 'staging_conf.py'
     open(tgtf, 'w').write(staging_conf % confd)
-    
+    s = ''
+    for k in confd:
+        s += "%s = '%s'\n" % (k, confd[k])
+    open(tgtf, 'a').write(s)
 
 def main():
 
