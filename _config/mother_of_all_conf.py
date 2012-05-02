@@ -105,16 +105,19 @@ staging_conf = '''
 rackspace_context = {
  '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
  '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
-
  '<<REPO-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
+ '<<WWW-SERVER-NAME>>': 'www.frozone.mikadosoftware.com',
+ '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
                      }
 
 office_context = {
  '<<CDN-SERVER-NAME>>': 'cdn.office.mikadosoftware.com',
  '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
  '<<REPO-SERVER-NAME>>': 'repo.office.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'repo.office.mikadosoftware.com',
+ '<<WWW-SERVER-NAME>>': 'www.office.mikadosoftware.com',
+ '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
+
+
 
                      }
 
@@ -122,7 +125,8 @@ fillet_context = {
  '<<CDN-SERVER-NAME>>': 'cdn.fillet.mikadosoftware.com',
  '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
  '<<REPO-SERVER-NAME>>': 'repo.fillet.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'repo.fillet.mikadosoftware.com',
+ '<<WWW-SERVER-NAME>>': 'www.fillet.mikadosoftware.com',
+ '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
                      }
 
