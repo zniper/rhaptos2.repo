@@ -23,7 +23,7 @@ import optparse
 import fabric
 from fabric.api import local
 #app
-import frozoneErrors
+from frozone import frozoneErrors
 import staginglib
 
 
