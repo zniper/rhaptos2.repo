@@ -1,7 +1,3 @@
-TBC='Not yet implemented - see frozone.readthedocs.org'
-
-all:
-	echo $(TBC)
 
 clean: clean-crud
 
@@ -9,19 +5,11 @@ clean-crud:
 	find ./ -name "*.pyc" -type f -exec rm {} \;
 	find ./ -name "*.py~" -type f -exec rm {} \;
 
+### Simple message.
+TBC='Not yet implemented - see frozone.readthedocs.org'
 
-srcdir = /home/deployagent/frozone
-TINYMCE_STORE = /usr/home/pbrian/frozone/thirdparty/tinymce
-localhome = /tmp/frozone
-localgit = $(localhome)/git
-localstaging = $(localhome)/staging
-remote_git_repo = git://github.com/lifeisstillgood/frozone.git
-remotewwwdir = /usr/share/www/nginx/cdn
-flaskdir_repo = usr/share/www/flask/e2repo
-flaskdir_server = usr/share/www/flask/e2server
-remotehome=/home/deployagent
-
-
+### config provided from a central config server
+include _config/conf.mk
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
