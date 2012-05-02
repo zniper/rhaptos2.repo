@@ -1,0 +1,6 @@
+
+class frozoneAJAXError(Exception):
+    ''' '''
+    pass
+
+
