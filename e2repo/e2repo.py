@@ -65,7 +65,11 @@ def moduleGET(mhash):
         html5 = open(os.path.join(REPO, str(mhash))).read()
     except Exception, e:
         raise e
-    return  asjson(html5)
+
+    s = asjson(html5)
+    resp = flask.make_response(s)    
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+    return resp
 
 @app.route("/module/", methods=['DELETE'])
 def moduleDELETE():
