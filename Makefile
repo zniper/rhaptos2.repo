@@ -3,6 +3,7 @@ TBC='Not yet implemented - see frozone.readthedocs.org'
 all:
 	echo $(TBC)
 
+clean: clean-crud
 
 clean-crud:
 	find ./ -name "*.pyc" -type f -exec rm {} \;
