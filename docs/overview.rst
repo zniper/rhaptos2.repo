@@ -1,6 +1,6 @@
-==================
-Rhaptos-Editor-2.0
-==================
+=======================================
+Overview and Tutorial of Frozone Editor
+=======================================
 
 :author: pbrian <paul@mikadosoftware.com>
 :Week: Apr 9-13

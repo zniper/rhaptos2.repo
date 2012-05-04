@@ -113,7 +113,7 @@ rackspace_context = {
 office_context = {
  '<<CDN-SERVER-NAME>>': 'cdn.office.mikadosoftware.com',
  '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
- '<<REPO-SERVER-NAME>>': 'repo.office.mikadosoftware.com',
+ '<<REPO-SERVER-NAME>>': 'www.office.mikadosoftware.com',
  '<<WWW-SERVER-NAME>>': 'www.office.mikadosoftware.com',
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
