@@ -1,22 +1,17 @@
 Welcome to frozone's documentation!
 ===================================
 
-index page 
+Frozone is `Connexions <www.cnx.org>`_ new editor and other components.
+
+
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+
+   Overview
+   Architecture
+   Infrastructure
+   DevOps
+   WeeklyReports
 
 
-   roadmap
-   install
-   install-os
-   overview
-   
-   requirements
-   development_guidelines
-   webservers
-   devops
-   weirdbugs
-   
-
-   weeklyreports

@@ -7,9 +7,12 @@ import fabpass
 
 
 '''
-Tools to do basic install and customisation
 
-logging is an issue in fabric.  solve it via redirection.?
+Turn a fresh ubuntu LXC install into a usable server for us
+
+ntp?
+ufw?
+
 
 '''
 
