@@ -25,7 +25,8 @@ import os, sys
 import fabric
 from fabric.api import local
 #app
-import frozoneErrors
+from frozone import frozoneError
+
 
 
 

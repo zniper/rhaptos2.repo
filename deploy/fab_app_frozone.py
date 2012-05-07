@@ -47,22 +47,10 @@ prep box first
 '''
 
 
-####### DEFAULT VALUES HERE #######
-####### PUT THESE DEFAULTS IN THE Makefile ...
+
+from frozone.conf import *
 
 
-TINYMCE_STORE='/usr/home/pbrian/frozone/thirdparty/tinymce'
-
-localhomedir = '/tmp/frozone'
-localgitrepo = os.path.join(localhomedir, 'frozone')
-localstagingdir = os.path.join(localhomedir, 'staging')
-remote_git_repo = 'git://github.com/lifeisstillgood/frozone.git'
-
-remote_wwwd='/usr/share/www/nginx/cdn/'
-remote_e2repo='/usr/share/www/flask/e2repo/'
-remote_e2server='/usr/share/www/flask/e2server/'
-homedir = '/home/deployagent'
-remote_supervisor = os.path.join(homedir, 'supervisor')
 
 def gitpull():
     with fabric.context_managers.cd(localgitdir):
@@ -146,12 +134,15 @@ def prepend(f):
     return os.path.join(localstagingdir, f)
 
 def install_cdn():
-    '''Static server '''
+    '''Static server for tiny. THe app specific  html and js is served through www.'''
 
     put(prepend('conf.d/nginx.conf'), 
                 '/etc/nginx/nginx.conf', use_sudo=True, mode=0755)
     put(prepend('conf.d/cdn.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
+    put(prepend('conf.d/www.conf'), 
+                '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
+
 
 
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/cdn')
@@ -166,7 +157,6 @@ def install_www():
 
     #0777 !!!! anyway -p stops failing if already there
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
-
 
     put(prepend('www/*'), 
                 remote_wwwd, use_sudo=True, mode=0755)

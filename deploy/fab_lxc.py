@@ -2,6 +2,12 @@
 
 '''
 
+Simple usage :: 
+  
+    see install-os in main docs
+
+
+
 We create any number of lxc based containers on a VMHost.
 We need to 
 

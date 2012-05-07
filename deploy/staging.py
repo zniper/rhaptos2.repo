@@ -23,7 +23,7 @@ import optparse
 import fabric
 from fabric.api import local
 #app
-import frozoneErrors
+from frozone import frozoneError
 import staginglib
 
 
@@ -69,22 +69,7 @@ def main(argv=None):
     stage_repo(thiscontext, options.src, options.tgt, options.branch)
 
 
-
-# CONSTANTS
-rackspace_context = {
- '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
- '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
-                     }
-
-office_context = {
- '<<CDN-SERVER-NAME>>': 'cdn.office.mikadosoftware.com',
- '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
-                     }
-
-fillet_context = {
- '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
- '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
-                     }
+from frozone._config.staging_conf import rackspace_context, office_context, fillet_context
 
 
 CONTEXT_MAP = {
@@ -98,5 +83,6 @@ CONTEXT_MAP = {
 
 
 if __name__ == '__main__':
+
     sys.exit(main())
 
