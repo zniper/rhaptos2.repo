@@ -21,3 +21,9 @@ This is such a common issue we need to build in solutions.  Assume it will alway
 
   ET as little endian is 21573, but GET sent by HTTP *to* a wsgi server is going to be funny - cos wsgi servers are not http servers...
 
+
+* when booting a container (seemingly the last numbered/built container)
+  it's netowkr stack does not come up.  You need to login to console
+  (lxc-console -n cnx4) and just ping anywhere.
+  I have modified rc.local to ping -c 3 www.google.com just to acheive thois
+

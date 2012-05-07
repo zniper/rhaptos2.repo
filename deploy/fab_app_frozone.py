@@ -47,10 +47,8 @@ prep box first
 '''
 
 
-####### DEFAULT VALUES HERE #######
-####### PUT THESE DEFAULTS IN THE Makefile ...
 
-from frozone._config.staging_conf import *
+from frozone.conf import *
 
 
 

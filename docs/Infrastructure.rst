@@ -8,6 +8,7 @@ Infrastructure
    install
    install-os
    logging
+   config
    webservers
    OS-Build
 

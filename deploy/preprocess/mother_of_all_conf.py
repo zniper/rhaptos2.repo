@@ -1,8 +1,19 @@
+#!/usr/local/bin/python
 
 # support - Makefile, fabfiles, python and js conf.
 '''
 
 Summary
+-------
+
+preprocess the configs, byt creating conf.mk and conf.py in frozone top directory, 
+from the values stored here.
+
+Those values are then used by fabfiles to deploy, and search/replace / stage the real files being deployed.
+
+
+
+Details
 -------
 
 I have a seperate folder, _config, which is designed to hold 
@@ -58,11 +69,17 @@ Its small but sanity saving
 '''
 
 import os
+from frozone import log
 
-
-### just making things more complicated...
+### The absolute minimum bootstapping data I need
+### where will we be staging these things...
 localhomedir = '/tmp/mikado'
 remotehomedir = '/home/deployagent'
+### get me the abspath, 2 directories up, which is frozone home.
+FROZONEHOME = os.path.abspath(os.path.join(__file__, '../../..'))
+
+
+#### change the constants below if we need to 
 
 confd = {
 
@@ -78,9 +95,16 @@ confd = {
     'remote_e2server':'/usr/share/www/flask/e2server',
     'remotehomedir' : remotehomedir,
     'remote_supervisor' : os.path.join(remotehomedir, 'supervisor'),
+
+
+
 }
 
+######### These are the on disk paths for things like nginx
+
 confmk = '''
+############### Nothing user editable here - adjust mother_of_all_conf.py
+
 srcdir = %(localgitrepo)s
 TINYMCE_STORE = %(TINYMCE_STORE)s
 localhome = %(localhomedir)s
@@ -94,13 +118,12 @@ remotehomedir = %(remotehomedir)s
 remote_supervisor = %(remote_supervisor)s
 '''
 
-def write_makeconf():
-    ''' '''
-    tgtf = 'conf.mk'
-    open(tgtf, 'w').write(confmk % confd)
 
+########## These allow us to choose which server group we are deploying to 
 
-staging_conf = '''
+pythonconf = '''
+############### Nothing user editable here - adjust mother_of_all_conf.py
+
 # CONSTANTS
 rackspace_context = {
  '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
@@ -130,15 +153,31 @@ fillet_context = {
 
                      }
 
+####### logging config
+import logging
+SYSLOG_SOCK='/dev/log'
+LOGLEVEL=logging.DEBUG
+
+######### server disk paths
+
 '''
 
+
 def write_stagingconf():
-    tgtf = 'staging_conf.py'
-    open(tgtf, 'w').write(staging_conf % confd)
+    tgtf = os.path.join(FROZONEHOME, 'conf.py')
+    open(tgtf, 'w').write(pythonconf % confd)
     s = ''
     for k in confd:
         s += "%s = '%s'\n" % (k, confd[k])
     open(tgtf, 'a').write(s)
+
+
+def write_makeconf():
+    ''' '''
+    tgtf = os.path.join(FROZONEHOME, 'conf.mk')
+    open(tgtf, 'w').write(confmk % confd)
+
+
 
 def main():
 
@@ -147,4 +186,7 @@ def main():
 
 
 if __name__ == '__main__':
+    lg = log.getFrozoneLogger(__name__)
+    lg.info('starting preprocessing')
     main()
+    lg.info('end preprocessing')

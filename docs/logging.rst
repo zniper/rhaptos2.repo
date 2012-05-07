@@ -9,27 +9,38 @@ things
 2. auditing (passive monitoring)
 3. pokeing (active monitoring)
 
+Auditing is what we usually think of as logging.  It is usually stored
+in text files, telling us what *has* happened, using *messages* sent
+from the code, when a developer thinks that is a good idea (often
+after an exception).
 
-metric gathering for me provides 2 outcomes for the price of one.
-We can see if the number of print jobs 
+We can append a message to the log file as follows::
 
-auditing is a process of finding out *why* the metrics changed.
-Usually storing log messages, enabling us to find out more
-sensibly what is going on, it is the process of sanley putting
-print statements into your code.
+    lg.warn('the pdf for user %s collection %s failed on server %s\
+    with err %s')
 
-pokeing - either treating it as a service, A further approach to
-auditing is to debug - watch the stack change during a run and
-analyse it more closely.  This is not part of logging as I see it.
+We shall use the standard *syslog* for this.
 
 
-Summary
--------
 
-We want to log 2 things - metrics and messages.
+Metric gathering is really about graphing and seeing what is going
+right / wrong.  
 
-We use statsd / graphite for the first, and syslogd or facebook's
-scribe.
+We can do this as follows::
+
+   import statsd
+   c = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
+   #...
+   c.incr('frozone.statsd.test')
+
+
+
+Pokeing, my term is derived from this `Steve Yegge
+<https://plus.google.com/112678702228711889851/posts/eVeouesvaVX>`_
+post.  There is a spectrum between testing a web-service, seeing if it
+returns 4 when asked 2+2, and determinng if it is up, responding under
+load, and so on.  We will develop monitoring of a web service, that will 
+be indistuinguishable from QA testing of that service.
 
 
 
@@ -132,6 +143,25 @@ Logging - audit style
 
 Using syslog - or rather the Ubuntu version rsyslogd.
 
+rsyslogd still seems to have a few bugs to be ironed out in ubuntu, but it has been well tested in the Debian world, and is simplest solution we have for now.
+
+The setup - we shall have *one* remote server, the logging server, that will collate all logs sent by the other servers.  All client servers will log to their local drives and forward on over tcp to the remote logging server.
+
+configuration
+~~~~~~~~~~~~~
+
+rsyslog is installed and enabled by deafualt in Ubuntu since (?).
+We will want to change the default listening port from 514 to 5514 (bug: following a 
+drop in privileses from startup user to syslog:syslog, ports below 1024 seem inaccessible)
+
+The clients obviously need to be told to log in that direction.
+
+We also want to turn off the default beahviour of writing some errors to the xconsole,
+as we have non X machines.
+
+We also want to configure the Python scripts to use local syslog socket ('/dev/log')
+
+
 
 Server::
 
@@ -139,27 +169,47 @@ Server::
     
   # provides TCP syslog reception
   $ModLoad imtcp
-  $InputTCPServerRun 514
+  $InputTCPServerRun 5514
 
   uncomment the above two lines - we now listen for TCP connections
 
+
+
+
+
 now::
 
-  reload rsyslog
+  sudo service rsyslog restart 
 
 
 
 src machine::
 
   </etc/rsyslog.conf>
-  #attempt to forward allloggingto cnx4                                                     *.* @@cnx4.office.mikadosoftware.com
+  #attempt to forward allloggingto cnx4                                                     *.* @@cnx4.office.mikadosoftware.com:5514
 
 note the double @ symbol - means send by TCP
 
 
+Turn off silly xlogging::
+
+  /etc/rsyslog.d/50-default.conf
+
+    We need to comment out the below in 
+    /etc/rsyslog.d/50-default.conf
+    (https://bugs.launchpad.net/ubuntu/+source/rsyslog/+bug/459730)
 
 
-/etc/rsyslog.d/50-default.conf
+    #daemon.*;mail.*;\
+    # news.err;\
+    # *.=debug;*.=info;\
+    # *.=notice;*.=warn |/dev/xconsole
+
+    thus stopping rsyslog trying to log to a X server console on a X-less box.
+  
+  
+
+
 
 Path to syslog config file:
 /etc/rsyslog.conf
@@ -178,3 +228,112 @@ service rsyslog reload
 
 Command to re-open log files
 service rsyslog restart
+
+
+
+Other rsyslogd related issues
+
+Logging in Python
+=================
+
+We are needing to look at various different module hierarchies.
+I am assuming the following
+
+
+
+package hierarchy
+~~~~~~~~~~~~~~~~~
+
+There are about as many opinions on how to do this as there are programmers.
+But here goes for this one - same rationale as usual, pick one, everyone stick
+with it till it becomes obvious its a mistake. 
+
+(A small aside, `twisted developers take on this <http://jcalderone.livejournal.com/39794.html>`_ is good read but usually 
+
+::
+
+ frozone
+   - docs/
+   - deploy/
+   - thirdparty/
+   - scripts/
+   - conf.d/
+   - libauth/     
+
+
+   - e2www
+     - test/
+     - main.py
+
+   - e2repo
+     - test/
+     - main.py
+
+   - lib_rhaptos
+     - test/
+
+   - log.py     
+   - FrozoneError.py
+   - setup.py
+   - README.rst
+   - policy.rst
+   - LICENSE
+
+
+I would expect us to log on the granularity of the above,
+That is::
+
+
+   frozone.e2repo.main
+
+We should *not* add handlers in lib* sections, because handlers should be added
+by the application portion.  Loggers should still be created in lib* portions obviopusly.
+We add the NullHandler I think.
+
+
+   
+
+::
+
+#!/usr/local/bin/python
+#! -*- coding: utf-8 -*-
+
+
+'''
+'''
+
+
+import logging
+from logging.handlers import SysLogHandler
+from frozone import conf
+
+#needs a test if syslog is actually up...
+
+def getFrozoneLogger(modname):
+    '''simple, pre-configured logger will be returned.
+    '''
+    lg = logging.getLogger(modname)
+    lg.setLevel(conf.LOGLEVEL)
+    ch = SysLogHandler(conf.SYSLOG_SOCK)
+    lg.addHandler(ch)
+ 
+    return lg
+
+
+
+    
+  import logging
+  lg = logging.getLogger(__name__)
+
+
+
+
+  
+Issues to note
+~~~~~~~~~~~~~~
+
+Logger instances *hang around* - they are designed as singleton servers, so creating them a lot really can hurt. One logger per running module is a good balance of granualrity and manageability.
+
+Logging usernames etc is important, and we shall developer either a LoggerAdapter approach or just keep it in parameters passed, depending on how the app evolves.  Watch this space.
+
+
