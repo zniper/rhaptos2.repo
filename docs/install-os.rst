@@ -1,5 +1,3 @@
-.. role(emphasis):: file
-
 ========================================
 Install and Admin of development servers
 ========================================
@@ -25,11 +23,15 @@ tl;dr
 
 2. change its networking ::
 
-    fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx02,vhostid=105
+    fab -H hpcube -f fab_lxc.py preboot:vhostname=cnx02,vhostid=105
 
 3. add in deploy user::
 
-    fab -f fab-lxc.py -H <lxc> useradd:username=<name>,passwd=<pass>
+    fab -f fab_lxc.py -H <lxc> useradd:username=<name>,passwd=<pass>
+
+3.a. add the lxc ssh fingerprint to our fab box' (laptop) known_hosts.::
+
+    ssh deployagent@cnx4 ...
 
 4. ssh into the box, you can now use fab scripts to add the frozone development branch::
 
@@ -466,7 +468,7 @@ Managing Ubuntu
 
 
 biblio
-~~~~~~
+======
 
 * http://lxc.teegra.net/#_setup_of_the_controlling_host
 * https://help.ubuntu.com/community/KVM/Networking
