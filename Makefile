@@ -9,7 +9,7 @@ clean-crud:
 TBC='Not yet implemented - see frozone.readthedocs.org'
 
 ### config provided from a central config server
-include _config/conf.mk
+include conf.mk
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
