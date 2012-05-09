@@ -69,7 +69,7 @@ Its small but sanity saving
 '''
 
 import os
-from frozone import log
+
 
 ### The absolute minimum bootstapping data I need
 ### where will we be staging these things...
@@ -186,7 +186,6 @@ def main():
 
 
 if __name__ == '__main__':
-    lg = log.getFrozoneLogger(__name__)
-    lg.info('starting preprocessing')
+
     main()
-    lg.info('end preprocessing')
+
