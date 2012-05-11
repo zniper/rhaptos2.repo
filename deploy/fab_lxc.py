@@ -37,7 +37,7 @@ for each lxc
 
 #preboot
 
-  fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx02,vhostid=105
+  fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx2,vhostip=10.0.0.2
 
 #rootboot
 
@@ -79,7 +79,7 @@ def getniceunsafetmpfile():
     '''must have file that is safename '''
     return '/tmp/frozone.%s' % random.randint(1,1000)
 
-def preboot(vhostname=None, vhostid=None):
+def preboot(vhostname=None, vhostip=None):
 
     ''' alter the remote network/interfaces file on a lxc container VHost.
     we are passed the vhostname, as a string (assume it is a valid number, but allows flexibility)
@@ -89,7 +89,7 @@ def preboot(vhostname=None, vhostid=None):
     
     write to /var/lib/lxc/{name}/rootfs/etc/network/interfaces 
 
-    fab -H hpcube preboot:vhostname=cnx02,vhostid=105 
+    fab -H hpcube preboot:vhostname=cnx02,vhostip=10.0.0.12 
            ^^^^^^
            VMHost !!
     '''
@@ -99,7 +99,7 @@ def preboot(vhostname=None, vhostid=None):
     #update the context 
     context = copy.deepcopy(CONTEXTTMPL)
     context['hostname'] = vhostname
-    context['ip4address'] = '10.0.0.%s' % vhostid
+    context['ip4address'] = '%s' % vhostip
 
     tgtpath = '/var/lib/lxc/%s/rootfs/etc/network/interfaces' % context['hostname']
     tmpl = '''#from frozone tmpl 
@@ -132,7 +132,7 @@ nameserver 10.0.0.1
     fabric.operations.put(tmpfile, tgtpath, use_sudo=True)
 
     #call sudoers
-    put_sudoers(vhostname, vhostid)
+    put_sudoers(vhostname, vhostip)
 
 
     fabric.api.sudo('lxc-start -d -n %s' % vhostname)
@@ -140,7 +140,7 @@ nameserver 10.0.0.1
 
 
 
-def put_sudoers(vhostname, vhostid):
+def put_sudoers(vhostname, vhostip):
     ''' '''
     tgtpath = '/var/lib/lxc/%s/rootfs/etc/sudoers' % vhostname
     fabric.contrib.files.append(tgtpath, 

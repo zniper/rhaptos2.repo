@@ -23,7 +23,7 @@ tl;dr
 
 2. change its networking ::
 
-    fab -H hpcube -f fab_lxc.py preboot:vhostname=cnx02,vhostid=105
+    fab -H hpcube -f fab_lxc.py preboot:vhostname=cnx2,vhostip=10.0.0.12
 
 3. add in deploy user::
 
@@ -372,7 +372,7 @@ I recommend reading the lxc-create script
 
    assuming the VMHOST has had deployagent set up (user plus sudoers)
    
-   fab -f fab-configlxcinstance.py -H hpcube preboot:vhostname=cnx1,vhostid=11
+   fab -f fab-configlxcinstance.py -H hpcube preboot:vhostname=cnx1,vhostip=10.0.0.11
 
    this will connect to vmhost, kerslunk the files under rootfs, start the instance, then login as root and fix a few things.
     
