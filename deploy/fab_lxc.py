@@ -60,7 +60,7 @@ import sys
 
 import  time
 
-import fabpass
+#import fabpass
 
 CONTEXTTMPL = {
     'hostname':   'cnx',
@@ -93,6 +93,8 @@ def preboot(vhostname=None, vhostip=None):
            ^^^^^^
            VMHost !!
     '''
+    print fabric.state.env
+
     fabric.api.sudo('lxc-stop -n %s' % vhostname)
     time.sleep(5)
 
