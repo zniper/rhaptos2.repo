@@ -252,6 +252,41 @@ can I see the webserver running on a container, from the host::
     pbrian@fillet:~$ wget 10.1.1.7
 
 
+Using the VLAN with firefox
+===========================
+
+Two approaches
+
+1. tunnel X from a server inside the 10.1.1.0/24 network, so run xfce4 on a container and just display locally.  This is a good one, configuration a bit fiddly - so I shall leave it for later.
+
+2. create  SOCKS5 proxy, so that firefox tunnels all its requests through the ssh tunnel and out in 10.1.1.0/24 network. This is by far the simplest approach, and works fine for now, also allowing test systems to run locally.
+
+
+login to a server on the 10.1.1.0 network::
+
+  $ ssh ubuntu@fillet -p 22217
+    
+    I have setup a port forwarding on fillet to go through to port 22 on 10.1.1.7 already.  
+    So this should log us into that remote machine
+  $ exit
+
+  $ ssh -D 8081 -N ubuntu@fillet -p 22217
+
+  Also set ::
+
+
+    network.proxy.socks_remote_dns = true
+
+  so all DNS is run from remote end too.
+
+.. figure:: socksProxy.jpg
+   :scale: 33 %
+
+.. figure:: dnsviafillet.png
+   :scale: 33 %
+
+   
+
 Acknowledgements
 ----------------
 
