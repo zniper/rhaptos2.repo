@@ -6,15 +6,15 @@ Fab file to install Graphite and Scribe onto a server
 '''
 
 import fabric
-import fabpass
+#import fabpass
 from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-STATSD_HOME = '/home/deployagent/statsd'
-GRAPHITE_HOME = '/home/deployagent/graphite'
-CARBON_HOME = '/home/deployagent/carbon'
-WHISPER_HOME = '/home/deployagent/whisper'
+STATSD_HOME = '/home/pbrian/statsd'
+GRAPHITE_HOME = '/home/pbrian/graphite'
+CARBON_HOME = '/home/pbrian/carbon'
+WHISPER_HOME = '/home/pbrian/whisper'
 
 
 def install_graphite_deps():
@@ -71,12 +71,12 @@ def install_graphite1():
 
     prompt('install whisper Y?','OK')
 
-    with fabric.context_managers.cd('/home/deployagent/whisper'):
+    with fabric.context_managers.cd(WHISPER_HOME):
         sudo('python setup.py install')
 
     prompt('install carbon Y?','OK')
 
-    with fabric.context_managers.cd('/home/deployagent/carbon'):
+    with fabric.context_managers.cd(CARBON_HOME):
         sudo('python setup.py install')
 
     with fabric.context_managers.cd('/opt/graphite/conf'):
@@ -92,14 +92,14 @@ EOF
 
      
     prompt('I will now run the graphite dependency check, Ctl-C if a problem - Y=cont.')
-    sudo('cd /home/deployagent/graphite/ && python check-dependencies.py')
+    sudo('cd %s && python check-dependencies.py' % GRAPHITE_HOME)
     prompt('Was the check ok? Ent to cont. Ctl-C abort.')
-    sudo('cd /home/deployagent/graphite && python setup.py install')
+    sudo('cd %s && python setup.py install' % GRAPHITE_HOME)
 
 
 #configure apache
 
-    with fabric.context_managers.cd('/home/deployagent/graphite/examples'):
+    with fabric.context_managers.cd(os.path.join(GRAPHITE_HOME, 'examples')):
         sudo('cp example-graphite-vhost.conf /etc/apache2/sites-available/default')
         sudo('cp /opt/graphite/conf/graphite.wsgi.example /opt/graphite/conf/graphite.wsgi')
         sudo('mkdir -p -m 0777 /etc/httpd/wsgi')
@@ -149,7 +149,7 @@ def install_statsd(graphitehost,
 }
 EOF
 ''' % (graphiteport, graphitehost, statsdport) )    
-    sudo('cd /home/deployagent/statsd && node stats.js dConfig.js &')
+    sudo('cd %s && node stats.js dConfig.js &' % STATSD_HOME)
 
 
 

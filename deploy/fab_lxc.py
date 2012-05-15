@@ -37,7 +37,7 @@ for each lxc
 
 #preboot
 
-  fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx02,vhostid=105
+  fab -H hpcube -f fab-lxc.py preboot:vhostname=cnx2,vhostip=10.0.0.2
 
 #rootboot
 
@@ -51,16 +51,18 @@ THen a uer fabdeploy has sudo privileges and can do normal deploy stuff
 
 
 import fabric
-from fabric.api import local
+from fabric.api import local, sudo, put
 from fabric.contrib import files
 import random
 import pprint
 import copy
 import sys
 
+from frozone.deploy import fab_sys
+
 import  time
 
-import fabpass
+#import fabpass
 
 CONTEXTTMPL = {
     'hostname':   'cnx',
@@ -74,12 +76,23 @@ CONTEXTTMPL = {
     }
 
 
+def build_new_container(vhostname, vhostip):
+    '''create, on host, a new container, based on ubuntu template
+
+
+      fab -H hpcube -f deploy/fab_lxc.py build_new_container:vhostname=cnx2,vhostip=10.0.0.12
+ 
+    '''
+    sudo('sudo lxc-create -t ubuntu -f /etc/lxc/lxc.conf -n %s' % vhostname)
+
 
 def getniceunsafetmpfile():
     '''must have file that is safename '''
     return '/tmp/frozone.%s' % random.randint(1,1000)
 
-def preboot(vhostname=None, vhostid=None):
+
+
+def preboot(vhostname=None, vhostip=None):
 
     ''' alter the remote network/interfaces file on a lxc container VHost.
     we are passed the vhostname, as a string (assume it is a valid number, but allows flexibility)
@@ -89,17 +102,16 @@ def preboot(vhostname=None, vhostid=None):
     
     write to /var/lib/lxc/{name}/rootfs/etc/network/interfaces 
 
-    fab -H hpcube preboot:vhostname=cnx02,vhostid=105 
+    fab -H hpcube preboot:vhostname=cnx02,vhostip=10.0.0.12 
            ^^^^^^
            VMHost !!
     '''
-    fabric.api.sudo('lxc-stop -n %s' % vhostname)
-    time.sleep(5)
+    lxc_stop(vhostname)
 
     #update the context 
     context = copy.deepcopy(CONTEXTTMPL)
     context['hostname'] = vhostname
-    context['ip4address'] = '10.0.0.%s' % vhostid
+    context['ip4address'] = '%s' % vhostip
 
     tgtpath = '/var/lib/lxc/%s/rootfs/etc/network/interfaces' % context['hostname']
     tmpl = '''#from frozone tmpl 
@@ -131,16 +143,20 @@ nameserver 10.0.0.1
     open(tmpfile,'w').write(tmpl % context)
     fabric.operations.put(tmpfile, tgtpath, use_sudo=True)
 
+
+    #### fix NAT / arp bug
+    sudo('''cat > /var/lib/lxc/%s/rootfs/etc/rc.local << EOF
+ping -c 3 www.google.com
+return 0
+EOF
+''' % context['hostname'])
+
     #call sudoers
-    put_sudoers(vhostname, vhostid)
+    put_sudoers(vhostname, vhostip)
+    lxc_start(vhostname)
 
 
-    fabric.api.sudo('lxc-start -d -n %s' % vhostname)
-    time.sleep(10)
-
-
-
-def put_sudoers(vhostname, vhostid):
+def put_sudoers(vhostname, vhostip):
     ''' '''
     tgtpath = '/var/lib/lxc/%s/rootfs/etc/sudoers' % vhostname
     fabric.contrib.files.append(tgtpath, 
@@ -171,22 +187,46 @@ def useradd(username=None, passwd=None):
     fabric.state.env['password'] = 'root' #yup, thats in the lxc-create
     fabric.state.env['user'] = 'root' #yup, thats in the lxc-create
 
-
     fabric.api.sudo('useradd  -d /home/%s -g sudo -m -s /bin/bash %s' % (
                     username, username))
     fabric.api.sudo("echo %s:%s | chpasswd" % (username, passwd))
 
-    #sudo sh -c "echo test1:pass1 | chpasswd"
+
+def lxc_stop(vhostname):
+    '''stop and instance of an named lxc
+
+    '''
+    fabric.api.sudo('lxc-stop -n %s' % vhostname)
+    time.sleep(10)
 
 
 def lxc_start(vhostname):
-    '''
-    TODO: getting results back??
+    '''start an instance of an named lxc
+    
     '''
 
     fabric.api.sudo('lxc-start -d -n %s' % vhostname)
-    
+    #give time to start
+    time.sleep(10)
 
+###################### POST BOOT
+
+def postboot():
+    '''perform all base configs needed once Virtual Server is running on network.
+
+    - make python base
+    '''
+    fab_sys.ubuntu_sys_install()
+
+###########################
+
+def lxc_destroy(vhostname):
+    '''WIpe out a container on a host 
+
+    '''    
+    sudo('lxc-destroy -fn %s' % vhostname)
+
+    
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
