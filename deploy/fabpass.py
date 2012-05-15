@@ -5,5 +5,7 @@ import fabric
 try:
     fabric.state.env['user']= 'deployagent'
     fabric.state.env['password']= 'deployagent'
-except:
-    pass
+except Exception, e:
+    print 'Avoiding raising this: %s' % e
+
+    

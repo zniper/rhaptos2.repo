@@ -1,20 +1,8 @@
 import fabric
-
 from fabconf import SUPERVISORDIR
-
 import fabpass
 
 
-
-'''
-
-Turn a fresh ubuntu LXC install into a usable server for us
-
-ntp?
-ufw?
-
-
-'''
 
 class frozoneError(Exception):
     pass
@@ -38,7 +26,7 @@ def sys_install_git_ubuntu():
     fabric.api.sudo('apt-get -y install git')
 
 def sys_install_pythonenv_ubuntu():
-    '''SHould I be using virtualenv - on a virtual box?? 
+    '''installing most useful python bits
 
 
     http://projects.unbit.it/uwsgi/wiki/Install
