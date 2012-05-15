@@ -124,13 +124,19 @@ remote_supervisor = %(remote_supervisor)s
 pythonconf = '''
 ############### Nothing user editable here - adjust mother_of_all_conf.py
 
-# CONSTANTS
+
 rackspace_context = {
  '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
  '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
  '<<REPO-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
  '<<WWW-SERVER-NAME>>': 'www.frozone.mikadosoftware.com',
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
+ 
+ '<<DNSFORWARDERS>>':  '208.67.222.222',
+ '<<ZONENAME>>': 'office.mikadosoftware.com',
+ '<<ZONEFILENAME>>': 'com.mikadosoftware.office.db',
+ '<<REVZONENAME>>': '0.0.10.in-addr.arpa',
+ '<<REVZONEFILENAME>>': 'rev.0.0.10.in-addr.arpa',
                      }
 
 office_context = {
@@ -140,7 +146,11 @@ office_context = {
  '<<WWW-SERVER-NAME>>': 'www.office.mikadosoftware.com',
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
-
+ '<<DNSFORWARDERS>>':  '208.67.222.222',
+ '<<ZONENAME>>': 'office.mikadosoftware.com',
+ '<<ZONEFILENAME>>': 'com.mikadosoftware.office.db',
+ '<<REVZONENAME>>': '0.0.10.in-addr.arpa',
+ '<<REVZONEFILENAME>>': 'rev.0.0.10.in-addr.arpa',
 
                      }
 
@@ -151,7 +161,12 @@ fillet_context = {
  '<<WWW-SERVER-NAME>>': 'www.fillet.mikadosoftware.com',
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
-                     }
+ '<<DNSFORWARDERS>>':  '128.42.178.32,128.42.209.32',
+ '<<ZONENAME>>': 'office.mikadosoftware.com',
+ '<<ZONEFILENAME>>': 'com.mikadosoftware.office.db',
+ '<<REVZONENAME>>': '0.0.10.in-addr.arpa',
+ '<<REVZONEFILENAME>>': 'rev.0.0.10.in-addr.arpa',
+                 } 
 
 ####### logging config
 import logging
