@@ -25,6 +25,9 @@ in the open - by hiring rackspace servers and putting the latest CI
 build onto there.
 
 
+Firstly we install an instance of Ubuntu on our dev server, and modify it so that
+we can use Linux containers.  At this point we can use different fab files to
+turn it into a variety of different servers.
 
 .. toctree::
    :maxdepth: 1
@@ -32,9 +35,30 @@ build onto there.
 
    install-os
    fabfiles
+   OS-Build
+
+Now we want to build a DNS server
+
+.. toctree::
+   :maxdepth: 1
+
+   dns
+
+At this point the Virtual Lan for our developer is ready to take on anything new
+
+.. toctree::
+   :maxdepth: 1
+
+
    jenkins
    logging
    config
+
+Now we install the application itself
+
+.. toctree::
+   :maxdepth: 1
+
    webservers
-   OS-Build
+
 
