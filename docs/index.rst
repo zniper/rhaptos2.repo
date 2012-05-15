@@ -9,8 +9,8 @@ Frozone is `Connexions <www.cnx.org>`_ new editor and other components.
    :maxdepth: 2
 
    Overview
+   Installation
    Architecture
-   Infrastructure
    DevOps
    WeeklyReports
 

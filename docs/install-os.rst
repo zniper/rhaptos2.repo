@@ -13,31 +13,38 @@ around a dozen ubuntu instances.
 tl;dr
 =====
 
+Pre requisites
+--------------
+
 1. Install Ubunutu 11.10 (soon to be 12.04 LTS) on your box
 2. Create a bridge network so >1 server can share the real NIC
 3. Add in LXC support to ubuntu
 
+
+
 1. create a new container::
    
-    sudo lxc-create -t ubuntu -f /etc/lxc/lxc.conf -n cnx01
+    make newcontainer host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1 vhostip=10.0.0.21
+    
+2. this will fire the following commands::
 
-2. change its networking ::
 
-    fab -H hpcube -f fab_lxc.py preboot:vhostname=cnx02,vhostid=105
+        fab -H $(host) -f $(fabfile) build_new_container:vhostname=$(vhostname),vhostip=$(vhostip)
+        fab -H $(host) -f $(fabfile) preboot:vhostname=$(vhostname),vhostip=$(vhostip)
+        fab -H $(host) -f $(fabfile) useradd:username=deployagent,passwd=deployagent
+	fab -H $(vhostname) -f $(fabfile) postboot
 
-3. add in deploy user::
-
-    fab -f fab_lxc.py -H <lxc> useradd:username=<name>,passwd=<pass>
+        yes, I am hardcoding that - it needs to be fixed.
+    
 
 3.a. add the lxc ssh fingerprint to our fab box' (laptop) known_hosts.::
 
     ssh deployagent@cnx4 ...
 
-4. ssh into the box, you can now use fab scripts to add the frozone development branch::
 
-    sh deploylatest.sh
+destroy container::
 
-    
+   make lxc_destroy  host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1
 
 .. warning::
 
@@ -372,7 +379,7 @@ I recommend reading the lxc-create script
 
    assuming the VMHOST has had deployagent set up (user plus sudoers)
    
-   fab -f fab-configlxcinstance.py -H hpcube preboot:vhostname=cnx1,vhostid=11
+   fab -f fab-configlxcinstance.py -H hpcube preboot:vhostname=cnx1,vhostip=10.0.0.11
 
    this will connect to vmhost, kerslunk the files under rootfs, start the instance, then login as root and fix a few things.
     
