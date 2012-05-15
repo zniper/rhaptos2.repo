@@ -1,5 +1,5 @@
 import fabric
-from fab_ostypes import UBUNTU, FREEBSD, WIN, OSX
+
 from fabconf import SUPERVISORDIR
 
 import fabpass
