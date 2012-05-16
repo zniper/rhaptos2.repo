@@ -15,7 +15,7 @@ import os
 from frozone import conf
 from frozone.deploy import staginglib
 
-def clone_and_clean(localgitrepo, localstage):
+def clone_and_clean(localgitrepo, localstage, frozonehome):
     '''This is a means to do a SVN EXPORT
     
     ''' 
@@ -24,9 +24,9 @@ def clone_and_clean(localgitrepo, localstage):
         local('rm -rf %s' % localstage) 
         local('mkdir -p -m 0755 %s' % localstage) 
 
-    local('git clone %s %s/frozone' % (localgitrepo, localstage))
 
-    local('rm -rf %s' % os.path.join(localstage,'.git')) 
+    local('git clone %s %s' % (localgitrepo, frozonehome))
+    local('rm -rf %s' % os.path.join(frozonehome, '.git')) 
 
 def mkvirtualenv(localstage):
     ''' '''
@@ -38,10 +38,12 @@ def stage(localgitrepo, localstage, configfile):
     '''given a git working copy, clone to a staging area, apply a
     certain config, and prepare it so it can be deployed '''
 
-    clone_and_clean(localgitrepo, localstage)
+    frozonehome = os.path.join(localstage, 'frozzone')
+
+    clone_and_clean(localgitrepo, localstage, frozonehome)
     mkvirtualenv(localstage)
 
     #apply the desired config file ... 
-    local('cp %s/frozone/deploy/%s %s/frozone/conf.py' % (localstage, configfile, localstage))    
+    local('cp %s/deploy/%s %s/conf.py' % (frozonehome, configfile, frozonehome))    
 
-    staginglib.overwrite(conf.context, os.path.join(localstage, 'frozone'))
+    staginglib.overwrite(conf.context, frozonehome)
