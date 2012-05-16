@@ -68,3 +68,11 @@ lxc_destroy:
 # make jenkins host=devjenkins fabfile=deploy/fab_sys_jenkins.py 
 jenkins:
 	fab -H $(host) -f $(fabfile) install_jenkins
+
+# make graphite host=devlog fabfile=deploy/fab_sys_graphite.py 
+# NB this assumes the statsd and graphite are on same host...
+graphite: 
+	fab -H $(host) -f $(fabfile) install_graphite_deps
+	fab -H $(host) -f $(fabfile) install_graphite
+	fab -H $(host) -f $(fabfile) install_statsd:graphitehost=$(host)
+
