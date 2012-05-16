@@ -27,17 +27,14 @@ Goto the top left corner, [Manage Jenkins] and then [Manage Plugins], click the 
 
 plugins, tick their install boxes and apply.
 
+ssh keys
+--------
 
 We need github ssh access. (Its for tagging back to github, and is
 frankly easier cos the github plugin compains lot)
 
 The process of getting the provate key I created and gave access to on
 github is left as an exercise.  Its been pretty painful so far :-)
-
-
-SO build a jenkins sshkey - I have one already registered on github.
-Its not that secure...
-And then ssh git@github.com as user jenkins on the box.
 
 As jenkins user::
 
@@ -50,6 +47,17 @@ Create a job
 ============
 
 We shall create a job that stages the repo deploy as a test.
+
+Manual 
+------
+
+::
+
+  git clone git@github.com:lifeisstillgood/frozone.git -b statsd-lib-work
+
+
+  make stage_local host=devjenkins fabfile=deploy/fab_app_frozone.py 
+
 
 Config of the job
 -----------------
