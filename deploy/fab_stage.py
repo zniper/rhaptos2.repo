@@ -48,4 +48,4 @@ def stage(localgitrepo, localstage, configfile):
     
     #### from this point on I need to use the virtualenv
 
-    local('python %s/deploy/runstaging.py %s' % (frozonehome, frozonehome))
+    local('export PYTHONPATH=/tmp/staging && python %s/deploy/runstaging.py %s' % (frozonehome, frozonehome))
