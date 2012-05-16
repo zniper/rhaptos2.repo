@@ -12,8 +12,6 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-from frozone import conf
-from frozone.deploy import staginglib
 
 def clone_and_clean(localgitrepo, localstage, frozonehome):
     '''This is a means to do a SVN EXPORT
@@ -45,5 +43,8 @@ def stage(localgitrepo, localstage, configfile):
 
     #apply the desired config file ... 
     local('cp %s/deploy/%s %s/conf.py' % (frozonehome, configfile, frozonehome))    
+
+    from frozone import conf
+    from frozone.deploy import staginglib
 
     staginglib.overwrite(conf.context, frozonehome)
