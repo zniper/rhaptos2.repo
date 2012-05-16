@@ -51,7 +51,6 @@ prep box first
 from frozone.conf import *
 
 
-
 def gitpull():
     with fabric.context_managers.cd(localgitdir):
         local('git checkout feature/cleanforjenkins && git pull')
@@ -66,6 +65,10 @@ def clean_local():
     local('rm -rf %s' % localstagingdir)
         
 
+def preprocess():
+    '''called on the jenkins server locally '''
+    local('cd %s/deploy/preprocess && python mother_of_all_conf.py')
+
 def stage_local(remote_git_repo,
                 localgit,
                 localstaging, 
@@ -74,7 +77,7 @@ def stage_local(remote_git_repo,
     ''' Download git repo, extract a known branch to staging, 
         do search replace on staging
 
-    expect to be called through the Makefile::
+        expect to be called through the Makefile::
 
         stage_local('git://github.com/lifeisstillgood/frozone.git',
                     '/tmp/frozone/git',
@@ -87,6 +90,7 @@ def stage_local(remote_git_repo,
     '''
 
     clean_local()
+    preprocess()
     local('python deploy/staging.py \
           --context=%s \
           --src=%s \
