@@ -12,6 +12,9 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
+from frozone import conf
+from frozone.deploy import staginglib
+
 def clone_and_clean(localgitrepo, localstage):
     '''This is a means to do a SVN EXPORT
     
@@ -28,7 +31,8 @@ def clone_and_clean(localgitrepo, localstage):
 def mkvirtualenv(localstage):
     ''' '''
     local('virtualenv %s/venv' % localstage)
-    #apply PYTHONPATH?
+    #ensure I can import frozone from within virtualenv
+    local('echo export PYTHONPATH=%s >> %s/venv/bin/activate' % (localstage, localstage))
 
 def stage(localgitrepo, localstage, configfile):
     '''given a git working copy, clone to a staging area, apply a
@@ -40,3 +44,4 @@ def stage(localgitrepo, localstage, configfile):
     #apply the desired config file ... 
     local('cp %s/frozone/deploy/%s %s/frozone/conf.py' % (localstage, configfile, localstage))    
 
+    staginglib.overwrite(conf.context, os.path.join(localstage, 'frozone'))
