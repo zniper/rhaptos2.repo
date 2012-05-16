@@ -10,9 +10,9 @@ clean-crud:
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
-#make stage localgitrepo=/tmp/clone localstage=/tmp/staging conffile=office_conf.py
+#make stage localgitrepo=/tmp/clone localstage=/tmp/staging configfile=office_conf.py
 stage:
-	fab -H $(host) -f $(fabfile) stage:localgitrepo=$(localgitrepo),localstage=$(localstage),conffile=$(conffile)
+	fab -H $(host) -f $(fabfile) stage:localgitrepo=$(localgitrepo),localstage=$(localstage),configfile=$(configfile)
 
 
 
