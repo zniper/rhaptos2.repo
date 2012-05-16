@@ -32,7 +32,7 @@ def mkvirtualenv(localstage):
     #ensure I can import frozone from within virtualenv
     local('echo export PYTHONPATH=%s >> %s/venv/bin/activate' % (localstage, localstage))
     local('echo %s >> %s/venv/lib/python2.7/site-packages/frozone.pth' % (localstage, localstage))
-    local('%s/venv/bin/python pip install Fabric' % (localstage))
+    local('%s/bin/pip install Fabric' % (localstage))
 
 def stage(localgitrepo, localstage, configfile):
     '''given a git working copy, clone to a staging area, apply a
