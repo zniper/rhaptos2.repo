@@ -44,7 +44,6 @@ def stage(localgitrepo, localstage, configfile):
     #apply the desired config file ... 
     local('cp %s/deploy/%s %s/conf.py' % (frozonehome, configfile, frozonehome))    
 
-    from frozone import conf
-    from frozone.deploy import staginglib
+    #### from this point on I need to use the virtualenv
 
-    staginglib.overwrite(conf.context, frozonehome)
+    local('source %s/venv/bin/python %s/deploy/runstaging.py %s' % (localstage, frozonehome, frozonehome))
