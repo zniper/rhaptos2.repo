@@ -38,7 +38,7 @@ def stage(localgitrepo, localstage, configfile):
     '''given a git working copy, clone to a staging area, apply a
     certain config, and prepare it so it can be deployed '''
 
-    frozonehome = os.path.join(localstage, 'frozzone')
+    frozonehome = os.path.join(localstage, 'frozone')
 
     clone_and_clean(localgitrepo, localstage, frozonehome)
     mkvirtualenv(localstage)
