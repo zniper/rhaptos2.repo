@@ -21,7 +21,7 @@ def clone_and_clean(localgitrepo, localstage):
         local('rm -rf %s' % localstage) 
         local('mkdir -p -m 0755 %s' % localstage) 
 
-    local('git clone %s %s/' % (localgitrepo, localstage))
+    local('git clone %s %s/frozone' % (localgitrepo, localstage))
 
     local('rm -rf %s' % os.path.join(localstage,'.git')) 
 
