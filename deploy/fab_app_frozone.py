@@ -90,7 +90,7 @@ def stage_local(remote_git_repo,
     '''
 
     clean_local()
-    preprocess()
+#    preprocess()
     local('python deploy/staging.py \
           --context=%s \
           --src=%s \

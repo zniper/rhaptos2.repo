@@ -2,20 +2,6 @@
 ### Simple message.
 TBC='Not yet implemented - see frozone.readthedocs.org'
 
-### config provided from a central config server
-include conf.mk
-
-###########
-#
-# CLEAN
-#
-#
-#
-#
-#
-#
-###########
-
 clean: clean-crud
 
 clean-crud:
@@ -24,9 +10,9 @@ clean-crud:
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
-
-stage-local:
-	fab -H $(host) -f $(fabfile) stage_local:remote_git_repo=$(remote_git_repo),localgit=$(localgit),localstaging=$(localstaging),branch=$(branch),context=$(context)
+#make stage localgitrepo=/tmp/clone localstage=/tmp/staging conffile=office_conf.py
+stage:
+	fab -H $(host) -f $(fabfile) stage:localgitrepo=$(localgitrepo),localstage=$(localstage),conffile=$(conffile)
 
 
 

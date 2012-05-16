@@ -14,6 +14,8 @@ And it will 'extract' code from the git repo in
 
 
 
+git clone 
+
 
 '''
 #batteries
@@ -69,7 +71,7 @@ def main(argv=None):
     stage_repo(thiscontext, options.src, options.tgt, options.branch)
 
 
-from frozone._config.staging_conf import rackspace_context, office_context, fillet_context
+from frozone.conf import rackspace_context, office_context, fillet_context
 
 
 CONTEXT_MAP = {
