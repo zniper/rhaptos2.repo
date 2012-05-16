@@ -41,11 +41,11 @@ def stage(localgitrepo, localstage, configfile):
     frozonehome = os.path.join(localstage, 'frozone')
 
     clone_and_clean(localgitrepo, localstage, frozonehome)
-    mkvirtualenv(localstage)
+#    mkvirtualenv(localstage)
 
     #apply the desired config file ... 
     local('cp %s/deploy/%s %s/conf.py' % (frozonehome, configfile, frozonehome))    
-
+    
     #### from this point on I need to use the virtualenv
 
-    local('%s/venv/bin/python %s/deploy/runstaging.py %s' % (localstage, frozonehome, frozonehome))
+    local('python %s/deploy/runstaging.py %s' % (localstage, frozonehome, frozonehome))
