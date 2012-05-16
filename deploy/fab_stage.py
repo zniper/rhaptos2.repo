@@ -38,5 +38,5 @@ def stage(localgitrepo, localstage, configfile):
     mkvirtualenv(localstage)
 
     #apply the desired config file ... 
-    local('cp %s/frozone/deploy/%s %s/frozone/conf.py' % (localstage, localstage))    
+    local('cp %s/frozone/deploy/%s %s/frozone/conf.py' % (localstage, configfile, localstage))    
 
