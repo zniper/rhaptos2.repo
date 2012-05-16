@@ -28,7 +28,7 @@ def clone_and_clean(localgitrepo, localstage, frozonehome):
 
 def mkvirtualenv(localstage):
     ''' '''
-    local('virtualenv %s/venv' % localstage)
+    local('virtualenv --extra-search-dir=%s %s/venv' % (localstage, localstage))
     #ensure I can import frozone from within virtualenv
     local('echo export PYTHONPATH=%s >> %s/venv/bin/activate' % (localstage, localstage))
 
