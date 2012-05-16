@@ -1,12 +1,13 @@
 #!/usr/local/bin/python
 
 '''
-Fab file to install Graphite and Scribe onto a server
+Fab file to install Graphite and Scribe and Statsd onto a server
+
 
 '''
 
 import fabric
-#import fabpass
+import fabpass
 from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
@@ -44,7 +45,7 @@ def install_graphite_deps():
 
 
 
-def install_graphite1():
+def install_graphite():
     ''' Grab the sources, build, then signal how to configure '''
 
     sh = '''

@@ -28,7 +28,12 @@ Goto the top left corner, [Manage Jenkins] and then [Manage Plugins], click the 
 plugins, tick their install boxes and apply.
 
 
-We need github ssh access. (Its for tagging back to github, and is frankly easier cos the github plugin compains lot)
+We need github ssh access. (Its for tagging back to github, and is
+frankly easier cos the github plugin compains lot)
+
+The process of getting the provate key I created and gave access to on
+github is left as an exercise.  Its been pretty painful so far :-)
+
 
 SO build a jenkins sshkey - I have one already registered on github.
 Its not that secure...
