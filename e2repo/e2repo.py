@@ -5,6 +5,9 @@ import datetime
 import md5, random
 import os
 import flask
+import statsd
+
+from frozone import conf
 
 app = Flask(__name__)
 
@@ -20,8 +23,11 @@ def getfilehash(moduletxt):
     h = random.randint(1,1000)
     return h
 
-
-
+def callstatsd(dottedcounter):
+    ''' '''
+    c = statsd.StatsClient(conf.statsdhost, conf.statsdport)
+    c.incr(dottedcounter)
+    #todo: really return c and keep elsewhere for efficieny I suspect
 
 def qlog(msg):
     d = datetime.datetime.today().isoformat()
@@ -41,6 +47,7 @@ def gettime():
 def modulePOST():
     qlog('postcall here')
     app.logger.info('test')
+    callstatsd('frozone.e2repo.POST')
     try:
 
         html5 = request.form['moduletxt']

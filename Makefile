@@ -35,12 +35,6 @@ remote-install-e2server:
 remote-start-supervisor:
 	echo $(TBC)
 
-#make host=cnx1 fabfile=deploy/fab_app_frozone.py branch=master context=office
-
-oneinstall: clean-local stage-local clean-remote remote-install-cdn remote-install-e2repo
-
-stageonly: clean-local stage-local 
-
 
 # make newcontainer host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1 vhostip=10.0.0.21
 newcontainer:
@@ -49,6 +43,7 @@ newcontainer:
 	fab -H $(vhostname) -f $(fabfile) useradd:username=deployagent,passwd=deployagent
 	fab -H $(vhostname) -f $(fabfile) postboot
 
+# make lxc-destroy host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1 vhostip=10.0.0.21
 lxc_destroy:
 	fab -H $(host) -f $(fabfile) lxc_destroy:vhostname=$(vhostname)
 

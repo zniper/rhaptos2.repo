@@ -25,7 +25,14 @@ Goto the top left corner, [Manage Jenkins] and then [Manage Plugins], click the 
    git
    github 
 
+   Violations
+   Cobertura
+
 plugins, tick their install boxes and apply.
+
+NB - 1.406 of Jenkins simply refuses to install Violations or Cobertura, so likely will upgrade.
+
+
 
 ssh keys
 --------
