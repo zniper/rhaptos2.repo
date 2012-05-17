@@ -10,10 +10,11 @@ import statsd
 from frozone import conf
 
 app = Flask(__name__)
+REPO = conf.remote_e2repo
 
 
 from logging import FileHandler
-fh = FileHandler(filename=os.path.join(conf.remote_e2repo, 'e2repo.log'))
+fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
 app.logger.addHandler(fh)
 
 
