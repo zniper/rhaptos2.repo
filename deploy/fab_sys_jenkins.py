@@ -20,3 +20,7 @@ def install_jenkins():
     '''
     sudo('apt-get install -y git ') 
     sudo('apt-get install -y jenkins')
+    sudo('pip install nose')
+    sudo('pip install Flask')
+    sudo('pip install Fabric')
+
