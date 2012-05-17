@@ -135,7 +135,9 @@ def filemap(topdir):
 
 def prepend(f):
     ''' '''
-    return os.path.join(localstagingdir, f)
+    return os.path.join(localstagingdir, 
+                        os.path.join('frozone', f)
+                        )
 
 def install_cdn():
     '''Static server for tiny. THe app specific  html and js is served through www.'''
