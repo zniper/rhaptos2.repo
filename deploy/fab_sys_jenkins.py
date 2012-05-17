@@ -23,4 +23,5 @@ def install_jenkins():
     sudo('pip install nose')
     sudo('pip install Flask')
     sudo('pip install Fabric')
+    sudo('pip install pylint')
 
