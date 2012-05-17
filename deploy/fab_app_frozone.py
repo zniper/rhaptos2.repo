@@ -170,7 +170,7 @@ def install_www():
 
     #0777 !!!! anyway -p stops failing if already there
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
-    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
+#    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
 
 
     put(os.path.join(localstagingdir, 'frozone'),
