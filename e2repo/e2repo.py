@@ -11,10 +11,9 @@ from frozone import conf
 
 app = Flask(__name__)
 
-REPO='/usr/share/www/nginx/repo'
 
 from logging import FileHandler
-fh = FileHandler(filename=os.path.join(REPO, 'myapp.log'))
+fh = FileHandler(filename=os.path.join(conf.remote_e2repo, 'e2repo.log'))
 app.logger.addHandler(fh)
 
 
@@ -25,7 +24,7 @@ def getfilehash(moduletxt):
 
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(conf.statsdhost, conf.statsdport)
+    c = statsd.StatsClient(conf.statsd_host, conf.statsd_port)
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 
