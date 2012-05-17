@@ -51,9 +51,22 @@ prep box first
 from frozone.conf import *
 
 
-def gitpull():
-    with fabric.context_managers.cd(localgitdir):
-        local('git checkout feature/cleanforjenkins && git pull')
+######### Tools
+
+
+def prepend(f):
+    '''given a file that should be under frozone/ give back that as a local path to make put operations easier '''
+    return os.path.join(localstagingdir, 
+                        os.path.join('frozone', f)
+                        )
+
+
+
+#def gitpull():
+#    with fabric.context_managers.cd(localgitdir):
+#        local('git checkout feature/cleanforjenkins && git pull')
+
+
 
 def clean_local():
     ''' '''
@@ -65,40 +78,40 @@ def clean_local():
     local('rm -rf %s' % localstagingdir)
         
 
-def preprocess():
-    '''called on the jenkins server locally '''
-    local('cd %s/deploy/preprocess && python mother_of_all_conf.py')
+#def preprocess():
+#    '''called on the jenkins server locally '''
+#    local('cd %s/deploy/preprocess && python mother_of_all_conf.py')
 
-def stage_local(remote_git_repo,
-                localgit,
-                localstaging, 
-                branch, 
-                context):
-    ''' Download git repo, extract a known branch to staging, 
-        do search replace on staging
+# def stage_local(remote_git_repo,
+#                 localgit,
+#                 localstaging, 
+#                 branch, 
+#                 context):
+#     ''' Download git repo, extract a known branch to staging, 
+#         do search replace on staging
 
-        expect to be called through the Makefile::
+#         expect to be called through the Makefile::
 
-        stage_local('git://github.com/lifeisstillgood/frozone.git',
-                    '/tmp/frozone/git',
-                    '/tmp/frozone/stage',
-                    'master',
-                    'rackspace')
+#         stage_local('git://github.com/lifeisstillgood/frozone.git',
+#                     '/tmp/frozone/git',
+#                     '/tmp/frozone/stage',
+#                     'master',
+#                     'rackspace')
 
-    I then call directly to the staging.py script provided.
+#     I then call directly to the staging.py script provided.
 
-    '''
+#     '''
 
-    clean_local()
-#    preprocess()
-    local('python deploy/staging.py \
-          --context=%s \
-          --src=%s \
-          --tgt=%s \
-          --branch=%s' % (context, 
-                          remote_git_repo,
-                          localstaging,
-                          branch )) 
+#     clean_local()
+# #    preprocess()
+#     local('python deploy/staging.py \
+#           --context=%s \
+#           --src=%s \
+#           --tgt=%s \
+#           --branch=%s' % (context, 
+#                           remote_git_repo,
+#                           localstaging,
+#                           branch )) 
     
 
 def remote_init(): 
@@ -110,17 +123,17 @@ def remote_init():
     #need a put here
         
 
-def filemap(topdir):
-    '''walka dir, get a listing of all files, 
-       then these can be used for put operations '''
-    fulllist = []
-    dirlist = []
-    ignorelist = ['.git',]
-    for root, dirs, files in os.walk(topdir):
-        if root in ignorelist: continue
-        dirlist.extend([root,])
-        fulllist.extend([os.path.join(root, f) for f in files])
-    return (dirlist, fulllist)
+# def filemap(topdir):
+#     '''walka dir, get a listing of all files, 
+#        then these can be used for put operations '''
+#     fulllist = []
+#     dirlist = []
+#     ignorelist = ['.git',]
+#     for root, dirs, files in os.walk(topdir):
+#         if root in ignorelist: continue
+#         dirlist.extend([root,])
+#         fulllist.extend([os.path.join(root, f) for f in files])
+#     return (dirlist, fulllist)
 
 
 ### a with operator that prepends the staging dir to 
@@ -133,20 +146,14 @@ def filemap(topdir):
 #    def __exit__(self, type, value, traceback):
 #        pass
 
-def prepend(f):
-    ''' '''
-    return os.path.join(localstagingdir, 
-                        os.path.join('frozone', f)
-                        )
-
 def install_cdn():
     '''Static server for tiny. THe app specific  html and js is served through www.'''
 
-    put(prepend('conf.d/nginx.conf'), 
+    put(prepend('conf.d/nginx/nginx.conf'), 
                 '/etc/nginx/nginx.conf', use_sudo=True, mode=0755)
-    put(prepend('conf.d/cdn.conf'), 
+    put(prepend('conf.d/nginx/cdn.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
-    put(prepend('conf.d/www.conf'), 
+    put(prepend('conf.d/nginx/www.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
 
@@ -187,7 +194,7 @@ def install_supervisor():
     ''' '''
 
     sudo('mkdir -p -m 0777 %s' % remote_supervisor)
-    put(prepend('conf.d/supervisord.conf'), 
+    put(prepend('conf.d/nginx/supervisord.conf'), 
                 '/home/deployagent/supervisor')
     
     #sudo supervisord -n -c /home/deployagent/supervisor/supervisord.conf
