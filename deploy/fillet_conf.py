@@ -9,7 +9,7 @@ LOGLEVEL=logging.DEBUG
 
 remote_e2repo = '/usr/share/www/flask/e2repo'
 
-TINYMCE_STORE = '/usr/home/pbrian/frozone/thirdparty/tinymce'
+TINYMCE_STORE = '/tmp/tinymce'
 remote_wwwd = '/usr/share/www/nginx/www'
 remote_supervisor = '/home/deployagent/supervisor'
 
