@@ -12,10 +12,12 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-STATSD_HOME = '/home/pbrian/statsd'
-GRAPHITE_HOME = '/home/pbrian/graphite'
-CARBON_HOME = '/home/pbrian/carbon'
-WHISPER_HOME = '/home/pbrian/whisper'
+from frozone import conf
+
+STATSD_HOME = os.path.join(conf.remotehomedir, 'statsd')
+GRAPHITE_HOME = os.path.join(conf.remotehomedir, 'graphite')
+CARBON_HOME = os.path.join(conf.remotehomedir, 'carbon')
+WHISPER_HOME = os.path.join(conf.remotehomedir, 'whisper')
 
 
 def install_graphite_deps():
