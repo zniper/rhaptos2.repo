@@ -58,7 +58,7 @@ def gitpull():
 def clean_local():
     ''' '''
 
-    for d in (localstagingdir, localhomedir, localgitrepo):
+    for d in (localstagingdir, localgitrepo):
         local('mkdir -p -m 0777 %s' % d)
 
     local('rm -rf %s' % localgitrepo)

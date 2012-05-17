@@ -24,12 +24,15 @@ LOGLEVEL=logging.DEBUG
 ######### server disk paths
 
 remote_e2repo = '/usr/share/www/flask/e2repo'
-localstagingdir = '/tmp/mikado/staging'
+
 TINYMCE_STORE = '/usr/home/pbrian/frozone/thirdparty/tinymce'
 remote_wwwd = '/usr/share/www/nginx/www'
 remote_supervisor = '/home/deployagent/supervisor'
-localgitrepo = '/tmp/mikado/git'
-localhomedir = '/tmp/mikado'
+
+
 remote_git_repo = 'git://github.com/lifeisstillgood/frozone.git'
 remote_e2server = '/usr/share/www/flask/e2server'
 remotehomedir = '/home/deployagent'
+
+localgitrepo = '/tmp/mikado/git'
+localstagingdir = '/tmp/mikado/staging'
