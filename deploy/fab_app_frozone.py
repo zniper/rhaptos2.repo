@@ -170,9 +170,16 @@ def install_www():
 
     #0777 !!!! anyway -p stops failing if already there
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
+    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
+
+
+    put(os.path.join(localstagingdir, 'frozone'),
+                remote_sitepackage, use_sudo=True, mode=0755)
 
     put(prepend('www/*'), 
                 remote_wwwd, use_sudo=True, mode=0755)
+    ######## why not run from site-packages?
+    
     put(prepend('e2server/*.py'), 
                 remote_e2server, use_sudo=True, mode=0755)
     put(prepend('e2server/reflector.py'), 

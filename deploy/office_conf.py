@@ -18,6 +18,7 @@ TINYMCE_STORE = '/tmp/tinymce'
 remote_wwwd = '/usr/share/www/nginx/www'
 remote_supervisor = '/home/deployagent/supervisor'
 
+remote_sitepackage = '/usr/local/lib/python2.7/site-packages/frozone'
 
 remote_git_repo = 'git://github.com/lifeisstillgood/frozone.git'
 remote_e2repo = '/usr/share/www/flask/e2repo'
