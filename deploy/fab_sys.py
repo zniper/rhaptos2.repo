@@ -40,6 +40,7 @@ def sys_install_pythonenv_ubuntu():
     fabric.api.sudo('pip install uwsgi')
     fabric.api.sudo('pip install supervisor')
     fabric.api.sudo('pip install Fabric')
+    fabric.api.sudo('pip install statsd')
 
     #setup supervisor
     fabric.api.run('mkdir %s' % SUPERVISORDIR)

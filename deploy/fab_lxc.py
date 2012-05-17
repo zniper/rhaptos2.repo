@@ -216,7 +216,9 @@ def postboot():
 
     - make python base
     '''
-    fab_sys.ubuntu_sys_install()
+    fab_sys.sys_install_git_ubuntu()
+    fab_sys.sys_install_pythonenv_ubuntu()
+    sudo('reboot')
 
 ###########################
 

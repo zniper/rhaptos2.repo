@@ -28,6 +28,8 @@ remotehomedir = '/home/deployagent'
 localgitrepo = '/tmp/mikado/git'
 localstagingdir = '/tmp/mikado/staging'
 
+statsd_host = 'devlog.office.mikadosoftware.com'
+statsd_port = 8125
 
 #######################
 

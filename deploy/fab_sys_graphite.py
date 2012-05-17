@@ -152,8 +152,9 @@ def install_statsd(graphitehost,
 }
 EOF
 ''' % (graphiteport, graphitehost, statsdport) )    
-    sudo('cd %s && node stats.js dConfig.js &' % STATSD_HOME)
-
+    sudo('cd %s && (node stats.js dConfig.js &) &' % STATSD_HOME)
+    #THe double and is a silly trick to daemonise processes (detach from tty) - I should do something proper with supervisor
+    #TODO put supervosr / god for node.js in here
 
 
     
