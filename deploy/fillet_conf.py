@@ -11,7 +11,7 @@ remote_e2repo = '/usr/share/www/flask/e2repo'
 
 TINYMCE_STORE = '/tmp/tinymce'
 remote_wwwd = '/usr/share/www/nginx/www'
-remote_supervisor = '/home/deployagent/supervisor'
+remote_supervisor_home = '/home/deployagent/supervisor'
 
 remote_git_repo = 'git://github.com/lifeisstillgood/frozone.git'
 remote_e2server = '/usr/share/www/flask/e2server'

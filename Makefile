@@ -27,7 +27,6 @@ remote-install-cdn:
 remote-install-e2repo:
 	fab -H $(host) -f $(fabfile) install_www
 	fab -H $(host) -f $(fabfile) install_supervisor
-	echo 'Now run supervisor - sudo supervisord -n -c /home/deployagent/supervisor/supervisord.conf'
 
 remote-install-e2server:
 	echo $(TBC)
@@ -58,3 +57,6 @@ graphite:
 	fab -H $(host) -f $(fabfile) install_graphite
 	fab -H $(host) -f $(fabfile) install_statsd:graphitehost=$(host)
 
+# make repo host=devweb fabfile=deploy/fab_sys_repo.py
+repo:
+	fab -H $(host) -f $(fabfile) prepare_repo

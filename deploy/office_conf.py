@@ -16,7 +16,7 @@ LOGLEVEL=logging.DEBUG
 
 TINYMCE_STORE = '/tmp/tinymce'
 remote_wwwd = '/usr/share/www/nginx/www'
-remote_supervisor = '/home/deployagent/supervisor'
+remote_supervisor_home = '/home/deployagent/supervisor'
 
 remote_sitepackage = '/usr/local/lib/python2.7/dist-packages'
 
