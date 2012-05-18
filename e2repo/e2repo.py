@@ -8,14 +8,16 @@ import flask
 import statsd
 
 from frozone import conf
+from frozone import log
 
 app = Flask(__name__)
 REPO = conf.remote_e2repo
 
 
-from logging import FileHandler
-fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
-app.logger.addHandler(fh)
+#from logging import FileHandler
+#fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
+lg = log.getFrozoneLogger('frozone_e2repo')
+app.logger.addHandler(lg)
 
 
 def getfilehash(moduletxt):
@@ -30,10 +32,7 @@ def callstatsd(dottedcounter):
     #todo: really return c and keep elsewhere for efficieny I suspect
 
 def qlog(msg):
-    d = datetime.datetime.today().isoformat()
-    fo = open('/tmp/e2repo.log','a')
-    fo.write('%s %s \n' % (d, msg))
-    fo.close()
+    app.logger.info(msg)
 
 
 def asjson(pyobj):
@@ -89,8 +88,6 @@ def modulePUT():
 
 if __name__ == "__main__":
     #app.debug = True
-  
-    from logging import FileHandler
-    fh = FileHandler(filename='/tmp/myapp.log')
-    app.logger.addHandler(fh)
+
+    app.logger.addHandler(lg)
     app.run(host='0.0.0.0', debug=True)
