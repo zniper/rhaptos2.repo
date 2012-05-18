@@ -40,6 +40,10 @@ context = {
  '<<WWW-SERVER-NAME>>': 'www.office.mikadosoftware.com',
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
+ '<<LOGSERVERFQDN>>': 'devlog.office.mikadosoftware.com',
+ '<<LOGSERVERPORT>>': 5514,
+ 
+
  '<<E2SERVERROOT>>': remote_e2server,
  '<<E2REPOROOT>>': remote_e2repo,
  '<<WSGIPORT_E2SERVER>>': '127.0.0.1:8001',

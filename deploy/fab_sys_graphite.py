@@ -158,3 +158,18 @@ EOF
 
 
     
+
+def install_rsyslogd():
+    '''install and configure rsyslogd on devlog '''
+    sudo('apt-get install -y rsyslog') 
+    sudo('''cat >> /etc/rsyslog.conf << "EOF"
+# provides TCP syslog reception
+$ModLoad imtcp
+$InputTCPServerRun 5514
+EOF
+''')
+    sudo('service rsyslog restart')
+
+
+def config_rsyslogd_client():
+    '''install and configure rsyslogd on clients '''

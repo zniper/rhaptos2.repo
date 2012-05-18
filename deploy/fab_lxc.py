@@ -211,6 +211,47 @@ def lxc_start(vhostname):
 
 ###################### POST BOOT
 
+def fixsyslogclient():
+    '''fixes to rsyslog that should run on everything.
+
+    server need s extra conf change to /etc/rsyslog.conf '''
+    ### alter rsyslog
+    files.append('/etc/rsyslog.conf', 
+                 ['# Added by Fabric, fab_lxc.py/postboot()',
+                  '*.* @@<<LOGSERVERFQDN>>:<<LOGSERVERPORT>>'], 
+                 use_sudo=True)
+
+
+    files.comment('/etc/rsyslog.d/50-default.conf',
+                  r'^.*daemon.*;mail.*;*$',
+                  use_sudo=True )
+
+    files.comment('/etc/rsyslog.d/50-default.conf',
+                   r'^.*news.err;*',
+                   use_sudo=True )
+
+    files.comment('/etc/rsyslog.d/50-default.conf',
+                  r'^.*\*.=debug;\*.=info;.*$',
+                  use_sudo=True )
+
+    files.comment('/etc/rsyslog.d/50-default.conf',
+                  r'^.*\*.=notice;\*.=warn.*|/dev/xconsole.*$',
+                  use_sudo=True )
+
+
+    ### handle weird issue where container has no external response till pings internally
+    files.comment('/etc/rc.local',
+                  r'^exit 0$',
+                  use_sudo=True )
+
+    files.append('/etc/rc.local', 
+                 ['# Added by Fabric, fab_lxc.py/postboot()',
+                  'ping -c 3 www.google.com'], 
+                 use_sudo=True)
+
+    sudo('service rsyslog restart')
+
+
 def postboot():
     '''perform all base configs needed once Virtual Server is running on network.
 
@@ -218,6 +259,7 @@ def postboot():
     '''
     fab_sys.sys_install_git_ubuntu()
     fab_sys.sys_install_pythonenv_ubuntu()
+    fixsyslogclient()
     sudo('reboot')
 
 ###########################
