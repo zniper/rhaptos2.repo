@@ -5,6 +5,7 @@ from fabric.operations import put
 from fabric.api import sudo, run, local
 import os
 
+from frozone.conf import *
 
 '''
 
@@ -48,99 +49,45 @@ prep box first
 
 
 
-from frozone.conf import *
 
 
 
-def gitpull():
-    with fabric.context_managers.cd(localgitdir):
-        local('git checkout feature/cleanforjenkins && git pull')
+######### Tools
+
+
+def prepend(f):
+    '''given a file that should be under frozone/ give back that as a local path to make put operations easier '''
+    return os.path.join(localstagingdir, 
+                        os.path.join('frozone', f)
+                        )
+
 
 def clean_local():
     ''' '''
 
-    for d in (localstagingdir, localhomedir, localgitrepo):
+    for d in (localstagingdir, localgitrepo):
         local('mkdir -p -m 0777 %s' % d)
 
     local('rm -rf %s' % localgitrepo)
     local('rm -rf %s' % localstagingdir)
         
-
-def stage_local(remote_git_repo,
-                localgit,
-                localstaging, 
-                branch, 
-                context):
-    ''' Download git repo, extract a known branch to staging, 
-        do search replace on staging
-
-    expect to be called through the Makefile::
-
-        stage_local('git://github.com/lifeisstillgood/frozone.git',
-                    '/tmp/frozone/git',
-                    '/tmp/frozone/stage',
-                    'master',
-                    'rackspace')
-
-    I then call directly to the staging.py script provided.
-
-    '''
-
-    clean_local()
-    local('python deploy/staging.py \
-          --context=%s \
-          --src=%s \
-          --tgt=%s \
-          --branch=%s' % (context, 
-                          remote_git_repo,
-                          localstaging,
-                          branch )) 
     
 
 def remote_init(): 
 
-    for d in (remote_wwwd, remote_e2repo, remote_e2server, remote_supervisor):
+    for d in (remote_wwwd, remote_e2repo, remote_e2server, remote_supervisor_home):
         sudo('mkdir -p -m 0777 %s' % d)
         
 
-    #need a put here
         
-
-def filemap(topdir):
-    '''walka dir, get a listing of all files, 
-       then these can be used for put operations '''
-    fulllist = []
-    dirlist = []
-    ignorelist = ['.git',]
-    for root, dirs, files in os.walk(topdir):
-        if root in ignorelist: continue
-        dirlist.extend([root,])
-        fulllist.extend([os.path.join(root, f) for f in files])
-    return (dirlist, fulllist)
-
-
-### a with operator that prepends the staging dir to 
-#class addroot(object):#
-#
-#    def __init__(self, file):
-#        self.file = file
-#    def __enter__(self):
-#        return os.path.join(localstagingdir, self.file)
-#    def __exit__(self, type, value, traceback):
-#        pass
-
-def prepend(f):
-    ''' '''
-    return os.path.join(localstagingdir, f)
-
 def install_cdn():
     '''Static server for tiny. THe app specific  html and js is served through www.'''
 
-    put(prepend('conf.d/nginx.conf'), 
+    put(prepend('conf.d/nginx/nginx.conf'), 
                 '/etc/nginx/nginx.conf', use_sudo=True, mode=0755)
-    put(prepend('conf.d/cdn.conf'), 
+    put(prepend('conf.d/nginx/cdn.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
-    put(prepend('conf.d/www.conf'), 
+    put(prepend('conf.d/nginx/www.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
 
@@ -157,9 +104,16 @@ def install_www():
 
     #0777 !!!! anyway -p stops failing if already there
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
+#    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
+
+
+    put(os.path.join(localstagingdir, 'frozone'),
+                remote_sitepackage, use_sudo=True, mode=0755)
 
     put(prepend('www/*'), 
                 remote_wwwd, use_sudo=True, mode=0755)
+    ######## why not run from site-packages?
+    
     put(prepend('e2server/*.py'), 
                 remote_e2server, use_sudo=True, mode=0755)
     put(prepend('e2server/reflector.py'), 
@@ -180,11 +134,11 @@ def restart_nginx():
 def install_supervisor():
     ''' '''
 
-    sudo('mkdir -p -m 0777 %s' % remote_supervisor)
-    put(prepend('conf.d/supervisord.conf'), 
-                '/home/deployagent/supervisor')
+    sudo('mkdir -p -m 0777 %s' % remote_supervisor_home)
+    put(prepend('conf.d/nginx/supervisord.conf'), 
+                 remote_supervisor_home)
     
-    #sudo supervisord -n -c /home/deployagent/supervisor/supervisord.conf
+    sudo('supervisord -c %s' % os.path.join(remote_supervisor_home, 'supervisord.conf'))
 
 # now start up the uwsgi servers, and restart nginx.  test by loading http://hadrian/frozone/test.html
 

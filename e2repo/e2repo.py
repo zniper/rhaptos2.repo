@@ -5,13 +5,16 @@ import datetime
 import md5, random
 import os
 import flask
+import statsd
+
+from frozone import conf
 
 app = Flask(__name__)
+REPO = conf.remote_e2repo
 
-REPO='/usr/share/www/nginx/repo'
 
 from logging import FileHandler
-fh = FileHandler(filename=os.path.join(REPO, 'myapp.log'))
+fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
 app.logger.addHandler(fh)
 
 
@@ -20,8 +23,11 @@ def getfilehash(moduletxt):
     h = random.randint(1,1000)
     return h
 
-
-
+def callstatsd(dottedcounter):
+    ''' '''
+    c = statsd.StatsClient(conf.statsd_host, conf.statsd_port)
+    c.incr(dottedcounter)
+    #todo: really return c and keep elsewhere for efficieny I suspect
 
 def qlog(msg):
     d = datetime.datetime.today().isoformat()
@@ -41,6 +47,7 @@ def gettime():
 def modulePOST():
     qlog('postcall here')
     app.logger.info('test')
+    callstatsd('frozone.e2repo.POST')
     try:
 
         html5 = request.form['moduletxt']

@@ -49,6 +49,17 @@ be indistuinguishable from QA testing of that service.
 Graphite / Statsd
 =================
 
+
+Summary 
+-------
+
+::
+
+   make lxc-destroy host=hpcube fabfile=deploy/fab_lxc.py vhostname=devlog vhostip=10.0.0.22
+   make newcontainer host=hpcube fabfile=deploy/fab_lxc.py vhostname=devlog vhostip=10.0.0.22
+   ping devlog ...
+   make graphite host=devlog fabfile=deploy/fab_sys_graphite.py
+
 .. warning::
    
    This is not fully automated install, and is unlikely to be due

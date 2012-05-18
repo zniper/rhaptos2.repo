@@ -1,20 +1,23 @@
 #!/usr/local/bin/python
 
 '''
-Fab file to install Graphite and Scribe onto a server
+Fab file to install Graphite and Scribe and Statsd onto a server
+
 
 '''
 
 import fabric
-#import fabpass
+import fabpass
 from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-STATSD_HOME = '/home/pbrian/statsd'
-GRAPHITE_HOME = '/home/pbrian/graphite'
-CARBON_HOME = '/home/pbrian/carbon'
-WHISPER_HOME = '/home/pbrian/whisper'
+from frozone import conf
+
+STATSD_HOME = os.path.join(conf.remotehomedir, 'statsd')
+GRAPHITE_HOME = os.path.join(conf.remotehomedir, 'graphite')
+CARBON_HOME = os.path.join(conf.remotehomedir, 'carbon')
+WHISPER_HOME = os.path.join(conf.remotehomedir, 'whisper')
 
 
 def install_graphite_deps():
@@ -44,7 +47,7 @@ def install_graphite_deps():
 
 
 
-def install_graphite1():
+def install_graphite():
     ''' Grab the sources, build, then signal how to configure '''
 
     sh = '''
@@ -149,8 +152,24 @@ def install_statsd(graphitehost,
 }
 EOF
 ''' % (graphiteport, graphitehost, statsdport) )    
-    sudo('cd %s && node stats.js dConfig.js &' % STATSD_HOME)
-
+    sudo('cd %s && (node stats.js dConfig.js &) &' % STATSD_HOME)
+    #THe double and is a silly trick to daemonise processes (detach from tty) - I should do something proper with supervisor
+    #TODO put supervosr / god for node.js in here
 
 
     
+
+def install_rsyslogd():
+    '''install and configure rsyslogd on devlog '''
+    sudo('apt-get install -y rsyslog') 
+    sudo('''cat >> /etc/rsyslog.conf << "EOF"
+# provides TCP syslog reception
+$ModLoad imtcp
+$InputTCPServerRun 5514
+EOF
+''')
+    sudo('service rsyslog restart')
+
+
+def config_rsyslogd_client():
+    '''install and configure rsyslogd on clients '''

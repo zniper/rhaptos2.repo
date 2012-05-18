@@ -39,10 +39,9 @@ def sys_install_pythonenv_ubuntu():
     fabric.api.sudo('apt-get install -y build-essential python-dev libxml2-dev')
     fabric.api.sudo('pip install uwsgi')
     fabric.api.sudo('pip install supervisor')
+    fabric.api.sudo('pip install Fabric')
+    fabric.api.sudo('pip install statsd')
 
-    #setup supervisor
-    fabric.api.run('mkdir %s' % SUPERVISORDIR)
-    
 
 
 def sys_install_nginx_ubuntu():
