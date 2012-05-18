@@ -137,8 +137,10 @@ def install_supervisor():
     sudo('mkdir -p -m 0777 %s' % remote_supervisor_home)
     put(prepend('conf.d/nginx/supervisord.conf'), 
                  remote_supervisor_home)
-    
-    sudo('supervisord -c %s' % os.path.join(remote_supervisor_home, 'supervisord.conf'))
+    try:
+        sudo('supervisord -c %s' % os.path.join(remote_supervisor_home, 'supervisord.conf'))
+    except:
+        print 'could not start supervisor as its already up '
 
 # now start up the uwsgi servers, and restart nginx.  test by loading http://hadrian/frozone/test.html
 
