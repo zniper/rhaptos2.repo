@@ -41,7 +41,7 @@ context = {
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
  '<<LOGSERVERFQDN>>': 'devlog.office.mikadosoftware.com',
- '<<LOGSERVERPORT>>': 5514,
+ '<<LOGSERVERPORT>>': '5514',
  
 
  '<<E2SERVERROOT>>': remote_e2server,
