@@ -23,3 +23,24 @@ so the process is as follows
 
 
 
+Summary
+-------
+
+We want to extract from github to local working copy.
+At this point, before deployment we need to know 
+  
+a) the context we shall be working in (ie is this a deploy to developer office, or production)
+
+We run the *preprocess* service to correctly set up the different configuration files for that context
+
+Then we need to run the *staging* process to get the in-code constants correctly fixed.
+
+At that point we can run fab files to deliver the code to the correct locations.
+
+
+1. download from github to workingcopy
+2. clone from workingcopy into staging dir, make stagingdir the PYTHONPATH (virtualenv?)
+3. preprocess on stagingdir
+4. stage on stagingdir
+5. run fabfiles / make
+
