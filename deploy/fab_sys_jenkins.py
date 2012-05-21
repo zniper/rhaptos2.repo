@@ -24,4 +24,5 @@ def install_jenkins():
     sudo('pip install Flask')
     sudo('pip install Fabric')
     sudo('pip install pylint')
+    sudo('pip install statsd')
 
