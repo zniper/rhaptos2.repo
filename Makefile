@@ -30,9 +30,9 @@ remote-install-e2repo:
 
 remote-install-e2server:
 	echo $(TBC)
-
-remote-start-supervisor:
-	echo $(TBC)
+#make supervisor -H devlog -f deploy/fab_app_frozone.py 
+supervisor:
+	fab -H $(host) -f $(fabfile) install_supervisor
 
 
 # make newcontainer host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1 vhostip=10.0.0.21

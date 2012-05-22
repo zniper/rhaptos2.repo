@@ -13,6 +13,7 @@ from fabric.api import sudo, run, local
 import os
 
 from frozone import conf
+from frozone.deploy import fab_lib
 
 STATSD_HOME = os.path.join(conf.remotehomedir, 'statsd')
 GRAPHITE_HOME = os.path.join(conf.remotehomedir, 'graphite')
@@ -28,6 +29,7 @@ def install_graphite_deps():
 
     '''
 
+    
     pkgs = [ 'apache2', 'apache2-mpm-worker', 'apache2-utils',
              'apache2.2-bin', 'apache2.2-common', 'libapr1',
              'libaprutil1', 'libaprutil1-dbd-sqlite3', 'libapache2-mod-wsgi',
@@ -39,6 +41,9 @@ def install_graphite_deps():
              'python-setuptools', 'python-twisted',
              
            ]
+
+
+    fab_lib.prep_ubuntu_server()
 
     for pkg in pkgs:
         sudo('apt-get install -y %s' % pkg)

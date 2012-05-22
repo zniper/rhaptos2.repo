@@ -28,19 +28,19 @@ remotehomedir = '/home/deployagent'
 localgitrepo = '/tmp/mikado/git'
 localstagingdir = '/tmp/mikado/staging'
 
-statsd_host = 'devlog.office.mikadosoftware.com'
+statsd_host = 'log.frozone.mikadosoftware.com'
 statsd_port = 8125
 
 #######################
 
 context = {
- '<<CDN-SERVER-NAME>>': 'cdn.office.mikadosoftware.com',
+ '<<CDN-SERVER-NAME>>': 'cdn.frozone.mikadosoftware.com',
  '<<CDN-SERVER-ROOT>>': '/usr/share/www/nginx/cdn',
- '<<REPO-SERVER-NAME>>': 'www.office.mikadosoftware.com',
- '<<WWW-SERVER-NAME>>': 'www.office.mikadosoftware.com',
+ '<<REPO-SERVER-NAME>>': 'www.frozone.mikadosoftware.com',
+ '<<WWW-SERVER-NAME>>': 'www.frozone.mikadosoftware.com',
  '<<WWW-SERVER-ROOT>>': '/usr/share/www/nginx/www',
 
- '<<LOGSERVERFQDN>>': 'devlog.office.mikadosoftware.com',
+ '<<LOGSERVERFQDN>>': 'log.frozone.mikadosoftware.com',
  '<<LOGSERVERPORT>>': '5514',
  
 
