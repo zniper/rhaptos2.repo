@@ -24,100 +24,70 @@ Examples
 --------
 ::
 
-  http://cnx.org/<user>/<workspace>/collection
+  http://cnx.org/<workspace>/
 
-  http://cnx.org/<user>/<workspace>/module
+  http://cnx.org/<workspace>/module
+
+
 
 Note that it is assumed the user will only ever reach their modules
-(editing area) from a user/workspace path.  We do not have to store it
+(editing area) from a workspace path.  We do not have to store it
 like this (its probably good not to) but we will have to enforce this
 partly for security but also cos this is the paradigm we are telling
 people exists.  (Ie you a user have a set of workspaces and in those
 are modules.  The ability to copy across is kind of ignored)
 
-* /collections/
+collections
+-----------
 
-  GET
-    Returns list of collections-hashids and URLS in Link header
-  POST
-    Expects a linked list of existing module hashes, plus meta data.  Creates a new collection and returns the URL
-  DELETE
-    N/A - return 404?
-  PUT
-    expects a *complete* list of existing collection-hash-ids, and will update the collections server accordingly (adding or deleting or moving).  
-
-* /user/workspace/collections/<hashid>
-  
-  GET
-     Will return the linked list of module-ids and any assoc meta data as JSON
-  POST
-     N/A
-  PUT 
-     Given linked list of module-ids it will update them.  ie this can do move of modules, delete of 1+ modules, or complete resetting.
-  DELETE
-     removes this collection from the users workspace.  Does not destructively affect the collection.  (Not sure how we do do that)
+Collections are not supported (possibly not supportable) in the 
+text-file only repository.  This probably will be a reason to move away 
+from text-file only, taking its learnings.
 
 
-* /user/workspace/modules
+/workspace/<workspaceid>
+------------------------
 
-  GET
-    return list of all modules in workspace (this seems ridiculous)
-  POST
-    Create a new empty module, and its unique URL
-  PUT
-    N/A ???
-  DELETE
-    N/A - must be a modules list
+:GET: return list of all modules in this workspace
+:POST:N/A
+:PUT: N/A
+:DELETE: remove this workspace
 
 
-* /user/workspace/modules/name
+workspace/<workspaceid>/modules
+-------------------------------
 
-  GET
+:GET:
     returns the *version history*, plus branching?? Or returns the HEAD/tip?
-  POST
+:POST:
     Create a new module version and store it based on payload.
-  PUT 
+:PUT: 
     N/A
-  DELETE
+:DELETE:
     Deelte the whole history and storage
 
-* /user/workspace/modules/name/versionhash
+/workspace/<workspaceid>/modules/<name>
+---------------------------------------
   
-   GET
-     returns the HTML5
-   POST
+:GET:
+     returns the HTML5 of latest version
+:POST:
      N/A
-   PUT 
+:PUT: 
      changes the stored version ???  Should we ever do this?
-   DELETE
+:DELETE:
      Not sure we ever want to do this either.
 
 
-* /pbrian/mybook/
-
-  or /user/pbrian/workspace/mybook
-
-  GET
-    returns the collections, lenses and modules in workspace
-  POST
-    NA
-  PUT
-    NA
-  DELETE
-    NA
- 
-   I think most of this is covered in the areas underneath - no?
-
-
-* /users/pbrian/
-
-  GET
+/users/pbrian/
+--------------
+:GET:
     list of workspaces
-  POST
+:POST:
     create a new user.   How do we tie this into OpenID is still big question
-  PUT
+:PUT:
     TBC
-  DELETE       
+:DELETE:
     TBC
 
 
