@@ -13,9 +13,9 @@ The initial stub version will simply support writing to a single directory as te
 '''
 
 import os
+from frozone import conf 
 
-
-MAINDIR = '/tmp/e2repo'
+MAINDIR = conf.remote_e2repo
 MODULEDIR = os.path.join(MAINDIR, 'modules')
 COLLECTIONDIR = os.path.join(MAINDIR, 'collections')
 LENSDIR = os.path.join(MAINDIR, 'lenses')
