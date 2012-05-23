@@ -3,14 +3,14 @@ Story So Far
 ============
 
 
-Use this page as a means to discover recent changes
-===================================================
+Use this page to discover recent changes
+========================================
 
-22 May
+23 May
 ------
 
 We have a working, installed by Jenkins, reporting to Graphite, 
-'editor' and file-onlt repository.
+'editor' and file-only repository.
 
 It can be found at `http://www.frozone.mikadosoftware.com/strawman.html <http://www.frozone.mikadosoftware.com/strawman.html>`_
 
