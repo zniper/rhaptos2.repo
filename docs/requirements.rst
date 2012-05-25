@@ -49,7 +49,7 @@ from text-file only, taking its learnings.
 ------------------------
 
 :GET: return list of all modules in this workspace
-:POST:N/A
+:POST: N/A
 :PUT: N/A
 :DELETE: remove this workspace
 

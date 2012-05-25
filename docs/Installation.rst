@@ -126,6 +126,8 @@ Now we want to build a DNS server
    :maxdepth: 1
 
    dns
+   hosting
+   lxc-routing
 
 At this point the Virtual Lan for our developer is ready to take on anything new
 
