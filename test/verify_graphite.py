@@ -7,7 +7,7 @@ import socket
 import time
 import random
 
-CARBON_SERVER = 'log.frozone.mikadosoftware.com'
+CARBON_SERVER = 'devlog.office.mikadosoftware.com'
 CARBON_PORT = 2003
 STATSD_PORT = 8125
 STATSD_HOST = CARBON_SERVER

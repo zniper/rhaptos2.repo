@@ -8,6 +8,11 @@ however there is a lot to it, so here is details on how to do the
 installation of the frozone eco-system (for want of a better term) and
 links to the source.
 
+Two types of install
+
+1. Simplest possible repo (the one laptop install)
+2. DevOps repo (full, Virtual servers)
+
 
 Overview
 ========
