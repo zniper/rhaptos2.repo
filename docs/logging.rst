@@ -159,7 +159,7 @@ rsyslogd still seems to have a few bugs to be ironed out in ubuntu, but it has b
 The setup - we shall have *one* remote server, the logging server, that will collate all logs sent by the other servers.  All client servers will log to their local drives and forward on over tcp to the remote logging server.
 
 configuration
-~~~~~~~~~~~~~
+-------------
 
 rsyslog is installed and enabled by deafualt in Ubuntu since (?).
 We will want to change the default listening port from 514 to 5514 (bug: following a 
@@ -253,7 +253,7 @@ I am assuming the following
 
 
 package hierarchy
-~~~~~~~~~~~~~~~~~
+-----------------
 
 There are about as many opinions on how to do this as there are programmers.
 But here goes for this one - same rationale as usual, pick one, everyone stick
@@ -341,7 +341,7 @@ def getFrozoneLogger(modname):
 
   
 Issues to note
-~~~~~~~~~~~~~~
+--------------
 
 Logger instances *hang around* - they are designed as singleton servers, so creating them a lot really can hurt. One logger per running module is a good balance of granualrity and manageability.
 
