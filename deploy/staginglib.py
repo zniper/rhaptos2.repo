@@ -82,7 +82,9 @@ def searchreplace(f, contextdict):
     for k in contextdict:
         # only sed replace for keys that are like <<xxxx>>
         if k.find('<<') >=0: 
-            txt_new = txt_new.replace(k, contextdict[k])
+            if txt_new.find(k) >= 0:
+                print k, f
+                txt_new = txt_new.replace(k, contextdict[k])
     open(f,'w').write(txt_new)
 
 
