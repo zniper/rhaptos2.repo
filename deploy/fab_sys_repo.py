@@ -15,6 +15,6 @@ import os
 
 def prepare_repo():
     ''' '''
-    from frozone.deploy import fab_sys
+    import fab_sys
     fab_sys.sys_install_nginx_ubuntu()
     
