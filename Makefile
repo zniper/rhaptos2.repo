@@ -10,6 +10,7 @@ clean-crud:
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
+
 #make stage localgitrepo=/tmp/clone localstage=/tmp/staging configfile=office_conf.py \
 host=devjenkins fabfile=deploy/fab_stage.py
 stage:

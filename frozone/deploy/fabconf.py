@@ -1,1 +1,0 @@
-SUPERVISORDIR='/home/deployagent/supervisor'
