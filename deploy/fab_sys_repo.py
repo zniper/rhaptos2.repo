@@ -12,10 +12,6 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-from frozone import conf
-
-
-
 
 def prepare_repo():
     ''' '''
