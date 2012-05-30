@@ -58,6 +58,7 @@ def overwrite(contextdict, local_staging_dir):
 
     '''
     #prep dir
+    print contextdict
 
     OKsuffix = ['.py', '.js', '.conf', '.html']
     for root, dirs, files in os.walk(local_staging_dir):
@@ -81,7 +82,8 @@ def searchreplace(f, contextdict):
 
     for k in contextdict:
         # only sed replace for keys that are like <<xxxx>>
-        if k.find('<<') >=0: 
+        if k.find('<<') >=0:
+            print k, 
             if txt_new.find(k) >= 0:
                 print k, f
                 txt_new = txt_new.replace(k, contextdict[k])
