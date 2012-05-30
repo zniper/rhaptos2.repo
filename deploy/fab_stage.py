@@ -18,6 +18,19 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
+def set_ini(configfile, localstage, localgitrepo):
+    '''Write the config file chosen by the make cmd to this environment
+
+    I suspect ENV vars would be better. 
+
+    example: we want to put the office.ini file in as the /etc/frozone.ini
+    '''
+
+    local('cp %s/deploy/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
+    fabric.contrib.files.append('/usr/local/etc/frozone.ini', 
+                                'localstagingdir:%s' % localstage, use_sudo = True)
+    fabric.contrib.files.append('/usr/local/etc/frozone.ini', 
+                                'localgitrepo:%s' % localgitrepo, use_sudo = True)
 
 def clone_and_clean(localgitrepo, localstage, tgtdir):
     '''This is a means to do a SVN EXPORT
@@ -38,17 +51,17 @@ def stage(localgitrepo, localstage, configfile):
     '''
 
     tgtdir = os.path.join(localstage, 'frozone')
-
+    set_ini(configfile, localstage, localgitrepo)
     clone_and_clean(localgitrepo, localstage, tgtdir)
 
-    #apply the desired config file ... 
-    local('cp %s/deploy/%s %s/conf.py' % (tgtdir, configfile, tgtdir))    
-    local('''cat >> %s/conf.py << EOF 
+#     #apply the desired config file ... 
+#     local('cp %s/deploy/%s %s/conf.py' % (tgtdir, configfile, tgtdir))    
+#     local('''cat >> %s/conf.py << EOF 
 
-localstage      = '%s'
-localgitrepo    = '%s'
-localstagingdir = localstage    
-EOF
-''' % (tgtdir, localstage, localgitrepo))
+# localstage      = '%s'
+# localgitrepo    = '%s'
+# localstagingdir = localstage    
+# EOF
+# ''' % (tgtdir, localstage, localgitrepo))
 
     local('python %s/deploy/runstaging.py %s' % (tgtdir, tgtdir))
