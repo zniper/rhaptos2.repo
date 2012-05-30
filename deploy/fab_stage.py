@@ -19,7 +19,7 @@ from fabric.api import sudo, run, local
 import os
 
 
-def clone_and_clean(localgitrepo, localstage):
+def clone_and_clean(localgitrepo, localstage, tgtdir):
     '''This is a means to do a SVN EXPORT
     
     ''' 

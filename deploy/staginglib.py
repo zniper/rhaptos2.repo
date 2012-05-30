@@ -26,20 +26,20 @@ import fabric
 from fabric.api import local
 
 
-def clone_and_clean(remotegitrepo, localstagingdir, branch):
-    '''This is a means to do a SVN EXPORT
+# def clone_and_clean(remotegitrepo, localstagingdir, branch):
+#     '''This is a means to do a SVN EXPORT
     
-    ''' 
-    #first, clean up the tgt folder.
-    if os.path.isdir(localstagingdir) is True:
-        local('rm -rf %s' % localstagingdir) 
-        local('mkdir -p -m 0755 %s' % localstagingdir) 
+#     ''' 
+#     #first, clean up the tgt folder.
+#     if os.path.isdir(localstagingdir) is True:
+#         local('rm -rf %s' % localstagingdir) 
+#         local('mkdir -p -m 0755 %s' % localstagingdir) 
 
-    local('git clone -b %s %s %s' % (branch, 
-                                  remotegitrepo, 
-                                  localstagingdir))    
+#     local('git clone -b %s %s %s' % (branch, 
+#                                   remotegitrepo, 
+#                                   localstagingdir))    
 
-    local('rm -rf %s' % os.path.join(localstagingdir,'.git')) 
+#     local('rm -rf %s' % os.path.join(localstagingdir,'.git')) 
 
 
 
@@ -80,13 +80,13 @@ def searchreplace(f, contextdict):
     txt_new = txt_orig
 
     for k in contextdict:
-        txt_new = txt_new.replace(k, contextdict[k])
+        # only sed replace for keys that are like <<xxxx>>
+        if k.find('<<') >=0: 
+            txt_new = txt_new.replace(k, contextdict[k])
     open(f,'w').write(txt_new)
 
 
-
-
-        
+       
 
 if __name__ == '__main__':
     import doctest
