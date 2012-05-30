@@ -5,7 +5,9 @@ from fabric.operations import put
 from fabric.api import sudo, run, local
 import os
 
-from frozone.conf import *
+from frozone.deploy import fab_lib
+confd = fab_lib.get_config()
+
 
 '''
 
@@ -56,8 +58,8 @@ prep box first
 
 
 def prepend(f):
-    '''given a file that should be under frozone/ give back that as a local path to make put operations easier '''
-    return os.path.join(localstagingdir, 
+    '''given a file that should be under frozone/ give back that as a local path to make #put operations easier '''
+    return os.path.join(confd['localstagingdir'], 
                         os.path.join('frozone', f)
                         )
 
@@ -65,17 +67,21 @@ def prepend(f):
 def clean_local():
     ''' '''
 
-    for d in (localstagingdir, localgitrepo):
+    for d in (confd['localstagingdir'], 
+              confd['localgitrepo']):
         local('mkdir -p -m 0777 %s' % d)
 
-    local('rm -rf %s' % localgitrepo)
-    local('rm -rf %s' % localstagingdir)
+    local('rm -rf %s' % confd['localgitrepo'])
+    local('rm -rf %s' % confd['localstagingdir'])
         
     
 
 def remote_init(): 
 
-    for d in (remote_wwwd, remote_e2repo, remote_e2server, remote_supervisor_home):
+    for d in (confd['remote_wwwd'], 
+              confd['remote_e2repo'], 
+              confd['remote_e2server'],
+              confd['remote_supervisor_home']):
         sudo('mkdir -p -m 0777 %s' % d)
         
 
@@ -83,18 +89,18 @@ def remote_init():
 def install_cdn():
     '''Static server for tiny. THe app specific  html and js is served through www.'''
 
-    put(prepend('conf.d/nginx/nginx.conf'), 
+    put('conf.d/nginx/nginx.conf', 
                 '/etc/nginx/nginx.conf', use_sudo=True, mode=0755)
-    put(prepend('conf.d/nginx/cdn.conf'), 
+    put('conf.d/nginx/cdn.conf', 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
-    put(prepend('conf.d/nginx/www.conf'), 
+    put('conf.d/nginx/www.conf', 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
 
 
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/cdn')
     sudo('chown -R www-data:www-data /usr/share/www/nginx/cdn')
-    put(TINYMCE_STORE, '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
+    put(confd['TINYMCE_STORE'], '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
     restart_nginx()
 
 
@@ -107,19 +113,19 @@ def install_www():
 #    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
 
 
-    put(os.path.join(localstagingdir, 'frozone'),
-                remote_sitepackage, use_sudo=True, mode=0755)
+    put(os.path.join(confd['localstagingdir'], 'frozone'),
+                confd['remote_sitepackage'], use_sudo=True, mode=0755)
 
-    put(prepend('www/*'), 
-                remote_wwwd, use_sudo=True, mode=0755)
+    put('www/*', 
+         confd['remote_wwwd'], use_sudo=True, mode=0755)
     ######## why not run from site-packages?
     
     put(prepend('e2server/*.py'), 
-                remote_e2server, use_sudo=True, mode=0755)
+                confd['remote_e2server'], use_sudo=True, mode=0755)
     put(prepend('e2server/reflector.py'), 
-                remote_e2repo, use_sudo=True, mode=0755)
+                confd['remote_e2repo'], use_sudo=True, mode=0755)
     put(prepend('e2repo/*.py'), 
-                remote_e2repo, use_sudo=True, mode=0755)
+                confd['remote_e2repo'], use_sudo=True, mode=0755)
 
 
     restart_nginx()
@@ -134,11 +140,12 @@ def restart_nginx():
 def install_supervisor():
     ''' '''
 
-    sudo('mkdir -p -m 0777 %s' % remote_supervisor_home)
+    sudo('mkdir -p -m 0777 %s' % confd['remote_supervisor_home'])
     put(prepend('conf.d/nginx/supervisord.conf'), 
-                 remote_supervisor_home)
+                 confd['remote_supervisor_home'])
     try:
-        sudo('supervisord -c %s' % os.path.join(remote_supervisor_home, 'supervisord.conf'))
+        sudo('supervisord -c %s' % os.path.join(confd['remote_supervisor_home'], 
+                                                'supervisord.conf'))
     except:
         print 'could not start supervisor as its already up '
 

@@ -24,10 +24,6 @@ import os, sys
 #3rd party
 import fabric
 from fabric.api import local
-#app
-from frozone import frozoneError
-
-
 
 
 def clone_and_clean(remotegitrepo, localstagingdir, branch):

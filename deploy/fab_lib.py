@@ -12,7 +12,15 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-from frozone import conf
+############################# Get config 
+import ConfigParser
+
+def get_config():
+
+    parser = ConfigParser.SafeConfigParser()
+    parser.read('../global.ini')
+    globaldict = dict(parser.items('frozone'))
+    return globaldict
 
 
 def prep_ubuntu_server():
