@@ -18,7 +18,7 @@ import ConfigParser
 def get_config():
 
     parser = ConfigParser.SafeConfigParser()
-    parser.read('/tmp/global.ini')
+    parser.read('/usr/local/etc/global.ini')
     globaldict = dict(parser.items('frozone'))
     return globaldict
 
