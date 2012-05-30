@@ -27,10 +27,7 @@ def set_ini(configfile, localstage, localgitrepo):
     '''
 
     local('sudo cp %s/deploy/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
-    fabric.contrib.files.append('/usr/local/etc/frozone.ini', 
-                                'localstagingdir:%s' % localstage, use_sudo = True)
-    fabric.contrib.files.append('/usr/local/etc/frozone.ini', 
-                                'localgitrepo:%s' % localgitrepo, use_sudo = True)
+ 
 
 def clone_and_clean(localgitrepo, localstage, tgtdir):
     '''This is a means to do a SVN EXPORT
