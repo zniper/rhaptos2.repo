@@ -26,7 +26,7 @@ def set_ini(configfile, localstage, localgitrepo):
     example: we want to put the office.ini file in as the /etc/frozone.ini
     '''
 
-    local('cp %s/deploy/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
+    local('sudo cp %s/deploy/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
     fabric.contrib.files.append('/usr/local/etc/frozone.ini', 
                                 'localstagingdir:%s' % localstage, use_sudo = True)
     fabric.contrib.files.append('/usr/local/etc/frozone.ini', 
