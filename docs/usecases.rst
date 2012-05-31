@@ -8,8 +8,8 @@ design to allow the use cases to be supported, and also discusses the
 likely technology choices.
 
 
-Simplest possible use case
---------------------------
+U1. Simplest possible use case
+------------------------------
 
 Professor Aardvark is the current holder of the Simon Cowell Chair for
 the Public Appreciation of Music and wishes to write the definitive
@@ -36,38 +36,49 @@ He does this by
    The right hand side is a set of books (collections) - each expandable 
    into a sorted list of modules.
 
-2. dragging chapters from his workspace into the book on the RHS, and the chapters then appear in the book underneat the previous chapter.
+2. dragging chapters from his workspace into the book on the RHS, and
+   the chapters then appear in the book underneath the previous
+   chapter.
 
-3. He then clicks 'proof-read' - and can see an HTML version of the book in a pop up window.
-
+3. He then clicks 'proof-read' - and can see an HTML version of the
+   book in a pop up window.
 
 He proof reads the whole book, and finds just one spelling mistake (I
 rum away (!)).
 
-He opens his workspace again, locates the chapter in the book, list of chapters, and opens the module in the editor by clicking 'edit' next to the chapter name. 
+He opens his workspace again, locates the chapter in the book, list of
+chapters, and opens the module in the editor by clicking 'edit' next
+to the chapter name.
 
-He changes the spelling mistake (Chortling that he could get something so obvious wrong) and presses 'save'.
+He changes the spelling mistake (Chortling that he could get something
+so obvious wrong) and presses 'save'.
 
-Now the book is at version 1, all chapters apart from capter 9 is at version 1 and chapter 9 (with the spelling mistake) is version 2.
+Now the book is at version 1, all chapters apart from capter 9 is at
+version 1 and chapter 9 (with the spelling mistake) is version 2.
 
-He clicks 'freeze book' - which tags the book collection at the current HEAD versions.
+He clicks 'freeze book' - which tags the book collection at the
+current HEAD versions.
 
-And he publishes the frozen version.  The pdf looks great, and it soon rises to the top of the cnx.org bestseller list.
+And he publishes the frozen version.  The pdf looks great, and it soon
+rises to the top of the cnx.org bestseller list.
 
-Simple Editing
---------------
+U2. Simple Editing
+------------------
 
 'Simon just loves it Dahling'.  Our Professor is overjoyed and decides
-that his dry prose could be enlivened with some photos.  He digs through his sock drawer and finds his old kodak-color prints of the amazing '83 concert. 
-After scanning in all 24 of them, he creates an entirely new chapter in his workspace, and drags it over to the chapter list.
+that his dry prose could be enlivened with some photos.  He digs
+through his sock drawer and finds his old kodak-color prints of the
+amazing '83 concert.  After scanning in all 24 of them, he creates an
+entirely new chapter in his workspace, and drags it over to the
+chapter list.
 
 He Freezes the new book at HEAD and publishes.
 
 Like Hotcakes.  No seriously, people are lapping it up.
 
 
-Rearranging chapter order
--------------------------
+U3. Rearranging chapter order
+-----------------------------
 
 But there is a problem now.  
 
@@ -77,52 +88,64 @@ do this with 20 chapters.
 
 He thinks he needs to split out many chapters into different parts and
 re-arrange them - but he does not want to muck about too much as he is
-planning to get that one last photo in.
+planning to make every instance of a band members name UPPERCASE.
 
 He needs to branch.
 
 This can be represented as a new workspace - he just checkouts a workspace,
-and it is a new branch, he names it new1.
+and it is a new branch, he names it 'video-version'.
 
 
 
-Bringing in someone else's work
--------------------------------
+U4. Bringing in someone else's work
+-----------------------------------
 
-Professor A decides it is time to pull in the remarkable work of 
-leading music critic T.I. Near and his online word doc of critical band reviews.
+Professor A decides it is time to pull in the remarkable work of
+leading music critic T.I. Near and his world famous, Word doc. of 
+band reviews.
 
-Professor enters the URL of the word doc, and imports it into his workspace
-called 'new1'.  The word doc is converted as best as possible into HTML5 and stored as tinear.doc.html
+Professor clicks 'create new module from word doc', enters the URL of
+the word doc, and imports it into his workspace called
+'video-version'.  The word doc is converted as best as possible into
+HTML5 and stored as tinear.doc.html
 
-However, there is a problem with the doc - it has bold and normal text only and no other styling infomration.
+However, there is a problem with the doc - it has bold and normal text
+only and no other styling infomration.
 
 So the HTML is just <strong> and <p>
 
-THe professor very nicely goes through the document assigning a H2 to the bold and section to the p.  He then notices the phil-o-matic tool that would have done this for him.
+The professor very nicely goes through the document assigning a
+'header' to the bold and 'section' to the paragraphs.  He then notices
+the phil-o-matic tool that would have done this for him.
 
-THe professor now drags the tinear.doc.html into the book in workspace 'new1'
+THe professor now drags the tinear.doc.html into the book in workspace
+'video-version', just after the photo chapters.
 
 He freezes the book and puiblishes it again
 
-MTV runs a retrospective on the professors career so far.
+MTV runs a retrospective on the Professor's career.  Prime time !
 
-Working with others
--------------------
+U5. Working with others
+-----------------------
 
 After his triumphant appearance on Good Morning America plugging the
 new book, several other promient academics emailed our Professor to
-ask if they could collaborate on the definitive encyclopaedia 
+ask if they could collaborate to create the definitive encyclopaedia 
 of 1980's New Romantics.
 
 
-This is looking good.  He emails Professor Xavier and Professor Zoltan 
-and tells them to create accounts on cnx.org, and to then checkout his workspace 'new1' - he gives their accounts permission to do this.
+This is looking good.  He emails Professor Xavier and Professor Zoltan
+and tells them to create accounts on cnx.org, and to then checkout his
+workspace 'video-version' - he gives their accounts permission to do
+this.
 
 They are 'authors' roles and he is a 'editor' role
 
 
-Unfortunately both Professors edit the skeleton chapter 'Her Name is Duran Duran', with professor X writing about the origin of the name in the film Barbarella.  But Professor Z just ranted on about Jane Fona's later career.
+Unfortunately both Professors edit the skeleton chapter 'Her Name is
+Duran Duran', with professor X writing about the origin of the name in
+the film Barbarella.  But Professor Z just ranted on about Jane Fonda's
+later career.
 
 Both men send in 'please add to book' requests.
 
@@ -134,24 +157,24 @@ The men make the changes and repeat the 'add to book' request.
 Professor A now has to use the merge tool to decide which parts of the
 two requests will be kept and which discarded.
 
-(THis is a difficult and trickly area.  Not sure how to approach
-this - merging HTML !)
+.. sidebar :: Help.
 
-Outside of cnx.org
-------------------
+   (This is a difficult and trickly area.  Not sure how to approach
+   this - merging HTML ! But we are merging *strucutred* html - is
+   this helpful?  Comments anyone?)
 
-THe respected Professor Q has heard about the project and sends in his
+U6. Outside of cnx.org
+----------------------
+
+The respected Professor Q has heard about the project and sends in his
 own chapter by email.  It was created in the MIT version of cnx.org,
 and is valid html5 (cnxml)
 
-The same process as above is followed 
+The same process as above is followed, firstly a spell check and corrections
+then a merge process.
 
 
-
-Editing not writing
--------------------
-
-
+THe imported document is taken using a URL.
 
 
 
