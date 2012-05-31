@@ -89,7 +89,7 @@ def install_cdn(localstagingdir):
 
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/cdn')
     sudo('chown -R www-data:www-data /usr/share/www/nginx/cdn')
-    put(confd['TINYMCE_STORE'], '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
+    put(confd['tinymce_store'], '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
     restart_nginx()
 
 
