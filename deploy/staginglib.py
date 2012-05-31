@@ -85,7 +85,6 @@ def searchreplace(f, contextdict):
         
         if k.find('<<') >=0:
             if txt_new.lower().find(k) >= 0:    #all configparser keys seems to get lowercases.
-                print k, f
                 txt_new = txt_new.replace(k.upper(), contextdict[k])
     open(f,'w').write(txt_new)
 
