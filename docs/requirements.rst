@@ -4,8 +4,6 @@ Mapping requirements docs to Service features.
 
 
 
-
-
 Draft REST defintions
 =====================
 
@@ -48,10 +46,55 @@ from text-file only, taking its learnings.
 /workspace/<workspaceid>
 ------------------------
 
-:GET: return list of all modules in this workspace
-:POST:N/A
-:PUT: N/A
-:DELETE: remove this workspace
+GET
+~~~
+
+return list of all modules in this workspace
+
+example::
+
+    http://www.office.mikadosoftware.com/e2repo/workspace/
+    returns application/json MIME type, with 
+
+    GET /e2repo/workspace/ HTTP/1.1
+    Host: www.office.mikadosoftware.com
+    User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:12.0) Gecko/20100101 Firefox/12.0
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+    Accept-Language: en-gb,en;q=0.5
+    Accept-Encoding: gzip, deflate
+
+
+
+    HTTP/1.1 200 OK
+    Server: nginx/1.0.5
+    Date: Thu, 31 May 2012 13:25:45 GMT
+    Content-Type: application/json
+    Connection: keep-alive
+    Content-Length: 123
+    Access-Control-Allow-Origin: *
+
+    ["test.1", "x.0", "test.0", "test.3", "test.5", "newmodule.1", ... ]
+
+
+:Known bugs: this returns the (only) workspace in the repository.  The
+             text file repo does not support multiple workspaces.  is
+             a workspace a branch?
+
+POST
+~~~~
+
+www.cnx.org/workspace/
+This will have to be like git branch  
+
+PUT
+~~~
+
+N/A
+
+DELETE
+~~~~~~~
+
+Remove this workspace
 
 
 workspace/<workspaceid>/modules
@@ -59,10 +102,13 @@ workspace/<workspaceid>/modules
 
 :GET:
     returns the *version history*, plus branching?? Or returns the HEAD/tip?
+
 :POST:
     Create a new module version and store it based on payload.
+
 :PUT: 
     N/A
+
 :DELETE:
     Deelte the whole history and storage
 
@@ -71,12 +117,34 @@ workspace/<workspaceid>/modules
   
 :GET:
      returns the HTML5 of latest version
+
 :POST:
      N/A
+
 :PUT: 
      changes the stored version ???  Should we ever do this?
+
 :DELETE:
      Not sure we ever want to do this either.
+
+
+/workspace/<workspaceid>/modules/<name>/<version>
+-------------------------------------------------
+  
+:GET:
+     returns the HTML5 of specified version
+
+:POST:
+     N/A the repor will control version numbering.
+     
+:PUT: 
+     changes the stored version ???  Should we ever do this?
+
+:DELETE:
+     Not sure we ever want to do this either.
+
+collections
+-----------
 
 
 /users/pbrian/
