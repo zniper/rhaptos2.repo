@@ -121,7 +121,7 @@ def restart_nginx():
 
 
 
-def install_supervisor():
+def install_supervisor(localstagingdir):
     ''' '''
 
     sudo('mkdir -p -m 0777 %s' % confd['remote_supervisor_home'])
