@@ -22,12 +22,14 @@ clean-remote:
 	fab -H $(host) -f $(fabfile) remote_init
 
 
+#make remote-install-e2repo host=devweb fabfile=deploy/fab_app_frozone.py localstagingdir=/tmp/staging
+
 remote-install-cdn:
-	fab -H $(host) -f $(fabfile) install_cdn
+	fab -H $(host) -f $(fabfile) install_cdn:localstagingdir=$(localstagingdir)
 
 remote-install-e2repo:
-	fab -H $(host) -f $(fabfile) install_www
-	fab -H $(host) -f $(fabfile) install_supervisor
+	fab -H $(host) -f $(fabfile) install_www:localstagingdir=$(localstagingdir)
+	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
 
 remote-install-e2server:
 	echo $(TBC)
