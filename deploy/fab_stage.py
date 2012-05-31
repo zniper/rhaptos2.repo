@@ -26,10 +26,10 @@ def set_ini(configfile, localstage, localgitrepo):
     example: we want to put the office.ini file in as the /etc/frozone.ini
     '''
 
-    local('sudo cp %s/deploy/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
+    local('sudo cp %s/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
  
 
-def clone_and_clean(localgitrepo, localstage, tgtdir):
+def clone_and_clean(localgitrepo, localstage):
     '''This is a means to do a SVN EXPORT
     
     ''' 
@@ -38,8 +38,8 @@ def clone_and_clean(localgitrepo, localstage, tgtdir):
         local('rm -rf %s' % localstage) 
         local('mkdir -p -m 0755 %s' % localstage) 
 
-    local('git clone %s %s' % (localgitrepo, tgtdir))
-    local('rm -rf %s' % os.path.join(tgtdir, '.git')) 
+    local('git clone %s %s' % (localgitrepo, localstage))
+    local('rm -rf %s' % os.path.join(localstage, '.git')) 
 
 def stage(localgitrepo, localstage, configfile):
     '''given a git working copy, clone to a staging area, apply a
@@ -47,18 +47,8 @@ def stage(localgitrepo, localstage, configfile):
     i.e. copy everything to /tmp/stage/frozone, sed, then run fab files from there.
     '''
 
-    tgtdir = os.path.join(localstage, 'frozone')
+
     set_ini(configfile, localstage, localgitrepo)
-    clone_and_clean(localgitrepo, localstage, tgtdir)
+    clone_and_clean(localgitrepo, localstage)
 
-#     #apply the desired config file ... 
-#     local('cp %s/deploy/%s %s/conf.py' % (tgtdir, configfile, tgtdir))    
-#     local('''cat >> %s/conf.py << EOF 
-
-# localstage      = '%s'
-# localgitrepo    = '%s'
-# localstagingdir = localstage    
-# EOF
-# ''' % (tgtdir, localstage, localgitrepo))
-
-    local('python %s/deploy/runstaging.py %s' % (tgtdir, tgtdir))
+    local('python %s/deploy/runstaging.py %s' % (localstage, localstage))
