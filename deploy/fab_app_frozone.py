@@ -101,15 +101,15 @@ def install_www(localstagingdir):
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
 #    sudo('mkdr -p -m 0777 %s' % remote_sitepackage)
 
-
-    put(os.path.join(localstagingdir, 'e2repo'),
+    #todo : install a pacakge !!
+    put(os.path.join(localstagingdir, 'Rhaptos2/rhaptos2/repo'),
                 confd['remote_sitepackage'], use_sudo=True, mode=0755)
 
     put('www/*', 
          confd['remote_wwwd'], use_sudo=True, mode=0755)
     ######## why not run from site-packages?
     
-    put(os.path.join(localstagingdir, 'e2repo/*.py'), 
+    put(os.path.join(localstagingdir, 'Rhaptos2/rhaptos2/repo/*.py'), 
                 confd['remote_e2repo'], use_sudo=True, mode=0755)
 
     restart_nginx()
