@@ -12,7 +12,7 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
-from frozone.deploy import fab_lib
+import fab_lib
 confd = fab_lib.get_config()
 
 STATSD_HOME = os.path.join(confd['remotehomedir'], 'statsd')
