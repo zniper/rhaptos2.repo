@@ -8,7 +8,8 @@
 
 import logging
 from logging.handlers import SysLogHandler
-from frozone import conf
+from rhaptos2 import conf
+import rhaptos2Err
 
 #needs a test if syslog is actually up...
 
