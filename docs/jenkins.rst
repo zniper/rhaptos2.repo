@@ -70,18 +70,19 @@ Config of the job
 -----------------
 
 1. Create a new job, choose [Build a free-style software project] and name it 'test'
+
 2. configuration::
 
-   Branches to build */jenkins-example
-   Repoistory URL: git@github.com:lifeisstillgood/frozone.git
+      Branches to build */jenkins-example
+      Repoistory URL: git@github.com:lifeisstillgood/frozone.git
 
-   Local subdirectory for repo (optional): frozone 
+      Local subdirectory for repo (optional): frozone 
 
-   Skip internal tag: tick
+      Skip internal tag: tick
 
-   Wipe out workspace before build: tick
+      Wipe out workspace before build: tick
 
-   Ignore build triggers for now
+      Ignore build triggers for now
 
 We are not triggering a build on each check-in (CI) - I want to be clearer on the destination boxes.
 

@@ -10,6 +10,7 @@ clean-crud:
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
+
 #make stage localgitrepo=/tmp/clone localstage=/tmp/staging configfile=office_conf.py \
 host=devjenkins fabfile=deploy/fab_stage.py
 stage:
@@ -21,12 +22,14 @@ clean-remote:
 	fab -H $(host) -f $(fabfile) remote_init
 
 
+#make remote-install-e2repo host=devweb fabfile=deploy/fab_app_frozone.py localstagingdir=/tmp/staging
+
 remote-install-cdn:
-	fab -H $(host) -f $(fabfile) install_cdn
+	fab -H $(host) -f $(fabfile) install_cdn:localstagingdir=$(localstagingdir)
 
 remote-install-e2repo:
-	fab -H $(host) -f $(fabfile) install_www
-	fab -H $(host) -f $(fabfile) install_supervisor
+	fab -H $(host) -f $(fabfile) install_www:localstagingdir=$(localstagingdir)
+	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
 
 remote-install-e2server:
 	echo $(TBC)
@@ -57,6 +60,6 @@ graphite:
 	fab -H $(host) -f $(fabfile) install_graphite
 	fab -H $(host) -f $(fabfile) install_statsd:graphitehost=$(host)
 
-# make repo host=devweb fabfile=deploy/fab_sys_repo.py
+# make repo host=devweb fabfile=deploy/fab_sys.py
 repo:
-	fab -H $(host) -f $(fabfile) prepare_repo
+	fab -H $(host) -f $(fabfile) sys_install_nginx_ubuntu

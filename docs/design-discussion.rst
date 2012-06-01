@@ -2,15 +2,16 @@
 Design discussions
 ==================
 
-This is a page for noting design / architecture issues and noting the pros and cons of variopus solutions.
-Overtime it should become a why we did what we did resource.
+This is a page for noting design / architecture issues and noting the
+pros and cons of variopus solutions.  Overtime it should become a why
+we did what we did resource.
 
 Same Origin Policy
 ==================
 
-We intend to use AJAX for a large majority of the work we do. AJAX has a
-severe limitation, called the `Same Origin Policy
- <http://en.wikipedia.org/wiki/Same_origin_policy>`_.  
+We intend to use AJAX for a large majority of the work we do. AJAX has
+a severe limitation, called the `Same Origin Policy
+<http://en.wikipedia.org/wiki/Same_origin_policy>`_.
 
 In short, a web page loaded from server x.y.z is prevented by the
 browser from *recieving a response*> from server a.y.z (Yes AJAX can
@@ -32,10 +33,11 @@ Logging and debugging
 =====================
 
 http://www.drdobbs.com/article/print?articleID=196802787&dept_url=/dept/debug/
+
 Todo: Setup centralised logging server
 
 
-Client side application
+Client side application 
 =======================
 
 http://lucumr.pocoo.org/2011/11/15/modern-web-applications-are-here/

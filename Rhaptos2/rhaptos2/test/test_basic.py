@@ -1,11 +1,11 @@
 
 
-import frozone
+import rhaptos2
 
 
 def test_canimport():
     try:
-        f = frozone.__file__ 
+        f = rhaptos2.__file__ 
         return True
     except:
         return False

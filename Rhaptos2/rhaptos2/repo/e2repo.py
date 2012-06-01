@@ -8,8 +8,11 @@ import flask
 import statsd
 import json
 
-from frozone import conf
-from frozone import log
+from rhaptos2 import conf
+from rhaptos2 import log
+
+#return a dict of conf from a .ini file
+confd = conf.get_config()
 
 app = Flask(__name__)
 REPO = '/tmp/repo' #conf.remote_e2repo
@@ -24,7 +27,7 @@ onbjects to standarse the things like username lookups, username to directory, e
 
 #from logging import FileHandler
 #fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
-lg = log.getFrozoneLogger('frozone_e2repo')
+lg = log.get_rhaptos2Logger('rhaptos2_e2repo')
 app.logger.addHandler(lg)
 
 def whoami():
@@ -59,7 +62,7 @@ def getfilename(modulename, REPO=REPO):
     
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(conf.statsd_host, conf.statsd_port)
+    c = statsd.StatsClient(confd['statsd_host'], confd['statsd_port'])
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 
@@ -110,7 +113,7 @@ def store_module(fulltext, jsondict):
 @app.route("/module/", methods=['POST'])
 def modulePOST():
     app.logger.info('POST CALLED')
-    callstatsd('frozone.e2repo.module.POST')
+    callstatsd('rhaptos2.e2repo.module.POST')
     try:
 
         html5 = request.form['moduletxt']
