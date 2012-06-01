@@ -99,10 +99,10 @@ def install_www(localstagingdir):
 
     #0777 !!!! anyway -p stops failing if already there
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
-#    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
+#    sudo('mkdr -p -m 0777 %s' % remote_sitepackage)
 
 
-    put(os.path.join(confd['localstagingdir'], 'e2repo'),
+    put(os.path.join(localstagingdir, 'e2repo'),
                 confd['remote_sitepackage'], use_sudo=True, mode=0755)
 
     put('www/*', 
