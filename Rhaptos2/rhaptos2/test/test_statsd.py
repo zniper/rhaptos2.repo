@@ -18,7 +18,7 @@ def check_statsd():
 
     c = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
     for i in range(100):
-        c.incr('frozone.statsd.verify') 
+        c.incr('rhaptos2.statsd.verify') 
 
 if __name__ == '__main__':
     check_statsd()

@@ -13,7 +13,7 @@ The initial stub version will simply support writing to a single directory as te
 '''
 
 import os
-from frozone import conf 
+from rhaptos2 import conf 
 
 MAINDIR = conf.remote_e2repo
 MODULEDIR = os.path.join(MAINDIR, 'modules')
