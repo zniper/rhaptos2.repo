@@ -104,7 +104,7 @@ I am starting with a configured host server, able to run LXC.
 
 6. make repo::
 
-    make repo host=devweb fabfile=deploy/fab_sys_repo.py
+    make repo host=devweb fabfile=deploy/fab_sys.py
    
 7. run Jenkins job to build repo and web servers
 
