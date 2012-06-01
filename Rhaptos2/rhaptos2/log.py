@@ -13,7 +13,7 @@ import rhaptos2Err
 
 #needs a test if syslog is actually up...
 
-def getFrozoneLogger(modname):
+def get_rhaptos2Logger(modname):
     '''simple, pre-configured logger will be returned.
     '''
 

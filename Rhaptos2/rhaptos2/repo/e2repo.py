@@ -24,7 +24,7 @@ onbjects to standarse the things like username lookups, username to directory, e
 
 #from logging import FileHandler
 #fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
-lg = log.getFrozoneLogger('rhaptos2_e2repo')
+lg = log.get_rhaptos2Logger('rhaptos2_e2repo')
 app.logger.addHandler(lg)
 
 def whoami():
