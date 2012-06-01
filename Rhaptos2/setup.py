@@ -32,6 +32,8 @@ def main():
           long_description='see description',
           install_requires=[
               "fabric >= 1.0.0",
+              "flask >= 0.8",
+              "statsd",
                            ],
           scripts=get_scripts(),
           )

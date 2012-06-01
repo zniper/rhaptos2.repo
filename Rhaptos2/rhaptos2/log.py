@@ -9,7 +9,7 @@
 import logging
 from logging.handlers import SysLogHandler
 from rhaptos2 import conf
-import rhaptos2Err
+confd = conf.get_config()
 
 #needs a test if syslog is actually up...
 
@@ -18,8 +18,8 @@ def get_rhaptos2Logger(modname):
     '''
 
     lg = logging.getLogger(modname)
-    lg.setLevel(conf.LOGLEVEL)
-    ch = SysLogHandler(conf.SYSLOG_SOCK)
+    lg.setLevel(confd['loglevel'])
+    ch = SysLogHandler(confd['syslog_sock'])
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %\
 (message)s')

@@ -11,6 +11,9 @@ import json
 from rhaptos2 import conf
 from rhaptos2 import log
 
+#return a dict of conf from a .ini file
+confd = conf.get_config()
+
 app = Flask(__name__)
 REPO = '/tmp/repo' #conf.remote_e2repo
 
@@ -59,7 +62,7 @@ def getfilename(modulename, REPO=REPO):
     
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(conf.statsd_host, conf.statsd_port)
+    c = statsd.StatsClient(confd['statsd_host'], confd['statsd_port'])
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 
