@@ -1,11 +1,5 @@
 
-import fabric
-import fabpass
-from fabric.operations import put
-from fabric.api import sudo, run, local
-import os
 
-from frozone.conf import *
 
 '''
 
@@ -48,6 +42,14 @@ prep box first
 '''
 
 
+import fabric
+import fabpass
+from fabric.operations import put
+from fabric.api import sudo, run, local
+import os
+
+import fab_lib
+confd = fab_lib.get_config()
 
 
 
@@ -55,51 +57,44 @@ prep box first
 ######### Tools
 
 
-def prepend(f):
-    '''given a file that should be under frozone/ give back that as a local path to make put operations easier '''
-    return os.path.join(localstagingdir, 
-                        os.path.join('frozone', f)
-                        )
-
-
-def clean_local():
-    ''' '''
-
-    for d in (localstagingdir, localgitrepo):
-        local('mkdir -p -m 0777 %s' % d)
-
-    local('rm -rf %s' % localgitrepo)
-    local('rm -rf %s' % localstagingdir)
-        
-    
-
 def remote_init(): 
 
-    for d in (remote_wwwd, remote_e2repo, remote_e2server, remote_supervisor_home):
+    ''' (clean down) then create target dir on remote host.
+
+    TBD - Clean Down
+    '''
+
+    for d in (confd['remote_wwwd'], 
+              confd['remote_e2repo'], 
+              confd['remote_e2server'],
+              confd['remote_supervisor_home']):
         sudo('mkdir -p -m 0777 %s' % d)
         
 
         
-def install_cdn():
-    '''Static server for tiny. THe app specific  html and js is served through www.'''
+def install_cdn(localstagingdir):
 
-    put(prepend('conf.d/nginx/nginx.conf'), 
+    '''Static server for tiny. THe app specific html and js is served
+    through www.'''
+
+    put(os.path.join(localstagingdir, 'conf.d/nginx/nginx.conf'),
                 '/etc/nginx/nginx.conf', use_sudo=True, mode=0755)
-    put(prepend('conf.d/nginx/cdn.conf'), 
-                '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
-    put(prepend('conf.d/nginx/www.conf'), 
+
+    put(os.path.join(localstagingdir, 'conf.d/nginx/cdn.conf'), 
                 '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
+    put(os.path.join(localstagingdir, 'conf.d/nginx/www.conf'), 
+                '/etc/nginx/conf.d/', use_sudo=True, mode=0755)
 
 
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/cdn')
     sudo('chown -R www-data:www-data /usr/share/www/nginx/cdn')
-    put(TINYMCE_STORE, '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
+    put(confd['tinymce_store'], '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
     restart_nginx()
 
 
 
-def install_www():
+def install_www(localstagingdir):
     '''need to be a nginx server. '''
 
     #0777 !!!! anyway -p stops failing if already there
@@ -107,20 +102,15 @@ def install_www():
 #    sudo('mkdir -p -m 0777 %s' % remote_sitepackage)
 
 
-    put(os.path.join(localstagingdir, 'frozone'),
-                remote_sitepackage, use_sudo=True, mode=0755)
+    put(os.path.join(confd['localstagingdir'], 'e2repo'),
+                confd['remote_sitepackage'], use_sudo=True, mode=0755)
 
-    put(prepend('www/*'), 
-                remote_wwwd, use_sudo=True, mode=0755)
+    put('www/*', 
+         confd['remote_wwwd'], use_sudo=True, mode=0755)
     ######## why not run from site-packages?
     
-    put(prepend('e2server/*.py'), 
-                remote_e2server, use_sudo=True, mode=0755)
-    put(prepend('e2server/reflector.py'), 
-                remote_e2repo, use_sudo=True, mode=0755)
-    put(prepend('e2repo/*.py'), 
-                remote_e2repo, use_sudo=True, mode=0755)
-
+    put(os.path.join(localstagingdir, 'e2repo/*.py'), 
+                confd['remote_e2repo'], use_sudo=True, mode=0755)
 
     restart_nginx()
 
@@ -131,14 +121,15 @@ def restart_nginx():
 
 
 
-def install_supervisor():
+def install_supervisor(localstagingdir):
     ''' '''
 
-    sudo('mkdir -p -m 0777 %s' % remote_supervisor_home)
-    put(prepend('conf.d/nginx/supervisord.conf'), 
-                 remote_supervisor_home)
+    sudo('mkdir -p -m 0777 %s' % confd['remote_supervisor_home'])
+    put(os.path.join(localstagingdir, 'conf.d/nginx/supervisord.conf'), 
+                 confd['remote_supervisor_home'])
     try:
-        sudo('supervisord -c %s' % os.path.join(remote_supervisor_home, 'supervisord.conf'))
+        sudo('supervisord -c %s' % os.path.join(confd['remote_supervisor_home'], 
+                                                'supervisord.conf'))
     except:
         print 'could not start supervisor as its already up '
 

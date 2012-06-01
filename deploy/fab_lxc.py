@@ -7,13 +7,11 @@ Simple usage ::
     see install-os in main docs
 
 
-
 We create any number of lxc based containers on a VMHost.
 We need to 
 
 1. alter files on the VMHost before booting the VHost
 2. login to the VHost, as root (!) and perform remainder of bootstrap
-
 3. login as deploy user to setup as normal
 
 
@@ -95,16 +93,17 @@ def getniceunsafetmpfile():
 def preboot(vhostname=None, vhostip=None):
 
     ''' alter the remote network/interfaces file on a lxc container VHost.
-    we are passed the vhostname, as a string (assume it is a valid number, but allows flexibility)
+
+    we are passed the vhostname, as a string (assume it is a valid
+    number, but allows flexibility)
     
 
-    >>> configure_network_interface_container('cnx1', 1)
+    configure_network_interface_container('cnx1', 1)
     
     write to /var/lib/lxc/{name}/rootfs/etc/network/interfaces 
 
     fab -H hpcube preboot:vhostname=cnx02,vhostip=10.0.0.12 
-           ^^^^^^
-           VMHost !!
+
     '''
     lxc_stop(vhostname)
 

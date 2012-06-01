@@ -278,7 +278,7 @@ This is part of teh lxc install above.
 Finally, create a container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-What is a container?  *L*inu*X* *C*ontainers are the Linux version of
+What is a container?  _L_inu_X_ _C_ontainers are the Linux version of
 the lightweight jails coming from the Solaris Zones and FreeBSD Jails 
 heritage.
 

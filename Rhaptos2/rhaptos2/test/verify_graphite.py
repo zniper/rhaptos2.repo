@@ -7,7 +7,7 @@ import socket
 import time
 import random
 
-CARBON_SERVER = 'log.frozone.mikadosoftware.com'
+CARBON_SERVER = 'devlog.office.mikadosoftware.com'
 CARBON_PORT = 2003
 STATSD_PORT = 8125
 STATSD_HOST = CARBON_SERVER
@@ -20,7 +20,7 @@ def check_graphite():
     except Exception, e:
         print 'could not connect on %s %s' % (CARBON_SERVER,CARBON_PORT)
         raise e
-    metric = 'frozone.carbon.verify'
+    metric = 'rhaptos2.carbon.verify'
     val = 1
 
     for i in range(10):
@@ -41,7 +41,7 @@ def check_statsd():
 
     c = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
     for i in range(10):
-        c.incr('frozone.statsd.verify') 
+        c.incr('rhaptos2.statsd.verify') 
 
 if __name__ == '__main__':
     check_graphite()

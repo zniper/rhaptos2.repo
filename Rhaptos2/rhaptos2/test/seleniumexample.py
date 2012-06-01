@@ -18,7 +18,7 @@ def test():
     driver = webdriver.Firefox()
 
     # go to the google home page
-    driver.get("http://hadrian/frozone/demostrawman.html")
+    driver.get("http://hadrian/rhaptos2/demostrawman.html")
 
     print 'sleeping'
     import time

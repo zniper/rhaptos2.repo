@@ -18,8 +18,18 @@ from fabric.operations import put, open_shell, prompt
 from fabric.api import sudo, run, local
 import os
 
+def set_ini(configfile, localstage, localgitrepo):
+    '''Write the config file chosen by the make cmd to this environment
 
-def clone_and_clean(localgitrepo, localstage, frozonehome):
+    I suspect ENV vars would be better. 
+
+    example: we want to put the office.ini file in as the /etc/frozone.ini
+    '''
+
+    local('sudo cp %s/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
+ 
+
+def clone_and_clean(localgitrepo, localstage):
     '''This is a means to do a SVN EXPORT
     
     ''' 
@@ -28,36 +38,17 @@ def clone_and_clean(localgitrepo, localstage, frozonehome):
         local('rm -rf %s' % localstage) 
         local('mkdir -p -m 0755 %s' % localstage) 
 
-
-    local('git clone %s %s' % (localgitrepo, frozonehome))
-    local('rm -rf %s' % os.path.join(frozonehome, '.git')) 
-
-# def mkvirtualenv(localstage):
-#     '''DEPRECATED '''
-#     local('virtualenv --extra-search-dir=%s %s/venv' % (localstage, localstage))
-#     #ensure I can import frozone from within virtualenv
-#     local('echo export PYTHONPATH=%s >> %s/venv/bin/activate' % (localstage, localstage))
-#     local('echo %s >> %s/venv/lib/python2.7/site-packages/frozone.pth' % (localstage, localstage))
-#     local('%s/venv/bin/pip install Fabric' % (localstage))
+    local('git clone %s %s' % (localgitrepo, localstage))
+    local('rm -rf %s' % os.path.join(localstage, '.git')) 
 
 def stage(localgitrepo, localstage, configfile):
     '''given a git working copy, clone to a staging area, apply a
-    certain config, and prepare it so it can be deployed '''
+    certain config, and prepare it so it can be deployed 
+    i.e. copy everything to /tmp/stage/frozone, sed, then run fab files from there.
+    '''
 
-    frozonehome = os.path.join(localstage, 'frozone')
 
-    clone_and_clean(localgitrepo, localstage, frozonehome)
-#    mkvirtualenv(localstage)
+    set_ini(configfile, localstage, localgitrepo)
+    clone_and_clean(localgitrepo, localstage)
 
-    #apply the desired config file ... 
-    local('cp %s/deploy/%s %s/conf.py' % (frozonehome, configfile, frozonehome))    
-    local('''cat >> %s/conf.py << EOF 
-
-localstage      = '%s'
-localgitrepo    = '%s'
-localstagingdir = localstage    
-EOF
-''' % (frozonehome, localstage, localgitrepo))
-    #### from this point on I need to use the virtualenv
-
-    local('export PYTHONPATH=/tmp/staging && python %s/deploy/runstaging.py %s' % (frozonehome, frozonehome))
+    local('python %s/deploy/runstaging.py %s' % (localstage, localstage))

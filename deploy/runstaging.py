@@ -1,6 +1,9 @@
 
 import sys
-from frozone import conf
-from frozone.deploy import staginglib
+import staginglib
 
-staginglib.overwrite(conf.context, sys.argv[1:][0])
+
+import fab_lib
+confd = fab_lib.get_config()
+
+staginglib.overwrite(confd, sys.argv[1:][0])
