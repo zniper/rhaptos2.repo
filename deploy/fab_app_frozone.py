@@ -106,6 +106,8 @@ def install_rhaptos2(localstagingdir, configfile):
         '/tmp', 
         use_sudo=True, mode=0755)
     sudo('pip install "/tmp/Rhaptos2-0.0.1.tar.gz"')
+    #install site wide config file
+    sudo('mkdir -p -m 0777 /usr/local/etc/rhaptos2')
     put(os.path.join(localstagingdir, configfile), 
         '/usr/local/etc/rhaptos2/frozone.ini',
         use_sudo=True, mode=0755)
