@@ -226,28 +226,26 @@ Turn off silly xlogging - this is a known issue in Ubunutu::
     thus stopping rsyslog trying to log to a X server console on a X-less box.
   
   
+::
 
-Path to syslog config file:
-/etc/rsyslog.conf
+    Path to syslog config file:
+    /etc/rsyslog.conf
 
-Syslog PID file
-/var/run/rsyslogd.pid
+    Syslog PID file
+    /var/run/rsyslogd.pid
 
-Path to syslog server
-/usr/sbin/rsyslogd
+    Path to syslog server
+    /usr/sbin/rsyslogd
 
-Command to start syslog
-service rsyslog start
+    Command to start syslog
+    service rsyslog start
 
-Command to apply changes
-service rsyslog reload
+    Command to apply changes
+    service rsyslog reload
 
-Command to re-open log files
-service rsyslog restart
+    Command to re-open log files
+    service rsyslog restart
 
-
-
-Other rsyslogd related issues
 
 Logging in Python
 =================
@@ -283,26 +281,92 @@ I am assuming the following
 
 	return lg
 
-    import logging
-    lg = logging.getLogger(__name__)
+	import logging
+	lg = logging.getLogger(__name__)
 
 
 Where do we find the grpahite database?
 ---------------------------------------
 
 
+* /opt/graphite/storage
+::
 
-    
+   $ sqlite3 graphite.db
+   >> select * from sqlite_master;
+
+   .help
+
+    sqlite> .databases
+    seq  name             file                                                      
+    ---  ---------------  ----------------------------------------------------------
+    0    main             /opt/graphite/storage/graphite.db                         
+
+    sqlite> .tables
+    account_mygraph             auth_user_groups          
+    account_profile             auth_user_user_permissions
+    account_variable            dashboard_dashboard       
+    account_view                dashboard_dashboard_owners
+    account_window              django_admin_log          
+    auth_group                  django_content_type       
+    auth_group_permissions      django_session            
+    auth_message                events_event              
+    auth_permission             tagging_tag               
+    auth_user                   tagging_taggeditem 
+  
+
+    > select * from auth_user;
+    1|root|||paul@mikadosoftware.com| ....
+    THis is what I created at fabfile time
+
+
+Getting to the data on disk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    >>> import whisper
+    >>> whisper.info('/opt/graphite/storage/whisper/rhaptos2/carbon/verify.wsp')
+    {'maxRetention': 157784400, 'xFilesFactor': 0.5, 'aggregationMethod': 'average', 'archives': [{'retention': 21600, 'secondsPerPoint': 10, 'points': 2160, 'size': 25920, 'offset': 52}, {'retention': 604800, 'secondsPerPoint': 60, 'points': 10080, 'size': 120960, 'offset': 25972}, {'retention': 157784400, 'secondsPerPoint': 600, 'points': 262974, 'size': 3155688, 'offset': 146932}]}
 
 
 
+biblio:
+~~~~~~~
+
+http://www.aosabook.org/en/graphite.html
+http://graphite.readthedocs.org/en/0.9.10/index.html
+http://stackoverflow.com/questions/7099197/tracking-metrics-using-statsd-via-etsy-and-graphite-graphite-graph-doesnt-se
 
   
 Issues to note
 ~~~~~~~~~~~~~~
 
-Logger instances *hang around* - they are designed as singleton servers, so creating them a lot really can hurt. One logger per running module is a good balance of granualrity and manageability.
+Logger instances *hang around* - they are designed as singleton
+servers, so creating them a lot really can hurt. One logger per
+running module is a good balance of granualrity and manageability.
 
-Logging usernames etc is important, and we shall developer either a LoggerAdapter approach or just keep it in parameters passed, depending on how the app evolves.  Watch this space.
+Logging usernames etc is important, and we shall developer either a
+LoggerAdapter approach or just keep it in parameters passed, depending
+on how the app evolves.  Watch this space.
 
+graphite:
 
+Do not publish updates faster than the minimum interval in
+your storage-schemas.conf file.
+
+This means that the statsd aggregator and the storage-schemas.conf
+*must* be in sync else if carbon aggreagtes every minute, but statsd
+pushes every 10 secs you will have statsd overwrite its own records
+5/6 of the time
+
+Note that this will not mean we can carry forward absolute metrics - we get averages 
+over the minumum sampling time.  This can be a problem if our traffic is bursty.
+As either statsd or carcbon will eventually average out our bursty ness.
+ 
+
+To Do:
+
+There is a lot to do here - setting timespans of logging
+granualrity. using and setting up the graphite as a stort of
+dashboard.
