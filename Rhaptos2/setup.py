@@ -19,11 +19,11 @@ def main():
 
     setup(name='Rhaptos2',
           version='0.0.1',
-          packages=['rhaptos2',
-                    'rhaptos2.repo',
-                    'rhaptos2.libauth',
-                    'rhaptos2.librhaptos1'
-                    'rhaptos2.client'
+          packages=['rhaptos2'
+                    ,'rhaptos2.repo'
+                    ,'rhaptos2.libauth'
+                    ,'rhaptos2.librhaptos1'
+                    ,'rhaptos2.client'
                    ],
           author='See AUTHORS.txt',
           author_email='info@cnx.org',
