@@ -62,7 +62,7 @@ def getfilename(modulename, REPO=REPO):
     
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(confd['statsd_host'], confd['statsd_port'])
+    c = statsd.StatsClient(confd['statsd_host'], int(confd['statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 

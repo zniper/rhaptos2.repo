@@ -56,7 +56,7 @@ import pprint
 import copy
 import sys
 
-from frozone.deploy import fab_sys
+import fab_sys
 
 import  time
 

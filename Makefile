@@ -6,7 +6,7 @@ clean: clean-crud
 
 clean-crud:
 	find ./ -name "*.pyc" -type f -exec rm {} \;
-	find ./ -name "*.py~" -type f -exec rm {} \;
+	find ./ -name "*.*~" -type f -exec rm {} \;
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
@@ -28,6 +28,7 @@ remote-install-cdn:
 	fab -H $(host) -f $(fabfile) install_cdn:localstagingdir=$(localstagingdir)
 
 remote-install-e2repo:
+	fab -H $(host) -f $(fabfile) install_rhaptos2:localstagingdir=$(localstagingdir),configfile=$(configfile)
 	fab -H $(host) -f $(fabfile) install_www:localstagingdir=$(localstagingdir)
 	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
 
@@ -59,6 +60,11 @@ graphite:
 	fab -H $(host) -f $(fabfile) install_graphite_deps
 	fab -H $(host) -f $(fabfile) install_graphite
 	fab -H $(host) -f $(fabfile) install_statsd:graphitehost=$(host)
+
+# make logger host=devlog fabfile=deploy/fab_sys_graphite.py 
+logger: 
+	fab -H $(host) -f $(fabfile) install_rsyslogd
+
 
 # make repo host=devweb fabfile=deploy/fab_sys.py
 repo:

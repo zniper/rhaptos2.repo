@@ -26,7 +26,8 @@ def set_ini(configfile, localstage, localgitrepo):
     example: we want to put the office.ini file in as the /etc/frozone.ini
     '''
 
-    local('sudo cp %s/%s /usr/local/etc/frozone.ini' % (localgitrepo, configfile) )
+    local('mkdir -p -m 0777 /usr/local/etc/rhaptos2')
+    local('cp %s/%s /usr/local/etc/rhaptos2/frozone.ini' % (localgitrepo, configfile) )
  
 
 def clone_and_clean(localgitrepo, localstage):
