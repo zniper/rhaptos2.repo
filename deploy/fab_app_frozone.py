@@ -97,7 +97,7 @@ def getrhaptos2pkg(localstagingdir):
     return os.path.join(localstagingdir, 
             'Rhaptos2/dist/Rhaptos2-0.0.1.tar.gz')
 
-def install_rhaptos2(localstagingdir):
+def install_rhaptos2(localstagingdir, configfile):
     ''' build setup pkg, push to the remote, install it.
    
     '''
