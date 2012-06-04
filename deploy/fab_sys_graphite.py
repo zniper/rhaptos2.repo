@@ -161,20 +161,29 @@ EOF
     #THe double and is a silly trick to daemonise processes (detach from tty) - I should do something proper with supervisor
     #TODO put supervosr / god for node.js in here
 
-
+############ logging
     
 
 def install_rsyslogd():
-    '''install and configure rsyslogd on devlog '''
+    '''install and configure rsyslogd on devlog 
+
+    make idempotent with fabric 
+    '''
+
+
     sudo('apt-get install -y rsyslog') 
+    sudo('service rsyslog stop') 
     sudo('''cat >> /etc/rsyslog.conf << "EOF"
 # provides TCP syslog reception
 $ModLoad imtcp
 $InputTCPServerRun 5514
 EOF
 ''')
+
     sudo('service rsyslog restart')
 
 
 def config_rsyslogd_client():
     '''install and configure rsyslogd on clients '''
+    pass
+    ### nb each client should be setup correctly with fab_lxc 

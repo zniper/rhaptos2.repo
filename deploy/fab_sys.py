@@ -2,18 +2,29 @@ import fabric
 
 from fabconf import SUPERVISORDIR
 import fabpass
-
-
+import datetime
 
 class frozoneError(Exception):
     pass
 
-def ubuntu_sys_install():
-    ''' '''
+def ubuntu_sys_install(version='1.0.0'):
+    '''entry point for all fabfiles that want to post boot configure an ubuntu system
+    
+    only one version supported right now :-)
+    '''
 
     sys_install_nginx_ubuntu()
     sys_install_git_ubuntu()
     sys_install_pythonenv_ubuntu()
+
+    fabric.api.sudo('apt-get -y install emacs')
+    fabric.api.sudo('apt-get -y install tree')
+
+    sudo('''cat >> /etc/mikadodeploy.log << EOF
+installed on %s
+installed ubuntu_sys_install version 1.0.0
+EOF
+''' % datetime.datetime.today().isoformat())
 
     fabric.api.sudo('reboot')
 
@@ -45,9 +56,7 @@ def sys_install_pythonenv_ubuntu():
 
 
 
-def sys_install_nginx_ubuntu():
-    
-    fabric.api.sudo('apt-get -y install nginx')
+
 
 
 
