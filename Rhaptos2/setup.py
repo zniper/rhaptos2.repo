@@ -33,7 +33,7 @@ def main():
           install_requires=[
               "fabric >= 1.0.0",
               "flask >= 0.8",
-              "statsd",
+              "statsd", "requests"
                            ],
           scripts=get_scripts(),
           )
