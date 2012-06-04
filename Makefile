@@ -61,6 +61,11 @@ graphite:
 	fab -H $(host) -f $(fabfile) install_graphite
 	fab -H $(host) -f $(fabfile) install_statsd:graphitehost=$(host)
 
+# make logger host=devlog fabfile=deploy/fab_sys_graphite.py 
+logger: 
+	fab -H $(host) -f $(fabfile) install_rsyslogd
+
+
 # make repo host=devweb fabfile=deploy/fab_sys.py
 repo:
 	fab -H $(host) -f $(fabfile) sys_install_nginx_ubuntu
