@@ -6,7 +6,7 @@ clean: clean-crud
 
 clean-crud:
 	find ./ -name "*.pyc" -type f -exec rm {} \;
-	find ./ -name "*.py~" -type f -exec rm {} \;
+	find ./ -name "*.*~" -type f -exec rm {} \;
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
