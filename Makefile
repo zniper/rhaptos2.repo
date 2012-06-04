@@ -28,6 +28,7 @@ remote-install-cdn:
 	fab -H $(host) -f $(fabfile) install_cdn:localstagingdir=$(localstagingdir)
 
 remote-install-e2repo:
+	fab -H $(host) -f $(fabfile) install_rhaptos2:localstagingdir=$(localstagingdir)
 	fab -H $(host) -f $(fabfile) install_www:localstagingdir=$(localstagingdir)
 	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
 
