@@ -92,14 +92,28 @@ def install_cdn(localstagingdir):
     put(confd['tinymce_store'], '/usr/share/www/nginx/cdn', use_sudo=True, mode=0755)
     restart_nginx()
 
+def getrhaptos2pkg(localstagingdir):
+    ''' '''
+    return os.path.join(localstagingdir, 
+            'Rhaptos2/dist/Rhaptos2-0.0.1.tar.gz')
 
+def install_repo(localstagingdir):
+    ''' build setup pkg, push to the remote, install it.
+   
+    '''
+    local('cd %s/Rhaptos2 && python setup.py sdist' % localstagingdir)
+    put(getrhaptos2pkg(localstagingdir),
+        '/tmp', 
+        use_sudo=True, mode=0755)
+    sudo('pip install "/tmp/Rhaptos2-0.0.1.tar.gz"')
+    
 
 def install_www(localstagingdir):
     '''need to be a nginx server. '''
 
     #0777 !!!! anyway -p stops failing if already there
     sudo('mkdir -p -m 0777 /usr/share/www/nginx/repo')
-#    sudo('mkdr -p -m 0777 %s' % remote_sitepackage)
+    install_repo(localstagingdir)
 
     #todo : install a pacakge !!
     put(os.path.join(localstagingdir, 'Rhaptos2/rhaptos2/repo'),
