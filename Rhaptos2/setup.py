@@ -23,6 +23,7 @@ def main():
                     'rhaptos2.repo',
                     'rhaptos2.libauth',
                     'rhaptos2.librhaptos1'
+                    'rhaptos2.client'
                    ],
           author='See AUTHORS.txt',
           author_email='info@cnx.org',
