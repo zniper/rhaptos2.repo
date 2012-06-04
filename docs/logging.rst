@@ -19,12 +19,13 @@ We can append a message to the log file as follows::
     lg.warn('the pdf for user %s collection %s failed on server %s\
     with err %s')
 
-We shall use the standard *syslog* for this.
+We shall use the standard *syslog* for this, but forward all collection
+of logs to a central syslog server.
 
 
 
 Metric gathering is really about graphing and seeing what is going
-right / wrong.  
+right / wrong over time.  
 
 We can do this as follows::
 
@@ -32,6 +33,7 @@ We can do this as follows::
    c = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
    #...
    c.incr('frozone.statsd.test')
+
 
 
 
@@ -113,7 +115,7 @@ Todo
 Install
 -------
 
-I am recommeding building graphite / statsd entirely on a virtual
+I am recommending building graphite / statsd entirely on a virtual
 server.  There are a large number of dependancies and
 configuration issues, and when the whole service is conceptually
 'just a box over there', you may as well make it a box over there
@@ -154,23 +156,30 @@ Logging - audit style
 
 Using syslog - or rather the Ubuntu version rsyslogd.
 
-rsyslogd still seems to have a few bugs to be ironed out in ubuntu, but it has been well tested in the Debian world, and is simplest solution we have for now.
+rsyslogd still seems to have a few bugs to be ironed out in ubuntu,
+but it has been well tested in the Debian world, and is simplest
+solution we have for now.
 
-The setup - we shall have *one* remote server, the logging server, that will collate all logs sent by the other servers.  All client servers will log to their local drives and forward on over tcp to the remote logging server.
+The setup - we shall have *one* remote server, the logging server,
+that will collate all logs sent by the other servers.  All client
+servers will log to their local drives and forward on over tcp to the
+remote logging server.
 
 configuration
--------------
+~~~~~~~~~~~~~
 
-rsyslog is installed and enabled by deafualt in Ubuntu since (?).
-We will want to change the default listening port from 514 to 5514 (bug: following a 
-drop in privileses from startup user to syslog:syslog, ports below 1024 seem inaccessible)
+rsyslog is installed and enabled by deafualt in Ubuntu since (?).  We
+will want to change the default listening port from 514 to 5514 (bug:
+following a drop in privileses from startup user to syslog:syslog,
+ports below 1024 seem inaccessible)
 
 The clients obviously need to be told to log in that direction.
 
-We also want to turn off the default beahviour of writing some errors to the xconsole,
-as we have non X machines.
+We also want to turn off the default beahviour of writing some errors
+to the xconsole, as we have non X machines.
 
-We also want to configure the Python scripts to use local syslog socket ('/dev/log')
+We also want to configure the Python scripts to use local syslog
+socket ('/dev/log')
 
 
 
@@ -185,9 +194,6 @@ Server::
   uncomment the above two lines - we now listen for TCP connections
 
 
-
-
-
 now::
 
   sudo service rsyslog restart 
@@ -196,13 +202,14 @@ now::
 
 src machine::
 
-  </etc/rsyslog.conf>
-  #attempt to forward allloggingto cnx4                                                     *.* @@cnx4.office.mikadosoftware.com:5514
+  </etc/rsyslog.conf> 
+  #attempt to forward allloggingto cnx4 
+  *.* @@cnx4.office.mikadosoftware.com:5514
 
 note the double @ symbol - means send by TCP
 
 
-Turn off silly xlogging::
+Turn off silly xlogging - this is a known issue in Ubunutu::
 
   /etc/rsyslog.d/50-default.conf
 
@@ -219,30 +226,26 @@ Turn off silly xlogging::
     thus stopping rsyslog trying to log to a X server console on a X-less box.
   
   
+::
 
+    Path to syslog config file:
+    /etc/rsyslog.conf
 
+    Syslog PID file
+    /var/run/rsyslogd.pid
 
-Path to syslog config file:
-/etc/rsyslog.conf
+    Path to syslog server
+    /usr/sbin/rsyslogd
 
-Syslog PID file
-/var/run/rsyslogd.pid
+    Command to start syslog
+    service rsyslog start
 
-Path to syslog server
-/usr/sbin/rsyslogd
+    Command to apply changes
+    service rsyslog reload
 
-Command to start syslog
-service rsyslog start
+    Command to re-open log files
+    service rsyslog restart
 
-Command to apply changes
-service rsyslog reload
-
-Command to re-open log files
-service rsyslog restart
-
-
-
-Other rsyslogd related issues
 
 Logging in Python
 =================
@@ -252,99 +255,118 @@ I am assuming the following
 
 
 
-package hierarchy
------------------
-
-There are about as many opinions on how to do this as there are programmers.
-But here goes for this one - same rationale as usual, pick one, everyone stick
-with it till it becomes obvious its a mistake. 
-
-(A small aside, `twisted developers take on this <http://jcalderone.livejournal.com/39794.html>`_ is good read but usually 
-
 ::
 
- frozone
-   - docs/
-   - deploy/
-   - thirdparty/
-   - scripts/
-   - conf.d/
-   - libauth/     
+    #!/usr/local/bin/python
+    #! -*- coding: utf-8 -*-
 
 
-   - e2www
-     - test/
-     - main.py
-
-   - e2repo
-     - test/
-     - main.py
-
-   - lib_rhaptos
-     - test/
-
-   - log.py     
-   - FrozoneError.py
-   - setup.py
-   - README.rst
-   - policy.rst
-   - LICENSE
-
-
-I would expect us to log on the granularity of the above,
-That is::
-
-
-   frozone.e2repo.main
-
-We should *not* add handlers in lib* sections, because handlers should be added
-by the application portion.  Loggers should still be created in lib* portions obviopusly.
-We add the NullHandler I think.
-
-
-   
-
-::
-
-#!/usr/local/bin/python
-#! -*- coding: utf-8 -*-
-
-
-'''
-'''
-
-
-import logging
-from logging.handlers import SysLogHandler
-from frozone import conf
-
-#needs a test if syslog is actually up...
-
-def getFrozoneLogger(modname):
-    '''simple, pre-configured logger will be returned.
     '''
-    lg = logging.getLogger(modname)
-    lg.setLevel(conf.LOGLEVEL)
-    ch = SysLogHandler(conf.SYSLOG_SOCK)
-    lg.addHandler(ch)
- 
-    return lg
+    '''
+
+
+    import logging
+    from logging.handlers import SysLogHandler
+    from frozone import conf
+
+    #needs a test if syslog is actually up...
+
+    def getFrozoneLogger(modname):
+	'''simple, pre-configured logger will be returned.
+	'''
+	lg = logging.getLogger(modname)
+	lg.setLevel(conf.LOGLEVEL)
+	ch = SysLogHandler(conf.SYSLOG_SOCK)
+	lg.addHandler(ch)
+
+	return lg
+
+	import logging
+	lg = logging.getLogger(__name__)
+
+
+Where do we find the grpahite database?
+---------------------------------------
+
+
+* /opt/graphite/storage
+::
+
+   $ sqlite3 graphite.db
+   >> select * from sqlite_master;
+
+   .help
+
+    sqlite> .databases
+    seq  name             file                                                      
+    ---  ---------------  ----------------------------------------------------------
+    0    main             /opt/graphite/storage/graphite.db                         
+
+    sqlite> .tables
+    account_mygraph             auth_user_groups          
+    account_profile             auth_user_user_permissions
+    account_variable            dashboard_dashboard       
+    account_view                dashboard_dashboard_owners
+    account_window              django_admin_log          
+    auth_group                  django_content_type       
+    auth_group_permissions      django_session            
+    auth_message                events_event              
+    auth_permission             tagging_tag               
+    auth_user                   tagging_taggeditem 
+  
+
+    > select * from auth_user;
+    1|root|||paul@mikadosoftware.com| ....
+    THis is what I created at fabfile time
+
+
+Getting to the data on disk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    >>> import whisper
+    >>> whisper.info('/opt/graphite/storage/whisper/rhaptos2/carbon/verify.wsp')
+    {'maxRetention': 157784400, 'xFilesFactor': 0.5, 'aggregationMethod': 'average', 'archives': [{'retention': 21600, 'secondsPerPoint': 10, 'points': 2160, 'size': 25920, 'offset': 52}, {'retention': 604800, 'secondsPerPoint': 60, 'points': 10080, 'size': 120960, 'offset': 25972}, {'retention': 157784400, 'secondsPerPoint': 600, 'points': 262974, 'size': 3155688, 'offset': 146932}]}
 
 
 
-    
-  import logging
-  lg = logging.getLogger(__name__)
+biblio:
+~~~~~~~
 
-
-
+http://www.aosabook.org/en/graphite.html
+http://graphite.readthedocs.org/en/0.9.10/index.html
+http://stackoverflow.com/questions/7099197/tracking-metrics-using-statsd-via-etsy-and-graphite-graphite-graph-doesnt-se
 
   
 Issues to note
---------------
+~~~~~~~~~~~~~~
 
-Logger instances *hang around* - they are designed as singleton servers, so creating them a lot really can hurt. One logger per running module is a good balance of granualrity and manageability.
+Logger instances *hang around* - they are designed as singleton
+servers, so creating them a lot really can hurt. One logger per
+running module is a good balance of granualrity and manageability.
 
-Logging usernames etc is important, and we shall developer either a LoggerAdapter approach or just keep it in parameters passed, depending on how the app evolves.  Watch this space.
+Logging usernames etc is important, and we shall developer either a
+LoggerAdapter approach or just keep it in parameters passed, depending
+on how the app evolves.  Watch this space.
 
+graphite:
 
+Do not publish updates faster than the minimum interval in
+your storage-schemas.conf file.
+
+This means that the statsd aggregator and the storage-schemas.conf
+*must* be in sync else if carbon aggreagtes every minute, but statsd
+pushes every 10 secs you will have statsd overwrite its own records
+5/6 of the time
+
+Note that this will not mean we can carry forward absolute metrics - we get averages 
+over the minumum sampling time.  This can be a problem if our traffic is bursty.
+As either statsd or carcbon will eventually average out our bursty ness.
+ 
+
+To Do:
+
+There is a lot to do here - setting timespans of logging
+granualrity. using and setting up the graphite as a stort of
+dashboard.
