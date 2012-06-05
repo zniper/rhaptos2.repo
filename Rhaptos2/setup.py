@@ -38,6 +38,7 @@ def main():
               ,"statsd"
               ,"requests"
               ,"nose"
+              ,"coverage"
                            ],
           scripts=get_scripts(),
 
