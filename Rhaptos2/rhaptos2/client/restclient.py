@@ -22,14 +22,14 @@ proxy_dict = {
 
 }
 
-def test_workspaceisempty(baseURL):
+def getworkspace_module_list(baseURL):
     ''' '''
     url = os.path.join(baseURL, 'e2repo/workspace')
     resp = requests.get(url, proxies=proxy_dict)
     list_of_modules = resp.json
     return list_of_modules
 
-def test_create_module(baseURL, modulename, text):      
+def create_module(baseURL, modulename, text):      
     url = os.path.join(baseURL, 'e2repo/module/')
     print url
     jsonpayload = json.dumps({'modulename': modulename, 'txtarea':text})
@@ -38,7 +38,8 @@ def test_create_module(baseURL, modulename, text):
     resp = requests.post(url, data=payload, proxies=proxy_dict)
     return resp.json
 
-print test_workspaceisempty('http://www.office.mikadosoftware.com')
-print test_create_module('http://www.office.mikadosoftware.com', 
-                        'testmod', 'test test')
-print test_workspaceisempty('http://www.office.mikadosoftware.com')
+def get_module_text(baseURL, savedname):
+    url = os.path.join(baseURL, 'e2repo/module/%s' % savedname)
+    print url
+    resp = requests.get(url, proxies=proxy_dict)
+    return resp.json
