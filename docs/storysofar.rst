@@ -9,42 +9,40 @@ Use this page to discover recent changes
 5 June
 ------
 
-Whoops - missed last weeks update.
-
 OK, we have pushed a few of the tickets onwards and now have
 
-1. python REST client - very much alpha, but provides a working set of
-   tests run by nose, that complete after each Jenkins build.  See
-   rhaptos2/client
+* *Test REST client* - very much alpha, but provides a working set of
+  tests run by nose, that complete after each Jenkins build.  See
+  rhaptos2/client
 
-1.a. Oh yes, I have renamed (almost) all of the code to be under
-  rhaptos2.  This was driven by Ed's sensible desire to get things
-  under publically acceptable namespaces.  The rhaptos2 name is not
-  finalised, but I chose it to see hwo much effort the renaming would
-  be overall.  Whilst sed did help, it turns out the answer is 'more
-  than I expected' But the next rename (if rhaptos2 is not right) will
-  be speedier.
+* *Rename Frozone* Oh yes, I have renamed (almost) all of the code to
+  be under rhaptos2.  This was driven by Ed's sensible desire to get
+  things under publically acceptable namespaces.  The rhaptos2 name is
+  not finalised, but I chose it to see hwo much effort the renaming
+  would be overall.  Whilst sed did help, it turns out the answer is
+  'more than I expected' But the next rename (if rhaptos2 is not
+  right) will be speedier.
 
-2. We can build and run from a virtualenv a repository on the local
-machine.  Along with my virtualenv howto (
-http://frozone.readthedocs.org/en/latest/) it is possible just to run
-a local repo (that passes the rest-client tests !) and not have to
-install jenkins or loggers etc.  I will try not to break it :-)
+* *local Developer install* We can build and run from a virtualenv a
+  repository on the local machine.  Along with my virtualenv howto (
+  http://frozone.readthedocs.org/en/latest/) it is possible just to
+  run a local repo (that passes the rest-client tests !) and not have
+  to install jenkins or loggers etc.  I will try not to break it :-)
 
-2.a. The REST client tests will encompass the API as shown in
+* *API* The REST client tests will encompass the API as shown in
   http://frozone.readthedocs.org/en/latest/requirements.html.  THis
   will test those supported and not yet supported. Please note the
   future API does depend a fair bit on getting the use cases right
   (see below)
 
-4. For devs using the 'wider' setup of multiple hosts, there are
-   improved setup instructions and notes on using CHarles as a web
-   debugging proxy - vital when looking at weird JSON bugs.
+* *CI, debugging* For devs using the 'wider' setup of multiple hosts,
+  there are improved setup instructions and notes on using CHarles as
+  a web debugging proxy - vital when looking at weird JSON bugs.
 
-5.  use cases - I am looking to understand the process users will og
-    through in editing / merging / publishing in the new architecture,
-    so we can more closely match technology to use cases.  Please do
-    comment.  (http://frozone.readthedocs.org/en/latest/usecases.html)
+* *Use Cases* - I am looking to understand the process users will og
+  through in editing / merging / publishing in the new architecture,
+  so we can more closely match technology to use cases.  Please do
+  comment.  (http://frozone.readthedocs.org/en/latest/usecases.html)
 
 
 
