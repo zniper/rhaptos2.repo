@@ -72,9 +72,8 @@ def getfilename(modulename, REPO=REPO):
     'test.1'
 
     '''
-    qlog('+++++' + REPO)
+    app.logger.info('+++++' + REPO)
     userdir = os.path.join(REPO, whoami())
-    qlog(userdir)
     try:
         allfiles = [f for f in os.listdir(userdir) if 
                  os.path.splitext(os.path.basename(f))[0] == modulename]
@@ -92,10 +91,6 @@ def callstatsd(dottedcounter):
     c = statsd.StatsClient(confd['statsd_host'], int(confd['statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
-
-def qlog(msg):
-    app.logger.error(msg)
-
 
 def asjson(pyobj):
     '''just placeholder '''
@@ -121,12 +116,11 @@ def store_module(fulltext, jsondict):
     folder = whoami()
     pathtofolder = os.path.join(REPO, folder)
 
-    qlog('******************** %s %s ' % (myhash, folder))
+    app.logger.info('******************** %s %s ' % (myhash, folder))
     newfile = os.path.join(pathtofolder, myhash)
-    qlog(newfile)
+    app.logger.info(newfile)
 
     try:
-        qlog('here')
         open(newfile,'w').write(fulltext)    
     except:
         #it will be far more efficient to write folder on first exception than check everytime
@@ -153,8 +147,9 @@ def modulePOST():
 
 
     except Exception, e:
-        qlog(repr(d))
-        qlog(str(e))
+
+        app.logger.error(str(e))
+        app.logger.info(repr(d))
         raise(e)
 
     s = asjson({'hashid':myhash})
@@ -178,7 +173,7 @@ def workspaceGET():
 
 @app.route("/module/<mhash>", methods=['GET'])
 def moduleGET(mhash):
-    qlog('getcall %s' % mhash)
+    app.logger.info('getcall %s' % mhash)
     try:
         jsonstr = fetch_module(whoami(), mhash)
     except Exception, e:
