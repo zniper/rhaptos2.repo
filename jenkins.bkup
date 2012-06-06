@@ -47,7 +47,7 @@ do
 echo $i
 done
 
-pip install $LOCALSTAGE/Rhaptos2/dist/Rhaptos2-0.0.1.tar.gz
+pip install $LOCALSTAGE/Rhaptos2/dist/Rhaptos2-$rhaptos2_current_version.tar.gz
 
 nosetests --with-xunit --xunit-file $WORKSPACE/nosetests.xml lib/python2.7/site-packages/rhaptos2/
 
