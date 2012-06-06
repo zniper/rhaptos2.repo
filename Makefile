@@ -7,6 +7,7 @@ clean: clean-crud
 clean-crud:
 	find ./ -name "*.pyc" -type f -exec rm {} \;
 	find ./ -name "*.*~" -type f -exec rm {} \;
+	find ./ -name ".#*"  -exec rm {} \;       #emacs why do I love you ?
 
 clean-local:
 	fab -H $(host) -f $(fabfile) clean_local
@@ -14,7 +15,7 @@ clean-local:
 #make stage localgitrepo=/tmp/clone localstage=/tmp/staging configfile=office_conf.py \
 host=devjenkins fabfile=deploy/fab_stage.py
 stage:
-	fab -H $(host) -f $(fabfile) stage:localgitrepo=$(localgitrepo),localstage=$(localstage),configfile=$(configfile)
+	fab -H $(host) -f $(fabfile) stage:localgitrepo=$(localgitrepo),localstage=$(localstage),configfile=$(configfile),developer=$(developer)
 
 
 
@@ -26,6 +27,9 @@ clean-remote:
 
 remote-install-cdn:
 	fab -H $(host) -f $(fabfile) install_cdn:localstagingdir=$(localstagingdir)
+
+remote-install-tiny:
+	fab -H $(host) -f $(fabfile) populate_thirdparty_to_cdn
 
 remote-install-e2repo:
 	fab -H $(host) -f $(fabfile) install_rhaptos2:localstagingdir=$(localstagingdir),configfile=$(configfile)
