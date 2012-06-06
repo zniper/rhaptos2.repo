@@ -18,7 +18,7 @@ def get_scripts():
 def main():
 
     setup(name='Rhaptos2',
-          version='0.0.1',
+          version='0.0.2',
           packages=['rhaptos2'
                     ,'rhaptos2.repo'
                     ,'rhaptos2.libauth'
