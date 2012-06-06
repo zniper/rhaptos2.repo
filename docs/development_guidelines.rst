@@ -6,6 +6,15 @@ justification and set of excuses.
 
 
 
+config
+------
+
+There is one server wide configuraiton file stored in /usr/local/etc/rhaptos2/frozone.ini.  The settings here can be overridden using Environment variables - except that only settings beginning "rhaptos2_" will be taken.
+
+so rhaptos2_current_version is set in frozone.ini and can be overrrideen
+
+It is unclear how this interacts with virtualenvs
+
 Github
 ------
 
