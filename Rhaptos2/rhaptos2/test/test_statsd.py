@@ -14,7 +14,7 @@ STATSD_HOST = CARBON_SERVER
 
 import statsd 
 
-def check_statsd():
+def test_statsd():
 
     c = statsd.StatsClient(STATSD_HOST, STATSD_PORT)
     for i in range(100):
