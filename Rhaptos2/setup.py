@@ -1,6 +1,6 @@
 
 '''
-setup.py for frozone
+setup.py for rhaptos2
 
 '''
 
@@ -33,7 +33,7 @@ def main():
           author_email='info@cnx.org',
           url='www.cnx.org',
           license='LICENSE.txt',
-          description='New editor / repo / system for cnx.org -frozone.readthedocs.org',
+          description='New editor / repo / system for cnx.org -rhaptos2.readthedocs.org',
           long_description='see description',
           install_requires=[
               "fabric >= 1.0.0"

@@ -25,6 +25,33 @@ onbjects to standarse the things like username lookups, username to directory, e
 
 '''
 
+
+def apply_cors(fn):
+    '''decorator to apply the correct CORS friendly header '''
+
+    def decorator():
+        resp = fn()
+        resp.headers["Access-Control-Allow-Origin"]= "*"
+        return resp
+    return decorator
+
+
+
+
+def add_location_header_to_response(fn):
+    ''' add Location: header 
+
+        from: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        For 201 (Created) responses, the Location is that of the new resource which was created by the request
+
+
+    decorator that assumes we are getting a flask response object'''
+
+    resp = fn()
+    resp.headers["Location"]= "URL NEEDED FROM HASHID"
+
+
+
 #from logging import FileHandler
 #fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
 lg = log.get_rhaptos2Logger('rhaptos2_e2repo')
@@ -110,6 +137,7 @@ def store_module(fulltext, jsondict):
        
     return myhash
 
+#@apply_cors
 @app.route("/module/", methods=['POST'])
 def modulePOST():
     app.logger.info('POST CALLED')
@@ -133,6 +161,7 @@ def modulePOST():
     resp = flask.make_response(s)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
+
     return resp
 
 
