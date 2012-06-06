@@ -69,7 +69,9 @@ def remote_init():
               confd['remote_e2server'],
               confd['remote_supervisor_home']):
         sudo('mkdir -p -m 0777 %s' % d)
-        
+
+    #clear out any current install of our stuff...
+    sudo('yes y | pip uninstall rhaptos2')
 
         
 def install_cdn(localstagingdir):
