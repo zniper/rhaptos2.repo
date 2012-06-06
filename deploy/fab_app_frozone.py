@@ -69,7 +69,9 @@ def remote_init():
               confd['remote_e2server'],
               confd['remote_supervisor_home']):
         sudo('mkdir -p -m 0777 %s' % d)
-        
+
+    #clear out any current install of our stuff...
+    sudo('yes y | pip uninstall rhaptos2')
 
         
 def install_cdn(localstagingdir):
@@ -95,17 +97,19 @@ def install_cdn(localstagingdir):
 def getrhaptos2pkg(localstagingdir):
     ''' '''
     return os.path.join(localstagingdir, 
-            'Rhaptos2/dist/Rhaptos2-0.0.1.tar.gz')
+            'Rhaptos2/dist/%s' % confd['rhaptos2_pkg_name'])
 
 def install_rhaptos2(localstagingdir, configfile):
     ''' build setup pkg, push to the remote, install it.
    
+    nb - rhaptos2_pkg_name is created in conf.py / fab_lib.py
+
     '''
     local('cd %s/Rhaptos2 && python setup.py sdist' % localstagingdir)
     put(getrhaptos2pkg(localstagingdir),
         '/tmp', 
         use_sudo=True, mode=0755)
-    sudo('pip install "/tmp/Rhaptos2-0.0.1.tar.gz"')
+    sudo('pip install "/tmp/%s"' % confd['rhaptos2_pkg_name'])  
     #install site wide config file
     sudo('mkdir -p -m 0777 /usr/local/etc/rhaptos2')
     put(os.path.join(localstagingdir, configfile), 

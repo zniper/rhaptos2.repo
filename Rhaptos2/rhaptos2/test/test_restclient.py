@@ -2,6 +2,8 @@
 
 from rhaptos2.client import restclient
 
+
+
 def test_create_module():
     modlist = restclient.getworkspace_module_list('http://www.office.mikadosoftware.com')
 
@@ -16,16 +18,17 @@ def test_create_module():
     
 
 
-def test_create_module_text():
+def test_create_module_text():                   
      content='xxddffgg'
-     saved_file_name = restclient.create_module('http://www.office.mikadosoftware.com', 
+     saved_file_name = restclient.create_module('http://www.office.mikadosoftware.com',
                         'testmod', content)
-     print saved_file_name
-     txt = restclient.get_module_text('http://www.office.mikadosoftware.com', 
-                           saved_file_name)
+     print saved_file_name['hashid']
+     txtd = restclient.get_module_text('http://www.office.mikadosoftware.com',
+                           saved_file_name['hashid'])
+     txt = txtd['txtarea']
      if txt.find(content)>=0:
          return True
-     else: 
+     else:
          return False
 
 if __name__ == '__main__':

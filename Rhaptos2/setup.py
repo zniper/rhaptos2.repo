@@ -9,8 +9,11 @@ import os, glob
 
 
 
+
 def get_scripts():
-    files = [os.path.join('scripts', f) for f in  os.listdir('scripts')]
+    setupdir = os.path.dirname(os.path.abspath(__file__))
+    files = [os.path.join('scripts', f) for f in  
+             os.listdir(os.path.join(setupdir, 'scripts'))]
     return files
 
 
@@ -18,7 +21,7 @@ def get_scripts():
 def main():
 
     setup(name='Rhaptos2',
-          version='0.0.1',
+          version='0.0.2',
           packages=['rhaptos2'
                     ,'rhaptos2.repo'
                     ,'rhaptos2.libauth'
