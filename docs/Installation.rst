@@ -99,7 +99,8 @@ I am starting with a configured host server, able to run LXC.
 
      http://devlog
      python verify_graphite.py in test dir
-    
+
+     ToDo: expand on this    
 
 
 6. make repo::

@@ -5,6 +5,29 @@ OK, this is a sort of a style guide, sort of a how to and mostly a
 justification and set of excuses.
 
 
+My local setup
+==============
+
+This is a discussion of the architecture and setup we / I am using
+
+We have two distinct locations to worry about.  The local (i.e. in my
+office) setup, and the shared, ie public, setup. THe first is mostly
+hosted on a single dedicated server in the corner of my office.  This
+is the developer-local server.  The other is at the moment hosted on
+rented rackspace virtual servers hosted physically 'somewhere in North
+London'.
+
+How to create the repo locally :
+
+1. localhost only
+
+   This is intended as a simple, try-me, setup.
+   run 
+
+
+
+
+
 
 config
 ------
