@@ -40,7 +40,7 @@ def main():
               ,"flask >= 0.8"
               ,"statsd"
               ,"requests"
-              ,"nose"
+              ,"nose", 'pylint'
 
                            ],
           scripts=get_scripts(),

@@ -34,6 +34,22 @@ Tests I want to see
 * message queueing
 * pygit - api
 
+ 
+
+API 
+---
+
+:Workspace:  a group of repos
+:collection: a group of files, 
+             including ordering of modules
+             Effectively a repo
+:branch: branch of a single repo
+
+:fork: branch of a single repo, but placed under my workspace
+       github - ? clone?
+:pull request: how?
+
+
 '''
 
 

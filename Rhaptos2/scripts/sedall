@@ -1,0 +1,16 @@
+
+l="<<CDN-SERVER-NAME>> <<CDN-SERVER-ROOT>> <<REPO-SERVER-NAME>> \
+ <<WWW-SERVER-NAME>> <<WWW-SERVER-ROOT>> <<LOGSERVERFQDN>>\
+ <<LOGSERVERPORT>> <<E2SERVERROOT>> <<E2REPOROOT>> <<WSGIPORT_E2REPO>>\
+ <<DNSFORWARDERS>> <<ZONENAME>> <<ZONEFILENAME>> <<REVZONENAME>> <<REVZONEFILENAME>>"
+
+for i in $l
+do
+
+  echo "find ./ -not -path "*.git*"  -name "*.py" \
+        -o -name "*.js" \
+        -o -name "*.ini" \
+        -o -name "*.conf" \
+        -o -name "*.html"  | xargs sed -i '' -e  's/$i/${i,,}/g'"
+
+done
