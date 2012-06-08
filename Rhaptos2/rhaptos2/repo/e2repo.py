@@ -1,3 +1,7 @@
+#!/usr/local/bin/python
+#! -*- coding: utf-8 -*-
+
+
 from flask import Flask, request,  url_for
 import datetime
 import reflector
@@ -22,6 +26,29 @@ REPO = '/tmp/repo' #conf.remote_e2repo
 Wanted:
 
 onbjects to standarse the things like username lookups, username to directory, etc etc
+
+Tests I want to see
+-------------------
+
+* logging 
+* message queueing
+* pygit - api
+
+ 
+
+API 
+---
+
+:Workspace:  a group of repos
+:collection: a group of files, 
+             including ordering of modules
+             Effectively a repo
+:branch: branch of a single repo
+
+:fork: branch of a single repo, but placed under my workspace
+       github - ? clone?
+:pull request: how?
+
 
 '''
 
@@ -64,12 +91,13 @@ def whoami():
     return 'testuser@cnx.org'
 
 def getfilename(modulename, REPO=REPO):
-    '''find all files with this name, test.1 etc, then sort and find next highest numnber 
+
+    '''find all files with this name, test.1 etc, then sort and find
+    next highest numnber
   
     >>> getfilename('test', REPO='/tmp')
     'test.0'
-    >>> getfilename('test', REPO='/tmp')
-    'test.1'
+
 
     '''
     app.logger.info('+++++' + REPO)
@@ -93,7 +121,14 @@ def callstatsd(dottedcounter):
     #todo: really return c and keep elsewhere for efficieny I suspect
 
 def asjson(pyobj):
-    '''just placeholder '''
+    '''just placeholder 
+
+
+    >>> x = {'a':1}
+    >>> asjson(x)
+    '{"a": 1}'
+
+    '''
     return json.dumps(pyobj)
 
 def gettime():

@@ -44,37 +44,18 @@ echo CONFIGFILE = $CONFIGFILE
 echo ***
 
 
-cd $LOCALGITREPO
-make clean
-make stage localgitrepo=$LOCALGITREPO \
-           localstage=$LOCALSTAGE \
-           configfile=$CONFIGFILE \
-           host=devjenkins \
-           fabfile=deploy/fab_stage.py \
-           developer=True
-#host not important here - all fab calls are local()
+######################## Part II - testing
+
+### Create a virtualenv with the current rhaptos2 in it.
+### run the tests from that venv, doctests, network tests, etc.
+
+. Rhaptos2/scripts/update_venv.sh $rhaptos2_current_version-$GIT_COMMIT
 
 
-cd $LOCALSTAGE
-
-make clean-remote \
-     host=$WEBHOST \
-     fabfile=deploy/fab_app_frozone.py \
-     localstagingdir=$LOCALSTAGE
-
-make remote-install-e2repo \
-     host=$WEBHOST \
-     fabfile=deploy/fab_app_frozone.py \
-     localstagingdir=$LOCALSTAGE \
-     configfile=$CONFIGFILE
-
-make remote-install-cdn host=$WEBHOST \
-                        fabfile=deploy/fab_app_frozone.py \
-                        localstagingdir=$LOCALSTAGE
-
-#dont bother most of the time...
-#make remote-install-tiny host=$WEBHOST \
-#                          fabfile=deploy/fab_app_frozone.py
+# now test
+nosetests_cwd=$ENV/lib/python2.7/site-packages/rhaptos2/
+nosetests -w $nosetests_cwd  --with-doctest -v
 
 
-
+#nosetests --with-coverage --with-xunit --cover-package=rhpatos2 --cover-erase --xunit-file $WORKSPACE/nosetests.xml
+#pylint -f parseable $nosetests_cwd | tee $WORKSPACE/pylint.out

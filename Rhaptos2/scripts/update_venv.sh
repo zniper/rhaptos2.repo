@@ -4,10 +4,20 @@
 # assuming we want to regularly and frequently test a pyhton pkg
 # keep the env up
 
+
 HOMEDIR=~
 PROJECT=$HOMEDIR/frozone/Rhaptos2
 
-VENVNAME=dev1
+
+### Needs a venvname
+if test -z "$1"
+then
+  echo "Must supply a Virtualenv name that will be $HOMEDIR/venvs/xxx"
+  exit 1
+fi
+
+VENVNAME=$1
+
 ENV=$HOMEDIR/venvs/$VENVNAME
 ENVPYTHON=$ENV/bin/python
 ENVPIP=$ENV/bin/pip
@@ -41,7 +51,7 @@ function create_install_new_rhaptos2_pkg() {
     cd $PROJECT
     $ENVPYTHON $SETUP sdist
     yes y | $ENVPIP uninstall rhaptos2
-    $ENVPIP install $PROJECT/dist/*.gz
+    $ENVPIP install $PROJECT/dist/Rhaptos2-0.0.2.tar.gz
 
 }
 
@@ -53,7 +63,7 @@ then
     echo 'venv exists, just install pkg'
     create_install_new_rhaptos2_pkg
     echo 'start local repo'
-    $ENVPYTHON -c 'from rhaptos2.repo import e2repo; e2repo.app.run()'   
+    echo $ENVPYTHON -c 'from rhaptos2.repo import e2repo; e2repo.app.run()'   
     
 else
 
@@ -62,10 +72,11 @@ else
     echo 'install new rhaptos to venv'
     create_install_new_rhaptos2_pkg
     echo 'start local repo'
-    $ENVPYTHON -c 'from rhaptos2.repo import e2repo; e2repo.app.run()'   
+    echo $ENVPYTHON -c 'from rhaptos2.repo import e2repo; e2repo.app.run()'   
 fi
 
 
 
 
 
+export ENV
