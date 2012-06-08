@@ -77,20 +77,4 @@ make remote-install-cdn host=$WEBHOST \
 #                          fabfile=deploy/fab_app_frozone.py
 
 
-######################## Part II - testing
 
-### Create a virtualenv with the current rhaptos2 in it.
-### run the tests from that venv, doctests, network tests, etc.
-
-echo $VENVS/$GIT_COMMIT
-cd $VENVS/test111 
-. bin/activate
-#will be installed
-
-# now test
-nosetests_cwd=lib/python2.7/site-packages/rhaptos2/
-nosetests -w $nosetests_cwd -w Rhaptos2/  -w deploy/ --with-doctest -v
-
-
-#nosetests --with-coverage --with-xunit --cover-package=rhpatos2 --cover-erase --xunit-file $WORKSPACE/nosetests.xml
-pylint -f parseable $nosetests_cwd | tee $WORKSPACE/pylint.out
