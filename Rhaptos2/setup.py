@@ -16,12 +16,10 @@ def get_scripts():
              os.listdir(os.path.join(setupdir, 'scripts'))]
     return files
 
-
-
 def main():
 
     setup(name='Rhaptos2',
-          version='0.0.2',
+          version="0.0.2",
           packages=['rhaptos2'
                     ,'rhaptos2.repo'
                     ,'rhaptos2.libauth'
@@ -41,7 +39,6 @@ def main():
               ,"statsd"
               ,"requests"
               ,"nose", 'pylint'
-
                            ],
           scripts=get_scripts(),
 
