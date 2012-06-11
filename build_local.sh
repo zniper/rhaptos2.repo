@@ -30,18 +30,22 @@ function whatsha {
 ### already setup in Jenkins parameters, so create here
 export WORKSPACE=/tmp/mikado
 export GIT_COMMIT=$(whatsha)
+
 export CONFIGFILE=conf.d/rhaptos2.ini
 export WEBHOST=devweb
 
 ############### Part 1 (as seen in jenkins)
 export LOCALGITREPO=./
 export LOCALSTAGE=$WORKSPACE/stage/$GIT_COMMIT 
-export rhaptos2_current_version=0.0.2
-echo ***
+
+echo "********************************************"
 echo LOCALGITREPO = $LOCALGITREPO
 echo LOCALSTAGE = $LOCALSTAGE
 echo CONFIGFILE = $CONFIGFILE
-echo ***
+echo rhaptos2_current_version = $rhaptos2_current_version
+echo "********************************************"
+
+
 
 
 cd $LOCALGITREPO

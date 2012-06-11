@@ -2,7 +2,7 @@
 #! -*- coding: utf-8 -*-
 
 
-from flask import Flask, request,  url_for
+from flask import Flask, g, request, redirect, url_for
 import datetime
 import reflector
 import datetime
@@ -11,6 +11,7 @@ import os
 import flask
 import statsd
 import json
+from functools import wraps
 
 from rhaptos2 import conf
 from rhaptos2 import log
@@ -20,6 +21,19 @@ confd = conf.get_config()
 
 app = Flask(__name__)
 REPO = '/tmp/repo' #conf.remote_e2repo
+
+
+
+
+
+#def resp_as_json():
+#    '''decorator that will convert to json '''
+#    @wraps(f)
+#    def decorated_function(*args, **kwargs):
+#        resp = flask.make_response(f)
+#        resp.content_type='application/json'
+#        return resp
+#    return decorated_function
 
 '''
 
@@ -49,6 +63,14 @@ API
        github - ? clone?
 :pull request: how?
 
+
+
+
+ToDO:
+
+* better CORS handling - see http://flask.pocoo.org/snippets/56/
+* decorator info: http://flask.pocoo.org/docs/patterns/viewdecorators/
+  http://docs.python.org/library/functools.html#functools.wraps
 
 '''
 
@@ -226,6 +248,13 @@ def moduleDELETE():
 def modulePUT():
     return 'You PUTed @ %s' %  gettime() 
 
+
+
+@app.route("/version/", methods=["GET"])
+#@resp_as_json()
+def versionGET():
+    ''' '''
+    return confd['rhaptos2_current_version']
 
 if __name__ == "__main__":
     import doctest
