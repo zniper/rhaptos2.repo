@@ -10,11 +10,11 @@ import os, glob
 
 
 
-def get_scripts():
-    setupdir = os.path.dirname(os.path.abspath(__file__))
-    files = [os.path.join('scripts', f) for f in  
-             os.listdir(os.path.join(setupdir, 'scripts'))]
-    return files
+#def get_scripts():
+#    setupdir = os.path.dirname(os.path.abspath(__file__))
+#    files = [os.path.join('scripts', f) for f in  
+#             os.listdir(os.path.join(setupdir, 'scripts'))]
+#    return files
 
 def main():
 
@@ -40,7 +40,7 @@ def main():
               ,"requests"
               ,"nose", 'pylint'
                            ],
-          scripts=get_scripts(),
+          scripts=['scripts/rhaptos2_runrepo.py'],
 
 #          #intention here is to get setup to use nose to run setup.py test. 
 #          tests_require="nose",

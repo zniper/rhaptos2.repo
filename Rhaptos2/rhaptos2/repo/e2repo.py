@@ -7,7 +7,7 @@ import datetime
 import reflector
 import datetime
 import md5, random
-import os
+import os, sys
 import flask
 import statsd
 import json
@@ -15,6 +15,7 @@ from functools import wraps
 
 from rhaptos2 import conf
 from rhaptos2 import log
+from rhaptos2 import exceptions
 
 #return a dict of conf from a .ini file
 confd = conf.get_config()
@@ -255,6 +256,25 @@ def modulePUT():
 def versionGET():
     ''' '''
     return confd['rhaptos2_current_version']
+
+
+### Below are for test /dev only.
+@app.route("/crash/", methods=["GET"])
+def crash():
+    ''' '''
+    if app.debug == True:
+        app.logger.info('crash command called.')
+        raise exceptions.Rhaptos2Error('Crashing on demand')
+
+
+@app.route("/burn/", methods=["GET"])
+def burn():
+    ''' '''
+    if app.debug == True:
+        app.logger.info('burn command called - dying hard with os._exit')
+        #sys.exit(1)
+        #Flask traps sys.exit (threads?)
+        os._exit(1) #trap _this_
 
 if __name__ == "__main__":
     import doctest
