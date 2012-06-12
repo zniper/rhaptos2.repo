@@ -226,12 +226,15 @@ def workspaceGET():
     resp = flask.make_response(json_dirlist)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    callstatsd('rhaptos2.e2repo.workspace.GET')
     return resp
 
 
 @app.route("/module/<mhash>", methods=['GET'])
 def moduleGET(mhash):
     app.logger.info('getcall %s' % mhash)
+    callstatsd('rhaptos2.e2repo.module.GET')
     try:
         jsonstr = fetch_module(whoami(), mhash)
     except Exception, e:
@@ -255,7 +258,12 @@ def modulePUT():
 #@resp_as_json()
 def versionGET():
     ''' '''
-    return confd['rhaptos2_current_version']
+    s = asjson(confd['rhaptos2_current_version'])
+    resp = flask.make_response(s)    
+    resp.content_type='application/json'
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    return resp
 
 
 ### Below are for test /dev only.
