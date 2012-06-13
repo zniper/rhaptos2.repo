@@ -7,7 +7,7 @@ import datetime
 import reflector
 import datetime
 import md5, random
-import os
+import os, sys
 import flask
 import statsd
 import json
@@ -15,6 +15,7 @@ from functools import wraps
 
 from rhaptos2 import conf
 from rhaptos2 import log
+from rhaptos2 import exceptions
 
 #return a dict of conf from a .ini file
 confd = conf.get_config()
@@ -225,12 +226,15 @@ def workspaceGET():
     resp = flask.make_response(json_dirlist)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    callstatsd('rhaptos2.e2repo.workspace.GET')
     return resp
 
 
 @app.route("/module/<mhash>", methods=['GET'])
 def moduleGET(mhash):
     app.logger.info('getcall %s' % mhash)
+    callstatsd('rhaptos2.e2repo.module.GET')
     try:
         jsonstr = fetch_module(whoami(), mhash)
     except Exception, e:
@@ -254,7 +258,31 @@ def modulePUT():
 #@resp_as_json()
 def versionGET():
     ''' '''
-    return confd['rhaptos2_current_version']
+    s = asjson(confd['rhaptos2_current_version'])
+    resp = flask.make_response(s)    
+    resp.content_type='application/json'
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    return resp
+
+
+### Below are for test /dev only.
+@app.route("/crash/", methods=["GET"])
+def crash():
+    ''' '''
+    if app.debug == True:
+        app.logger.info('crash command called.')
+        raise exceptions.Rhaptos2Error('Crashing on demand')
+
+
+@app.route("/burn/", methods=["GET"])
+def burn():
+    ''' '''
+    if app.debug == True:
+        app.logger.info('burn command called - dying hard with os._exit')
+        #sys.exit(1)
+        #Flask traps sys.exit (threads?)
+        os._exit(1) #trap _this_
 
 if __name__ == "__main__":
     import doctest

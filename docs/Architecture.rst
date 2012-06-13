@@ -51,3 +51,37 @@ background
 
 * https://github.com/blog/530-how-we-made-github-fast
 * http://www.anchor.com.au/blog/2009/09/github-designing-success/
+
+
+Repository platform
+-------------------
+
+The repo sits on Ubuntu 11.10 and expects to migrate painlessly to 12.04(LTS)Ther repo is an nginx pair of load balanced 
+
+upstream serving
+http://wiki.nginx.org/HttpProxyModule
+
+.. figure:: graphite_load_bal.png
+   :scale: 50 %
+   
+We can see the use of nginx as a simple load balancer for two backend instances of Flask.  I create two instances using ::
+
+ $ service rhaptos2 start PORT=7999
+ $ service rhaptos2 start PORT=7998
+
+and configure nginx as ::
+
+ upstream repobk  {
+   server devweb:7999 weight=5;
+   server devweb:7998 weight=5;
+ }
+ 
+
+
+
+load balancing
+http://library.linode.com/linux-ha/highly-available-load-balancer-ubuntu-10.04
+LVS ? 
+
+Repository Architecture
+-----------------------

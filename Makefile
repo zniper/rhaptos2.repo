@@ -34,13 +34,15 @@ remote-install-tiny:
 remote-install-e2repo:
 	fab -H $(host) -f $(fabfile) install_rhaptos2:localstagingdir=$(localstagingdir),configfile=$(configfile)
 	fab -H $(host) -f $(fabfile) install_www:localstagingdir=$(localstagingdir)
-	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
+#	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
+	fab -H $(host) -f $(fabfile) install_upstart:localstagingdir=$(localstagingdir)
 
 remote-install-e2server:
 	echo $(TBC)
-#make supervisor -H devlog -f deploy/fab_app_frozone.py 
+
+#make supervisor host=devweb fabfile=deploy/fab_app_frozone.py localstagingdir=/tmp/...
 supervisor:
-	fab -H $(host) -f $(fabfile) install_supervisor
+	fab -H $(host) -f $(fabfile) install_supervisor:localstagingdir=$(localstagingdir)
 
 
 # make newcontainer host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1 vhostip=10.0.0.21
@@ -73,3 +75,8 @@ logger:
 # make repo host=devweb fabfile=deploy/fab_sys.py
 repo:
 	fab -H $(host) -f $(fabfile) sys_install_nginx_ubuntu
+
+#make reposervice host=devweb fabfile=deploy/fab_app_frozone.py localstagingdir=
+reposervice:
+	fab -H $(host) -f $(fabfile) install_upstart:localstagingdir=$(localstagingdir)
+    
