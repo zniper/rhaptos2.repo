@@ -45,13 +45,19 @@ function initial_venv_creation() {
 }
 
 
+
+
 function create_install_new_rhaptos2_pkg() {
+
+    ## uninstall rhaptos from venv
+    yes y | $ENVPIP uninstall rhaptos2
 
     #create a new dist pkg
     cd $PROJECT
+    rm -rf $PROJECT/dist
     $ENVPYTHON $SETUP sdist
-    yes y | $ENVPIP uninstall rhaptos2
-    $ENVPIP install $PROJECT/dist/Rhaptos2-0.0.2.tar.gz
+
+    $ENVPIP install $PROJECT/dist/Rhaptos2-*
 
 }
 
