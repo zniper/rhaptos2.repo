@@ -16,11 +16,10 @@ class Rhaptos2ConfigError(Exception):
     '''Put this in common area'''
     pass
 
-
-def get_config():
+def get_config(rhaptos2_config_location='/usr/local/etc/rhaptos2/rhaptos2.ini'):
 
     parser = ConfigParser.SafeConfigParser()
-    parser.read('/usr/local/etc/rhaptos2/rhaptos2.ini')
+    parser.read(rhaptos2_config_location)
     confd = dict(parser.items('rhaptos2'))
 
     thisdict = {}
