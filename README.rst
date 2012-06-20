@@ -18,7 +18,7 @@ The install instructions for that are as follows::
 
    export LOCALGITBAMBOO=/tmp/cnx/bamboo
    export LOCALGITRHAPTOS2=/tmp/cnx/Rhaptos2
-
+   export CONFIGFILE=/tmp/cnx/bamboo/conf.d/rhaptos2.ini.localhost
 
    cd bamboo/
    bash ./update_venv.sh localenv
