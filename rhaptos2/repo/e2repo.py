@@ -2,9 +2,11 @@
 #! -*- coding: utf-8 -*-
 
 
-from flask import Flask, g, request, redirect, url_for
+from flask import Flask, render_template, request, g, session, flash, \
+     redirect, url_for, abort
+
+
 import datetime
-import reflector
 import datetime
 import md5, random
 import os, sys
@@ -188,6 +190,13 @@ def store_module(fulltext, jsondict):
         
        
     return myhash
+
+########################### views
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 #@apply_cors
 @app.route("/module/", methods=['POST'])

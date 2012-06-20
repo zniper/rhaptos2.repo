@@ -42,6 +42,8 @@ def main():
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 
+          package_data={'rhaptos2.repo': ['templates/*.*', 'static/*.*']},
+
 #          #intention here is to get setup to use nose to run setup.py test. 
 #          tests_require="nose",
 #          test_suite="nose.collector",
