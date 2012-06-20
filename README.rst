@@ -10,6 +10,20 @@ It can be run from a single developer laptop, in a virtualenv.
 
 The install instructions for that are as follows::
 
+   mkdir -p -m 0777 /tmp/cnx
+   cd /tmp/cnx
+   git clone https://github.com/Connexions/bamboo.git
+   git clone https://github.com/lifeisstillgood/Rhaptos2.git
+   
+
+   export LOCALGITBAMBOO=/tmp/cnx/bamboo
+   export LOCALGITRHAPTOS2=/tmp/cnx/Rhaptos2
+
+
+   cd bamboo/
+   bash update_venv.sh localenv
+
+   
 
 
 to recap::
