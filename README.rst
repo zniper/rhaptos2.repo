@@ -21,7 +21,19 @@ The install instructions for that are as follows::
 
 
    cd bamboo/
-   bash update_venv.sh localenv
+   bash ./update_venv.sh localenv
+
+   You should then see an update saying:
+
+   <yourpath>/bin/python -c "from rhaptos2.repo import e2repo; e2repo.app.run(debug=True, use_reloader=False)"   
+
+   run this in one terminal
+
+   open your webbroswer to 
+
+   http://localhost:5000/
+
+   you should see a simple editor.
 
    
 
