@@ -15,18 +15,14 @@ import statsd
 import json
 from functools import wraps
 
-from rhaptos2 import conf
+from rhaptos2.conf import confd
 from rhaptos2 import log
 from rhaptos2 import exceptions
 
-#return a dict of conf from a .ini file
-confd = conf.get_config()
+#### see http://flask.pocoo.org/docs/patterns/packages/
 
 app = Flask(__name__)
+lg = log.get_rhaptos2Logger('rhaptos2-repo')
+app.logger.addHandler(lg)
 
 import rhaptos2.repo.views
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

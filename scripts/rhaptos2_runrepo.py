@@ -7,6 +7,7 @@ Just launch the main Flask repo app.
 '''
 
 from optparse import OptionParser
+import os
 from rhaptos2.repo import app  ## NB repo.__init__ has app as callable...
 from rhaptos2 import conf
 
@@ -34,6 +35,11 @@ def main():
     '''
     opts, args = parse_args()
     #todo: Some validation here??
+
+    s = '########### ENV VARS WE START UP WITH HERE\n'
+    for k in os.environ: s += '\n%s:%s' % (k, os.environ[k])
+    s += '\n########### ENV VARS END'
+    print s
 
     app.run(host=opts.host, 
                    port=opts.port, 

@@ -1,5 +1,4 @@
 
-from rhaptos2 import log
 
 
 class Rhaptos2Error(Exception):

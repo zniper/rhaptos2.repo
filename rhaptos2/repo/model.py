@@ -101,12 +101,6 @@ def add_location_header_to_response(fn):
     resp.headers["Location"]= "URL NEEDED FROM HASHID"
 
 
-
-#from logging import FileHandler
-#fh = FileHandler(filename=os.path.join(REPO, 'e2repo.log'))
-lg = log.get_rhaptos2Logger('rhaptos2_e2repo')
-app.logger.addHandler(lg)
-
 def whoami():
     '''Not too sure how I will work this but I need a user, OpenID
   

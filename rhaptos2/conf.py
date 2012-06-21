@@ -11,18 +11,34 @@ THIS IS A COPY OF FILE: fab_lib.py  - manually keep in synch till apply a new pa
 ############################# below here must match with fab_lib.py
 import os
 import ConfigParser
+from rhaptos2.exceptions import Rhaptos2Error
 
-class Rhaptos2ConfigError(Exception):
-    '''Put this in common area'''
-    pass
+def sanitycheck():
+    '''What are the things we want to be sure we have right at runtime?
+
+    '''
+    try:
+        configfile = os.environ['CONFIGFILE']
+        #assert os.path.isfile(configfile)
+    except Exception, e:
+        s = ''
+        for k in os.environ: s += '\n%s:%s' % (k, os.environ[k]) 
+        raise  Rhaptos2Error('#1 Cannot find ENV VAR of CONFIGFILE or cannot find it' + s)
+
 
 def get_config():
 
 
-    rhaptos2_config_location = os.environ['CONFIGFILE']
     parser = ConfigParser.SafeConfigParser()
-    parser.read(rhaptos2_config_location)
-    confd = dict(parser.items('rhaptos2'))
+    try:
+        parser.read(os.environ['CONFIGFILE'])
+        confd = dict(parser.items('rhaptos2'))
+    except Exception, e:
+        print '*** Failed conf: %s' % os.environ['CONFIGFILE'] 
+        raise e
+
+
+
 
     thisdict = {}
     for k in os.environ:
@@ -32,16 +48,11 @@ def get_config():
     #update the global conf
     confd.update(thisdict)    
 
-
-
-    ### get from the environment anything labelled rhaptos2_ as well
-    ### test here???
-    expected_keys = [ 
-                     ] 
-    for k in expected_keys:
-        if k not in confd.keys():
-             raise Rhaptos2ConfigError('config key %s not found.' % k)
+    #### Grab expected os.environ
+    confd['CONFIGFILE'] = os.environ['CONFIGFILE']
 
     return confd
 
+sanitycheck()
+confd = get_config()
 

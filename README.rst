@@ -15,25 +15,24 @@ The install instructions for that are as follows::
     pip install virtualenv
     pip install fabric
 
+   Please ensure these are available system-wide or run them from your own virtualenv (Not tested)    
+
    All else should get put into a virtualenv so is not a dependancy really.
 
+   Set up as below:
 
    mkdir -p -m 0777 /tmp/cnx
    cd /tmp/cnx
+
    git clone https://github.com/Connexions/bamboo.git
    git clone https://github.com/lifeisstillgood/Rhaptos2.git
    
-
-   export LOCALGITBAMBOO=/tmp/cnx/bamboo
-   export LOCALGITRHAPTOS2=/tmp/cnx/Rhaptos2
-   export CONFIGFILE=/tmp/cnx/bamboo/conf.d/rhaptos2.ini.localhost
-
    cd bamboo/
-   bash ./update_venv.sh localenv
+   bash ./newstarter.sh
 
    You should then see an update saying:
 
-   <yourpath>/bin/python -c "from rhaptos2.repo import e2repo; e2repo.app.run(debug=True, use_reloader=False)"   
+   export CONFIGFILE=/tmp/cnx/bamboo/conf.d/rhaptos2.ini.localhost && /tmp/mikado/venvs/testenv/bin/python /tmp/mikado/venvs/testenv/bin/rhaptos2_runrepo.py --host='0.0.0.0' --port=5000 --debug=True
 
    run this in one terminal
 
@@ -48,10 +47,10 @@ The install instructions for that are as follows::
 
 to recap::
 
-  deployment is dpoine using fabric files, usiong configuration written into global.ini
+  deployment is done using fabric files, using configuration in ENV vars or in file.
 
-  before deployment, a staging process is run, basically sed-like, that sets the config for the environment we are in.  THis probably should move to ENV vars.
-
+  before deployment, we run a build process - basically sed-like, that sets the config 
+  for the environment we are in. 
 
 
 
