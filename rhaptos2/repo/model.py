@@ -17,15 +17,15 @@ from functools import wraps
 
 from rhaptos2 import conf
 from rhaptos2 import log
-from rhaptos2 import exceptions
+from rhaptos2.exceptions import Rhaptos2Error
 
 #return a dict of conf from a .ini file
 confd = conf.get_config()
 
-app = Flask(__name__)
-REPO = '/tmp/repo' #conf.remote_e2repo
 
+#REPO = '/tmp/repo' #conf.remote_e2repo
 
+from rhaptos2.repo import app
 
 
 
@@ -88,8 +88,6 @@ def apply_cors(fn):
     return decorator
 
 
-
-
 def add_location_header_to_response(fn):
     ''' add Location: header 
 
@@ -115,7 +113,22 @@ def whoami():
     THis is hard coded to testuser@cnx.org'''
     return 'testuser@cnx.org'
 
-def getfilename(modulename, REPO=REPO):
+def userspace():
+    ''' '''
+    user_email = whoami()
+    userspace = os.path.join(confd['remote_e2repo'],
+                             user_email)
+    if os.path.isdir(userspace):
+        return userspace
+    else:
+       try:
+           os.mkdirs(userspace)
+           return userspace 
+       except Exception,e:
+           raise Rhaptos2Error('cannot create repo or userspace %s - %s' % (userspace, e))
+           
+    
+def getfilename(modulename):
 
     '''find all files with this name, test.1 etc, then sort and find
     next highest numnber
@@ -125,10 +138,10 @@ def getfilename(modulename, REPO=REPO):
 
 
     '''
-    app.logger.info('+++++' + REPO)
-    userdir = os.path.join(REPO, whoami())
+    app.logger.info('+++++' + confd['remote_e2repo'])
+
     try:
-        allfiles = [f for f in os.listdir(userdir) if 
+        allfiles = [f for f in os.listdir(userspace()) if 
                  os.path.splitext(os.path.basename(f))[0] == modulename]
     except OSError, IOError:
         allfiles = []
@@ -161,7 +174,8 @@ def gettime():
 
 def fetch_module(username, hashid):
     ''' '''
-    folder = os.path.join(REPO, username)
+     
+    folder = userspace()
     json = open(os.path.join(folder, str(hashid))).read()    
     return json 
 
@@ -169,14 +183,10 @@ def store_module(fulltext, jsondict):
     '''recieve and write to disk the json dict holding the text edtited
 
     '''
-
-
     myhash = getfilename(jsondict['modulename'])
+    pathtofolder = userspace()
 
-    folder = whoami()
-    pathtofolder = os.path.join(REPO, folder)
-
-    app.logger.info('******************** %s %s ' % (myhash, folder))
+    app.logger.info('******************** %s %s ' % (myhash, pathtofolder))
     newfile = os.path.join(pathtofolder, myhash)
     app.logger.info(newfile)
 
@@ -191,108 +201,3 @@ def store_module(fulltext, jsondict):
        
     return myhash
 
-########################### views
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-#@apply_cors
-@app.route("/module/", methods=['POST'])
-def modulePOST():
-    app.logger.info('POST CALLED')
-    callstatsd('rhaptos2.e2repo.module.POST')
-    try:
-
-        html5 = request.form['moduletxt']
-        d = json.loads(html5)
-        
-        app.logger.info(repr(d))
-                      
-        myhash = store_module(html5, d)
-
-
-    except Exception, e:
-
-        app.logger.error(str(e))
-        app.logger.info(repr(d))
-        raise(e)
-
-    s = asjson({'hashid':myhash})
-    resp = flask.make_response(s)    
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-
-    return resp
-
-
-@app.route("/workspace/", methods=['GET'])
-def workspaceGET():
-    ''' '''
-    f = os.listdir(os.path.join(REPO, whoami()))
-    json_dirlist = json.dumps(f)
-    resp = flask.make_response(json_dirlist)    
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-
-    callstatsd('rhaptos2.e2repo.workspace.GET')
-    return resp
-
-
-@app.route("/module/<mhash>", methods=['GET'])
-def moduleGET(mhash):
-    app.logger.info('getcall %s' % mhash)
-    callstatsd('rhaptos2.e2repo.module.GET')
-    try:
-        jsonstr = fetch_module(whoami(), mhash)
-    except Exception, e:
-        raise e
-
-    resp = flask.make_response(jsonstr)    
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    return resp
-
-@app.route("/module/", methods=['DELETE'])
-def moduleDELETE():
-    return 'You DELETEed @ %s' %  gettime() 
-
-@app.route("/module/", methods=['PUT'])
-def modulePUT():
-    return 'You PUTed @ %s' %  gettime() 
-
-
-
-@app.route("/version/", methods=["GET"])
-#@resp_as_json()
-def versionGET():
-    ''' '''
-    s = asjson(confd['rhaptos2_current_version'])
-    resp = flask.make_response(s)    
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-
-    return resp
-
-
-### Below are for test /dev only.
-@app.route("/crash/", methods=["GET"])
-def crash():
-    ''' '''
-    if app.debug == True:
-        app.logger.info('crash command called.')
-        raise exceptions.Rhaptos2Error('Crashing on demand')
-
-
-@app.route("/burn/", methods=["GET"])
-def burn():
-    ''' '''
-    if app.debug == True:
-        app.logger.info('burn command called - dying hard with os._exit')
-        #sys.exit(1)
-        #Flask traps sys.exit (threads?)
-        os._exit(1) #trap _this_
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

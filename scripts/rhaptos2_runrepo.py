@@ -7,7 +7,7 @@ Just launch the main Flask repo app.
 '''
 
 from optparse import OptionParser
-from rhaptos2.repo import e2repo
+from rhaptos2.repo import app  ## NB repo.__init__ has app as callable...
 from rhaptos2 import conf
 
 
@@ -35,7 +35,7 @@ def main():
     opts, args = parse_args()
     #todo: Some validation here??
 
-    e2repo.app.run(host=opts.host, 
+    app.run(host=opts.host, 
                    port=opts.port, 
                    debug=opts.debug,
                    use_reloader=False 
