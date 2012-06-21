@@ -10,6 +10,14 @@ It can be run from a single developer laptop, in a virtualenv.
 
 The install instructions for that are as follows::
 
+   dependancies:
+
+    pip install virtualenv
+    pip install fabric
+
+   All else should get put into a virtualenv so is not a dependancy really.
+
+
    mkdir -p -m 0777 /tmp/cnx
    cd /tmp/cnx
    git clone https://github.com/Connexions/bamboo.git
