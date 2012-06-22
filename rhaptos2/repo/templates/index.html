@@ -42,10 +42,13 @@
 <script type="text/javascript" src="http://<<cdn-server-name>>/tiny-init.js"></script>
 
 
-
-
-
 </head>                                                                 
+
+{% for message in get_flashed_messages() %}
+  <p class=message>{{ message }}
+{% endfor %}
+
+
 
 <body>                                                                  
 
@@ -58,9 +61,18 @@
 <tr>
  <td>Text Editor:</td> 
  <td>
+
+<ul class=navigation>
+  {% if g.user %}
+  <li><a href="{{ url_for('edit_profile') }}">profile</a>
+  <li><a href="{{ url_for('logout') }}">sign out [{{ g.user.name }} ({{ g.user.email }})]</a>
+  {% else %}
+  <li><a href="{{ url_for('login') }}">sign in</a>
+  {% endif %}
+</ul>
+
     <form name="fakeeditor" id="form1">
 
-    Username: <div id="usernamedisplay"></div>
     Modulename:<input id="modulename" type="text" name="modulename" value="">
 
     <hr/>

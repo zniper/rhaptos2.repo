@@ -30,7 +30,12 @@ def main():
               ,"flask >= 0.8"
               ,"statsd"
               ,"requests"
-              ,"nose", 'pylint'
+              ,"nose" 
+              ,"pylint"
+              ,"Flask-OpenID"
+              ,"sqlalchemy"
+#build issues...
+              ,"pysqlite >= 2.6.2"
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 

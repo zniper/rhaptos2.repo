@@ -28,6 +28,50 @@ confd = conf.get_config()
 from rhaptos2.repo import app
 
 
+from flask import Flask, render_template, request, g, session, flash, \
+     redirect, url_for, abort
+from flaskext.openid import OpenID
+
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+
+app.config.update(
+    DATABASE_URI = 'sqlite:////tmp/flask-openid.db',
+    SECRET_KEY = 'development key',
+    DEBUG = True
+)
+
+# setup flask-openid
+oid = OpenID(app)
+
+# setup sqlalchemy
+engine = create_engine(app.config['DATABASE_URI'])
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
+Base = declarative_base()
+Base.query = db_session.query_property()
+
+def init_db():
+    Base.metadata.create_all(bind=engine)
+
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(60))
+    email = Column(String(200))
+    openid = Column(String(200))
+
+    def __init__(self, name, email, openid):
+        self.name = name
+        self.email = email
+        self.openid = openid
+
+
+
 
 #def resp_as_json():
 #    '''decorator that will convert to json '''
@@ -88,6 +132,56 @@ def apply_cors(fn):
     return decorator
 
 
+def whoami():
+    '''Not too sure how I will work this but I need a user, OpenID
+  
+    migrate to http://flask.pocoo.org/snippets/51/
+
+    THis is hard coded to testuser@cnx.org'''
+
+
+    app.logger.info('+++++ session dict' + repr(session.__dict__) )
+    app.logger.info('+++++ app config' + repr(app.config) )
+
+    if not g.user:
+        app.logger.info('+++++ No session?' + repr(g) )
+        raise exceptions.Rhaptos2Error('Not logged in - trap this?')
+    else:
+        return [g.user.email, g.user.name]
+
+def workspace_path():
+    ''' NOT SAFE IN ANY WAY'''
+    email =  whoami()[0]
+    return os.path.join(REPO, email)
+
+@app.route("/whoami/", methods=['GET'])
+def whoamiGET():
+    ''' '''
+    ### todo: return 401 code and let ajax client put up login.
+    try:
+        email, name =  whoami()
+    except exceptions.Rhaptos2Error:
+        email = ''
+        name = '<a href="">login</a>'
+
+    d = {'user_email': email,
+         'user_name': name}
+    jsond = asjson(d)
+    ### make decorators !!!
+    resp = flask.make_response(jsond)    
+    resp.content_type='application/json'
+    resp = apply_cors(resp)
+
+    return resp
+
+def apply_cors(resp):
+    '''  '''
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+    resp.headers["Access-Control-Allow-Credentials"]= "true"
+    return resp
+
+
+
 def add_location_header_to_response(fn):
     ''' add Location: header 
 
@@ -101,15 +195,16 @@ def add_location_header_to_response(fn):
     resp.headers["Location"]= "URL NEEDED FROM HASHID"
 
 
-def whoami():
-    '''Not too sure how I will work this but I need a user, OpenID
+# def whoami():
+#     '''Not too sure how I will work this but I need a user, OpenID
   
-    THis is hard coded to testuser@cnx.org'''
-    return 'testuser@cnx.org'
+#     THis is hard coded to testuser@cnx.org'''
+#     return 'testuser@cnx.org'
 
+#@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    user_email = whoami()
+    user_email = whoami()[0]
     userspace = os.path.join(confd['remote_e2repo'],
                              user_email)
     if os.path.isdir(userspace):
@@ -166,11 +261,13 @@ def asjson(pyobj):
 def gettime():
     return datetime.datetime.today().isoformat()
 
-def fetch_module(username, hashid):
-    ''' '''
+def fetch_module(modname):
+    ''' retrieve module by name from current user store.
+
+    '''
      
     folder = userspace()
-    json = open(os.path.join(folder, str(hashid))).read()    
+    json = open(os.path.join(folder, str(modname))).read()    
     return json 
 
 def store_module(fulltext, jsondict):
