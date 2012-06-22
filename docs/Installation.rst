@@ -65,16 +65,22 @@ I am starting with a configured host server, able to run LXC.
 
 2. kill running containers::
 
-     make lxc_destroy host=hpcube fabfile=deploy/fab_lxc.py vhostname=devlog vhostip=10.0.0.22
-     make lxc_destroy host=hpcube fabfile=deploy/fab_lxc.py vhostname=devweb vhostip=10.0.0.24
+     make lxc_destroy host=hpcube vhostname=devlog vhostip=10.0.0.22
+     make lxc_destroy host=hpcube vhostname=devweb vhostip=10.0.0.24
      (Not killing jenkins just yet.)
 
 3. recreate ::
 
     see newlxc.sh
+    export CONFIGFILE=/etc/rhaptos2.ini
     make newcontainer host=hpcube   fabfile=deploy/fab_lxc.py vhostname=devweb vhostip=10.0.0.24
     make newcontainer host=hpcube   fabfile=deploy/fab_lxc.py vhostname=devlog vhostip=10.0.0.22
-      
+  
+Now the CONFIGFILE has become vital in almost all parts of Bamboo and Rhaptos2.  As we have a build / deploy 
+process, I am not making any (?) default assumptions, but taking it all from a config file, which clearly needs
+to be supplied, else I dont know if I am building for produiction or developer. 
+     
+
 4. Now each server should have Ubunut base plus bunch of Python additions
    (NB rember debian puts python packages in dist-packages, just to confuse you)
    ::
@@ -106,6 +112,8 @@ I am starting with a configured host server, able to run LXC.
 6. make repo::
 
     make repo host=devweb fabfile=deploy/fab_sys.py
+
+    Actually the whole build/deploy the repo is a little more involced, please see ...
    
 7. run Jenkins job to build repo and web servers
 
