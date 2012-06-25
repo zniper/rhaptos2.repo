@@ -61,7 +61,6 @@ function save_validate(){
             type: 'GET'
         });
 	request.done(function(data) {
-	    //$("#responsearea").html(data);      
 	    logout(data + 'done a success');
             $('#e2textarea').tinymce().setContent(data);
 	});
@@ -121,7 +120,7 @@ function getwhoami(){
         success: function(module){
             var user_email = module['user_email'];
             var user_name = module['user_name'];
-            alert(user_email + user_name);
+            //alert(user_email + user_name);
             $('#usernamedisplay').html(user_name + "-" + user_email);
         },
 
@@ -150,12 +149,17 @@ function buildHistory(){
             historyarr.sort();
             $.each(historyarr, function(i,elem){
                 var strelem = "'" + elem + "'";
-		htmlfrag += '<li> <a href="#" onclick="getLoadHistoryVer(' +  strelem + ');" >' + elem + '</a>';
-                });
+		htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+            });
+
             $('#workspaces').html(htmlfrag);    
         }
     });    
 };
+
+function delete_module(filename){
+    alert("Delete Function TBC: called on module: " + filename);
+}
 
 function showres(i, elem){
 
@@ -215,12 +219,13 @@ $(document).ready(function() {
     buildHistory();    
     getwhoami();    
 
-    $("a").click(function(event){
-        logout('noclick');
+    //nolink are links that do some jquery function, but should not be links
+    $("a.nolink").click(function(event){
+        logout('click-preventDefault');
 	event.preventDefault();
     });
 
-    $("#click1").click(function(event){
+    $("#save").click(function(event){
                          saveText();
                          event.preventDefault();
                        }

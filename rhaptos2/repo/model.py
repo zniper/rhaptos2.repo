@@ -211,7 +211,7 @@ def userspace():
         return userspace
     else:
        try:
-           os.mkdirs(userspace)
+           os.makedirs(userspace)
            return userspace 
        except Exception,e:
            raise Rhaptos2Error('cannot create repo or userspace %s - %s' % (userspace, e))
