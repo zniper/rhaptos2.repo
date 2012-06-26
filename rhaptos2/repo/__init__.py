@@ -15,9 +15,11 @@ import statsd
 import json
 from functools import wraps
 
-from rhaptos2.conf import confd
+from rhaptos2 import conf
 from rhaptos2 import log
 from rhaptos2 import exceptions
+
+confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
 
 #### see http://flask.pocoo.org/docs/patterns/packages/
 

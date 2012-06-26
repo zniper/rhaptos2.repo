@@ -8,7 +8,8 @@
 
 import logging
 from logging.handlers import SysLogHandler
-from rhaptos2.conf import confd
+from rhaptos2 import conf
+confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
 
 #needs a test if syslog is actually up...
 
@@ -18,11 +19,11 @@ def get_rhaptos2Logger(modname):
     if envvar: use_logging == False will return NullHandler logger.
     '''
 
-    print "logging"
-    print confd['use_logging'], type(confd['use_logging'])
+#    print "logging"
+#    print confd['use_logging'], type(confd['use_logging'])
 
     if confd['use_logging'] == 'Y':
-        print 'yes logging'
+#       print 'yes logging'
         lg = logging.getLogger(modname)
         lg.setLevel(confd['loglevel'])
         ch = SysLogHandler(confd['syslog_sock'])
@@ -30,7 +31,7 @@ def get_rhaptos2Logger(modname):
         ch.setFormatter(formatter)
         lg.addHandler(ch)
     else:
-        print 'not logging'
+#        print 'not logging'
         lg = logging.getLogger(modname)
         lg.addHandler(logging.NullHandler())        
 

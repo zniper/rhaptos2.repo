@@ -26,33 +26,24 @@ def sanitycheck():
         raise  Rhaptos2Error('#1 Cannot find ENV VAR of CONFIGFILE or cannot find it' + s)
 
 
-def get_config():
+def get_config(conf_file_path, section):
+    ''' I expect every module to take from the env 'CONFIGFILE' and then 
+        request this function to build a dict from that filepath and the section '''
 
-
-    parser = ConfigParser.SafeConfigParser()
     try:
-        parser.read(os.environ['CONFIGFILE'])
-        confd = dict(parser.items('rhaptos2'))
+        parser = ConfigParser.SafeConfigParser()
+        parser.read(conf_file_path)
+        confd = dict(parser.items(section))
     except Exception, e:
-        print '*** Failed conf: %s' % os.environ['CONFIGFILE'] 
+        print '*** Failed conf: %s' % conf_file_path
         raise e
 
-
-
-
-    thisdict = {}
-    for k in os.environ:
-        if k.find('rhaptos2_') == 0:
-            thisdict[k] = os.environ[k]
-
-    #update the global conf
-    confd.update(thisdict)    
 
     #### Grab expected os.environ
     confd['CONFIGFILE'] = os.environ['CONFIGFILE']
 
     return confd
 
-sanitycheck()
-confd = get_config()
 
+
+sanitycheck()

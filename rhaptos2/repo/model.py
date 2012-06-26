@@ -20,7 +20,7 @@ from rhaptos2 import log
 from rhaptos2.exceptions import Rhaptos2Error
 
 #return a dict of conf from a .ini file
-confd = conf.get_config()
+confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
 
 
 #REPO = '/tmp/repo' #conf.remote_e2repo
@@ -145,7 +145,7 @@ def whoami():
 
     if not g.user:
         app.logger.info('+++++ No session?' + repr(g) )
-        raise exceptions.Rhaptos2Error('Not logged in - trap this?')
+        raise Rhaptos2Error('Not logged in - trap this?')
     else:
         return [g.user.email, g.user.name]
 
@@ -160,7 +160,7 @@ def whoamiGET():
     ### todo: return 401 code and let ajax client put up login.
     try:
         email, name =  whoami()
-    except exceptions.Rhaptos2Error:
+    except Rhaptos2Error:
         email = ''
         name = '<a href="">login</a>'
 
