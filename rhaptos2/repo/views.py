@@ -13,10 +13,10 @@ import statsd
 import json
 from functools import wraps
 
-
+from rhaptos2 import conf
+confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
 from rhaptos2 import log
 from rhaptos2 import exceptions
-from rhaptos2.conf import confd
 from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
 from rhaptos2.repo import model
