@@ -38,8 +38,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 app.config.update(
-    DATABASE_URI = 'sqlite:////tmp/flask-openid.db',
-    SECRET_KEY = 'development key',
+    DATABASE_URI = '<<openid_userdb_uri>>',
+    SECRET_KEY = '<<openid_secretkey>>',
     DEBUG = True
 )
 
