@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Sign in{% endblock %}
+{% block body %}
+  <h2>Sign in</h2>
+
+I suggest you login with Google Accounts using:
+
+https://www.google.com/accounts/o8/id
+
+A better form will be coming in due course
+
+  <form action="" method=post>
+    {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+    <p>
+      OpenID:
+      <input type=text name=openid size=30>
+      <input type=submit value="Sign in">
+      <input type=hidden name=next value="{{ next }}">
+  </form>
+
+
+
+{% endblock %}
