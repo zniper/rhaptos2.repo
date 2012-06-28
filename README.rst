@@ -48,10 +48,10 @@ The install instructions for that are as follows::
    cd ~/cnxcode
 
    git clone https://github.com/Connexions/bamboo.git
-   git clone https://github.com/lifeisstillgood/Rhaptos2.git
+   git clone https://github.com/Connexions/rhaptos2.repo.git
 
 
-   cd ~/cnx/bamboo/
+   cd ~/cnxcode/bamboo/
    bash deploy-local.sh localhost ~/cnxcode/bamboo/conf.d/rhaptos2.ini ~/cnxcode/
 
    
