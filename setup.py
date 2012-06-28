@@ -12,7 +12,7 @@ import os, glob
 
 def main():
 
-    setup(name='Rhaptos2',
+    setup(name='rhaptos2.repo',
           version="0.0.2",
           packages=['rhaptos2'
                     ,'rhaptos2.repo'
@@ -34,8 +34,7 @@ def main():
               ,"pylint"
               ,"Flask-OpenID"
               ,"sqlalchemy"
-#build issues...
-              ,"pysqlite >= 2.6.2"
+#             sqlite3 - assume its compiled into distrib
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 
