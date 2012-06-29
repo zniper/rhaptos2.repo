@@ -15,15 +15,13 @@ import statsd
 import json
 from functools import wraps
 
-from rhaptos2 import conf
-from rhaptos2 import log
-from rhaptos2.exceptions import Rhaptos2Error
+from rhaptos2.common import conf
+from rhaptos2.common import log
+from rhaptos2.common.err import Rhaptos2Error
 
 #return a dict of conf from a .ini file
-confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
+confd = conf.get_config('rhaptos2')
 
-
-#REPO = '/tmp/repo' #conf.remote_e2repo
 
 from rhaptos2.repo import app
 
@@ -38,8 +36,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 app.config.update(
-    DATABASE_URI = '<<openid_userdb_uri>>',
-    SECRET_KEY = '<<openid_secretkey>>',
+    DATABASE_URI = confd['openid_userdb_uri'],
+    SECRET_KEY = confd['openid_secretkey'],
     DEBUG = True
 )
 

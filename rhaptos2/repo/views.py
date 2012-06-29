@@ -13,15 +13,14 @@ import statsd
 import json
 from functools import wraps
 
-from rhaptos2 import conf
-confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
-from rhaptos2 import log
-from rhaptos2 import exceptions
+
+from rhaptos2.common import log
+from rhaptos2.common import err
+from rhaptos2.common import conf
+confd = conf.get_config('rhaptos2')
 from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
-from rhaptos2.repo import model
-
-
+from rhaptos2.repo import model, get_version
 
 
 ########################### views
@@ -101,7 +100,7 @@ def modulePUT():
 #@resp_as_json()
 def versionGET():
     ''' '''
-    s = model.asjson(confd['rhaptos2_current_version'])
+    s = get_version()
     resp = flask.make_response(s)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"

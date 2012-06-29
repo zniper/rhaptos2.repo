@@ -7,6 +7,7 @@ clean: clean-crud
 clean-crud:
 	find ./ -name "*.pyc" -type f -exec rm {} \;
 	find ./ -name "*.*~" -type f -exec rm {} \;
+	find ./ -name ".\!*"  -exec rm {} \;       #emacs why do I love you ?
 	find ./ -name ".#*"  -exec rm {} \;       #emacs why do I love you ?
 
 clean-local:

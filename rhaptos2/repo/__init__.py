@@ -15,16 +15,26 @@ import statsd
 import json
 from functools import wraps
 
-from rhaptos2 import conf
-from rhaptos2 import log
-from rhaptos2 import exceptions
+from rhaptos2.common import conf
+from rhaptos2.common import log
+from rhaptos2.common import err
 
-confd = conf.get_config(os.environ['CONFIGFILE'], 'rhaptos2')
+confd = conf.get_config('rhaptos2')
 
 #### see http://flask.pocoo.org/docs/patterns/packages/
 
 app = Flask(__name__)
-lg = log.get_rhaptos2Logger('rhaptos2-repo')
+lg = log.get_logger('rhaptos2', confd)
 app.logger.addHandler(lg)
+
+
+def get_version():
+    '''Making very broad assumptions about the existence of files '''
+    try:
+        v = open('version.txt').read().strip()
+        return v
+    except Exception, e:
+        return '0.0.0'
+    #todo: think about this 
 
 import rhaptos2.repo.views
