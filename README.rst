@@ -49,7 +49,9 @@ The install instructions for that are as follows::
 
    git clone https://github.com/Connexions/bamboo.git
    git clone https://github.com/Connexions/rhaptos2.repo.git
-
+   then:
+       git checkout 0.0.3 in both directories
+    
 
    cd ~/cnxcode/bamboo/
    bash deploy-local.sh localhost ~/cnxcode/bamboo/conf.d/rhaptos2.ini ~/cnxcode/
