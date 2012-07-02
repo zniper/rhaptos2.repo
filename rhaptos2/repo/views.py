@@ -86,9 +86,28 @@ def moduleGET(modname):
     resp.headers["Access-Control-Allow-Origin"]= "*"
     return resp
 
-@app.route("/module/", methods=['DELETE'])
-def moduleDELETE():
-    return 'You DELETEed @ %s' %  model.gettime() 
+@app.route("/module/<modname>", methods=['DELETE'])
+def moduleDELETE(modname):
+    '''support deletion of a module                                                                                       
+                                                                                                                        
+    200 - delete file successful                                                                                             202 - queued for deletion 
+    404 - no such file found                                                                                                 '''
+
+    status_code = 200
+    headers = []
+
+    app.logger.info('getcall %s' % modname)
+    model.callstatsd('rhaptos2.e2repo.module.GET')
+    try:
+        jsonstr = model.delete_module(modname)
+    except IOError, e:
+        status_code = 404
+    
+    resp = flask.make_response(jsonstr)
+    resp.status_code = status_code
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+    return resp
+
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():

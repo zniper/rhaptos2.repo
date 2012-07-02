@@ -158,7 +158,25 @@ function buildHistory(){
 };
 
 function delete_module(filename){
-    alert("Delete Function TBC: called on module: " + filename);
+    $.ajax({
+        type: "DELETE",
+        dataType: 'json',
+        url: REPOBASEURL + "/module/" + filename,
+	xhrFields: {
+	    withCredentials: true
+	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+        
+        success: function(){
+            logout("deleted " + filename);
+            buildHistory();            
+        },
+
+        error: function(jqXHR, textStatus, err) {
+            logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
+        }
+
+    });    
+
 }
 
 function showres(i, elem){

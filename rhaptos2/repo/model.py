@@ -24,7 +24,7 @@ confd = conf.get_config('rhaptos2')
 
 
 from rhaptos2.repo import app
-
+from rhaptos2.repo import files
 
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
@@ -245,6 +245,7 @@ def callstatsd(dottedcounter):
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 
+
 def asjson(pyobj):
     '''just placeholder 
 
@@ -258,6 +259,20 @@ def asjson(pyobj):
 
 def gettime():
     return datetime.datetime.today().isoformat()
+
+def delete_module(modname):
+    '''delete reqd module
+ 
+    
+    '''
+
+    folder = userspace()
+    try:
+        result = files.rhaptos_file_delete(modname, folder)
+    except IOError, e:
+        raise e
+    return ''
+
 
 def fetch_module(modname):
     ''' retrieve module by name from current user store.
