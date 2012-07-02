@@ -30,8 +30,9 @@ app.logger.addHandler(lg)
 
 def get_version():
     '''Making very broad assumptions about the existence of files '''
+    d = os.path.dirname(__file__)
     try:
-        v = open('version.txt').read().strip()
+        v = open(os.path.join(d, 'version.txt')).read().strip()
         return v
     except Exception, e:
         return '0.0.0'
