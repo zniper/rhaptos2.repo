@@ -6,7 +6,7 @@
 
 var FROZONE = {
 
-    e2repoFQDN   : "<<repo-server-name>>",
+    e2repoFQDN   : "<<www-server-name>>",
     wwwFQDN      : "<<www-server-name>>",
 
 
