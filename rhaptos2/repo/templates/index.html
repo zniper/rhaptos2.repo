@@ -1,44 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<tr>
- <td>Text Editor:</td> 
- <td>
-
-<ul class=navigation>
-  {% if g.user %}
-  <li><a href="{{ url_for('edit_profile') }}">profile</a>
-  <li><a href="{{ url_for('logout') }}">sign out [{{ g.user.name }} ({{ g.user.email }})]</a>
-  {% else %}
-  <li><a href="{{ url_for('login') }}">sign in</a>
-  {% endif %}
-</ul>
-
     <form name="fakeeditor" id="form1">
 
     Modulename:<input id="modulename" type="text" name="modulename" value="">
 
     <hr/>
-    
+     
     <textarea id="e2textarea">This is the module text</textarea> 
     </form>
- </td> 
- <td>
-   Workspace:
-   <div id="workspaces"></div>
- </td> 
- </tr>
 
-<tr>
- <td>msgs:</td> 
- <td>
    <a class="nolink" href="#" id="save">Save.</a>
-   <hr/>
+
    <div id="responsearea">Console below:</div>
    <hr/>
    <div id="logarea"></div>
- </td>
- <td>Blank</td>
-  </tr>
 
 {% endblock %}

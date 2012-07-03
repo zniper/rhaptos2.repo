@@ -1,10 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-                                                                  
- <head> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 
-    <title>Connexions - Frozone Development</title>
-    <link rel="stylesheet" type="text/css" href="/static/frozone.css" />
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+
+  <!-- **** layout stylesheet **** -->
+  <link rel="stylesheet" type="text/css" href="/static/style.css" />
+
+  <!-- **** colour scheme stylesheet **** -->
+  <link rel="stylesheet" type="text/css" href="/static/blue.css" />
 
 
 <!-- JQuery -->
@@ -42,27 +47,59 @@
 <script type="text/javascript" src="http://<<cdn-server-name>>/tinymce/tiny-init.js"></script>
 
 
-</head>                                                                 
+</head>
+
 
 {% for message in get_flashed_messages() %}
   <p class=message>{{ message }}
 {% endfor %}
 
 
+<body>
+  <div id="main">
+    <div id="links_container">
+      <div id="logo"><h1>CNX - RHaptos2</h1><h2>Digital Open Education Ecosystem</h2></div>
 
-<body>                                                                  
+      <div id="links">
 
-<table>
-<tr><td colspan="3" bgcolor="blue">
-    <img src="http://cnx.org/internal-banner.gif">
-   </td>
-</tr>
 
-{% block body %}
-If you see this jinja2 did not work 
-{% endblock %}
+  {% if g.user %}
+  <a href="{{ url_for('edit_profile') }}">profile</a> | <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }} ({{ g.user.email }})]</a>
+  {% else %}
+  <a href="{{ url_for('login') }}">sign in</a>
+  {% endif %}
 
-</table>
 
- </body>                                                                 
- </html>
+
+      </div>
+
+    </div>
+    <div id="menu">
+        <li><a id="selected" href="#">edit</a></li>
+        <li><a href="#">Files</a></li>
+        <li><a href="#">Metadata</a></li>
+        <li><a href="#">Roles</a></li>
+        <li><a href="#">Links</a></li>
+        <li><a href="#">Preview</a></li>
+        <li><a href="#">Publish</a></li>
+    </div>
+
+    <div id="content">
+      <div id="column1">
+        <div class="sidebaritem">
+            <div id="workspaces"></div>
+        </div>
+      </div>
+
+      <div id="column2">
+
+        <h1>{% block modname %}{% endblock %}</h1>
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+    <div id="footer">
+      copyright &copy; 2012 connexions | <a href="http://www.dcarter.co.uk">design by dcarter</a>
+    </div>
+  </div>
+</body>
+</html>
