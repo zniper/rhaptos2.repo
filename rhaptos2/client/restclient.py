@@ -19,9 +19,22 @@ proxy_dict = {
 'https': 'marcus.office.mikadosoftware.com:8888',
 'ftp': 'marcus.office.mikadosoftware.com:8888',
 
-
 }
 
+#turn off using proxies
+#proxy_dict = None
+
+def client_whoami(baseURL):
+    """Get details of who repo thinks is logged in
+
+    """
+    url = os.path.join(baseURL, 'whoami/')
+    c = {'Cookie': '''session="y8qe/xrnhdLHBVNXpOkKVp8xoOg=?openid=UydodHRwczovL3d3dy5nb29nbGUuY29tL2FjY291bnRzL284L2lkP2lkPUFJdE9hd2xjN29ZazhNTmx3Qmd4Q3dNaExEcXpYcTFCWEE0YWJiaycKcDEKLg=="'''}
+    resp = requests.get(url, proxies=proxy_dict, headers=c)
+    x = resp.json
+    return x
+    
+   
 def getworkspace_module_list(baseURL):
     ''' '''
     url = os.path.join(baseURL, 'e2repo/workspace')
