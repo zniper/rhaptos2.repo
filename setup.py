@@ -31,7 +31,7 @@ def main():
                    ],
           author='See AUTHORS.txt',
           author_email='info@cnx.org',
-          url='www.cnx.org',
+          url='https://github.com/Connexions/rhaptos2.repo',
           license='LICENSE.txt',
           description='New editor / repo / system for cnx.org -rhaptos2.readthedocs.org',
           long_description='see description',
@@ -44,16 +44,13 @@ def main():
               ,"pylint"
               ,"Flask-OpenID"
               ,"sqlalchemy"
-#             sqlite3 - assume its compiled into distrib
+              ,"rhaptos2.common"
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 
           package_data={'rhaptos2.repo': ['templates/*.*', 'static/*.*', 'version.txt', 'default.ini'],
                         },
 
-#          #intention here is to get setup to use nose to run setup.py test. 
-#          tests_require="nose",
-#          test_suite="nose.collector",
           
           )
 
