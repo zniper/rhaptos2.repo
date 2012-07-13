@@ -82,7 +82,7 @@ function getLoadHistoryVer(uuid){
 
         success: function(nodedoc){
             var title = nodedoc['title'];
-            var txtarea = nodedoc['txtarea'];
+            var txtarea = nodedoc['content'];
  
             var aclrw = nodedoc['aclrw'];
             var contentrw = nodedoc['contentrw'];
