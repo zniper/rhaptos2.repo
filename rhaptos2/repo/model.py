@@ -24,7 +24,7 @@ confd = conf.get_config('rhaptos2')
 
 
 from rhaptos2.repo import app
-from rhaptos2.repo import files
+from rhaptos2.repo import files, security
 
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
@@ -55,6 +55,9 @@ Base.query = db_session.query_property()
 def init_db():
     Base.metadata.create_all(bind=engine)
 
+
+
+    
 
 class User(Base):
     __tablename__ = 'users'
@@ -144,6 +147,7 @@ def whoami():
     if not g.user:
         app.logger.info('+++++ No session?' + repr(g) )
         raise Rhaptos2Error('Not logged in - trap this?')
+        #return("Not logged in", 401) 
     else:
         return [g.user.email, g.user.name]
 
@@ -159,8 +163,7 @@ def whoamiGET():
     try:
         email, name =  whoami()
     except Rhaptos2Error:
-        email = ''
-        name = '<a href="">login</a>'
+        return("Not logged in", 401)
 
     d = {'user_email': email,
          'user_name': name}
@@ -202,9 +205,8 @@ def add_location_header_to_response(fn):
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    user_email = whoami()[0]
-    userspace = os.path.join(confd['remote_e2repo'],
-                             user_email)
+    userspace =confd['remote_e2repo']
+
     if os.path.isdir(userspace):
         return userspace
     else:
@@ -212,31 +214,33 @@ def userspace():
            os.makedirs(userspace)
            return userspace 
        except Exception,e:
-           raise Rhaptos2Error('cannot create repo or userspace %s - %s' % (userspace, e))
+           raise Rhaptos2Error('cannot create repo \
+                                or userspace %s - %s' % (
+                                 userspace, e))
            
     
-def getfilename(modulename):
+# def getfilename(modulename):
 
-    '''find all files with this name, test.1 etc, then sort and find
-    next highest numnber
+#     '''find all files with this name, test.1 etc, then sort and find
+#     next highest numnber
   
-    >>> getfilename('test', REPO='/tmp')
-    'test.0'
+#     >>> getfilename('test', REPO='/tmp')
+#     'test.0'
 
 
-    '''
-    app.logger.info('+++++' + confd['remote_e2repo'])
+#     '''
+#     app.logger.info('+++++' + confd['remote_e2repo'])
 
-    try:
-        allfiles = [f for f in os.listdir(userspace()) if 
-                 os.path.splitext(os.path.basename(f))[0] == modulename]
-    except OSError, IOError:
-        allfiles = []
+#     try:
+#         allfiles = [f for f in os.listdir(userspace()) if 
+#                  os.path.splitext(os.path.basename(f))[0] == modulename]
+#     except OSError, IOError:
+#         allfiles = []
  
-    if len(allfiles) == 0:
-        return '%s.%s' % (modulename, 0)
-    else:
-        return '%s.%s' % (modulename, len(allfiles))
+#     if len(allfiles) == 0:
+#         return '%s.%s' % (modulename, 0)
+#     else:
+#         return '%s.%s' % (modulename, len(allfiles))
 
     
 def callstatsd(dottedcounter):
@@ -283,25 +287,15 @@ def fetch_module(modname):
     json = open(os.path.join(folder, str(modname))).read()    
     return json 
 
-def store_module(fulltext, jsondict):
+def store_module(jsondict):
     '''recieve and write to disk the json dict holding the text edtited
 
     '''
-    myhash = getfilename(jsondict['modulename'])
-    pathtofolder = userspace()
-
-    app.logger.info('******************** %s %s ' % (myhash, pathtofolder))
-    newfile = os.path.join(pathtofolder, myhash)
-    app.logger.info(newfile)
-
-    try:
-        open(newfile,'w').write(fulltext)    
-    except:
-        #it will be far more efficient to write folder on first exception than check everytime
-        os.mkdir(pathtofolder)
-        app.logger.error('%s path did not exist - creating' % pathtofolder) 
-        open(os.path.join(pathtofolder, str(myhash)),'w').write(fulltext)    
-        
+    
+    n = security.NodeDoc()
+    n.load_from_djson(jsondict)
+    print n.uuid
+    n.save()
+    app.logger.info('saved new file %s ' % n.uuid)
        
-    return myhash
-
+    return n.uuid

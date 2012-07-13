@@ -20,7 +20,7 @@ from rhaptos2.common import conf
 confd = conf.get_config('rhaptos2')
 from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
-from rhaptos2.repo import model, get_version
+from rhaptos2.repo import model, get_version, security
 
 
 ########################### views
@@ -36,22 +36,26 @@ def modulePOST():
     app.logger.info('POST CALLED')
     model.callstatsd('rhaptos2.e2repo.module.POST')
     try:
+       
 
-        html5 = request.form['moduletxt']
-        d = json.loads(html5)
-        
+        d = request.json
+        if d['uuid'] != u'': 
+            return ("POSTED WITH A UUID" , 500)
+        else:
+            d['uuid'] = None
+
         app.logger.info(repr(d))
-                      
-        myhash = model.store_module(html5, d)
+        html5 = ''' '''              
+        myuuid = model.store_module(d)
 
 
     except Exception, e:
 
         app.logger.error(str(e))
-        app.logger.info(repr(d))
+
         raise(e)
 
-    s = model.asjson({'hashid':myhash})
+    s = model.asjson({'hashid':myuuid})
     resp = flask.make_response(s)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -63,8 +67,10 @@ def modulePOST():
 def workspaceGET():
     ''' '''
     
-    f = os.listdir(model.userspace())
-    json_dirlist = json.dumps(f)
+    email, name = model.whoami()
+    w = security.WorkSpace(email)
+    
+    json_dirlist = json.dumps(w.annotatedfiles)
     resp = flask.make_response(json_dirlist)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
