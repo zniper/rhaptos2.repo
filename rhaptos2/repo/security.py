@@ -82,6 +82,7 @@ class NodeDoc(object):
     """
 
     def __init__(self):
+        self.nodedocversion = "0.1" 
         self.versionkeys = ['aclrw', 'content', 'contentrw', 'title', 'uuid']
 
     def load_from_file(self, uid):
@@ -135,20 +136,24 @@ class NodeDoc(object):
 
 
     def load_from_djson(self, djson):
-        """given a dict (from the JSON POST) create internal object """
+        """given a dict (from the JSON POST) create internal object 
+
+        Returns None, its updating internally. 
+        """
 
 
 
         v01keys = self.versionkeys
         if sorted(djson.keys()) != v01keys:
-            raise  Rhaptos2Error("Incoming JSON has incorrect keys - version 0.1" + str(djson.keys()) + str(v01keys))
+            raise  Rhaptos2Error("Incoming JSON has incorrect keys" + \
+                      str(djson.keys()) + str(v01keys))
         if not djson['uuid'] : djson['uuid'] = str(uuid.uuid4())
         self.__dict__.update(djson)
 
                  
 
     def update(self, openid, **kwds):
-        """update internal dict with some checking, """
+        """update internal dict with whatever sent in kwds, plus some checking, """
         change_all = self.allow_other_change(openid)
         change_acl = self.allow_acl_change(openid)
 

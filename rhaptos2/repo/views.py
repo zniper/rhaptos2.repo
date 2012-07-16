@@ -29,24 +29,23 @@ from rhaptos2.repo import model, get_version, security
 def index():
     return render_template('index.html')
 
-
-#@apply_cors
-@app.route("/module/", methods=['POST'])
-def modulePOST():
-    app.logger.info('POST CALLED')
-    model.callstatsd('rhaptos2.e2repo.module.POST')
+@app.route("/module/", methods=['PUT'])
+def modulePUT():
+    app.logger.info('MODULE PUT CALLED')
+    model.callstatsd('rhaptos2.repo.module.PUT')
     try:
        
 
         d = request.json
-        if d['uuid'] != u'': 
-            return ("POSTED WITH A UUID" , 500)
-        else:
-            d['uuid'] = None
+        if d['uuid'] == u'': 
+            return ("PUT WITHOUT A UUID" , 400)
 
         app.logger.info(repr(d))
-        html5 = ''' '''              
-        myuuid = model.store_module(d)
+        current_nd = model.mod_from_file(d['uuid'])       
+        current_nd.load_from_djson(d) #this checks permis
+        uid = current_nd.uuid
+        current_nd.save()  
+        
 
 
     except Exception, e:
@@ -55,7 +54,43 @@ def modulePOST():
 
         raise(e)
 
-    s = model.asjson({'hashid':myuuid})
+    s = model.asjson({'hashid':uid})
+    resp = flask.make_response(s)    
+    resp.content_type='application/json'
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    return resp
+
+
+
+#@apply_cors
+@app.route("/module/", methods=['POST'])
+def modulePOST():
+    app.logger.info('POST CALLED')
+    model.callstatsd('rhaptos2.repo.module.POST')
+    try:
+       
+
+        d = request.json
+        if d['uuid'] != u'': 
+            return ("POSTED WITH A UUID" , 400)
+        else:
+            d['uuid'] = None
+
+        app.logger.info(repr(d))
+        ### maybe we know too much about nodedocs
+        nd = model.mod_from_json(d)
+        uid = nd.uuid
+        nd.save()
+        del(nd)
+
+    except Exception, e:
+
+        app.logger.error(str(e))
+
+        raise(e)
+
+    s = model.asjson({'hashid':uid})
     resp = flask.make_response(s)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -115,9 +150,6 @@ def moduleDELETE(modname):
     return resp
 
 
-@app.route("/module/", methods=['PUT'])
-def modulePUT():
-    return 'You PUTed @ %s' %  model.gettime() 
 
 
 
