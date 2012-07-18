@@ -69,6 +69,8 @@ Components
 
 8. authentication / authorisation
 
+9. Web-view
+
 
 
 One paragraph descriptions
@@ -209,6 +211,15 @@ We currently use OpenID (1.1) authentication against outside providers (such as 
 We intend to use this as the primary authentication *and* authorisation me chanism.
 
 We shall store openid-identifers with the document as a form of ACL control
+
+
+9. Web View
+-----------
+
+This shall provide the "web site" service, as well as provicding access to the 
+publications through all manner of User-Agents.  I expect that the canonical URLs will
+be the same as the unpub-repo, only the Accept headers will be different (see above)
+
 
 
 
