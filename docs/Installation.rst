@@ -2,20 +2,49 @@
 Installing and updating
 =======================
 
+Heroku has proven an interesting case study in large scale deployment
+of many many apps.  The founders there have published an opinionated
+view of how to structure deployment and applications at
+`http://www.12factor.net/`_
 
-We shall be using Jenkins to do the majority of the installation,
-however there is a lot to it, so here is details on how to do the
-installation of the frozone eco-system (for want of a better term) and
-links to the source.
+One interesting takeaway is to ::
 
-Two types of install
 
-1. Simplest possible repo (the one laptop install)
-2. DevOps repo (full, Virtual servers)
+  Keep development, staging, and production as similar as possible
+
+This (along with most of the other 11 ideas) I generally agree with
+(frankly its all a bit common sense).  Anyway.
+
+This means that in production if we think we are going to have a range
+of webservers running our app, that we should at the very least have
+two web apps running in development.  And they should be installed and
+monitored the same way as they will be live.
+
+What I am saying is that we are beyond just downloading one egg and
+running the code.  We need deployment scripts just to get started.
+
 
 
 Overview
 ========
+
+There are two main deployment targets during development
+
+1. Developer's local office
+
+2. Rackspace Cloud servers
+
+I  have assumed  that  each developer  will  have at  least a  virtual
+machine of Ubuntu running  locally at an acceptable speed.  Personally
+I  have  an  entry  level   server  running  Linux  Containers,  as  a
+lightweight solution. YMMV
+
+The idea is that at a very minimum, we shall install the repository
+and web server(s) onto a clean virtual machine, and run the
+'eco-system' from there.  There will be (minimal) system wide alterations to the developers real local system.
+
+
+
 
 We are using several servers, some as repositories, some as logging
 servers etc.  To do this without having m,ultiple physical hosts, we
