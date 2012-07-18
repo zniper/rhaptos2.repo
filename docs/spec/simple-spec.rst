@@ -346,7 +346,7 @@ We shall have to look t the best means of passing around trees, I suspect D3.js 
 A set of sections will be linked together via a *collection*, a graph (probably a tree in most cases) of uuid nodes.  Parsing both these on both sides of the client/server will be important to get right.
 
 .. figure:: collection-tree.png
-
+   :scale: 50 %
 
 
 Other tools
