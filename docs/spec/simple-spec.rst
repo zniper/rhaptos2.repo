@@ -367,7 +367,7 @@ REST API discussion
 TBD
 
 
-..
+.. ::
 
     Meta Data
     =========
