@@ -286,13 +286,27 @@ discuss...
 
 Also
 
-ACL style approach, where the permissions for a document are stored on the documnet.
-It is simple to implement but requires us to create a seperate index (to enable knowing which docs to show).
-AS we do that is it not simpler to store the acls on the index server, which also remvoes a large attack vector 
+ACL style approach, where the permissions for a document are stored on
+the documnet.  It is simple to implement but requires us to create a
+seperate index (to enable knowing which docs to show).  AS we do that
+is it not simpler to store the acls on the index server, which also
+remvoes a large attack vector
 http://peekay.org/2009/03/26/security-issues-with-google-docs/
 http://jonmcleanpcv.wordpress.com/2010/11/19/google-docs-has-a-big-gaping-security-hole/
 
+
 I am unclear how security on node.js / Aloha works.
+
+
+
+Security - It is highly unlikely that storing userids in the documents
+that are then sent out to the wild will be a suitable and secure
+solution.  Crypto can be too easily broken if not done well.  As such
+its probably a good idea to push the security lookup over to backend
+and probbably do security per collections
+
+However as a first cut we may well find security embedded with KeyCzar
+will be sufficient
 
 
 More Detailed Look
@@ -470,5 +484,108 @@ Smallest possible solution
 * uuid based, rest based solution.  COmpletely aysnchronous (202)
 * collection emelment - simple linear linkages of uuids
 * versioning - limited support - not first class object in this metahpr
+
+
+
+Feature List
+============
+
+List of features, will try to expand
+
+Collection defintion as a single file
+-------------------------------------  
+
+How to define a collection
+WHat file format will we use (JSON?)
+WHat parsers
+What security
+
+.. figure:: collection-tree.png
+
+
+Indexing (user workspace)
+-------------------------
+
+.. figure:: collection-tree.png
+ 
+We will need to have a shareable backend database that stores
+which uuids one has access
+THis will be a phase two - as the security on each doc is probably acceptable 
+(well ok - its not, but we may need to get in some pentesting to decide if that is vulnerable or if other things I have not thought of are)
+
+Sections as smallest unit of storage
+------------------------------------
+
+.. figure:: collection-tree.png
+  
+Lets breakdown the documents into sections.
+We dont have to do it immediately, but we do have to do it.
+
+
+bi-directional API for Editor / Auhtor tools
+--------------------------------------------
+
+.. figure:: collection-tree.png
+
+See above
+
+Metadata storage and changes
+----------------------------
+
+.. figure:: collection-tree.png
+
+Pretty simple I think, just list of metadata we want to keep with every 
+collection and node.
+
+
+
+ 
+    
+
+
+  
+
+
+
+Requirements list
+=================
+
+Re-working of "CNX Rewrite Requirements"
+
+Editor
+::
+
+
+    RequirementSecondary Requirement
+    WYSIWYG HTML 5 EditorEdit without viewing Source
+    WYSIWYG HTML 5 EditorAbility to insert processing instructions
+    WYSIWYG HTML 5 EditorDrag and Drop elements on a module
+    WYSIWYG HTML 5 EditorHTML pasted in should be restricted to the subset allowed
+    WYSIWYG HTML 5 EditorDrag and drop images into the editor
+    WYSIWYG HTML 5 EditorSplit module into multiple modules
+    PDF PreviewCalls out to PDF service
+    Web View PreviewCalls out to Web View
+    Web View PreviewAllow mobile and full web preview
+    Edit rolesLinks at top of module editor
+    Edit LinksLinks at top of module editor
+    Edit MetadataLinks at top of module editor
+    Edit MetadataSubject is required
+    Imports (Word, LaTeX, CNXML, HTML, Zip)Imports performed by Transformation services
+    Exports (HTML, ZIP, CNXML)Uses Transformation services?
+    Edit FilesAdd, replace and delete images and other media files
+    PublishPushes content to published repository
+    PublishAccept License and enter description
+    SaveSaves to local repository
+    StorageStore unpublished modules and related files
+    StorageShould have API so any database can be used for storage
+    Sword
+    Derive a copy
+    Math
+    Small changes on published content
+    Editor sandbox to allow users to try the editor without having an account
+    Test publish option
+    RestrictionsPrevent empty modules from being published
+
+
 
 
