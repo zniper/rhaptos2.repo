@@ -25,13 +25,32 @@ from rhaptos2.repo import model, get_version, security
 
 ########################### views
 
+
+def apply_cors(fn):
+    '''decorator to apply the correct CORS
+       friendly header 
+       I am assuming all view functions return 
+       just text ..  hmmm
+    '''
+    @wraps(fn)
+    def newfn(*args, **kwds):
+        resp = flask.make_response(fn())
+        resp.content_type='application/json'
+        resp.headers["Access-Control-Allow-Origin"]= "*"
+        return resp
+
+    return newfn
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-#@apply_cors
+
 @app.route("/module/", methods=['POST'])
+@apply_cors
 def modulePOST():
     app.logger.info('POST CALLED')
     model.callstatsd('rhaptos2.e2repo.module.POST')
@@ -56,11 +75,11 @@ def modulePOST():
         raise(e)
 
     s = model.asjson({'hashid':myuuid})
-    resp = flask.make_response(s)    
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
+#    resp = flask.make_response(s)    
+#    resp.content_type='application/json'
+#    resp.headers["Access-Control-Allow-Origin"]= "*"
 
-    return resp
+    return s
 
 
 @app.route("/workspace/", methods=['GET'])
