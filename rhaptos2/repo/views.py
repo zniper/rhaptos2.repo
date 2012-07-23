@@ -46,7 +46,7 @@ def apply_cors(fn):
 
 @app.route('/')
 def index():
-    return render_template('index.html', build_url=confd['BUILD_TAG'])
+    return render_template('index.html', build_tag=confd['BUILD_TAG'])
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
