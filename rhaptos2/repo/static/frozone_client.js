@@ -223,7 +223,7 @@ function saveText(){
 	     url: MODULEURL,
         	xhrFields: {
 	         withCredentials: true
-	        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+	        }, 
 
 
 	     type: requestmethod,
@@ -248,13 +248,40 @@ function saveText(){
 
     };
 
+function opendialog(dia){
 
+   $(dia).dialog("open");
 
+};
+
+function test(){
+
+    //alert(whoami.identity_url + "/n" +
+    //      whoami.name + "/n" +
+    //      whoami.email);
+    var s = "#dialog";
+    $(s).dialog("open");
+
+};
 
 
 $(document).ready(function() {
 
+    //mark dialog areas as dialog but not shown
+    var dialogs = ["#dialog_files", "#dialog_metadata",
+                   "#dialog_roles", "#dialog_links",
+                   "#dialog_links", "#dialog_preview",
+                   "#dialog_publish"];
+    $.each(dialogs, function(i,v){
+        alert(i + ":" + v);
+        $(v).dialog({ autoOpen: false });
+    });
+
+
     //bind various clicks
+    $("#testclick").click(function(e){test();
+                                      e.preventDefault()});
+
 
     $("#clickLoadTextArea").click(function(e){load_textarea();
                                               e.preventDefault()});
@@ -275,6 +302,7 @@ $(document).ready(function() {
                        }
                       );
 
+    
   
 });
 

@@ -10,11 +10,15 @@
 
   <!-- **** colour scheme stylesheet **** -->
   <link rel="stylesheet" type="text/css" href="/static/blue.css" />
+  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/sunny/jquery-ui.css" />
+
 
 
 <!-- JQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js"></script>
+
+
 <!-- TinyMCE and the TinyMCE JQuery helper-->
 <script type="text/javascript" src="http://<<cdn-server-name>>/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript" src="http://<<cdn-server-name>>/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
@@ -42,9 +46,28 @@
 
 
 
+    <script type="text/javascript">
+      /* To be simple means to get current logged in USer back to JQuery*/
+      var whoami = {
+          identity_url: "{{ g.user.identity_url }}",
+          email       : "{{ g.user.email }}",
+          name        : "{{ g.user.name }}"
+      }
+    </script>
+
+
+
 
 <!-- finally, initiate tinymce using oerpub.editor config -->
 <script type="text/javascript" src="http://<<cdn-server-name>>/tinymce/tiny-init.js"></script>
+
+
+<script>
+  $(function() {
+  $( "#menu" ).tabs();
+  });
+
+  </script>
 
 
 </head>
@@ -64,7 +87,7 @@
 
 
   {% if g.user %}
-  <a href="{{ url_for('edit_profile') }}">profile</a> | <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }} ({{ g.user.email }})]</a>
+   <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }}]</a>
   {% else %}
   <a href="{{ url_for('login') }}">sign in</a>
   {% endif %}
@@ -76,13 +99,39 @@
     </div>
     <div id="menu">
         <li><a id="selected" href="#">edit</a></li>
-        <li><a href="#">Files</a></li>
-        <li><a href="#">Metadata</a></li>
-        <li><a href="#">Roles</a></li>
-        <li><a href="#">Links</a></li>
-        <li><a href="#">Preview</a></li>
-        <li><a href="#">Publish</a></li>
+        <li><a href="#" onclick="opendialog('#dialog_files');">Files</a></li>
+        <li><a href="#" onclick="opendialog('#dialog_metadata');">Metadata</a></li>
+        <li><a href="#" onclick="opendialog('#dialog_roles');">Roles</a></li>
+        <li><a href="#" onclick="opendialog('#dialog_links');">Links</a></li>
+        <li><a href="#" onclick="opendialog('#dialog_preview');">Preview</a></li>
+        <li><a href="#" onclick="opendialog('#dialog_publish');">Publish</a></li>
+        <li><a href="#" id="testclick">Test</a></li>
     </div>
+
+<div id="dialog_files" title="Files">
+  Dialog for files (TBC)
+</div>
+
+<div id="dialog_metadata" title="Metadata">
+  Dialog for Metadata (TBC)
+</div>
+
+<div id="dialog_roles" title="Roles">
+  Dialog for roles (TBC)
+</div>
+
+<div id="dialog_links" title="Links">
+  Dialog for links (TBC)
+</div>
+
+<div id="dialog_preview" title="Preview">
+  Dialog for Preview (TBC)
+</div>
+
+<div id="dialog_publish" title="Publish">
+  Dialog for Publish (TBC)
+</div>
+
 
     <div id="content">
       <div id="column1">
@@ -95,7 +144,9 @@
 
         <h1>{% block modname %}{% endblock %}</h1>
         {% block body %}{% endblock %}
+
       </div>
+
     </div>
     <div id="footer">
       copyright &copy; 2012 connexions | <a href="http://www.dcarter.co.uk">design by dcarter</a>
