@@ -211,11 +211,16 @@ function saveText(){
          
          var requestmethod = 'POST';
          var payload = serialise_form(); 
-         
-     
-         for (var i in payload){                  
-             alert(i + ' : ' + payload[i]);
+         if (payload['uuid'] != ''){
+             requestmethod = 'PUT';     
          };
+
+         var foo = "";
+         for (var i in payload){                  
+             foo = "/n" + i + ' : ' + payload[i];
+         };
+         alert(requestmethod);
+         alert(foo);
 
          var json_text = JSON.stringify(payload, null, 2);
 

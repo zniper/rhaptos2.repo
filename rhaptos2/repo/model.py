@@ -257,15 +257,20 @@ def fetch_module(modname):
     json = open(os.path.join(folder, str(modname))).read()    
     return json 
 
-def store_module(jsondict):
-    '''recieve and write to disk the json dict holding the text edtited
-
-    '''
+def mod_from_json(jsondict):
+    """Given a JSON dict from a POST / PUT request
+       create and return a NodeDoc class """
     
     n = security.NodeDoc()
     n.load_from_djson(jsondict)
-    print n.uuid
-    n.save()
-    app.logger.info('saved new file %s ' % n.uuid)
-       
-    return n.uuid
+    return n
+
+def mod_from_file(uid):
+    """ Given a uuid, pull the currently stored  
+        and return as NodeDoc object"""
+    n = security.NodeDoc()
+    n.load_from_file(uid)
+    return n
+
+
+
