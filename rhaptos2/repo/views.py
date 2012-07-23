@@ -37,6 +37,7 @@ def apply_cors(fn):
         resp = flask.make_response(fn())
         resp.content_type='application/json'
         resp.headers["Access-Control-Allow-Origin"]= "*"
+        resp.headers["Access-Control-Allow-Credentials"]= "true"
         return resp
 
     return newfn
@@ -85,11 +86,16 @@ def modulePOST():
 @app.route("/workspace/", methods=['GET'])
 def workspaceGET():
     ''' '''
-    
-    email, name = model.whoami()
-    w = security.WorkSpace(email)
-    
-    json_dirlist = json.dumps(w.annotatedfiles)
+    ###TODO - should whoami redirect to a login page?
+    ### yes the client should only expect to handle HTTP CODES
+   
+    identity = model.whoami()
+    if not identity:
+        json_dirlist = []
+    else: 
+        w = security.WorkSpace(identity.email)
+        json_dirlist = json.dumps(w.annotatedfiles)
+ 
     resp = flask.make_response(json_dirlist)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -176,14 +182,12 @@ def burn():
 
 @app.before_request
 def before_request():
-    g.user = None
-    if 'openid' in session:
-        g.user = model.User.query.filter_by(openid=session['openid']).first()
+    g.user = model.whoami()
 
 
 @app.after_request
 def after_request(response):
-    model.db_session.remove()
+#    model.db_session.remove()
     return response
 
 
@@ -214,64 +218,16 @@ def create_or_login(resp):
     with a terrible URL which we certainly don't want.
     """
     session['openid'] = resp.identity_url
-    user = model.User.query.filter_by(openid=resp.identity_url).first()
+    model.store_identity(resp.identity_url,
+                       name=resp.fullname or resp.nickname,
+                       email=resp.email)
+    user = model.whoami()
+
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
         return redirect(model.oid.get_next_url())
-    return redirect(url_for('create_profile', next=model.oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
-
-
-@app.route('/create-profile', methods=['GET', 'POST'])
-def create_profile():
-    """If this is the user's first login, the create_or_login function
-    will redirect here so that the user can set up his profile.
-    """
-    if g.user is not None or 'openid' not in session:
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        if not name:
-            flash(u'Error: you have to provide a name')
-        elif '@' not in email:
-            flash(u'Error: you have to enter a valid email address')
-        else:
-            flash(u'Profile successfully created')
-            model.db_session.add(model.User(name, email, session['openid']))
-            model.db_session.commit()
-            return redirect(model.oid.get_next_url())
-    return render_template('create_profile.html', next_url=model.oid.get_next_url())
-
-
-@app.route('/profile', methods=['GET', 'POST'])
-def edit_profile():
-    """Updates a profile"""
-    if g.user is None:
-        abort(401)
-    form = dict(name=g.user.name, email=g.user.email)
-    if request.method == 'POST':
-        if 'delete' in request.form:
-            model.db_session.delete(g.user)
-            model.db_session.commit()
-            session['openid'] = None
-            flash(u'Profile deleted')
-            return redirect(url_for('index'))
-        form['name'] = request.form['name']
-        form['email'] = request.form['email']
-        if not form['name']:
-            flash(u'Error: you have to provide a name')
-        elif '@' not in form['email']:
-            flash(u'Error: you have to enter a valid email address')
-        else:
-            flash(u'Profile successfully created')
-            g.user.name = form['name']
-            g.user.email = form['email']
-            model.db_session.commit()
-            return redirect(url_for('edit_profile'))
-    return render_template('edit_profile.html', form=form)
+    return redirect(model.oid.get_next_url())
 
 
 @app.route('/logout')
