@@ -24,15 +24,15 @@ confd = conf.get_config('rhaptos2')
 
 
 from rhaptos2.repo import app
-from rhaptos2.repo import files
+from rhaptos2.repo import files, security
 
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from flaskext.openid import OpenID
 
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+#from sqlalchemy import create_engine, Column, Integer, String
+#from sqlalchemy.orm import scoped_session, sessionmaker
+#from sqlalchemy.ext.declarative import declarative_base
 
 
 app.config.update(
@@ -43,32 +43,6 @@ app.config.update(
 
 # setup flask-openid
 oid = OpenID(app)
-
-# setup sqlalchemy
-engine = create_engine(app.config['DATABASE_URI'])
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
-Base = declarative_base()
-Base.query = db_session.query_property()
-
-def init_db():
-    Base.metadata.create_all(bind=engine)
-
-
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(60))
-    email = Column(String(200))
-    openid = Column(String(200))
-
-    def __init__(self, name, email, openid):
-        self.name = name
-        self.email = email
-        self.openid = openid
-
-
 
 
 #def resp_as_json():
@@ -120,57 +94,61 @@ ToDO:
 '''
 
 
-def apply_cors(fn):
-    '''decorator to apply the correct CORS friendly header '''
+class Identity(object):
+    def __init__(self, identity_url):
+        """placeholder - we want to store identiy values somewhere
+           but sqlite is limited to one server, so need move to network aware storage
+        """
+        self.identity_url = identity_url
+        if self.identity_url:
+            self.email = 'Not Implemented' #pull from memcache
+            self.name = 'Not Implemented'
+        else:
+            self.email = None
+            self.name = None
 
-    def decorator():
-        resp = fn()
-        resp.headers["Access-Control-Allow-Origin"]= "*"
-        return resp
-    return decorator
+def store_identity(identity_url, **kwds):
+    """no-op but would push idneity to backend storage ie memcvache """
+    pass
 
+def retrieve_identity(identity_url, **kwds):
+    """no-op but would pull idneity to backend storage ie memcvache """
+    pass
 
 def whoami():
-    '''Not too sure how I will work this but I need a user, OpenID
-  
-    migrate to http://flask.pocoo.org/snippets/51/
-
-    THis is hard coded to testuser@cnx.org'''
-
-
+    '''
+    return the identity url stored in session cookie
+    '''
+    callstatsd("rhaptos2.repo.whoami")    
     app.logger.info('+++++ session dict' + repr(session.__dict__) )
     app.logger.info('+++++ app config' + repr(app.config) )
 
-    if not g.user:
-        app.logger.info('+++++ No session?' + repr(g) )
-        raise Rhaptos2Error('Not logged in - trap this?')
+    if 'openid' in session:
+        user = Identity(session['openid'])
+        return user
     else:
-        return [g.user.email, g.user.name]
+        app.logger.info('+++++ No session' + repr(g) )
+        return None
+        #is this alwasys desrireed?
 
-def workspace_path():
-    ''' NOT SAFE IN ANY WAY'''
-    email =  whoami()[0]
-    return os.path.join(REPO, email)
 
 @app.route("/whoami/", methods=['GET'])
 def whoamiGET():
     ''' '''
     ### todo: return 401 code and let ajax client put up login.
-    try:
-        email, name =  whoami()
-    except Rhaptos2Error:
-        email = ''
-        name = '<a href="">login</a>'
-
-    d = {'user_email': email,
-         'user_name': name}
-    jsond = asjson(d)
-    ### make decorators !!!
-    resp = flask.make_response(jsond)    
-    resp.content_type='application/json'
-    resp = apply_cors(resp)
-
-    return resp
+    identity =  whoami()
+    
+        
+    if identity:
+        d = identity.__dict__
+        jsond = asjson(d)
+        ### make decorators !!!
+        resp = flask.make_response(jsond)    
+        resp.content_type='application/json'
+        resp = apply_cors(resp)
+        return resp
+    else:
+        return("Not logged in", 401)
 
 def apply_cors(resp):
     '''  '''
@@ -193,18 +171,12 @@ def add_location_header_to_response(fn):
     resp.headers["Location"]= "URL NEEDED FROM HASHID"
 
 
-# def whoami():
-#     '''Not too sure how I will work this but I need a user, OpenID
-  
-#     THis is hard coded to testuser@cnx.org'''
-#     return 'testuser@cnx.org'
 
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    user_email = whoami()[0]
-    userspace = os.path.join(confd['remote_e2repo'],
-                             user_email)
+    userspace =confd['remote_e2repo']
+
     if os.path.isdir(userspace):
         return userspace
     else:
@@ -212,31 +184,33 @@ def userspace():
            os.makedirs(userspace)
            return userspace 
        except Exception,e:
-           raise Rhaptos2Error('cannot create repo or userspace %s - %s' % (userspace, e))
+           raise Rhaptos2Error('cannot create repo \
+                                or userspace %s - %s' % (
+                                 userspace, e))
            
     
-def getfilename(modulename):
+# def getfilename(modulename):
 
-    '''find all files with this name, test.1 etc, then sort and find
-    next highest numnber
+#     '''find all files with this name, test.1 etc, then sort and find
+#     next highest numnber
   
-    >>> getfilename('test', REPO='/tmp')
-    'test.0'
+#     >>> getfilename('test', REPO='/tmp')
+#     'test.0'
 
 
-    '''
-    app.logger.info('+++++' + confd['remote_e2repo'])
+#     '''
+#     app.logger.info('+++++' + confd['remote_e2repo'])
 
-    try:
-        allfiles = [f for f in os.listdir(userspace()) if 
-                 os.path.splitext(os.path.basename(f))[0] == modulename]
-    except OSError, IOError:
-        allfiles = []
+#     try:
+#         allfiles = [f for f in os.listdir(userspace()) if 
+#                  os.path.splitext(os.path.basename(f))[0] == modulename]
+#     except OSError, IOError:
+#         allfiles = []
  
-    if len(allfiles) == 0:
-        return '%s.%s' % (modulename, 0)
-    else:
-        return '%s.%s' % (modulename, len(allfiles))
+#     if len(allfiles) == 0:
+#         return '%s.%s' % (modulename, 0)
+#     else:
+#         return '%s.%s' % (modulename, len(allfiles))
 
     
 def callstatsd(dottedcounter):
@@ -283,25 +257,20 @@ def fetch_module(modname):
     json = open(os.path.join(folder, str(modname))).read()    
     return json 
 
-def store_module(fulltext, jsondict):
-    '''recieve and write to disk the json dict holding the text edtited
+def mod_from_json(jsondict):
+    """Given a JSON dict from a POST / PUT request
+       create and return a NodeDoc class """
+    
+    n = security.NodeDoc()
+    n.load_from_djson(jsondict)
+    return n
 
-    '''
-    myhash = getfilename(jsondict['modulename'])
-    pathtofolder = userspace()
+def mod_from_file(uid):
+    """ Given a uuid, pull the currently stored  
+        and return as NodeDoc object"""
+    n = security.NodeDoc()
+    n.load_from_file(uid)
+    return n
 
-    app.logger.info('******************** %s %s ' % (myhash, pathtofolder))
-    newfile = os.path.join(pathtofolder, myhash)
-    app.logger.info(newfile)
 
-    try:
-        open(newfile,'w').write(fulltext)    
-    except:
-        #it will be far more efficient to write folder on first exception than check everytime
-        os.mkdir(pathtofolder)
-        app.logger.error('%s path did not exist - creating' % pathtofolder) 
-        open(os.path.join(pathtofolder, str(myhash)),'w').write(fulltext)    
-        
-       
-    return myhash
 
