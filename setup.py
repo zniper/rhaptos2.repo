@@ -24,8 +24,7 @@ def main():
 
     setup(name='rhaptos2.repo',
           version=get_version(),
-          packages=['rhaptos2'
-                    ,'rhaptos2.repo'
+          packages=[ 'rhaptos2.repo'
                     ,'rhaptos2.client'
                     ,'rhaptos2.test'
                    ],
@@ -45,6 +44,7 @@ def main():
               ,"Flask-OpenID"
               ,"sqlalchemy"
               ,"rhaptos2.common"
+              ,"python-memcached"
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 
