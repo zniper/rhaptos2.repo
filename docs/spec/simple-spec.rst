@@ -505,12 +505,19 @@ WHat parsers
 What security
 
 .. figure:: collection-tree.png
+   :height: 674
+   :width:  1366
+   :scale:  50 %
 
 
 Indexing (user workspace)
 -------------------------
 
 .. figure:: collection-tree.png
+   :height: 674
+   :width:  1366
+   :scale:  50 %
+
  
 We will need to have a shareable backend database that stores
 which uuids one has access
@@ -521,6 +528,10 @@ Sections as smallest unit of storage
 ------------------------------------
 
 .. figure:: collection-tree.png
+   :height: 674
+   :width:  1366
+   :scale:  50 %
+
   
 Lets breakdown the documents into sections.
 We dont have to do it immediately, but we do have to do it.
@@ -530,6 +541,10 @@ bi-directional API for Editor / Auhtor tools
 --------------------------------------------
 
 .. figure:: collection-tree.png
+   :height: 674
+   :width:  1366
+   :scale:  50 %
+
 
 See above
 
@@ -537,6 +552,10 @@ Metadata storage and changes
 ----------------------------
 
 .. figure:: collection-tree.png
+   :height: 674
+   :width:  1366
+   :scale:  50 %
+
 
 Pretty simple I think, just list of metadata we want to keep with every 
 collection and node.

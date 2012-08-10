@@ -51,7 +51,9 @@ notes on the below dioagram, and the list of components.
 
 
 .. figure:: overview.png
-            :scale: 50 %
+            :height: 568
+            :width:  544
+            :scale: 75 %
 
             Overview
 
@@ -109,6 +111,8 @@ simple tree widget in JQuery.
 
 
 .. figure:: collection-tree.png
+   :height: 674
+   :width:  1366
    :scale:  50 %
    :alt:   Look 
 
