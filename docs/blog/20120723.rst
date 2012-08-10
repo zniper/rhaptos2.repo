@@ -1,0 +1,14 @@
+===========
+Mon, 23 Jul
+===========
+
+Jenkins and COntinuous Deployment
+=================================
+
+We have been doing this without explicitly supporting it for a while
+
+the problems we have
+
+the opportunites we have
+
+more..
