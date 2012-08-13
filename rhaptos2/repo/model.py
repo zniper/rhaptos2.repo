@@ -99,13 +99,23 @@ class User(object):
     """
     Is the user from memcache
 
-    Not sure there is a clear diff between Identity and User
     """
 
-    def __init__(self, jsondoc):
+    def __init__(self):
         """initialise from json doc """
         self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
-  
+
+
+    def load_JSON(self, jsondocstr):
+        """ parse and store details of properly formatted JSON doc
+          
+            
+        """
+        user_dict = json.loads(jsondocstr)
+        self.__dict__.update(user_dict)
+         
+       
+
 class Identity(object):
     def __init__(self, openid_url):
         """placeholder - we want to store identiy values somewhere
@@ -121,6 +131,12 @@ class Identity(object):
             self.email = None
             self.name = None
             self.userID = None
+
+    def user_as_dict(self):
+        return {"openid_url": self.openid_url,
+                "email": self.email,
+                "name": self.name}
+
 
 def get_user_from_openid(openid_url):
     """
@@ -158,13 +174,24 @@ def whoami():
 
 @app.route("/whoami/", methods=['GET'])
 def whoamiGET():
-    ''' '''
+    ''' 
+
+    returns
+    Either 401 if OpenID not available or JSON document of form
+
+    {"openid_url": "https://www.google.com/accounts/o8/id?id=AItOawlWRa8JTK7NyaAvAC4KrGaZik80gsKfe2U", 
+     "email": "Not Implemented", 
+     "name": "Not Implemented"}
+ 
+    I expect we shall want to shift to a User.JSON document...
+
+
+    '''
     ### todo: return 401 code and let ajax client put up login.
     identity =  whoami()
-    
         
     if identity:
-        d = identity.__dict__
+        d = identity.user_as_dict()
         jsond = asjson(d)
         ### make decorators !!!
         resp = flask.make_response(jsond)    
