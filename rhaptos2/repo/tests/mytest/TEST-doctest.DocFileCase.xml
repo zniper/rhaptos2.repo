@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuite errors="0" failures="1" name="doctest.DocFileCase" tests="1" time="0.458">
+	<testcase classname="doctest.DocFileCase" name="local_tests_txt" time="0.458">
+		<failure message="Failed doctest test for local_tests.txt
+  File &quot;local_tests.txt&quot;, line 0
+
+----------------------------------------------------------------------
+File &quot;local_tests.txt&quot;, line 3, in local_tests.txt
+Failed example:
+    files.return1()
+Expected:
+    3
+Got:
+    [logline] this is a log line
+    2
+" type="AssertionError">
+<![CDATA[Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/doctest.py", line 2166, in runTest
+    raise self.failureException(self.format_failure(new.getvalue()))
+AssertionError: Failed doctest test for local_tests.txt
+  File "local_tests.txt", line 0
+
+----------------------------------------------------------------------
+File "local_tests.txt", line 3, in local_tests.txt
+Failed example:
+    files.return1()
+Expected:
+    3
+Got:
+    [logline] this is a log line
+    2
+
+]]>		</failure>
+	</testcase>
+	<system-out>
+<![CDATA[]]>	</system-out>
+	<system-err>
+<![CDATA[]]>	</system-err>
+</testsuite>

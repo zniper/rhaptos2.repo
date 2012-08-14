@@ -44,9 +44,13 @@ def apply_cors(fn):
 
 
 
+@app.route('/static/conf.js')
+def confjs():
+    return render_template("conf.js", confd=confd)
+
 @app.route('/')
 def index():
-    return render_template('index.html', build_tag=confd['BUILD_TAG'])
+    return render_template('index.html', build_tag=confd['BUILD_TAG'], confd=confd)
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
@@ -206,7 +210,7 @@ def burn():
         os._exit(1) #trap _this_
 
 
-################ openid views
+################ openid views - from flask
 
 
 @app.before_request
@@ -236,7 +240,8 @@ def login():
             return model.oid.try_login(openid, ask_for=['email', 'fullname',
                                                   'nickname'])
     return render_template('login.html', next=model.oid.get_next_url(),
-                           error=model.oid.fetch_error())
+                           error=model.oid.fetch_error(),
+                           confd=confd)
 
 
 @model.oid.after_login

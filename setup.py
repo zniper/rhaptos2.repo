@@ -24,11 +24,10 @@ def main():
 
     setup(name='rhaptos2.repo',
           version=get_version(),
-          packages=['rhaptos2'
-                    ,'rhaptos2.repo'
+          packages=['rhaptos2.repo'
                     ,'rhaptos2.client'
-                    ,'rhaptos2.test'
                    ],
+          namespace_packages = ['rhaptos2'],
           author='See AUTHORS.txt',
           author_email='info@cnx.org',
           url='https://github.com/Connexions/rhaptos2.repo',
@@ -45,10 +44,14 @@ def main():
               ,"Flask-OpenID"
               ,"sqlalchemy"
               ,"rhaptos2.common"
+              ,"unittest-xml-reporting"
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 
-          package_data={'rhaptos2.repo': ['templates/*.*', 'static/*.*', 'version.txt', 'default.ini'],
+          package_data={'rhaptos2.repo': ['templates/*.*', 
+                                          'static/*.*', 
+                                           'version.txt', 
+                                           'tests/*.*'],
                         },
 
           

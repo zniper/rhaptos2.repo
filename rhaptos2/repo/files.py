@@ -25,6 +25,9 @@ confd = conf.get_config('rhaptos2')
 from rhaptos2.repo import app 
 
 
+def return1():
+    print "[logline] this is a log line"
+    return 2#testing soimewthing silly
 
 def rhaptos_file_delete(modname, userspace):
     '''
