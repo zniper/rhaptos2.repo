@@ -39,12 +39,14 @@ def main():
               ,"flask >= 0.8"
               ,"statsd"
               ,"requests"
-              ,"nose" 
               ,"pylint"
               ,"Flask-OpenID"
-              ,"sqlalchemy"
+              ,"python-memcached"
+              ,"nose"
+
               ,"rhaptos2.common"
               ,"unittest-xml-reporting"
+              ,"mikado.oss.doctest_additions"
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 
