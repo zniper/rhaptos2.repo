@@ -1,5 +1,9 @@
 
->>> from rhaptos2.repo import files
->>> files.return1()
-3
+
+This is an example test file
+ 
+>>> 1 + 1
+2
+
+
 

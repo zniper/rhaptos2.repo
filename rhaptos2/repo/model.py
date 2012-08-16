@@ -274,3 +274,6 @@ def mod_from_file(uid):
 
 
 
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
