@@ -26,6 +26,7 @@ confd = conf.get_config('rhaptos2')
 app = Flask(__name__)
 lg = log.get_logger('rhaptos2', confd)
 app.logger.addHandler(lg)
+app.config.update(confd)
 
 
 def get_version():

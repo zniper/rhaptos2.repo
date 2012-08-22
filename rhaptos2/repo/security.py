@@ -6,8 +6,6 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-#return a dict of conf from a .ini file                                                                                   
-confd = conf.get_config('rhaptos2')
 
 
 class WorkSpace(object):
@@ -36,7 +34,7 @@ class WorkSpace(object):
     def __init__(self, openid):
         """ """
         self.openid = openid
-        repodir = confd['remote_e2repo']    
+        repodir = app.config['rhaptos2_repodir']    
         plain = []
         annotated = [] 
         files = [os.path.join(repodir, f) for f in os.listdir(repodir)]
@@ -127,7 +125,7 @@ class NodeDoc(object):
         
 
         """
-        repodir = confd['remote_e2repo']
+        repodir = app.config['rhaptos2_repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
  
@@ -179,7 +177,7 @@ class NodeDoc(object):
         if self.uuid == None:
             raise Rhaptos2Error("Need a UUID to save")
         print "Saving"
-        repodir = confd['remote_e2repo']
+        repodir = app.config['rhaptos2_repodir']
         filepath = os.path.join(repodir, self.uuid)
         ###aaarrgh check keys
         d = {}

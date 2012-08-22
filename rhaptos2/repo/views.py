@@ -17,7 +17,7 @@ from functools import wraps
 from rhaptos2.common import log
 from rhaptos2.common import err
 from rhaptos2.common import conf
-confd = conf.get_config('rhaptos2')
+
 from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
 from rhaptos2.repo import model, get_version, security
@@ -46,11 +46,11 @@ def apply_cors(fn):
 
 @app.route('/static/conf.js')
 def confjs():
-    return render_template("conf.js", confd=confd)
+    return render_template("conf.js", confd=app.config)
 
 @app.route('/')
 def index():
-    return render_template('index.html', build_tag=confd['BUILD_TAG'], confd=confd)
+    return render_template('index.html', build_tag=app.config['BUILD_TAG'], confd=app.config)
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
@@ -242,7 +242,7 @@ def login():
                                                   'nickname'])
     return render_template('login.html', next=model.oid.get_next_url(),
                            error=model.oid.fetch_error(),
-                           confd=confd)
+                           confd=app.config)
 
 
 @model.oid.after_login

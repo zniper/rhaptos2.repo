@@ -20,8 +20,8 @@ from functools import wraps
 
 from rhaptos2.common import log
 from rhaptos2.common import err
-from rhaptos2.common import conf
-confd = conf.get_config('rhaptos2')
+#from rhaptos2.common import conf
+#confd = conf.get_config('rhaptos2')
 from rhaptos2.repo import app 
 
 
