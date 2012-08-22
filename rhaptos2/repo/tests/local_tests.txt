@@ -16,6 +16,9 @@ This is an example test file
 >>> tester = app.test_client()
 >>> rv = tester.get('/')
 >>> assert "dcarter" in rv.data
-
+>>> rv = tester.get('/version/')
+>>> assert "0.0.4" in rv.data
+>>> rv.data
+'0.0.4'
 
 
