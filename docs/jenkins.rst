@@ -2,6 +2,24 @@
 Jenkins
 =======
 
+General considerations
+======================
+
+The first and for me primary consideration is I as a developer
+want to be able to run locally, the same build that jenkins will 
+run remotely.
+
+Yes, annonying aren't I.
+
+So the build scripts need to be flexible.
+
+Secondly, Jenkins is not perfect, and it rather assumes you are not,
+well, doing the first thing above.
+
+
+
+
+
 
 Installing jenkins is pretty simple::
 
@@ -15,6 +33,22 @@ have not been successful doing so and see little need as this will be a long run
 
 Configuration
 =============
+
+Security
+--------
+
+Crerate people in system, turn on security.  Note you create a person in matrix,m then they logon.
+
+ENable security, ensure ANonymous only has Read access (Overasll) and your username has the lot.
+ 
+
+
+Supporting stuff
+----------------
+
+FIX: Need /etc/rhaptos2.ini installed.. migrate to all ENV setup.
+
+
 
 Install plugins
 ---------------
@@ -144,3 +178,31 @@ Tips
   a good :file:`man hier` idea, but frankly it confuses the heck out
   of me each time.
 
+
+
+Chain of jobs
+=============
+
+
+Useful plugin - downstreambuild
+
+Because tests often dominates the execution time, a Jenkins best
+practice involves splitting test executions into different jobs,
+possibly in multiple different jobs.
+
+
+Branches to build
+THis is part of git plugin
+It is very important - if left as default (**) then 
+all remote repositories and all branches in them will 
+be examined for changes and built
+
+So bob commits to brnach fix-bug1234 and alice commits to addBlueButton
+then both brnaches will be built, and run and tested.
+
+THis is probably what we want to do.
+
+Another copy of this job could however just track master branch...
+
+What not to do - try and create an overarching job - a master job.
+DO this one step at a time.
