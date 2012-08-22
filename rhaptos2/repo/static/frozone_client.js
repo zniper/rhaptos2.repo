@@ -116,12 +116,15 @@ function getwhoami(){
         url: REPOBASEURL + "/whoami/",
 	xhrFields: {
 	    withCredentials: true
-	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-        
-        success: function(module){
-            var user_email = module['user_email'];
-            var user_name = module['user_name'];
-            //alert(user_email + user_name);
+	},  
+        //display who I am        
+        success: function(jsondoc){
+
+            for (var i in jsondoc){
+                alert(i);
+            };
+            var user_email = jsondoc['email'];
+            var user_name = jsondoc['name'];
             $('#usernamedisplay').html(user_name + "-" + user_email);
         },
 

@@ -115,7 +115,7 @@ def modulePOST():
         raise(e)
 
 
-    s = model.asjson({'hashid':myuuid})
+    s = model.asjson({'hashid':uid})
     return s
 
 
@@ -124,12 +124,13 @@ def workspaceGET():
     ''' '''
     ###TODO - should whoami redirect to a login page?
     ### yes the client should only expect to handle HTTP CODES
-   
+    ### compare on userID
+
     identity = model.whoami()
     if not identity:
         json_dirlist = []
     else: 
-        w = security.WorkSpace(identity.email)
+        w = security.WorkSpace(identity.userID)
         json_dirlist = json.dumps(w.annotatedfiles)
  
     resp = flask.make_response(json_dirlist)    

@@ -47,6 +47,7 @@ def main():
               ,"rhaptos2.common"
               ,"unittest-xml-reporting"
               ,"mikado.oss.doctest_additions"
+              ,"python-memcached"
                            ],
           scripts=['scripts/rhaptos2_runrepo.py'],
 

@@ -1,0 +1,4 @@
+
+
+>>> from rhaptos2.repo import model
+>>> u = model.User()
