@@ -44,9 +44,13 @@ def apply_cors(fn):
 
 
 
+@app.route('/static/conf.js')
+def confjs():
+    return render_template("conf.js", confd=confd)
+
 @app.route('/')
 def index():
-    return render_template('index.html', build_tag=confd['BUILD_TAG'])
+    return render_template('index.html', build_tag=confd['BUILD_TAG'], confd=confd)
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
@@ -111,7 +115,7 @@ def modulePOST():
         raise(e)
 
 
-    s = model.asjson({'hashid':myuuid})
+    s = model.asjson({'hashid':uid})
     return s
 
 
@@ -120,12 +124,13 @@ def workspaceGET():
     ''' '''
     ###TODO - should whoami redirect to a login page?
     ### yes the client should only expect to handle HTTP CODES
-   
+    ### compare on userID
+
     identity = model.whoami()
     if not identity:
         json_dirlist = []
     else: 
-        w = security.WorkSpace(identity.email)
+        w = security.WorkSpace(identity.userID)
         json_dirlist = json.dumps(w.annotatedfiles)
  
     resp = flask.make_response(json_dirlist)    
@@ -206,7 +211,7 @@ def burn():
         os._exit(1) #trap _this_
 
 
-################ openid views
+################ openid views - from flask
 
 
 @app.before_request
@@ -236,7 +241,8 @@ def login():
             return model.oid.try_login(openid, ask_for=['email', 'fullname',
                                                   'nickname'])
     return render_template('login.html', next=model.oid.get_next_url(),
-                           error=model.oid.fetch_error())
+                           error=model.oid.fetch_error(),
+                           confd=confd)
 
 
 @model.oid.after_login

@@ -21,10 +21,15 @@ class WorkSpace(object):
 
     Arrggh
 
-    >>> u = UserSpace('paul@mikadosoftware.com')
-    >>> u.files
 
-    >>> u.annotatedfiles
+    TODO: test some means of writing files
+    I want to write os.environ remote_e2repo, then write files to it.  Need 
+    some doctest fixtures ??
+
+    >> u = WorkSpace('paul@mikadosoftware.com')
+    >> u.files
+
+    >> u.annotatedfiles
 
 
     """
@@ -95,27 +100,29 @@ class NodeDoc(object):
         todo: split out parser and allow for versioning
         todo: make it vastly better 
 
+        Again tests need to be repeatable on Jenkins -
+        sort out doctest fixtures
 
-        >>> c = NodeDoc()
-        >>> c.load_from_file('efe3e9bc-b345-4dec-b6dd-cd43e63e82ca')
-        >>> c.title
+        >> c = NodeDoc()
+        >> c.load_from_file('efe3e9bc-b345-4dec-b6dd-cd43e63e82ca')
+        >> c.title
         u'There and back again'
-        >>> assert c.uuid == u'abcdefg'
-        >>> c.update('paul@mikadosoftware.com', title='foobar')
+        >> assert c.uuid == u'abcdefg'
+        >> c.update('paul@mikadosoftware.com', title='foobar')
         F...
-        >>> c.update('paul@mikadosoftware.com', title='foobar2', content="little")
+        >> c.update('paul@mikadosoftware.com', title='foobar2', content="little")
         F...
 
         ### But an openid user that is not in the list ...
-        >>> c.update('paul@noauth.com', title='foobar')
+        >> c.update('paul@noauth.com', title='foobar')
         Traceback (most recent call last):
            ...
         Rhaptos2Error: unauthorised
-        >>> c.save()
+        >> c.save()
         S...
-        >>> c = NodeDoc()
-        >>> c.load_from_file('junk')
-        >>> assert c.uuid is None
+        >> c = NodeDoc()
+        >> c.load_from_file('junk')
+        >> assert c.uuid is None
         
         
 

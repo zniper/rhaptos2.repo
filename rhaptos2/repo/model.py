@@ -36,8 +36,8 @@ from flaskext.openid import OpenID
 
 
 app.config.update(
-    DATABASE_URI = confd['openid_userdb_uri'],
-    SECRET_KEY = confd['openid_secretkey'],
+    DATABASE_URI = confd['rhaptos2_openid_userdb_uri'],
+    SECRET_KEY = confd['rhaptos2_openid_secretkey'],
     DEBUG = True
 )
 
@@ -92,20 +92,58 @@ ToDO:
   http://docs.python.org/library/functools.html#functools.wraps
 
 '''
+import memcache
 
+
+class User(object):
+    """
+    Is the user from memcache
+
+    """
+
+    def __init__(self):
+        """initialise from json doc """
+        self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
+
+
+    def load_JSON(self, jsondocstr):
+        """ parse and store details of properly formatted JSON doc
+          
+            
+        """
+        user_dict = json.loads(jsondocstr)
+        self.__dict__.update(user_dict)
+         
+       
 
 class Identity(object):
-    def __init__(self, identity_url):
+    def __init__(self, openid_url):
         """placeholder - we want to store identiy values somewhere
            but sqlite is limited to one server, so need move to network aware storage
         """
-        self.identity_url = identity_url
-        if self.identity_url:
-            self.email = 'Not Implemented' #pull from memcache
-            self.name = 'Not Implemented'
+        self.openid_url = openid_url
+        self.user = get_user_from_openid(openid_url)
+        if self.openid_url:
+            self.email = 'your email' 
+            self.name = 'your name'
+            self.userID = self.user.userID
         else:
             self.email = None
             self.name = None
+            self.userID = None
+
+    def user_as_dict(self):
+        return {"openid_url": self.openid_url,
+                "email": self.email,
+                "name": self.name}
+
+
+def get_user_from_openid(openid_url):
+    """
+    """
+    #supposed to be memcache lookup
+    return User('')
+
 
 def store_identity(identity_url, **kwds):
     """no-op but would push idneity to backend storage ie memcvache """
@@ -118,6 +156,8 @@ def retrieve_identity(identity_url, **kwds):
 def whoami():
     '''
     return the identity url stored in session cookie
+    TODO: store the userid in session cookie too ?
+
     '''
     callstatsd("rhaptos2.repo.whoami")    
     app.logger.info('+++++ session dict' + repr(session.__dict__) )
@@ -127,20 +167,31 @@ def whoami():
         user = Identity(session['openid'])
         return user
     else:
-        app.logger.info('+++++ No session' + repr(g) )
+        callstatsd("rhaptos2.repo.notloggedin")    
         return None
         #is this alwasys desrireed?
 
 
 @app.route("/whoami/", methods=['GET'])
 def whoamiGET():
-    ''' '''
+    ''' 
+
+    returns
+    Either 401 if OpenID not available or JSON document of form
+
+    {"openid_url": "https://www.google.com/accounts/o8/id?id=AItOawlWRa8JTK7NyaAvAC4KrGaZik80gsKfe2U", 
+     "email": "Not Implemented", 
+     "name": "Not Implemented"}
+ 
+    I expect we shall want to shift to a User.JSON document...
+
+
+    '''
     ### todo: return 401 code and let ajax client put up login.
     identity =  whoami()
-    
         
     if identity:
-        d = identity.__dict__
+        d = identity.user_as_dict()
         jsond = asjson(d)
         ### make decorators !!!
         resp = flask.make_response(jsond)    
@@ -274,3 +325,6 @@ def mod_from_file(uid):
 
 
 
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
