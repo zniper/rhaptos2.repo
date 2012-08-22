@@ -166,11 +166,10 @@ Sections
 --------
 
 
-A :doc:`section-doc` is a fragment of valid HTML5, that when concatenated with
-other sections in the correct order specified by one (or more)
-collections, will produce a valid HTML5 document, and that document
-will represent to document written.
-
+A :doc:`section-doc` is a fragment of valid HTML5, that when
+concatenated with other sections in the correct order specified by one
+(or more) collections, will produce a valid HTML5 document, and that
+document will represent to document written.
 
 A section derives its security status from ACLS of a collection.  An
 approval process will either store acls with each section (easy to
