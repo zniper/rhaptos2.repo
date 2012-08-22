@@ -176,6 +176,32 @@ Architecture
 2. document what is there, what has been done.  Not document what you hope to do - unlesss you label it bluesky.
 
 
+
+Misc.
+=====
+
+THis is stuff I don't have a useful place for.
+
+pip and Interpreter shutdown. 
+-----------------------------
+
+Fabric uses paramiko to do its ssh connection setup.  If you use pip install you will occassionally see 
+::
+
+  Exception in thread Thread-1 (most likely raised during interpreter shutdown):
+  Traceback (most recent call last):
+    File "/usr/lib/python2.7/threading.py", line 551, in __bootstrap_inner
+    File "/usr/local/lib/python2.7/dist-packages/ssh/transport.py", line 1602, in run
+  <type 'exceptions.AttributeError'>: 'NoneType' object has no attribute 'error'
+
+
+This is because we have not close()d the ssh connection before the main() thread exits - which 
+is the main thread on remote, presumably kept open by pip.
+
+My workaround - stick a useless last sudo("ls") in after pip command and things shutdfown gracefully.
+see: https://github.com/paramiko/paramiko/issues/17 for someone trying to fix it properly.
+
+
 Biblio
 ------
 
