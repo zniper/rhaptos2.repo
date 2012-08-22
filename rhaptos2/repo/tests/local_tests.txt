@@ -5,5 +5,17 @@ This is an example test file
 >>> 1 + 1
 2
 
+>>> from rhaptos2.repo import app
+>>> d = {'rhaptos2_repodir':'/tmp/repo',
+...      'rhaptos2_statsd_host':'log.frozone.mikadosoftware.com',
+...      'rhaptos2_statsd_port':'8125',
+...      'rhaptos2_www_server_name':'www.frozone.mikadosoftware.com',
+...      'rhaptos2_cdn_server_name':'www.frozone.mikadosoftware.com',
+...      'BUILD_TAG':'WHATDOWEDOHERE'}
+>>> app.config.update(d)
+>>> tester = app.test_client()
+>>> rv = tester.get('/')
+>>> assert "dcarter" in rv.data
+
 
 
