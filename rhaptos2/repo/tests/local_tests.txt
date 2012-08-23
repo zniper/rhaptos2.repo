@@ -6,7 +6,10 @@ This is an example test file
 2
 
 >>> from rhaptos2.repo import app
->>> d = {'rhaptos2_repodir':'/tmp/repo',
+>>> d = {
+...      'rhaptos2_use_logging':'Y',
+...      'rhaptos2_loglevel':'DEBUG',
+...      'rhaptos2_repodir':'/tmp/repo',
 ...      'rhaptos2_statsd_host':'log.frozone.mikadosoftware.com',
 ...      'rhaptos2_statsd_port':'8125',
 ...      'rhaptos2_www_server_name':'www.frozone.mikadosoftware.com',

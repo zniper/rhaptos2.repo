@@ -33,8 +33,8 @@ from flaskext.openid import OpenID
 
 
 app.config.update(
-    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
-    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
+#    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
+#    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
     DEBUG = True
 )
 
