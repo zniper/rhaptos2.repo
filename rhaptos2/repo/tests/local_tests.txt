@@ -16,12 +16,35 @@ This is an example test file
 ...      'rhaptos2_cdn_server_name':'www.frozone.mikadosoftware.com',
 ...      'BUILD_TAG':'WHATDOWEDOHERE'}
 >>> app.config.update(d)
->>> tester = app.test_client()
->>> rv = tester.get('/')
+>>> app.config["TESTING"] = True
+>>> tclient = app.test_client()
+>>> rv = tclient.get('/')
 >>> assert "dcarter" in rv.data
->>> rv = tester.get('/version/')
+>>> rv = tclient.get('/version/')
 >>> assert "0.0.4" in rv.data
 >>> rv.data
 '0.0.4'
+
+Test the views 
+
+>>> rv = tclient.get("/static/conf.js")
+>>> assert 'wwwFQDN      : "www.frozone.mikadosoftware.com"' in rv.data
+>>> rv.status_code
+200
+>>> rv.headers
+Headers([('Content-Type', 'text/html; charset=utf-8'), ('Content-Length', '433')])
+
+>>> mod = {"content": "<section> In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole, filled with the ends of worms and an oozy smell, nor yet a dry, bare, sandy hole with nothing in it to sit down on or to eat: it was a hobbit-hole, and that means comfort.\" \" </section>  ", "aclrw": ["paul@mikadosoftware.com"], "contentrw": ["paul@mikadosoftware.com", "rhaptos2tester@gmail.com"], "uuid": "abcdefg", "title": "There and back again"}
+>>> import json
+>>> print mod["aclrw"]
+['paul@mikadosoftware.com']
+
+>>> rv = tclient.get("/workspace/")
+>>> rv.data 
+'[]'
+
+#>>> m = json.dumps(mod)
+#>>> rv = tclient.post("/module/", data=m, headers=[('X-Requested-With', 'XMLHttpRequest')#])
+#)
 
 

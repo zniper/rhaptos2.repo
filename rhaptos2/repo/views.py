@@ -63,7 +63,7 @@ def modulePUT():
         if d['uuid'] == u'': 
             return ("PUT WITHOUT A UUID" , 400)
 
-        app.logger.info(repr(d))
+        #app.logger.info(repr(d))
         current_nd = model.mod_from_file(d['uuid'])       
         current_nd.load_from_djson(d) #this checks permis
         uid = current_nd.uuid
@@ -101,7 +101,7 @@ def modulePOST():
         else:
             d['uuid'] = None
 
-        app.logger.info(repr(d))
+        #app.logger.info(repr(d))
         ### maybe we know too much about nodedocs
         nd = model.mod_from_json(d)
         uid = nd.uuid
@@ -128,7 +128,7 @@ def workspaceGET():
 
     identity = model.whoami()
     if not identity:
-        json_dirlist = []
+        json_dirlist = json.dumps([])
     else: 
         w = security.WorkSpace(identity.userID)
         json_dirlist = json.dumps(w.annotatedfiles)

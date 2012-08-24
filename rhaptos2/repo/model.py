@@ -157,8 +157,8 @@ def whoami():
 
     '''
     callstatsd("rhaptos2.repo.whoami")    
-    app.logger.info('+++++ session dict' + repr(session.__dict__) )
-    app.logger.info('+++++ app config' + repr(app.config) )
+#    app.logger.info('+++++ session dict' + repr(session.__dict__) )
+#    app.logger.info('+++++ app config' + repr(app.config) )
 
     if 'openid' in session:
         user = Identity(session['openid'])
