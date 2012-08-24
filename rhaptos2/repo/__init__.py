@@ -39,6 +39,7 @@ apptype = 'rhaptos2'
 confd = conf.get_config(apptype)
 app = Flask(__name__)
 app.config.update(confd)
+app.config['BUILD_TAG'] = 'FIXBUILDTAG!'
 set_logger(apptype, app.config)
 
 import rhaptos2.repo.views
