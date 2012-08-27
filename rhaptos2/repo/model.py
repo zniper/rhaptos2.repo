@@ -19,9 +19,6 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-#return a dict of conf from a .ini file
-confd = conf.get_config('rhaptos2')
-
 
 from rhaptos2.repo import app
 from rhaptos2.repo import files, security
@@ -36,8 +33,8 @@ from flaskext.openid import OpenID
 
 
 app.config.update(
-    DATABASE_URI = confd['rhaptos2_openid_userdb_uri'],
-    SECRET_KEY = confd['rhaptos2_openid_secretkey'],
+#    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
+#    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
     DEBUG = True
 )
 
@@ -160,8 +157,8 @@ def whoami():
 
     '''
     callstatsd("rhaptos2.repo.whoami")    
-    app.logger.info('+++++ session dict' + repr(session.__dict__) )
-    app.logger.info('+++++ app config' + repr(app.config) )
+#    app.logger.info('+++++ session dict' + repr(session.__dict__) )
+#    app.logger.info('+++++ app config' + repr(app.config) )
 
     if 'openid' in session:
         user = Identity(session['openid'])
@@ -226,7 +223,7 @@ def add_location_header_to_response(fn):
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    userspace =confd['remote_e2repo']
+    userspace = app.config['rhaptos2_repodir']
 
     if os.path.isdir(userspace):
         return userspace
@@ -240,33 +237,10 @@ def userspace():
                                  userspace, e))
            
     
-# def getfilename(modulename):
-
-#     '''find all files with this name, test.1 etc, then sort and find
-#     next highest numnber
-  
-#     >>> getfilename('test', REPO='/tmp')
-#     'test.0'
-
-
-#     '''
-#     app.logger.info('+++++' + confd['remote_e2repo'])
-
-#     try:
-#         allfiles = [f for f in os.listdir(userspace()) if 
-#                  os.path.splitext(os.path.basename(f))[0] == modulename]
-#     except OSError, IOError:
-#         allfiles = []
- 
-#     if len(allfiles) == 0:
-#         return '%s.%s' % (modulename, 0)
-#     else:
-#         return '%s.%s' % (modulename, len(allfiles))
-
-    
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(confd['statsd_host'], int(confd['statsd_port']))
+    c = statsd.StatsClient(app.config['rhaptos2_statsd_host'], 
+                       int(app.config['rhaptos2_statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 

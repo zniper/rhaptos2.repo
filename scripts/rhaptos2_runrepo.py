@@ -9,7 +9,7 @@ Just launch the main Flask repo app.
 from optparse import OptionParser
 import os
 from rhaptos2.repo import app  ## NB repo.__init__ has app as callable...
-from rhaptos2 import conf
+from rhaptos2.common import conf
 
 
 def parse_args():

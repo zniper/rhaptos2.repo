@@ -49,7 +49,7 @@ def main():
               ,"mikado.oss.doctest_additions"
               ,"python-memcached"
                            ],
-          scripts=['scripts/rhaptos2_runrepo.py'],
+          scripts=glob.glob('scripts/*'),
 
           package_data={'rhaptos2.repo': ['templates/*.*', 
                                           'static/*.*', 
