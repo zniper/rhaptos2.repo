@@ -22,15 +22,15 @@
         return $('#username').val();
     };
 
-    function get_modulename(){
-        var mname = $('#modulename').val();
+    function get_title(){
+        var mname = $('#title').val();
         return mname;
     };
 
 function save_validate(){
-    var modulename=get_modulename();
-    if (modulename = ''){
-        jQuery.error('Must have a modulename');
+    var title=get_title();
+    if (title = ''){
+        jQuery.error('Must have a title');
     }
     return
 }
@@ -38,18 +38,11 @@ function save_validate(){
     function get_textarea_html5(){
         //retrieve, as JSON, the contents of the edit-area 
         var txtarea = $('#e2textarea').tinymce().getContent();
-        var payload = {
-            'username': get_username(),
-            'modulename': get_modulename(),
-            'txtarea': txtarea
-        };
-
-        var json_text = JSON.stringify(payload, null, 2);
-        return json_text;
+        return txtarea;
     };
 
 
-    function load_textarea(modulename){
+    function load_textarea(title){
         
         var request =$.ajax({
 	    url: MODULEURL + mhashid,
@@ -60,6 +53,7 @@ function save_validate(){
 
             type: 'GET'
         });
+
 	request.done(function(data) {
 	    logout(data + 'done a success');
             $('#e2textarea').tinymce().setContent(data);
@@ -75,22 +69,29 @@ function save_validate(){
     };
 
 
-function getLoadHistoryVer(filename){
+function getLoadHistoryVer(uuid){
     // ajax request to retrieve module and parse json and load into textarea
     $.ajax({
         type: "GET",
         dataType: 'json',
-        url: MODULEURL + filename,
+        url: MODULEURL + uuid,
 	xhrFields: {
 	    withCredentials: true
 	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
 
 
-        success: function(module){
-            var modulename = module['modulename'];
-            var txtarea = module['txtarea'];
+        success: function(nodedoc){
+            var title = nodedoc['title'];
+            var txtarea = nodedoc['content'];
  
-            $('#modulename').val(modulename);
+            var aclrw = nodedoc['aclrw'];
+            var contentrw = nodedoc['contentrw'];
+
+            $('#title').val(title);
+            $('#aclrw').val(aclrw);
+            $('#contentrw').val(contentrw);
+            $('#uuid').val(uuid);
+
             $('#e2textarea').tinymce().setContent(txtarea);
         },
 
@@ -115,12 +116,15 @@ function getwhoami(){
         url: REPOBASEURL + "/whoami/",
 	xhrFields: {
 	    withCredentials: true
-	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-        
-        success: function(module){
-            var user_email = module['user_email'];
-            var user_name = module['user_name'];
-            //alert(user_email + user_name);
+	},  
+        //display who I am        
+        success: function(jsondoc){
+
+            for (var i in jsondoc){
+                alert(i);
+            };
+            var user_email = jsondoc['email'];
+            var user_name = jsondoc['name'];
             $('#usernamedisplay').html(user_name + "-" + user_email);
         },
 
@@ -148,8 +152,8 @@ function buildHistory(){
         success: function(historyarr){
             historyarr.sort();
             $.each(historyarr, function(i,elem){
-                var strelem = "'" + elem + "'";
-		htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+                var strelem = "'" + elem[0] + "'";
+		htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
             });
 
             $('#workspaces').html(htmlfrag);    
@@ -185,26 +189,54 @@ function showres(i, elem){
 };
 
 
-    function saveText(){
+function serialise_form(){
+    // return form1 as object/hasharrary
+    var payload = new Object;
+    payload['content'] = get_textarea_html5();
+    payload['uuid'] = $("#uuid").val();
+    
+    payload['aclrw'] = $("#aclrw").val().split(",");
+    
+    payload['contentrw'] = $("#contentrw").val().split(",");
+    payload['title'] = $("#title").val();
+
+//        var json_text = JSON.stringify(payload, null, 2);
+//        return json_text;
+
+    return payload;
+
+};
+
+function saveText(){
 	 //constants
 
-        save_validate();
+         save_validate();
          
          var requestmethod = 'POST';
-//         var payload = {'moduletxt':  get_textarea_html5()}; 
-         var payload = {'moduletxt':  get_textarea_html5()}; 
+         var payload = serialise_form(); 
+         if (payload['uuid'] != ''){
+             requestmethod = 'PUT';     
+         };
 
-	 var menuId = 42;
+         var foo = "";
+         for (var i in payload){                  
+             foo = "/n" + i + ' : ' + payload[i];
+         };
+         alert(requestmethod);
+         alert(foo);
+
+         var json_text = JSON.stringify(payload, null, 2);
 
 	 var request = $.ajax({
 	     url: MODULEURL,
         	xhrFields: {
 	         withCredentials: true
-	        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+	        }, 
 
 
 	     type: requestmethod,
-             data: payload,
+             data: json_text,
+             contentType:"application/json; charset=utf-8",
              dataType:'json'
 	 });
 
@@ -224,11 +256,40 @@ function showres(i, elem){
 
     };
 
+function opendialog(dia){
+
+   $(dia).dialog("open");
+
+};
+
+function test(){
+
+    //alert(whoami.identity_url + "/n" +
+    //      whoami.name + "/n" +
+    //      whoami.email);
+    var s = "#dialog";
+    $(s).dialog("open");
+
+};
 
 
 $(document).ready(function() {
 
+    //mark dialog areas as dialog but not shown
+    var dialogs = ["#dialog_files", "#dialog_metadata",
+                   "#dialog_roles", "#dialog_links",
+                   "#dialog_links", "#dialog_preview",
+                   "#dialog_publish"];
+    $.each(dialogs, function(i,v){
+        alert(i + ":" + v);
+        $(v).dialog({ autoOpen: false });
+    });
+
+
     //bind various clicks
+    $("#testclick").click(function(e){test();
+                                      e.preventDefault()});
+
 
     $("#clickLoadTextArea").click(function(e){load_textarea();
                                               e.preventDefault()});
@@ -249,6 +310,7 @@ $(document).ready(function() {
                        }
                       );
 
+    
   
 });
 

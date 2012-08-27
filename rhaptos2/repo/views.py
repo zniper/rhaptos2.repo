@@ -17,41 +17,67 @@ from functools import wraps
 from rhaptos2.common import log
 from rhaptos2.common import err
 from rhaptos2.common import conf
-confd = conf.get_config('rhaptos2')
+
 from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
-from rhaptos2.repo import model, get_version
+from rhaptos2.repo import model, get_version, security
 
 
 ########################### views
 
+
+def apply_cors(fn):
+    '''decorator to apply the correct CORS
+       friendly header 
+       I am assuming all view functions return 
+       just text ..  hmmm
+    '''
+    @wraps(fn)
+    def newfn(*args, **kwds):
+        resp = flask.make_response(fn())
+        resp.content_type='application/json'
+        resp.headers["Access-Control-Allow-Origin"]= "*"
+        resp.headers["Access-Control-Allow-Credentials"]= "true"
+        return resp
+
+    return newfn
+
+
+
+@app.route('/static/conf.js')
+def confjs():
+    return render_template("conf.js", confd=app.config)
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', build_tag=app.config['BUILD_TAG'], confd=app.config)
 
-
-#@apply_cors
-@app.route("/module/", methods=['POST'])
-def modulePOST():
-    app.logger.info('POST CALLED')
-    model.callstatsd('rhaptos2.e2repo.module.POST')
+@app.route("/module/", methods=['PUT'])
+def modulePUT():
+    app.logger.info('MODULE PUT CALLED')
+    model.callstatsd('rhaptos2.repo.module.PUT')
     try:
+       
 
-        html5 = request.form['moduletxt']
-        d = json.loads(html5)
+        d = request.json
+        if d['uuid'] == u'': 
+            return ("PUT WITHOUT A UUID" , 400)
+
+        #app.logger.info(repr(d))
+        current_nd = model.mod_from_file(d['uuid'])       
+        current_nd.load_from_djson(d) #this checks permis
+        uid = current_nd.uuid
+        current_nd.save()  
         
-        app.logger.info(repr(d))
-                      
-        myhash = model.store_module(html5, d)
 
 
     except Exception, e:
 
         app.logger.error(str(e))
-        app.logger.info(repr(d))
+
         raise(e)
 
-    s = model.asjson({'hashid':myhash})
+    s = model.asjson({'hashid':uid})
     resp = flask.make_response(s)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -59,12 +85,54 @@ def modulePOST():
     return resp
 
 
+
+
+@app.route("/module/", methods=['POST'])
+@apply_cors
+def modulePOST():
+    app.logger.info('POST CALLED')
+    model.callstatsd('rhaptos2.repo.module.POST')
+    try:
+       
+
+        d = request.json
+        if d['uuid'] != u'': 
+            return ("POSTED WITH A UUID" , 400)
+        else:
+            d['uuid'] = None
+
+        #app.logger.info(repr(d))
+        ### maybe we know too much about nodedocs
+        nd = model.mod_from_json(d)
+        uid = nd.uuid
+        nd.save()
+        del(nd)
+
+    except Exception, e:
+
+        app.logger.error(str(e))
+
+        raise(e)
+
+
+    s = model.asjson({'hashid':uid})
+    return s
+
+
 @app.route("/workspace/", methods=['GET'])
 def workspaceGET():
     ''' '''
-    
-    f = os.listdir(model.userspace())
-    json_dirlist = json.dumps(f)
+    ###TODO - should whoami redirect to a login page?
+    ### yes the client should only expect to handle HTTP CODES
+    ### compare on userID
+
+    identity = model.whoami()
+    if not identity:
+        json_dirlist = json.dumps([])
+    else: 
+        w = security.WorkSpace(identity.userID)
+        json_dirlist = json.dumps(w.annotatedfiles)
+ 
     resp = flask.make_response(json_dirlist)    
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -109,9 +177,6 @@ def moduleDELETE(modname):
     return resp
 
 
-@app.route("/module/", methods=['PUT'])
-def modulePUT():
-    return 'You PUTed @ %s' %  model.gettime() 
 
 
 
@@ -146,19 +211,17 @@ def burn():
         os._exit(1) #trap _this_
 
 
-################ openid views
+################ openid views - from flask
 
 
 @app.before_request
 def before_request():
-    g.user = None
-    if 'openid' in session:
-        g.user = model.User.query.filter_by(openid=session['openid']).first()
+    g.user = model.whoami()
 
 
 @app.after_request
 def after_request(response):
-    model.db_session.remove()
+#    model.db_session.remove()
     return response
 
 
@@ -178,7 +241,8 @@ def login():
             return model.oid.try_login(openid, ask_for=['email', 'fullname',
                                                   'nickname'])
     return render_template('login.html', next=model.oid.get_next_url(),
-                           error=model.oid.fetch_error())
+                           error=model.oid.fetch_error(),
+                           confd=app.config)
 
 
 @model.oid.after_login
@@ -189,64 +253,16 @@ def create_or_login(resp):
     with a terrible URL which we certainly don't want.
     """
     session['openid'] = resp.identity_url
-    user = model.User.query.filter_by(openid=resp.identity_url).first()
+    model.store_identity(resp.identity_url,
+                       name=resp.fullname or resp.nickname,
+                       email=resp.email)
+    user = model.whoami()
+
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
         return redirect(model.oid.get_next_url())
-    return redirect(url_for('create_profile', next=model.oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
-
-
-@app.route('/create-profile', methods=['GET', 'POST'])
-def create_profile():
-    """If this is the user's first login, the create_or_login function
-    will redirect here so that the user can set up his profile.
-    """
-    if g.user is not None or 'openid' not in session:
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        if not name:
-            flash(u'Error: you have to provide a name')
-        elif '@' not in email:
-            flash(u'Error: you have to enter a valid email address')
-        else:
-            flash(u'Profile successfully created')
-            model.db_session.add(model.User(name, email, session['openid']))
-            model.db_session.commit()
-            return redirect(model.oid.get_next_url())
-    return render_template('create_profile.html', next_url=model.oid.get_next_url())
-
-
-@app.route('/profile', methods=['GET', 'POST'])
-def edit_profile():
-    """Updates a profile"""
-    if g.user is None:
-        abort(401)
-    form = dict(name=g.user.name, email=g.user.email)
-    if request.method == 'POST':
-        if 'delete' in request.form:
-            model.db_session.delete(g.user)
-            model.db_session.commit()
-            session['openid'] = None
-            flash(u'Profile deleted')
-            return redirect(url_for('index'))
-        form['name'] = request.form['name']
-        form['email'] = request.form['email']
-        if not form['name']:
-            flash(u'Error: you have to provide a name')
-        elif '@' not in form['email']:
-            flash(u'Error: you have to enter a valid email address')
-        else:
-            flash(u'Profile successfully created')
-            g.user.name = form['name']
-            g.user.email = form['email']
-            model.db_session.commit()
-            return redirect(url_for('edit_profile'))
-    return render_template('edit_profile.html', form=form)
+    return redirect(model.oid.get_next_url())
 
 
 @app.route('/logout')

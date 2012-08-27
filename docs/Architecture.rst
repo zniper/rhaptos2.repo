@@ -9,6 +9,14 @@ Architecture
    roadmap.rst
 
 
+Supporting HTTP Status Codes fully
+
+We want to support the flow as shown here 
+http://i.stack.imgur.com/whhD1.png
+and deploy a wrapper and test clietns to ensure it.
+
+
+
 Some thoughts
 =============
 
@@ -85,3 +93,6 @@ LVS ?
 
 Repository Architecture
 -----------------------
+
+
+

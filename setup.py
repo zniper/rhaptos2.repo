@@ -24,11 +24,10 @@ def main():
 
     setup(name='rhaptos2.repo',
           version=get_version(),
-          packages=['rhaptos2'
-                    ,'rhaptos2.repo'
+          packages=['rhaptos2.repo'
                     ,'rhaptos2.client'
-                    ,'rhaptos2.test'
                    ],
+          namespace_packages = ['rhaptos2'],
           author='See AUTHORS.txt',
           author_email='info@cnx.org',
           url='https://github.com/Connexions/rhaptos2.repo',
@@ -40,15 +39,22 @@ def main():
               ,"flask >= 0.8"
               ,"statsd"
               ,"requests"
-              ,"nose" 
               ,"pylint"
               ,"Flask-OpenID"
-              ,"sqlalchemy"
-              ,"rhaptos2.common"
-                           ],
-          scripts=['scripts/rhaptos2_runrepo.py'],
+              ,"python-memcached"
+              ,"nose"
 
-          package_data={'rhaptos2.repo': ['templates/*.*', 'static/*.*', 'version.txt', 'default.ini'],
+              ,"rhaptos2.common"
+              ,"unittest-xml-reporting"
+              ,"mikado.oss.doctest_additions"
+              ,"python-memcached"
+                           ],
+          scripts=glob.glob('scripts/*'),
+
+          package_data={'rhaptos2.repo': ['templates/*.*', 
+                                          'static/*.*', 
+                                           'version.txt', 
+                                           'tests/*.*'],
                         },
 
           

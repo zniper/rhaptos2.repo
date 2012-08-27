@@ -19,56 +19,27 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-#return a dict of conf from a .ini file
-confd = conf.get_config('rhaptos2')
-
 
 from rhaptos2.repo import app
-from rhaptos2.repo import files
+from rhaptos2.repo import files, security
 
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from flaskext.openid import OpenID
 
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+#from sqlalchemy import create_engine, Column, Integer, String
+#from sqlalchemy.orm import scoped_session, sessionmaker
+#from sqlalchemy.ext.declarative import declarative_base
 
 
 app.config.update(
-    DATABASE_URI = confd['openid_userdb_uri'],
-    SECRET_KEY = confd['openid_secretkey'],
+#    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
+#    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
     DEBUG = True
 )
 
 # setup flask-openid
 oid = OpenID(app)
-
-# setup sqlalchemy
-engine = create_engine(app.config['DATABASE_URI'])
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
-Base = declarative_base()
-Base.query = db_session.query_property()
-
-def init_db():
-    Base.metadata.create_all(bind=engine)
-
-
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(60))
-    email = Column(String(200))
-    openid = Column(String(200))
-
-    def __init__(self, name, email, openid):
-        self.name = name
-        self.email = email
-        self.openid = openid
-
-
 
 
 #def resp_as_json():
@@ -118,59 +89,114 @@ ToDO:
   http://docs.python.org/library/functools.html#functools.wraps
 
 '''
+import memcache
 
 
-def apply_cors(fn):
-    '''decorator to apply the correct CORS friendly header '''
+class User(object):
+    """
+    Is the user from memcache
 
-    def decorator():
-        resp = fn()
-        resp.headers["Access-Control-Allow-Origin"]= "*"
-        return resp
-    return decorator
+    """
 
+    def __init__(self):
+        """initialise from json doc """
+        self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
+
+
+    def load_JSON(self, jsondocstr):
+        """ parse and store details of properly formatted JSON doc
+          
+            
+        """
+        user_dict = json.loads(jsondocstr)
+        self.__dict__.update(user_dict)
+         
+       
+
+class Identity(object):
+    def __init__(self, openid_url):
+        """placeholder - we want to store identiy values somewhere
+           but sqlite is limited to one server, so need move to network aware storage
+        """
+        self.openid_url = openid_url
+        self.user = get_user_from_openid(openid_url)
+        if self.openid_url:
+            self.email = 'your email' 
+            self.name = 'your name'
+            self.userID = self.user.userID
+        else:
+            self.email = None
+            self.name = None
+            self.userID = None
+
+    def user_as_dict(self):
+        return {"openid_url": self.openid_url,
+                "email": self.email,
+                "name": self.name}
+
+
+def get_user_from_openid(openid_url):
+    """
+    """
+    #supposed to be memcache lookup
+    return User('')
+
+
+def store_identity(identity_url, **kwds):
+    """no-op but would push idneity to backend storage ie memcvache """
+    pass
+
+def retrieve_identity(identity_url, **kwds):
+    """no-op but would pull idneity to backend storage ie memcvache """
+    pass
 
 def whoami():
-    '''Not too sure how I will work this but I need a user, OpenID
-  
-    migrate to http://flask.pocoo.org/snippets/51/
+    '''
+    return the identity url stored in session cookie
+    TODO: store the userid in session cookie too ?
 
-    THis is hard coded to testuser@cnx.org'''
+    '''
+    callstatsd("rhaptos2.repo.whoami")    
+#    app.logger.info('+++++ session dict' + repr(session.__dict__) )
+#    app.logger.info('+++++ app config' + repr(app.config) )
 
-
-    app.logger.info('+++++ session dict' + repr(session.__dict__) )
-    app.logger.info('+++++ app config' + repr(app.config) )
-
-    if not g.user:
-        app.logger.info('+++++ No session?' + repr(g) )
-        raise Rhaptos2Error('Not logged in - trap this?')
+    if 'openid' in session:
+        user = Identity(session['openid'])
+        return user
     else:
-        return [g.user.email, g.user.name]
+        callstatsd("rhaptos2.repo.notloggedin")    
+        return None
+        #is this alwasys desrireed?
 
-def workspace_path():
-    ''' NOT SAFE IN ANY WAY'''
-    email =  whoami()[0]
-    return os.path.join(REPO, email)
 
 @app.route("/whoami/", methods=['GET'])
 def whoamiGET():
-    ''' '''
+    ''' 
+
+    returns
+    Either 401 if OpenID not available or JSON document of form
+
+    {"openid_url": "https://www.google.com/accounts/o8/id?id=AItOawlWRa8JTK7NyaAvAC4KrGaZik80gsKfe2U", 
+     "email": "Not Implemented", 
+     "name": "Not Implemented"}
+ 
+    I expect we shall want to shift to a User.JSON document...
+
+
+    '''
     ### todo: return 401 code and let ajax client put up login.
-    try:
-        email, name =  whoami()
-    except Rhaptos2Error:
-        email = ''
-        name = '<a href="">login</a>'
-
-    d = {'user_email': email,
-         'user_name': name}
-    jsond = asjson(d)
-    ### make decorators !!!
-    resp = flask.make_response(jsond)    
-    resp.content_type='application/json'
-    resp = apply_cors(resp)
-
-    return resp
+    identity =  whoami()
+        
+    if identity:
+        d = identity.user_as_dict()
+        jsond = asjson(d)
+        ### make decorators !!!
+        resp = flask.make_response(jsond)    
+        resp.content_type='application/json'
+        resp = apply_cors(resp)
+        return resp
+    else:
+        return("Not logged in", 401)
 
 def apply_cors(resp):
     '''  '''
@@ -193,18 +219,12 @@ def add_location_header_to_response(fn):
     resp.headers["Location"]= "URL NEEDED FROM HASHID"
 
 
-# def whoami():
-#     '''Not too sure how I will work this but I need a user, OpenID
-  
-#     THis is hard coded to testuser@cnx.org'''
-#     return 'testuser@cnx.org'
 
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    user_email = whoami()[0]
-    userspace = os.path.join(confd['remote_e2repo'],
-                             user_email)
+    userspace = app.config['rhaptos2_repodir']
+
     if os.path.isdir(userspace):
         return userspace
     else:
@@ -212,36 +232,15 @@ def userspace():
            os.makedirs(userspace)
            return userspace 
        except Exception,e:
-           raise Rhaptos2Error('cannot create repo or userspace %s - %s' % (userspace, e))
+           raise Rhaptos2Error('cannot create repo \
+                                or userspace %s - %s' % (
+                                 userspace, e))
            
-    
-def getfilename(modulename):
-
-    '''find all files with this name, test.1 etc, then sort and find
-    next highest numnber
-  
-    >>> getfilename('test', REPO='/tmp')
-    'test.0'
-
-
-    '''
-    app.logger.info('+++++' + confd['remote_e2repo'])
-
-    try:
-        allfiles = [f for f in os.listdir(userspace()) if 
-                 os.path.splitext(os.path.basename(f))[0] == modulename]
-    except OSError, IOError:
-        allfiles = []
- 
-    if len(allfiles) == 0:
-        return '%s.%s' % (modulename, 0)
-    else:
-        return '%s.%s' % (modulename, len(allfiles))
-
     
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(confd['statsd_host'], int(confd['statsd_port']))
+    c = statsd.StatsClient(app.config['rhaptos2_statsd_host'], 
+                       int(app.config['rhaptos2_statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 
@@ -283,25 +282,23 @@ def fetch_module(modname):
     json = open(os.path.join(folder, str(modname))).read()    
     return json 
 
-def store_module(fulltext, jsondict):
-    '''recieve and write to disk the json dict holding the text edtited
+def mod_from_json(jsondict):
+    """Given a JSON dict from a POST / PUT request
+       create and return a NodeDoc class """
+    
+    n = security.NodeDoc()
+    n.load_from_djson(jsondict)
+    return n
 
-    '''
-    myhash = getfilename(jsondict['modulename'])
-    pathtofolder = userspace()
+def mod_from_file(uid):
+    """ Given a uuid, pull the currently stored  
+        and return as NodeDoc object"""
+    n = security.NodeDoc()
+    n.load_from_file(uid)
+    return n
 
-    app.logger.info('******************** %s %s ' % (myhash, pathtofolder))
-    newfile = os.path.join(pathtofolder, myhash)
-    app.logger.info(newfile)
 
-    try:
-        open(newfile,'w').write(fulltext)    
-    except:
-        #it will be far more efficient to write folder on first exception than check everytime
-        os.mkdir(pathtofolder)
-        app.logger.error('%s path did not exist - creating' % pathtofolder) 
-        open(os.path.join(pathtofolder, str(myhash)),'w').write(fulltext)    
-        
-       
-    return myhash
 
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

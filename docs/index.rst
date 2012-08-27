@@ -15,3 +15,19 @@ Frozone is `Connexions <www.cnx.org>`_ new editor and other components.
    WeeklyReports
 
 
+And the Blog :
+
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   blog/*
+   
+And the Spec:
+
+.. toctree::
+   :maxdepth: 1
+   
+
+   spec/index

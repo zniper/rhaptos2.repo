@@ -19,13 +19,10 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common import err
 
-confd = conf.get_config('rhaptos2')
 
-#### see http://flask.pocoo.org/docs/patterns/packages/
-
-app = Flask(__name__)
-lg = log.get_logger('rhaptos2', confd)
-app.logger.addHandler(lg)
+def set_logger(apptype, app_configd):
+    lg = log.get_logger(apptype, app_configd)
+    app.logger.addHandler(lg)
 
 
 def get_version():
@@ -37,5 +34,12 @@ def get_version():
     except Exception, e:
         return '0.0.0'
     #todo: think about this 
+
+apptype = 'rhaptos2'
+confd = conf.get_config(apptype)
+app = Flask(__name__)
+app.config.update(confd)
+app.config['BUILD_TAG'] = 'FIXBUILDTAG!'
+set_logger(apptype, app.config)
 
 import rhaptos2.repo.views
