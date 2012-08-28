@@ -2,6 +2,8 @@
 rhaptos2.repo
 =============
 
+(TO be rewritten)
+
 This is the repository for cnx editor.  It is desinged to work
 primarily as a web app in conjunction with multiple other systems
 deployed using the bamboo setup files
