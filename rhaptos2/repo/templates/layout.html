@@ -116,7 +116,86 @@
 </div>
 
 <div id="dialog_metadata" title="Metadata">
-  Dialog for Metadata (TBC)
+  <form>
+
+<fieldset class="main">
+        <legend>Contact info</legend>
+
+        <fieldset class="nested">
+            <legend>Name</legend>    
+            <ol>
+                <li>
+                    <label for="textboxName">Name</label>
+                    <input id="textboxName" name="textboxName" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxName" >Title</label>
+                    <input id="textboxName" name="textboxTitle" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxCompany">Company</label>
+                    <input id="textboxCompany" name="textboxCompany" type="text" style="width: 15em;"/>
+                </li>
+            </ol>
+        </fieldset>        
+
+        <fieldset class="nested">
+            <legend>Address</legend>    
+            <ol>
+                <li>
+                    <label for="textboxAddress1" >Street address</label>
+                    <input id="textboxAddress1" name="textboxAddress1" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxAddress2" >Street address</label> 
+                    <input id="textboxAddress2" name="textboxAddress2" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxCity" >City</label>
+                    <input id="textboxCity" name="textboxCity" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxRegion" >City/Region</label>
+                    <input id="textboxRegion" name="textboxRegion" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxPostalCode" >Postal code</label>
+                    <input id="textboxPostalCode" name="textboxPostalCode" type="text" style="width: 15em;"/>
+                </li>
+                <li>
+                    <label for="textboxCountry" >Country</label>
+                    <input id="textboxCountry" name="textboxCountry" type="text" style="width: 15em;"/>
+                </li>
+            </ol>
+        </fieldset>        
+
+        <fieldset class="nested">
+            <legend>Phone numbers</legend>
+            <ol>
+                <li style="display:none">
+                    <label for="textboxName" >Name</label>
+                    <input id="text1" name="textboxName" type="text" style="width: 15em;"/>
+                </li>
+                <li style="display:none">
+                    <label for="textboxAddress1" >Address</label>
+                    <input id="text2" name="textboxAddress1" type="text" style="width: 15em;" />
+                </li>
+                <li>
+                    <label for="textboxAddress2" >Phone</label> 
+                    <input id="text3" name="textboxAddress2" type="text" style="width: 15em;"/>
+                </li>
+            </ol>    
+        </fieldset>        
+
+        <div class="buttonsContainer">
+            <input class="button" type="submit" value="OK" /> 
+            <input class="button" type="button" value="Cancel" /> 
+        </div>
+
+    </fieldset>
+
+  
+  </form>
 </div>
 
 <div id="dialog_roles" title="Roles">

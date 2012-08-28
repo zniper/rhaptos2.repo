@@ -120,9 +120,9 @@ function getwhoami(){
         //display who I am        
         success: function(jsondoc){
 
-            for (var i in jsondoc){
-                alert(i);
-            };
+//            for (var i in jsondoc){
+//               alert(i);
+//            };
             var user_email = jsondoc['email'];
             var user_name = jsondoc['name'];
             $('#usernamedisplay').html(user_name + "-" + user_email);
@@ -281,7 +281,7 @@ $(document).ready(function() {
                    "#dialog_links", "#dialog_preview",
                    "#dialog_publish"];
     $.each(dialogs, function(i,v){
-        alert(i + ":" + v);
+//        alert(i + ":" + v);
         $(v).dialog({ autoOpen: false });
     });
 
