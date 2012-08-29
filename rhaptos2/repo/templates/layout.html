@@ -11,34 +11,20 @@
   <!-- **** colour scheme stylesheet **** -->
   <link rel="stylesheet" type="text/css" href="/static/blue.css" />
   <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/sunny/jquery-ui.css" />
+  <link rel="stylesheet" href="http://cdn.aloha-editor.org/latest/css/aloha.css" type="text/css">
 
-
-
-<!-- JQuery -->
+<!-- requirejs first -->
+<script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/require.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js"></script>
+
+    <!-- Aloha -->
+    <!-- Load Aloha Editor css and js -->
+
+   <script src="http://cdn.aloha-editor.org/latest/lib/aloha.js"
+      data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link">
+   </script>
 
 
-<!-- TinyMCE and the TinyMCE JQuery helper-->
-<script type="text/javascript" src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript" src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/jscripts/tiny_mce/jquery.tinymce.js"></script>
-<!-- From oerpub.editor (manual insert) -->
-
-<script type="text/javascript" 
-        src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/jscripts/tiny_mce/plugins/blockish/editor_plugin_src.js">
-</script>
-
-<script type="text/javascript" 
-        src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/jscripts/tiny_mce/plugins/exercise/editor_plugin_src.js">
-</script>
-
-<script type="text/javascript" 
-        src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/jscripts/tiny_mce/plugins/section/editor_plugin_src.js">
-</script>
-
-<script type="text/javascript" 
-        src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/jscripts/tiny_mce/plugins/blockish/grammar.js">
-</script>
 
 <!-- Frozone client -->
 <script type="text/javascript" src="http://{{ confd['rhaptos2_www_server_name'] }}/static/conf.js"></script>
@@ -57,10 +43,6 @@
     </script>
 
 
-
-
-<!-- finally, initiate tinymce using oerpub.editor config -->
-<script type="text/javascript" src="http://{{ confd['rhaptos2_cdn_server_name'] }}/tinymce/tiny-init.js"></script>
 
 
 <script>
@@ -132,69 +114,14 @@
                     <label for="textboxName" >Title</label>
                     <input id="textboxName" name="textboxTitle" type="text" style="width: 15em;"/>
                 </li>
-                <li>
-                    <label for="textboxCompany">Company</label>
-                    <input id="textboxCompany" name="textboxCompany" type="text" style="width: 15em;"/>
-                </li>
             </ol>
-        </fieldset>        
-
-        <fieldset class="nested">
-            <legend>Address</legend>    
-            <ol>
-                <li>
-                    <label for="textboxAddress1" >Street address</label>
-                    <input id="textboxAddress1" name="textboxAddress1" type="text" style="width: 15em;"/>
-                </li>
-                <li>
-                    <label for="textboxAddress2" >Street address</label> 
-                    <input id="textboxAddress2" name="textboxAddress2" type="text" style="width: 15em;"/>
-                </li>
-                <li>
-                    <label for="textboxCity" >City</label>
-                    <input id="textboxCity" name="textboxCity" type="text" style="width: 15em;"/>
-                </li>
-                <li>
-                    <label for="textboxRegion" >City/Region</label>
-                    <input id="textboxRegion" name="textboxRegion" type="text" style="width: 15em;"/>
-                </li>
-                <li>
-                    <label for="textboxPostalCode" >Postal code</label>
-                    <input id="textboxPostalCode" name="textboxPostalCode" type="text" style="width: 15em;"/>
-                </li>
-                <li>
-                    <label for="textboxCountry" >Country</label>
-                    <input id="textboxCountry" name="textboxCountry" type="text" style="width: 15em;"/>
-                </li>
-            </ol>
-        </fieldset>        
-
-        <fieldset class="nested">
-            <legend>Phone numbers</legend>
-            <ol>
-                <li style="display:none">
-                    <label for="textboxName" >Name</label>
-                    <input id="text1" name="textboxName" type="text" style="width: 15em;"/>
-                </li>
-                <li style="display:none">
-                    <label for="textboxAddress1" >Address</label>
-                    <input id="text2" name="textboxAddress1" type="text" style="width: 15em;" />
-                </li>
-                <li>
-                    <label for="textboxAddress2" >Phone</label> 
-                    <input id="text3" name="textboxAddress2" type="text" style="width: 15em;"/>
-                </li>
-            </ol>    
         </fieldset>        
 
         <div class="buttonsContainer">
             <input class="button" type="submit" value="OK" /> 
             <input class="button" type="button" value="Cancel" /> 
         </div>
-
     </fieldset>
-
-  
   </form>
 </div>
 

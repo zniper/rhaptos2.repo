@@ -37,7 +37,7 @@ function save_validate(){
 
     function get_textarea_html5(){
         //retrieve, as JSON, the contents of the edit-area 
-        var txtarea = $('#e2textarea').tinymce().getContent();
+        var txtarea = $('#editarea').tinymce().getContent();
         return txtarea;
     };
 
@@ -56,7 +56,7 @@ function save_validate(){
 
 	request.done(function(data) {
 	    logout(data + 'done a success');
-            $('#e2textarea').tinymce().setContent(data);
+            $('#editarea').tinymce().setContent(data);
 	});
 
 	request.fail(function(jqXHR, textStatus, err) {
@@ -92,7 +92,7 @@ function getLoadHistoryVer(uuid){
             $('#contentrw').val(contentrw);
             $('#uuid').val(uuid);
 
-            $('#e2textarea').tinymce().setContent(txtarea);
+            $('#editarea').tinymce().setContent(txtarea);
         },
 
         error: function(jqXHR, textStatus, err) {
@@ -273,7 +273,18 @@ function test(){
 };
 
 
+function start_aloha(){
+
+    $('#editarea').aloha();
+    $('#content').aloha();
+    alert("started aloha");
+};
+
+
+
 $(document).ready(function() {
+
+    start_aloha();    
 
     //mark dialog areas as dialog but not shown
     var dialogs = ["#dialog_files", "#dialog_metadata",
@@ -293,6 +304,8 @@ $(document).ready(function() {
 
     $("#clickLoadTextArea").click(function(e){load_textarea();
                                               e.preventDefault()});
+
+
 
     logout('AJAX will fire at ' + MODULEURL);    
     buildHistory();    
