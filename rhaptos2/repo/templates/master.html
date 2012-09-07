@@ -1,0 +1,67 @@
+{% extends "hdr.html" %}
+{% block body %}
+<!-- ABove should be sep templ -->
+     <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+<div class="container-fluid">
+ <div class="row-fluid">
+
+  <!-- Main content -->
+  <div class="span9">
+
+
+        <h1>{% block modname %}{% endblock %}</h1>
+        {% block editor %}{% endblock %}
+
+
+
+  </div>
+  <!-- COllection Editor -->   
+  <div class="span3">
+
+     <div id="coltree">   </div>
+
+
+  {% if g.user %}
+   <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }}]</a>
+  {% else %}
+  <a href="{{ url_for('login') }}">sign in</a>
+  {% endif %}
+  
+  Revision: {{ confd['bamboo_trackid'] }} <!-- test -->
+
+   <div id="usernamedisplay">fff</div>
+   <div id="workspaces">&nbsp;</div>
+
+  
+  </div>
+ </div> 
+
+
+
+
+
+
+                 
+ 
+
+            <footer>
+      copyright &copy; 2012 connexions | 
+     <a href="http://www.dcarter.co.uk">
+       design by dcarter</a>
+            </footer>
+
+        </div> <!-- /container -->
+
+
+
+
+
+    </body>
+</html>
+
+{% endblock %}
