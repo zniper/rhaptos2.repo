@@ -1,9 +1,5 @@
+Testing repo run locally (unit tests, plus no network)
 
-
-This is an example test file
- 
->>> 1 + 1
-2
 
 >>> from rhaptos2.repo import app
 >>> d = {

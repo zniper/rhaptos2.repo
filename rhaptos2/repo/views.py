@@ -50,7 +50,7 @@ def confjs():
 
 @app.route('/')
 def index():
-    return render_template('index.html', build_tag=app.config['BUILD_TAG'], confd=app.config)
+    return render_template('index.html', confd=app.config)
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
