@@ -1,28 +1,49 @@
 {% extends "master.html" %}
 {% block editor %}
 
-    <form name="fakeeditor" id="form1">
+    <form name="fakeeditor" id="form1" >
+     <fieldset name="Editor" > 
+      <div class="field">
+       <label class="input-label" for="title" >Title</label>
+       <div class="input"> <input type="text" id="title" name="title" value="" > </div>
+      </div>
 
-    Modulename:<input id="title" type="text" name="title" value="">
+    <div class="field">
+      <div class="input">
+       <textarea id="editarea" class="field span12" rows="15" >
+         Enter Module Text Here...
+       </textarea>
+      </div> 
+    </div>
+    </fieldset>
 
-    <hr/>
-     
-    <textarea id="editarea">This is the module text</textarea> 
+    <fieldset name="hidden ACLs">
 
+      <div class="field">
+       <label class="input-label" for="uuid" >uuid</label>
+       <div class="input"> <input id="uuid" name="uuid" value=""> </div>
+      </div>
 
-    <ul>
-    <li>uuid<input id="uuid" name="uuid" value=""></li>
-    <li>aclrw<input id="aclrw" name="aclrw" value=""></li>
-    <li>contentrw<input id="contentrw" name="contentrw" value=""></li>
-    </ul>
+      <div class="field">
+       <label class="input-label" for="aclrw" >aclrw</label>
+       <div class="input"> <input id="aclrw" name="aclrw" value=""> </div>
+      </div>
+
+      <div class="field">
+       <label class="input-label" for="contentrw" >contentrw</label>
+       <div class="input"> <input id="contentrw" name="contentrw" value=""> </div>
+      </div>
+
+    </fieldset>
 
 
     </form>
 
+   <hr/>
    <a class="nolink" href="#" id="save">Save.</a>
 
    <div id="responsearea">Console below:</div>
-   <hr/>
+
    <div id="logarea"></div>
 
 {% endblock %}
