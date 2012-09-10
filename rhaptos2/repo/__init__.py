@@ -14,6 +14,7 @@ import flask
 import statsd
 import json
 from functools import wraps
+import uuid
 
 from rhaptos2.common import conf
 from rhaptos2.common import log
@@ -41,4 +42,8 @@ app = Flask(__name__)
 app.config.update(confd)
 set_logger(apptype, app.config)
 
+@app.before_request
+def requestid():
+    g.requestid = uuid.uuid4()
+    
 import rhaptos2.repo.views
