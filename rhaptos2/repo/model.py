@@ -34,7 +34,7 @@ from flaskext.openid import OpenID
 
 app.config.update(
 #    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
-#    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
+    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
     DEBUG = True
 )
 
@@ -98,7 +98,7 @@ class User(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, openid_url):
         """initialise from json doc """
         self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
 
@@ -139,7 +139,7 @@ def get_user_from_openid(openid_url):
     """
     """
     #supposed to be memcache lookup
-    return User('')
+    return User(openid_url)
 
 
 def store_identity(identity_url, **kwds):

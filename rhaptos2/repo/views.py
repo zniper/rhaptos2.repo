@@ -12,7 +12,7 @@ import flask
 import statsd
 import json
 from functools import wraps
-
+import uuid
 
 from rhaptos2.common import log
 from rhaptos2.common import err
@@ -21,6 +21,7 @@ from rhaptos2.common import conf
 from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
 from rhaptos2.repo import model, get_version, security
+
 
 
 ########################### views
@@ -46,10 +47,14 @@ def apply_cors(fn):
 
 @app.route('/static/conf.js')
 def confjs():
-    return render_template("conf.js", confd=app.config)
+
+    resp = flask.make_response(render_template("conf.js", confd=app.config))    
+    resp.content_type='application/javascript'
+    return resp
 
 @app.route('/')
 def index():
+    app.logger.info("THis is request %s" % g.requestid)
     return render_template('index.html', confd=app.config)
 
 @app.route("/module/", methods=['PUT'])
@@ -90,29 +95,22 @@ def modulePUT():
 @app.route("/module/", methods=['POST'])
 @apply_cors
 def modulePOST():
+    print app    
     app.logger.info('POST CALLED')
     model.callstatsd('rhaptos2.repo.module.POST')
-    try:
-       
 
-        d = request.json
-        if d['uuid'] != u'': 
-            return ("POSTED WITH A UUID" , 400)
-        else:
-            d['uuid'] = None
+    d = request.json
+    if d['uuid'] != u'': 
+        return ("POSTED WITH A UUID" , 400)
+    else:
+        d['uuid'] = None
 
-        #app.logger.info(repr(d))
-        ### maybe we know too much about nodedocs
-        nd = model.mod_from_json(d)
-        uid = nd.uuid
-        nd.save()
-        del(nd)
-
-    except Exception, e:
-
-        app.logger.error(str(e))
-
-        raise(e)
+    #app.logger.info(repr(d))
+    ### maybe we know too much about nodedocs
+    nd = model.mod_from_json(d)
+    uid = nd.uuid
+    nd.save()
+    del(nd)
 
 
     s = model.asjson({'hashid':uid})
