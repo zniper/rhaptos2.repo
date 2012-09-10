@@ -6,7 +6,7 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-
+from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
 class WorkSpace(object):
     """Represents the set of NodeDocs the user can currently view
@@ -31,16 +31,18 @@ class WorkSpace(object):
 
 
     """
-    def __init__(self, openid):
+    def __init__(self, user_id):
         """ """
-        self.openid = openid
+        app.logger.info("in workspace" + user_id)
+        
+        self.user_id = user_id
         repodir = app.config['rhaptos2_repodir']    
         plain = []
         annotated = [] 
         files = [os.path.join(repodir, f) for f in os.listdir(repodir)]
         for fpath in files:
             d = json.loads(open(fpath).read())
-            if openid in d['contentrw']:
+            if user_id in d['contentrw']:
                 plain.append(os.path.basename(fpath))
                 annotated.append([os.path.basename(fpath),
                                  d['title']
@@ -157,10 +159,10 @@ class NodeDoc(object):
 
                  
 
-    def update(self, openid, **kwds):
+    def update(self, user_id, **kwds):
         """update internal dict with whatever sent in kwds, plus some checking, """
-        change_all = self.allow_other_change(openid)
-        change_acl = self.allow_acl_change(openid)
+        change_all = self.allow_other_change(user_id)
+        change_acl = self.allow_acl_change(user_id)
 
         if change_all == False:
             raise Rhaptos2Error("unauthorised")
@@ -186,23 +188,23 @@ class NodeDoc(object):
         open(filepath, 'wb').write(json.dumps(d))
 
 
-    def allow_acl_change(self, openid):
+    def allow_acl_change(self, user_id):
         """ """
            
-        if openid in self.aclrw:
-            print "Found %s in %s" % (openid, self.aclrw)
+        if user_id in self.aclrw:
+            app.logger.info("Found %s in %s" % (user_id, self.aclrw))
             return True
         else:
-            print "Not Found %s in %s" % (openid, self.aclrw)
+            app.logger.info("Not Found %s in %s" % (user_id, self.aclrw))
             return False
 
-    def allow_other_change(self, openid):
+    def allow_other_change(self, user_id):
         """ """
-        if openid in self.contentrw:
-            print "FOund %s in %s" % (openid, self.contentrw)
+        if user_id in self.contentrw:
+            app.logger.info("Found %s in %s" % (user_id, self.contentrw))
             return True
         else:
-            print "Not FOund %s in %s" % (openid, self.contentrw)
+            app.logger.info("Not Found %s in %s" % (user_id, self.contentrw))
             return False
 
 
