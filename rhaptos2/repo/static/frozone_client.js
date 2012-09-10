@@ -140,6 +140,7 @@ function getwhoami() {
 
 function buildHistory() {
 
+    var jsond = "[";
     var htmlfrag = '<ul>';
     $.ajax({
         type: 'GET',
@@ -154,8 +155,19 @@ function buildHistory() {
             $.each(historyarr, function(i, elem) {
                 var strelem = "'" + elem[0] + "'";
                 htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+                jsond += '{"data": "' + elem[1] + '", "state": "closed"},';
             });
 
+            x = jsond.length-1;
+            y = jsond.substring(0,x);
+            jsond = y + "]";     
+            //jsond += ']"'; 
+
+            good = '[{"state": "closed", "data": "yyyyy"}, {"state": "closed", "data": "ddd"}]'
+            logout(jsond);
+            logout(good);
+
+            populate_tree(jsond);
             $('#workspaces').html(htmlfrag);
         }
     });
@@ -295,13 +307,15 @@ var data = [
                          });
 }
 
-function populate_tree() {
+function populate_tree(jsonstr) {
 
-    var d = '{"data": "title",' +
-            '"state": "closed"}';
+    logout(jsonstr);
+    alert(String(jsonstr));
+    x = $.parseJSON(jsonstr);
+    alert(x); 
 
     var jsTreeSettings = $('#coltree').jstree('get_settings');
-    jsTreeSettings.json_data.data = $.parseJSON(d);
+    jsTreeSettings.json_data.data = x; //$.parseJSON(jsonstr);
     $.jstree._reference('coltree')._set_settings(jsTreeSettings);
 
     // Refresh whole our tree (-1 means root of tree)
@@ -339,12 +353,17 @@ $(document).ready(function() {
 
 
     logout('AJAX will fire at ' + MODULEURL);
-    buildHistory();
+
     getwhoami();
 
 
     start_tree();
-    populate_tree();
+//    var d = '{"data": "title",' +
+//            '"state": "closed"}';
+
+//    populate_tree(d);
+
+    buildHistory();
 
     //nolink are links that do some jquery function, but should not be links
     $('a.nolink').click(function(event) {
