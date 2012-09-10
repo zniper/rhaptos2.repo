@@ -1,17 +1,78 @@
 {% extends "hdr.html" %}
 {% block body %}
-<!-- ABove should be sep templ -->
      <body>
         <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+            <p class="chromeframe">You are using an outdated
+        browser. <a href="http://browsehappy.com/">Upgrade your
+        browser today</a>
+        or <a href="http://www.google.com/chromeframe/?redirect=true">install
+        Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-      <!-- Main hero unit for a primary marketing message or call to action -->
+      <!-- Main hero unit  -->
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+
+	<ul class="nav">
+	  <li class="active">
+	    <a class="brand" href="#">ConneXions</a>
+	  </li>
+	  <li><a href="#">About</a></li>
+	  <li><a href="#">MyCNX</a></li>
+
+          <li class="dropdown">
+           <a href="#"
+              class="dropdown-toggle"
+              data-toggle="dropdown">
+              MetaData
+              <b class="caret"></b>
+           </a>
+           <ul class="dropdown-menu">
+           <li><a href="#">Module Metadata</a></li>
+           <li><a href="#">Module Roles</a></li>
+           <li><a href="#">Collection Roles</a></li>
+           <li><a href="#">Collection Metadata</a></li>
+           <li><a href="#">Collection other</a></li>
+           </ul>
+          </li>
+
+
+
+<li>
+  {% if g.user %}
+   <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }}]</a>
+  {% else %}
+  <a href="{{ url_for('login') }}">sign in</a>
+  {% endif %}
+</li>
+</ul>
+
+<ul class="nav pull-right"> 
+
+<li>  
+  <div> {{ confd['bamboo_trackid'] }} <!-- test --> </div>
+</li>
+
+<li>
+   <div id="usernamedisplay">fff</div>
+</li>
+	</ul>
+
+
+
+
+    </div>
+  </div>
+</div> 
+
+
 <div class="container-fluid">
  <div class="row-fluid">
 
   <!-- Main content -->
-  <div class="span9">
+  <div class="span9" id="editorspan">
 
 
         <h1>{% block modname %}{% endblock %}</h1>
@@ -20,34 +81,20 @@
 
 
   </div>
-  <!-- COllection Editor -->   
-  <div class="span3">
+  <!-- Collection Editor -->   
+  <div class="span3" id="collectionspan">
 
      <div id="coltree">   </div>
-
-
-  {% if g.user %}
-   <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }}]</a>
-  {% else %}
-  <a href="{{ url_for('login') }}">sign in</a>
-  {% endif %}
-  
-  Revision: {{ confd['bamboo_trackid'] }} <!-- test -->
-
-   <div id="usernamedisplay">fff</div>
-   <div id="workspaces">&nbsp;</div>
-
-  
+ 
   </div>
  </div> 
 
+ <div class="row-fluid" >
+ <div class="span12" >
 
-
-
-
-
-                 
- 
+   <div id="workspaces" >Workspaces here</div>
+  </div>
+ </div>
 
             <footer>
       copyright &copy; 2012 connexions | 
