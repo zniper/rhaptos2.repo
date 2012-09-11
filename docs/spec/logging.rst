@@ -11,6 +11,54 @@ Principles:
 3. write tools and centralise stuff (dashboard) to encourage reuse of tools
 4. use metrics as a guide.
 
+Example use
+-----------
+
+We have a rhaptos2.common project which contains the generic logging code.
+This means all projects (even if they want projects not to do with CNX)
+can use the same API to log their events, and do so in a consistent manner
+
+The code is set up to use a custom python logger, and a statsd-client
+to send audit logs to a centralised sysloging server, and a metric gathering 
+graphite server
+
+Example call::
+
+    app.logger.info(
+               msg="PUT of module abcd-1234-4443-44 by userid xxx"
+               events=["rhaptos2.repo.module.put", "cnx.users.xxx"]
+               ) 
+
+
+context
+-------
+
+Whilst a log message can contain whatever the developer needs to say,
+we can expect to always get the below data passed in - making filtering 
+the output much easier.
+
+userid - the cnx based id of a user, that is mapped to a "real" openid / address by rhaptos2.user
+
+component - there is no hard and fast definition of a component, but its best thought 
+            of as a discrete unit, doing some useful work for us.
+
+event tags - these are defined as strings - they are quite arbitrary but it is useful for us 
+             to keep a simple hierarchy - like rhaptos2.repo.module / collection
+
+time & server & running instance
+
+
+
+Output filtering
+----------------
+
+We will get a *lot* of logs.  At the moment we capture x MB / mth
+We could expect to conservatively increase that by 50% simply by gathering in 
+more detail.
+
+Filtering the output is at the moment a simple affair (grep).
+We shall develop tools to filter the output in more consistent means 
+
 
 Metric gathering
 ----------------
