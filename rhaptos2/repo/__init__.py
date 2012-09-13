@@ -16,9 +16,7 @@ import json
 from functools import wraps
 import uuid
 
-from rhaptos2.common import conf
-from rhaptos2.common import log
-from rhaptos2.common import err
+from rhaptos2.common import conf, log, err
 
 
 def set_logger(apptype, app_configd):
