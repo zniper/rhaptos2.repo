@@ -18,8 +18,8 @@ from rhaptos2.common import log
 from rhaptos2.common import err
 from rhaptos2.common import conf
 
-from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
-
+from rhaptos2.repo import app, dolog
+#circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 from rhaptos2.repo import model, get_version, security
 
 
@@ -27,8 +27,8 @@ from rhaptos2.repo import model, get_version, security
 
 
 def apply_cors(fn):
-    '''decorator to apply the correct CORS
-       friendly header 
+    '''decorator to apply the correct CORS friendly header 
+
        I am assuming all view functions return 
        just text ..  hmmm
     '''
@@ -54,8 +54,7 @@ def index():
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
-    app.logger.info('MODULE PUT CALLED')
-    model.callstatsd('rhaptos2.repo.module.PUT')
+    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
     try:
        
 
@@ -63,18 +62,12 @@ def modulePUT():
         if d['uuid'] == u'': 
             return ("PUT WITHOUT A UUID" , 400)
 
-        #app.logger.info(repr(d))
         current_nd = model.mod_from_file(d['uuid'])       
         current_nd.load_from_djson(d) #this checks permis
         uid = current_nd.uuid
         current_nd.save()  
-        
-
 
     except Exception, e:
-
-        app.logger.error(str(e))
-
         raise(e)
 
     s = model.asjson({'hashid':uid})
@@ -90,18 +83,15 @@ def modulePUT():
 @app.route("/module/", methods=['POST'])
 @apply_cors
 def modulePOST():
-    app.logger.info('POST CALLED')
-    model.callstatsd('rhaptos2.repo.module.POST')
+    dolog("INFO", 'A Module POSTed', caller=modulePOST, statsd=['rhaptos2.repo.module.POST',])
     try:
-       
-
         d = request.json
         if d['uuid'] != u'': 
             return ("POSTED WITH A UUID" , 400)
         else:
             d['uuid'] = None
 
-        #app.logger.info(repr(d))
+
         ### maybe we know too much about nodedocs
         nd = model.mod_from_json(d)
         uid = nd.uuid
@@ -109,9 +99,6 @@ def modulePOST():
         del(nd)
 
     except Exception, e:
-
-        app.logger.error(str(e))
-
         raise(e)
 
 
@@ -143,8 +130,7 @@ def workspaceGET():
 
 @app.route("/module/<modname>", methods=['GET'])
 def moduleGET(modname):
-    app.logger.info('getcall %s' % modname)
-    model.callstatsd('rhaptos2.e2repo.module.GET')
+    dolog("INFO", 'MODULE GET CALLED on %s' % modname, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
     try:
         jsonstr = model.fetch_module(modname)
     except Exception, e:
@@ -164,8 +150,7 @@ def moduleDELETE(modname):
     status_code = 200
     headers = []
 
-    app.logger.info('getcall %s' % modname)
-    model.callstatsd('rhaptos2.e2repo.module.GET')
+    dolog("INFO", 'DELETE CALLED on %s' % modname, caller=moduleDELETE, statsd=['rhaptos2.repo.module.DELETE',])
     try:
         jsonstr = model.delete_module(modname)
     except IOError, e:
@@ -197,7 +182,7 @@ def versionGET():
 def crash():
     ''' '''
     if app.debug == True:
-        app.logger.info('crash command called.')
+        dolog("INFO", 'crash command called', caller=crash, statsd=['rhaptos2.repo.crash',])
         raise exceptions.Rhaptos2Error('Crashing on demand')
 
 
@@ -205,7 +190,8 @@ def crash():
 def burn():
     ''' '''
     if app.debug == True:
-        app.logger.info('burn command called - dying hard with os._exit')
+        dolog("INFO", 'burn command called - dying hard with os._exit'
+                      , caller=crash, statsd=['rhaptos2.repo.crash',])
         #sys.exit(1)
         #Flask traps sys.exit (threads?)
         os._exit(1) #trap _this_

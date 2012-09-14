@@ -2,10 +2,6 @@
 #! -*- coding: utf-8 -*-
 
 
-from flask import Flask, render_template, request, g, session, flash, \
-     redirect, url_for, abort
-
-
 import datetime
 import datetime
 import md5, random
@@ -18,23 +14,17 @@ from functools import wraps
 from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
-
-
-from rhaptos2.repo import app
+from rhaptos2.repo import app, dolog
 from rhaptos2.repo import files, security
 
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from flaskext.openid import OpenID
-
-#from sqlalchemy import create_engine, Column, Integer, String
-#from sqlalchemy.orm import scoped_session, sessionmaker
-#from sqlalchemy.ext.declarative import declarative_base
+import memcache
 
 
 app.config.update(
-#    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
-#    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
+    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
     DEBUG = True
 )
 
@@ -89,7 +79,7 @@ ToDO:
   http://docs.python.org/library/functools.html#functools.wraps
 
 '''
-import memcache
+
 
 
 class User(object):
@@ -156,9 +146,7 @@ def whoami():
     TODO: store the userid in session cookie too ?
 
     '''
-    callstatsd("rhaptos2.repo.whoami")    
-#    app.logger.info('+++++ session dict' + repr(session.__dict__) )
-#    app.logger.info('+++++ app config' + repr(app.config) )
+    dolog("INFO", "Whoami called", caller=whoami)    
 
     if 'openid' in session:
         user = Identity(session['openid'])
