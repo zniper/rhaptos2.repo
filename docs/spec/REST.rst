@@ -52,3 +52,16 @@ The remix web - taking portions of web pages,
 placing them in other documents, editing opn fly, collaboratively.
 
 The goal...
+
+
+http://tools.ietf.org/html/rfc4288#page-5
+
+Media types:
+
+www.iana.org/assignments/link-relations
+http://tools.ietf.org/html/rfc5988#page-6
+
+
+Defined in 
+CLient just has to know what to do with them
+Like it kjnows what to do with HTML

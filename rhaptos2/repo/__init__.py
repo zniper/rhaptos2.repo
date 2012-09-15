@@ -22,7 +22,7 @@ import statsd
 import json
 from functools import wraps
 import logging
-
+import uuid
 from rhaptos2.common import conf, log, err
 
 
@@ -33,6 +33,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
     
     caller is the function passed when the dolog func is called.  We jsut grab its name
     extras is likely to hold a list of strings that are the buckets
+
 
     >>> dolog("ERROR", "whoops", os.path.isdir, ['a.b.c',]) 
 
@@ -133,7 +134,10 @@ apptype = 'rhaptos2'
 confd = conf.get_config(apptype)
 app = Flask(__name__)
 app.config.update(confd)
-app.config['BUILD_TAG'] = 'FIXBUILDTAG!'
 set_logger(apptype, app.config)
 
+@app.before_request
+def requestid():
+    g.requestid = uuid.uuid4()
+    
 import rhaptos2.repo.views

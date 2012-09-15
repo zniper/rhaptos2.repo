@@ -88,7 +88,7 @@ class User(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, openid_url):
         """initialise from json doc """
         self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
 
@@ -129,7 +129,7 @@ def get_user_from_openid(openid_url):
     """
     """
     #supposed to be memcache lookup
-    return User('')
+    return User(openid_url)
 
 
 def store_identity(identity_url, **kwds):
