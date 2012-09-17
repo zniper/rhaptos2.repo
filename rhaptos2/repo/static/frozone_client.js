@@ -1,8 +1,9 @@
-
-// :author: pbrian <paul@mikadosoftware.com>
-// :JQuery scripts for ednamode project for CNX.org
-// NB: assume conf.js is included earlier ...
-
+// Copyright (c) Rice University 2012
+// This software is subject to 
+// the provisions of the GNU Lesser General
+// Public License Version 2.1 (LGPL).
+// See LICENCE.txt for details.  
+//
 
 
     var REPOBASEURL = 'http://' + FROZONE.e2repoFQDN;
@@ -16,6 +17,7 @@
 
         var txt = $('#logarea').html();
         $('#logarea').html(txt + '<li> ' + msg);
+        console.log(msg);
     }
 
     function get_username() {

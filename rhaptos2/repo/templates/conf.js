@@ -1,11 +1,9 @@
-
-
-// :author: pbrian <paul@mikadosoftware.com>
-// :JQuery configuration details for Frozone
-// THIS FILE SHOULD BE DECLARED FIRST IN ALL FROZONE HTML
-
-// PRODUCTIONNOTES:: This is dynamically created (awkward config otherwise).  
-// PRODUCTIONNOTES:: SO needs to be  behind varnish or other http cache.
+// Copyright (c) Rice University 2012
+// This software is subject to 
+// the provisions of the GNU Lesser General
+// Public License Version 2.1 (LGPL).
+// See LICENCE.txt for details.  
+//
 
 
 var FROZONE = {
