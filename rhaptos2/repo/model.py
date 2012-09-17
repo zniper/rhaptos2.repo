@@ -32,7 +32,7 @@ import memcache
 
 
 app.config.update(
-    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
+    SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
     DEBUG = True
 )
 
@@ -127,6 +127,8 @@ class Identity(object):
             self.name = None
             self.userID = None
 
+        self.user_id = self.userID
+
     def user_as_dict(self):
         return {"openid_url": self.openid_url,
                 "email": self.email,
@@ -158,9 +160,11 @@ def whoami():
 
     if 'openid' in session:
         user = Identity(session['openid'])
+        g.user_id = user.userID
         return user
     else:
         callstatsd("rhaptos2.repo.notloggedin")    
+        g.user_id = None
         return None
         #is this alwasys desrireed?
 
@@ -219,7 +223,7 @@ def add_location_header_to_response(fn):
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    userspace = app.config['rhaptos2_repodir']
+    userspace = app.config['rhaptos2repo_repodir']
 
     if os.path.isdir(userspace):
         return userspace
@@ -235,8 +239,8 @@ def userspace():
     
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(app.config['rhaptos2_statsd_host'], 
-                       int(app.config['rhaptos2_statsd_port']))
+    c = statsd.StatsClient(app.config['rhaptos2repo_statsd_host'], 
+                       int(app.config['rhaptos2repo_statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 

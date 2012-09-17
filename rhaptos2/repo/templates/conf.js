@@ -10,8 +10,8 @@
 
 var FROZONE = {
 
-    e2repoFQDN   : "{{ confd['rhaptos2_www_server_name'] }}", 
-    wwwFQDN      : "{{ confd['rhaptos2_www_server_name'] }}"
+    e2repoFQDN   : "{{ confd['rhaptos2repo_www_server_name'] }}", 
+    wwwFQDN      : "{{ confd['rhaptos2repo_www_server_name'] }}"
 
 
 }

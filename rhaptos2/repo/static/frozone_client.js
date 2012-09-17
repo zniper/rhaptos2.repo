@@ -49,8 +49,7 @@ function save_validate() {
 
         xhrFields: {
             withCredentials: true
-        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-
+        }, 
             type: 'GET'
         });
 
@@ -219,6 +218,14 @@ function serialise_form() {
 
 }
 
+function newText(){
+    $('#aclrw').val(whoami["userID"]);
+    $('#contentrw').val(whoami["userID"]);
+    $('#title').val('');
+    $('#editartea').html('Enter your text here...');        
+    alert("you are :" + whoami);
+};
+
 function saveText() {
          //constants
 
@@ -288,7 +295,7 @@ function test() {
 function start_aloha() {
 
     $('#editarea').aloha();
-    alert('started aloha');
+    logout('started aloha');
 }
 
 function start_tree() {
@@ -310,9 +317,7 @@ var data = [
 function populate_tree(jsonstr) {
 
     logout(jsonstr);
-    alert(String(jsonstr));
     x = $.parseJSON(jsonstr);
-    alert(x); 
 
     var jsTreeSettings = $('#coltree').jstree('get_settings');
     jsTreeSettings.json_data.data = x; //$.parseJSON(jsonstr);
@@ -326,8 +331,6 @@ function populate_tree(jsonstr) {
 
 
 $(document).ready(function() {
-
-    alert('Begin');
 
     start_aloha();
 
@@ -375,12 +378,19 @@ $(document).ready(function() {
 
     });
 
-    $('#save').click(function(event) {
+    $('#savemodule').click(function(event) {
                          saveText();
                          event.preventDefault();
                        }
                       );
 
+
+
+    $('#newmodule').click(function(event) {
+                         newText();
+                         event.preventDefault();
+                       }
+                      );
 
 
 });

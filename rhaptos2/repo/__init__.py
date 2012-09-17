@@ -71,7 +71,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
         statsd = [calledby,]
 
     try:
-        request_id = request.request_id
+        request_id = g.request_id
     except:
         request_id = "no_request_id" 
 
@@ -107,10 +107,10 @@ def set_logger(apptype, app_configd):
     if loglevel not in confd.keys():
         confd[loglevel] = 'DEBUG'
     ###
-    
+
     ## define handlers
-    hdlr2 = log.StatsdHandler(app.config['rhaptos2_statsd_host'],
-                    int(app.config['rhaptos2_statsd_port']))
+    hdlr2 = log.StatsdHandler(app.config['rhaptos2repo_statsd_host'],
+                    int(app.config['rhaptos2repo_statsd_port']))
 
     hdlr = logging.StreamHandler()
 
@@ -138,14 +138,17 @@ def get_version():
         return '0.0.0'
     #todo: think about this 
 
-apptype = 'rhaptos2'
+
+apptype = 'rhaptos2repo'
 confd = conf.get_config(apptype)
 app = Flask(__name__)
 app.config.update(confd)
+
 set_logger(apptype, app.config)
 
 @app.before_request
 def requestid():
     g.requestid = uuid.uuid4()
-    
+    g.request_id = g.requestid
+
 import rhaptos2.repo.views

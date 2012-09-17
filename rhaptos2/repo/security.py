@@ -18,7 +18,8 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-from rhaptos2.repo import app  #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
+from rhaptos2.repo import app, dolog
+ #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
 class WorkSpace(object):
     """Represents the set of NodeDocs the user can currently view
@@ -45,10 +46,11 @@ class WorkSpace(object):
     """
     def __init__(self, user_id):
         """ """
-        app.logger.info("in workspace" + user_id)
+        dolog("INFO", "in workspace of %s" % user_id, 
+              caller=WorkSpace, statsd=['rhaptos2.repo.workspace.entered',])
         
         self.user_id = user_id
-        repodir = app.config['rhaptos2_repodir']    
+        repodir = app.config['rhaptos2repo_repodir']    
         plain = []
         annotated = [] 
         files = [os.path.join(repodir, f) for f in os.listdir(repodir)]
@@ -139,7 +141,7 @@ class NodeDoc(object):
         
 
         """
-        repodir = app.config['rhaptos2_repodir']
+        repodir = app.config['rhaptos2repo_repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
  
@@ -191,7 +193,7 @@ class NodeDoc(object):
         if self.uuid == None:
             raise Rhaptos2Error("Need a UUID to save")
         print "Saving"
-        repodir = app.config['rhaptos2_repodir']
+        repodir = app.config['rhaptos2repo_repodir']
         filepath = os.path.join(repodir, self.uuid)
         ###aaarrgh check keys
         d = {}
