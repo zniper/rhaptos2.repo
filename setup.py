@@ -55,7 +55,7 @@ def main():
               ,"python-memcached"
               ,"nose"
 
-              ,"rhaptos2.common"
+              ,"rhaptos2.common >= 0.0.12"
               ,"unittest-xml-reporting"
               ,"mikado.oss.doctest_additions"
               ,"python-memcached"
