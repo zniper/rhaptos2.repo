@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
+###  
+# Copyright (c) Rice University 2012
+# This software is subject to
+# the provisions of the GNU Lesser General
+# Public License Version 2.1 (LGPL).
+# See LICENCE.txt for details.
+###
+
+
 sect1 = {"id":  "org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126",                    
         "version":"ad0d6c247e0f1347364d890ec2e9fb53",
         "title": "Introduction",               

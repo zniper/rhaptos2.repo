@@ -1,5 +1,13 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 #! -*- coding: utf-8 -*-
+
+###  
+# Copyright (c) Rice University 2012
+# This software is subject to
+# the provisions of the GNU Lesser General
+# Public License Version 2.1 (LGPL).
+# See LICENCE.txt for details.
+###
 
 
 from flask import Flask, render_template, request, g, session, flash,   redirect, url_for, abort
