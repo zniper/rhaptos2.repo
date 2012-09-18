@@ -62,7 +62,7 @@ def confjs():
 
 @app.route('/')
 def index():
-    app.logger.info("THis is request %s" % g.requestid)
+    dolog("INFO", "THis is request %s" % g.requestid)
     return render_template('index.html', confd=app.config)
 
 @app.route("/module/", methods=['PUT'])

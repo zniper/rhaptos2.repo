@@ -206,19 +206,19 @@ class NodeDoc(object):
         """ """
            
         if user_id in self.aclrw:
-            app.logger.info("Found %s in %s" % (user_id, self.aclrw))
+            dolog("INFO", "Found %s in %s" % (user_id, self.aclrw))
             return True
         else:
-            app.logger.info("Not Found %s in %s" % (user_id, self.aclrw))
+            dolog("INFO", "Not Found %s in %s" % (user_id, self.aclrw))
             return False
 
     def allow_other_change(self, user_id):
         """ """
         if user_id in self.contentrw:
-            app.logger.info("Found %s in %s" % (user_id, self.contentrw))
+            dolog("INFO", "Found %s in %s" % (user_id, self.contentrw))
             return True
         else:
-            app.logger.info("Not Found %s in %s" % (user_id, self.contentrw))
+            dolog("INFO", "Not Found %s in %s" % (user_id, self.contentrw))
             return False
 
 
