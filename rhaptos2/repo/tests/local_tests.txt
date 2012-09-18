@@ -27,8 +27,8 @@ Test the views
 >>> assert 'wwwFQDN      : "www.frozone.mikadosoftware.com"' in rv.data
 >>> rv.status_code
 200
->>> rv.headers
-Headers([('Content-Type', 'application/javascript'), ('Content-Length', '433')])
+>>> rv.headers # doctest: +ELLIPSIS
+Headers([('Content-Type', 'application/javascript'), ('Content-Length', '...')])
 
 >>> mod = {"content": "<section> In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole, filled with the ends of worms and an oozy smell, nor yet a dry, bare, sandy hole with nothing in it to sit down on or to eat: it was a hobbit-hole, and that means comfort.\" \" </section>  ", "aclrw": ["paul@mikadosoftware.com"], "contentrw": ["paul@mikadosoftware.com", "rhaptos2tester@gmail.com"], "uuid": "abcdefg", "title": "There and back again"}
 >>> import json
