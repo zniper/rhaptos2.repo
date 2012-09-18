@@ -48,7 +48,7 @@ function save_validate() {
 
 function get_textarea_html5() {
         //retrieve, as JSON, the contents of the edit-area
-        var txtarea = $('#editarea').html();
+        var txtarea = $('#editarea-aloha').html();
         return txtarea;
     }
 
