@@ -1,8 +1,8 @@
 // Copyright (c) Rice University 2012
-// This software is subject to 
+// This software is subject to
 // the provisions of the GNU Lesser General
 // Public License Version 2.1 (LGPL).
-// See LICENCE.txt for details.  
+// See LICENCE.txt for details.
 //
 
 
@@ -14,10 +14,19 @@
 
     function logout(msg) {
         //log to a HTML area all messages
+        var smsg = '';
 
+        if (typeof(msg) == 'object') {
+            for (var item in msg){
+                smsg += item + "-" + msg[item];
+                                 }
+                                     }
+        else                         {
+            smsg = msg;
+                                     } 
         var txt = $('#logarea').html();
-        $('#logarea').html(txt + '<li> ' + msg);
-        console.log(msg);
+        $('#logarea').html(txt + '<li> ' + smsg);
+        console.log(smsg);
     }
 
     function get_username() {
@@ -37,27 +46,36 @@ function save_validate() {
     return;
 }
 
-    function get_textarea_html5() {
+function get_textarea_html5() {
         //retrieve, as JSON, the contents of the edit-area
         var txtarea = $('#editarea').html();
         return txtarea;
     }
 
 
-    function load_textarea(title) {
-
+function load_textarea(mhashid) {
+        // 
+        
         var request = $.ajax({
             url: MODULEURL + mhashid,
 
         xhrFields: {
             withCredentials: true
-        }, 
+        },
             type: 'GET'
         });
 
         request.done(function(data) {
-            logout(data + 'done a success');
-            $('#editarea').html(data);
+            //why not returned as json???
+            var jdata = $.parseJSON(data);
+            logout(jdata);
+            //weird aloha feature - suffixed textareas.. ask phil.. 
+            $('#editarea-aloha').val(jdata['content']);
+            $('#aclrw').val(jdata['aclrw']);
+            $('#contentrw').val(jdata['contentrw']);
+            $('#title').val(jdata['title']);
+            $('#uuid').val(jdata['uuid']);
+
         });
 
         request.fail(function(jqXHR, textStatus, err) {
@@ -93,7 +111,7 @@ function getLoadHistoryVer(uuid) {
             $('#contentrw').val(contentrw);
             $('#uuid').val(uuid);
 
-            $('#editarea').html(txtarea);
+            $('#editarea-aloha').html(txtarea);
         },
 
         error: function(jqXHR, textStatus, err) {
@@ -141,7 +159,7 @@ function getwhoami() {
 
 function buildHistory() {
 
-    var jsond = "[";
+    var jsond = '[';
     var htmlfrag = '<ul>';
     $.ajax({
         type: 'GET',
@@ -156,18 +174,14 @@ function buildHistory() {
             $.each(historyarr, function(i, elem) {
                 var strelem = "'" + elem[0] + "'";
                 htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
-                jsond += '{"data": "' + elem[1] + '", "state": "closed"},';
+                jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
             });
 
-            x = jsond.length-1;
-            y = jsond.substring(0,x);
-            jsond = y + "]";     
-            //jsond += ']"'; 
-
-            good = '[{"state": "closed", "data": "yyyyy"}, {"state": "closed", "data": "ddd"}]'
+            x = jsond.length - 1;
+            y = jsond.substring(0, x);
+            jsond = y + ']';
+            //jsond += ']"';
             logout(jsond);
-            logout(good);
-
             populate_tree(jsond);
             $('#workspaces').html(htmlfrag);
         }
@@ -220,13 +234,13 @@ function serialise_form() {
 
 }
 
-function newText(){
-    $('#aclrw').val(whoami["userID"]);
-    $('#contentrw').val(whoami["userID"]);
+function newText() {
+    $('#aclrw').val(whoami['userID']);
+    $('#contentrw').val(whoami['userID']);
     $('#title').val('');
-    $('#editartea').html('Enter your text here...');        
-    alert("you are :" + whoami);
-};
+    $('#editartea').html('Enter your text here...');
+    alert('you are :' + whoami);
+}
 
 function saveText() {
          //constants
@@ -300,6 +314,17 @@ function start_aloha() {
     logout('started aloha');
 }
 
+function node_load_event(node) {
+
+
+   var moduleuuid = node.attr('id');
+   getLoadHistoryVer(moduleuuid);
+//   var s = "Calling load_textarea(" + moduleuuid + ")";
+//   logout(s);
+//   load_textarea(moduleuuid);
+
+   }
+
 function start_tree() {
 
 var data = [
@@ -310,10 +335,22 @@ var data = [
 
     $('#coltree').jstree({
             json_data: {data: data},
-            plugins: ['themes', 'json_data', 'ui', 'crrm', 'hotkeys'],
-            core: { }
+            plugins: ['themes', 'json_data', 'ui', 'crrm', 'hotkeys', 'contextmenu'],
+            core: { },
+            
+            contextmenu: {'select_node': true,
+                          'items': {'load': {'label': 'Edit module',
+                                           'action': function(obj) {node_load_event(obj);}
+                                          }
+                                 }
+                        }
 
-                         });
+                         })
+           .bind("delete.jstree", function(e, data) {alert("Delete TBD");
+                                                    });
+
+
+
 }
 
 function populate_tree(jsonstr) {

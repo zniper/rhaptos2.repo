@@ -147,7 +147,8 @@ def moduleGET(modname):
     except Exception, e:
         raise e
 
-    resp = flask.make_response(jsonstr)    
+    resp = flask.make_response(jsonstr) 
+    resp.content_type='application/json'   
     resp.headers["Access-Control-Allow-Origin"]= "*"
     return resp
 
