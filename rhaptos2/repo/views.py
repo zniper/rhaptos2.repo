@@ -52,6 +52,15 @@ def apply_cors(fn):
     return newfn
 
 
+### Utter junk just to get round http://openid-selector.googlecode.com quickl
+### We need a CDN approach ...
+
+@app.route('/images/openid-providers-en.png')
+def junk():
+    resp = flask.redirect('/static/images/openid-providers-en.png')
+    return resp
+
+
 
 @app.route('/static/conf.js')
 def confjs():
