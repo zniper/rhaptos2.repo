@@ -2,6 +2,9 @@
 Jenkins
 =======
 
+
+sudo rm /usr/local/man
+
 General considerations
 ======================
 
