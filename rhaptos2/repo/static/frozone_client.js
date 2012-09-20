@@ -237,9 +237,11 @@ function serialise_form() {
 function newText() {
     $('#aclrw').val(whoami['userID']);
     $('#contentrw').val(whoami['userID']);
-    $('#title').val('');
-    $('#editartea').html('Enter your text here...');
-    alert('you are :' + whoami);
+    $('#title').val('Enter title here ...');
+    $('#uuid').val('');
+    $('#editarea-aloha').html('Enter your text here...');
+
+
 }
 
 function saveText() {
@@ -257,8 +259,8 @@ function saveText() {
          for (var i in payload) {
              foo = '/n' + i + ' : ' + payload[i];
          }
-         alert(requestmethod);
-         alert(foo);
+//         alert(requestmethod);
+//         alert(foo);
 
          var json_text = JSON.stringify(payload, null, 2);
 
@@ -329,7 +331,7 @@ function start_tree() {
 
 var data = [
  {
- 'data' : 'weekly',
+ 'data' : false,
  'attr': {'rel': 'directory'}
  }];
 
@@ -341,7 +343,15 @@ var data = [
             contextmenu: {'select_node': true,
                           'items': {'load': {'label': 'Edit module',
                                            'action': function(obj) {node_load_event(obj);}
-                                          }
+                                          },
+                                   'create': false,
+                                   'rename': false,
+                                   'delete': false,
+                                   'edit': false,
+                                   'remove':false,
+                                   'ccp':false
+
+     
                                  }
                         }
 
