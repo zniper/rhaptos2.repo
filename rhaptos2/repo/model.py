@@ -119,8 +119,8 @@ class Identity(object):
         self.openid_url = openid_url
         self.user = get_user_from_openid(openid_url)
         if self.openid_url:
-            self.email = 'your email' 
-            self.name = 'your name'
+            self.email = 'john.doe@cnx.org' 
+            self.name = 'John Doe'
             self.userID = self.user.userID
         else:
             self.email = None
