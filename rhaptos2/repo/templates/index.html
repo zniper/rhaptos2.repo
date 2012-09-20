@@ -1,29 +1,58 @@
-{% extends "layout.html" %}
-{% block body %}
+{% extends "master.html" %}
+{% block editor %}
 
-    <form name="fakeeditor" id="form1">
+    <form name="fakeeditor" id="form1" >
+     <fieldset name="Editor" > 
+      <div class="field">
+       <label class="input-label" for="title" >Title</label>
+       <div class="input"> <input type="text" id="title" name="title" value="" > </div>
+      </div>
 
-    Modulename:<input id="title" type="text" name="title" value="">
+ <div class="btn-toolbar">
+  <div class="btn-group"> 
+   <a href="#" id="savemodule" class="btn btn-inverse btn-mini nolink">
+     <i class="icon-white icon-hdd"></i>Save</a>
+   <a href="#" id="newmodule" class="btn btn-inverse btn-mini nolink">
+     <i class="icon-white icon-file"></i> New</a>
+  </div>
+</div>
 
-    <hr/>
-     
-    <textarea id="editarea">This is the module text</textarea> 
+    <div class="field">
+      <div class="input">
+       <textarea id="editarea" class="field span12" rows="15" >
+         Enter Module Text Here...
+       </textarea>
+      </div> 
+    </div>
+    </fieldset>
 
-    <div id="content"><p>Getting started with Aloha Editor!</p></div>
+    <fieldset name="hidden ACLs">
 
-    <ul>
-    <li>uuid<input id="uuid" name="uuid" value=""></li>
-    <li>aclrw<input id="aclrw" name="aclrw" value=""></li>
-    <li>contentrw<input id="contentrw" name="contentrw" value=""></li>
-    </ul>
+      <div class="field">
+       <label class="input-label" for="uuid" >uuid</label>
+       <div class="input"> <input id="uuid" name="uuid" value=""> </div>
+      </div>
+
+      <div class="field">
+       <label class="input-label" for="aclrw" >aclrw</label>
+       <div class="input"> <input id="aclrw" name="aclrw" value=""> </div>
+      </div>
+
+      <div class="field">
+       <label class="input-label" for="contentrw" >contentrw</label>
+       <div class="input"> <input id="contentrw" name="contentrw" value=""> </div>
+      </div>
+
+    </fieldset>
 
 
     </form>
 
-   <a class="nolink" href="#" id="save">Save.</a>
+   <hr/>
+
 
    <div id="responsearea">Console below:</div>
-   <hr/>
+
    <div id="logarea"></div>
 
 {% endblock %}

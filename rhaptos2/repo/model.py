@@ -1,9 +1,13 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-
-from flask import Flask, render_template, request, g, session, flash, \
-     redirect, url_for, abort
+###  
+# Copyright (c) Rice University 2012
+# This software is subject to
+# the provisions of the GNU Lesser General
+# Public License Version 2.1 (LGPL).
+# See LICENCE.txt for details.
+###
 
 
 import datetime
@@ -18,23 +22,17 @@ from functools import wraps
 from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
-
-
-from rhaptos2.repo import app
+from rhaptos2.repo import app, dolog
 from rhaptos2.repo import files, security
 
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from flaskext.openid import OpenID
-
-#from sqlalchemy import create_engine, Column, Integer, String
-#from sqlalchemy.orm import scoped_session, sessionmaker
-#from sqlalchemy.ext.declarative import declarative_base
+import memcache
 
 
 app.config.update(
-#    DATABASE_URI = app.config['rhaptos2_openid_userdb_uri'],
-#    SECRET_KEY = app.config['rhaptos2_openid_secretkey'],
+    SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
     DEBUG = True
 )
 
@@ -89,7 +87,7 @@ ToDO:
   http://docs.python.org/library/functools.html#functools.wraps
 
 '''
-import memcache
+
 
 
 class User(object):
@@ -98,7 +96,7 @@ class User(object):
 
     """
 
-    def __init__(self):
+    def __init__(self, openid_url):
         """initialise from json doc """
         self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
 
@@ -129,6 +127,8 @@ class Identity(object):
             self.name = None
             self.userID = None
 
+        self.user_id = self.userID
+
     def user_as_dict(self):
         return {"openid_url": self.openid_url,
                 "email": self.email,
@@ -139,7 +139,7 @@ def get_user_from_openid(openid_url):
     """
     """
     #supposed to be memcache lookup
-    return User('')
+    return User(openid_url)
 
 
 def store_identity(identity_url, **kwds):
@@ -156,15 +156,15 @@ def whoami():
     TODO: store the userid in session cookie too ?
 
     '''
-    callstatsd("rhaptos2.repo.whoami")    
-#    app.logger.info('+++++ session dict' + repr(session.__dict__) )
-#    app.logger.info('+++++ app config' + repr(app.config) )
+    dolog("INFO", "Whoami called", caller=whoami)    
 
     if 'openid' in session:
         user = Identity(session['openid'])
+        g.user_id = user.userID
         return user
     else:
         callstatsd("rhaptos2.repo.notloggedin")    
+        g.user_id = None
         return None
         #is this alwasys desrireed?
 
@@ -223,7 +223,7 @@ def add_location_header_to_response(fn):
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    userspace = app.config['rhaptos2_repodir']
+    userspace = app.config['rhaptos2repo_repodir']
 
     if os.path.isdir(userspace):
         return userspace
@@ -239,8 +239,8 @@ def userspace():
     
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(app.config['rhaptos2_statsd_host'], 
-                       int(app.config['rhaptos2_statsd_port']))
+    c = statsd.StatsClient(app.config['rhaptos2repo_statsd_host'], 
+                       int(app.config['rhaptos2repo_statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 

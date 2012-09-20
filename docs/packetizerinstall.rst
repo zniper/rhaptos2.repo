@@ -91,3 +91,27 @@ add a row to database
 ensure the rewrite rules work ok, ensure templates in right position
 
    
+Build Server:
+
+1. plain ubunut install
+1.a. sudo apt-get remove nginx && sudo service nginx stop
+
+2. sudo apt-get install mysql-server mysql-client libdbd-mysql-perl liburi-perl libcrypt-dh-perl libdigest-sha-perl libmath-bigint-perl libdata-random-perl
+
+3. install apache
+   sudo apt-get install apache2 apache2-mpm-prefork apache2-utils apache2.2-common
+
+configure apache/packetiser
+
+sudo mkdir /var/www/openid
+sudo chown -R www-data:www-data /var/www/openid
+
+sudo mkdir -p /usr/local/lib/site_perl/
+sudo cp -r bin/ lib/ /usr/local/lib/site_perl/
+
+sudo cp -r htdocs/* /var/www/openid/
+sudo cp -r templates/ /var/www/
+
+
+
+

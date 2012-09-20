@@ -1,89 +1,108 @@
-
-// :author: pbrian <paul@mikadosoftware.com>
-// :JQuery scripts for ednamode project for CNX.org
-// NB: assume conf.js is included earlier ...
-
-
-
-    var REPOBASEURL="http://" + FROZONE.e2repoFQDN ;
-    var MODULEURL="http://" + FROZONE.e2repoFQDN + "/module/";
-    var WORKSPACEURL="http://" + FROZONE.e2repoFQDN + "/workspace/";
+// Copyright (c) Rice University 2012
+// This software is subject to
+// the provisions of the GNU Lesser General
+// Public License Version 2.1 (LGPL).
+// See LICENCE.txt for details.
+//
 
 
+    var REPOBASEURL = 'http://' + FROZONE.e2repoFQDN;
+    var MODULEURL = 'http://' + FROZONE.e2repoFQDN + '/module/';
+    var WORKSPACEURL = 'http://' + FROZONE.e2repoFQDN + '/workspace/';
 
-    function logout(msg){
+
+
+    function logout(msg) {
         //log to a HTML area all messages
+        var smsg = '';
 
-        var txt = $("#logarea").html();
-        $("#logarea").html(txt + "<li> " + msg);
-    };
+        if (typeof(msg) == 'object') {
+            for (var item in msg){
+                smsg += item + "-" + msg[item];
+                                 }
+                                     }
+        else                         {
+            smsg = msg;
+                                     } 
+        var txt = $('#logarea').html();
+        $('#logarea').html(txt + '<li> ' + smsg);
+        console.log(smsg);
+    }
 
-    function get_username(){
+    function get_username() {
         return $('#username').val();
-    };
+    }
 
-    function get_title(){
+    function get_title() {
         var mname = $('#title').val();
         return mname;
-    };
+    }
 
-function save_validate(){
-    var title=get_title();
-    if (title = ''){
+function save_validate() {
+    var title = get_title();
+    if (title = '') {
         jQuery.error('Must have a title');
     }
-    return
+    return;
 }
 
-    function get_textarea_html5(){
-        //retrieve, as JSON, the contents of the edit-area 
-        var txtarea = $('#editarea').tinymce().getContent();
+function get_textarea_html5() {
+        //retrieve, as JSON, the contents of the edit-area
+        var txtarea = $('#editarea-aloha').html();
         return txtarea;
-    };
+    }
 
 
-    function load_textarea(title){
+function load_textarea(mhashid) {
+        // 
         
-        var request =$.ajax({
-	    url: MODULEURL + mhashid,
+        var request = $.ajax({
+            url: MODULEURL + mhashid,
 
-	xhrFields: {
-	    withCredentials: true
-       	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-
+        xhrFields: {
+            withCredentials: true
+        },
             type: 'GET'
         });
 
-	request.done(function(data) {
-	    logout(data + 'done a success');
-            $('#editarea').tinymce().setContent(data);
-	});
+        request.done(function(data) {
+            //why not returned as json???
+            var jdata = $.parseJSON(data);
+            logout(jdata);
+            //weird aloha feature - suffixed textareas.. ask phil.. 
+            $('#editarea-aloha').val(jdata['content']);
+            $('#aclrw').val(jdata['aclrw']);
+            $('#contentrw').val(jdata['contentrw']);
+            $('#title').val(jdata['title']);
+            $('#uuid').val(jdata['uuid']);
 
-	request.fail(function(jqXHR, textStatus, err) {
-	    logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
-	});
+        });
 
-	request.always(function(jqXHR, textStatus){
-	    logout(textStatus);
-	});
-    };
+        request.fail(function(jqXHR, textStatus, err) {
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+        });
+
+        request.always(function(jqXHR, textStatus) {
+            logout(textStatus);
+        });
+    }
 
 
-function getLoadHistoryVer(uuid){
+function getLoadHistoryVer(uuid) {
     // ajax request to retrieve module and parse json and load into textarea
     $.ajax({
-        type: "GET",
+        type: 'GET',
         dataType: 'json',
         url: MODULEURL + uuid,
-	xhrFields: {
-	    withCredentials: true
-	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+        xhrFields: {
+            withCredentials: true
+        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
 
 
-        success: function(nodedoc){
+        success: function(nodedoc) {
             var title = nodedoc['title'];
             var txtarea = nodedoc['content'];
- 
+
             var aclrw = nodedoc['aclrw'];
             var contentrw = nodedoc['contentrw'];
 
@@ -92,239 +111,325 @@ function getLoadHistoryVer(uuid){
             $('#contentrw').val(contentrw);
             $('#uuid').val(uuid);
 
-            $('#editarea').tinymce().setContent(txtarea);
+            $('#editarea-aloha').html(txtarea);
         },
 
         error: function(jqXHR, textStatus, err) {
-            logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         },
 
         complete: function(jqXHR, textStatus, err) {
-            logout( "Complete: Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
-        },
+            logout('Complete: Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+        }
 
 
-    });    
+    });
 }
 
 
-function getwhoami(){
+function getwhoami() {
     // ajax request
     $.ajax({
-        type: "GET",
+        type: 'GET',
         dataType: 'json',
-        url: REPOBASEURL + "/whoami/",
-	xhrFields: {
-	    withCredentials: true
-	},  
-        //display who I am        
-        success: function(jsondoc){
+        url: REPOBASEURL + '/whoami/',
+        xhrFields: {
+            withCredentials: true
+        },
+        //display who I am
+        success: function(jsondoc) {
 
 //            for (var i in jsondoc){
 //               alert(i);
 //            };
             var user_email = jsondoc['email'];
             var user_name = jsondoc['name'];
-            $('#usernamedisplay').html(user_name + "-" + user_email);
+            $('#usernamedisplay').html(user_name + '-' + user_email);
         },
 
         error: function(jqXHR, textStatus, err) {
-            logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         }
 
-    });    
+    });
 }
 
 
 
 
-function buildHistory(){
+function buildHistory() {
 
-    var htmlfrag = '<ul>'
+    var jsond = '[';
+    var htmlfrag = '<ul>';
     $.ajax({
-        type: "GET",
+        type: 'GET',
         dataType: 'json',
         url: WORKSPACEURL,
-	xhrFields: {
-	    withCredentials: true
-	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+        xhrFields: {
+            withCredentials: true
+        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
 
-        success: function(historyarr){
+        success: function(historyarr) {
             historyarr.sort();
-            $.each(historyarr, function(i,elem){
+            $.each(historyarr, function(i, elem) {
                 var strelem = "'" + elem[0] + "'";
-		htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+                htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+                jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
             });
 
-            $('#workspaces').html(htmlfrag);    
+            x = jsond.length - 1;
+            y = jsond.substring(0, x);
+            jsond = y + ']';
+            //jsond += ']"';
+            logout(jsond);
+            populate_tree(jsond);
+            $('#workspaces').html(htmlfrag);
         }
-    });    
-};
+    });
+}
 
-function delete_module(filename){
+function delete_module(filename) {
     $.ajax({
-        type: "DELETE",
+        type: 'DELETE',
         dataType: 'json',
-        url: REPOBASEURL + "/module/" + filename,
-	xhrFields: {
-	    withCredentials: true
-	},  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-        
-        success: function(){
-            logout("deleted " + filename);
-            buildHistory();            
+        url: REPOBASEURL + '/module/' + filename,
+        xhrFields: {
+            withCredentials: true
+        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+
+        success: function() {
+            logout('deleted ' + filename);
+            buildHistory();
         },
 
         error: function(jqXHR, textStatus, err) {
-            logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         }
 
-    });    
+    });
 
 }
 
-function showres(i, elem){
+function showres(i, elem) {
 
     logout(i + ': ' + elem);
-};
+}
 
 
-function serialise_form(){
+function serialise_form() {
     // return form1 as object/hasharrary
     var payload = new Object;
     payload['content'] = get_textarea_html5();
-    payload['uuid'] = $("#uuid").val();
-    
-    payload['aclrw'] = $("#aclrw").val().split(",");
-    
-    payload['contentrw'] = $("#contentrw").val().split(",");
-    payload['title'] = $("#title").val();
+    payload['uuid'] = $('#uuid').val();
+
+    payload['aclrw'] = $('#aclrw').val().split(',');
+
+    payload['contentrw'] = $('#contentrw').val().split(',');
+    payload['title'] = $('#title').val();
 
 //        var json_text = JSON.stringify(payload, null, 2);
 //        return json_text;
 
     return payload;
 
-};
+}
 
-function saveText(){
-	 //constants
+function newText() {
+    $('#aclrw').val(whoami['userID']);
+    $('#contentrw').val(whoami['userID']);
+    $('#title').val('');
+    $('#editartea').html('Enter your text here...');
+    alert('you are :' + whoami);
+}
+
+function saveText() {
+         //constants
 
          save_validate();
-         
-         var requestmethod = 'POST';
-         var payload = serialise_form(); 
-         if (payload['uuid'] != ''){
-             requestmethod = 'PUT';     
-         };
 
-         var foo = "";
-         for (var i in payload){                  
-             foo = "/n" + i + ' : ' + payload[i];
-         };
+         var requestmethod = 'POST';
+         var payload = serialise_form();
+         if (payload['uuid'] != '') {
+             requestmethod = 'PUT';
+         }
+
+         var foo = '';
+         for (var i in payload) {
+             foo = '/n' + i + ' : ' + payload[i];
+         }
          alert(requestmethod);
          alert(foo);
 
          var json_text = JSON.stringify(payload, null, 2);
 
-	 var request = $.ajax({
-	     url: MODULEURL,
-        	xhrFields: {
-	         withCredentials: true
-	        }, 
+         var request = $.ajax({
+             url: MODULEURL,
+                xhrFields: {
+                 withCredentials: true
+                },
 
 
-	     type: requestmethod,
+             type: requestmethod,
              data: json_text,
-             contentType:"application/json; charset=utf-8",
-             dataType:'json'
-	 });
+             contentType: 'application/json; charset=utf-8',
+             dataType: 'json'
+         });
 
-	 request.done(function(data) {
-	     //$("#responsearea").html(data);
+         request.done(function(data) {
+             //$("#responsearea").html(data);
              $.each(data, showres);
              buildHistory();
-	 });
+         });
 
-	 request.fail(function(jqXHR, textStatus, err) {
-	     logout( "Request failed: " + textStatus + ":" + err + ":" +  jqXHR.status);
-	 });
+         request.fail(function(jqXHR, textStatus, err) {
+             logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+         });
 
-	 request.always(function(jqXHR, textStatus){
-	     logout(textStatus);
-	 });
+         request.always(function(jqXHR, textStatus) {
+             logout(textStatus);
+         });
 
-    };
+    }
 
-function opendialog(dia){
+function opendialog(dia) {
 
-   $(dia).dialog("open");
+   $(dia).dialog('open');
 
-};
+}
 
-function test(){
+function test() {
 
     //alert(whoami.identity_url + "/n" +
     //      whoami.name + "/n" +
     //      whoami.email);
-    var s = "#dialog";
-    $(s).dialog("open");
+    var s = '#dialog';
+    $(s).dialog('open');
 
-};
+}
 
 
-function start_aloha(){
+function start_aloha() {
 
     $('#editarea').aloha();
-    $('#content').aloha();
-    alert("started aloha");
-};
+    logout('started aloha');
+}
+
+function node_load_event(node) {
+
+
+   var moduleuuid = node.attr('id');
+   getLoadHistoryVer(moduleuuid);
+//   var s = "Calling load_textarea(" + moduleuuid + ")";
+//   logout(s);
+//   load_textarea(moduleuuid);
+
+   }
+
+function start_tree() {
+
+var data = [
+ {
+ 'data' : 'weekly',
+ 'attr': {'rel': 'directory'}
+ }];
+
+    $('#coltree').jstree({
+            json_data: {data: data},
+            plugins: ['themes', 'json_data', 'ui', 'crrm', 'hotkeys', 'contextmenu'],
+            core: { },
+            
+            contextmenu: {'select_node': true,
+                          'items': {'load': {'label': 'Edit module',
+                                           'action': function(obj) {node_load_event(obj);}
+                                          }
+                                 }
+                        }
+
+                         })
+           .bind("delete.jstree", function(e, data) {alert("Delete TBD");
+                                                    });
+
+
+
+}
+
+function populate_tree(jsonstr) {
+
+    logout(jsonstr);
+    x = $.parseJSON(jsonstr);
+
+    var jsTreeSettings = $('#coltree').jstree('get_settings');
+    jsTreeSettings.json_data.data = x; //$.parseJSON(jsonstr);
+    $.jstree._reference('coltree')._set_settings(jsTreeSettings);
+
+    // Refresh whole our tree (-1 means root of tree)
+    $.jstree._reference('coltree').refresh(-1);
+}
+
 
 
 
 $(document).ready(function() {
 
-    start_aloha();    
+    start_aloha();
 
     //mark dialog areas as dialog but not shown
-    var dialogs = ["#dialog_files", "#dialog_metadata",
-                   "#dialog_roles", "#dialog_links",
-                   "#dialog_links", "#dialog_preview",
-                   "#dialog_publish"];
-    $.each(dialogs, function(i,v){
+    var dialogs = ['#dialog_files', '#dialog_metadata',
+                   '#dialog_roles', '#dialog_links',
+                   '#dialog_links', '#dialog_preview',
+                   '#dialog_publish'];
+    $.each(dialogs, function(i, v) {
 //        alert(i + ":" + v);
         $(v).dialog({ autoOpen: false });
     });
 
 
     //bind various clicks
-    $("#testclick").click(function(e){test();
+    $('#testclick').click(function(e) {test();
                                       e.preventDefault()});
 
 
-    $("#clickLoadTextArea").click(function(e){load_textarea();
+    $('#clickLoadTextArea').click(function(e) {load_textarea();
                                               e.preventDefault()});
 
 
 
-    logout('AJAX will fire at ' + MODULEURL);    
-    buildHistory();    
-    getwhoami();    
+    logout('AJAX will fire at ' + MODULEURL);
+
+    getwhoami();
+
+
+    start_tree();
+//    var d = '{"data": "title",' +
+//            '"state": "closed"}';
+
+//    populate_tree(d);
+
+    buildHistory();
 
     //nolink are links that do some jquery function, but should not be links
-    $("a.nolink").click(function(event){
+    $('a.nolink').click(function(event) {
         logout('click-preventDefault');
-	event.preventDefault();
+        event.preventDefault();
+
+
+
+
     });
 
-    $("#save").click(function(event){
+    $('#savemodule').click(function(event) {
                          saveText();
                          event.preventDefault();
                        }
                       );
 
-    
-  
+
+
+    $('#newmodule').click(function(event) {
+                         newText();
+                         event.preventDefault();
+                       }
+                      );
+
+
 });
-
-

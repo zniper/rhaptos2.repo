@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
+###  
+# Copyright (c) Rice University 2012
+# This software is subject to
+# the provisions of the GNU Lesser General
+# Public License Version 2.1 (LGPL).
+# See LICENCE.txt for details.
+###
+
+
 import uuid
 import json
 import os, sys
@@ -6,7 +18,8 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-
+from rhaptos2.repo import app, dolog
+ #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
 
 class WorkSpace(object):
     """Represents the set of NodeDocs the user can currently view
@@ -31,16 +44,19 @@ class WorkSpace(object):
 
 
     """
-    def __init__(self, openid):
+    def __init__(self, user_id):
         """ """
-        self.openid = openid
-        repodir = app.config['rhaptos2_repodir']    
+        dolog("INFO", "in workspace of %s" % user_id, 
+              caller=WorkSpace, statsd=['rhaptos2.repo.workspace.entered',])
+        
+        self.user_id = user_id
+        repodir = app.config['rhaptos2repo_repodir']    
         plain = []
         annotated = [] 
         files = [os.path.join(repodir, f) for f in os.listdir(repodir)]
         for fpath in files:
             d = json.loads(open(fpath).read())
-            if openid in d['contentrw']:
+            if user_id in d['contentrw']:
                 plain.append(os.path.basename(fpath))
                 annotated.append([os.path.basename(fpath),
                                  d['title']
@@ -125,7 +141,7 @@ class NodeDoc(object):
         
 
         """
-        repodir = app.config['rhaptos2_repodir']
+        repodir = app.config['rhaptos2repo_repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
  
@@ -157,10 +173,10 @@ class NodeDoc(object):
 
                  
 
-    def update(self, openid, **kwds):
+    def update(self, user_id, **kwds):
         """update internal dict with whatever sent in kwds, plus some checking, """
-        change_all = self.allow_other_change(openid)
-        change_acl = self.allow_acl_change(openid)
+        change_all = self.allow_other_change(user_id)
+        change_acl = self.allow_acl_change(user_id)
 
         if change_all == False:
             raise Rhaptos2Error("unauthorised")
@@ -177,7 +193,7 @@ class NodeDoc(object):
         if self.uuid == None:
             raise Rhaptos2Error("Need a UUID to save")
         print "Saving"
-        repodir = app.config['rhaptos2_repodir']
+        repodir = app.config['rhaptos2repo_repodir']
         filepath = os.path.join(repodir, self.uuid)
         ###aaarrgh check keys
         d = {}
@@ -186,23 +202,23 @@ class NodeDoc(object):
         open(filepath, 'wb').write(json.dumps(d))
 
 
-    def allow_acl_change(self, openid):
+    def allow_acl_change(self, user_id):
         """ """
            
-        if openid in self.aclrw:
-            print "Found %s in %s" % (openid, self.aclrw)
+        if user_id in self.aclrw:
+            dolog("INFO", "Found %s in %s" % (user_id, self.aclrw))
             return True
         else:
-            print "Not Found %s in %s" % (openid, self.aclrw)
+            dolog("INFO", "Not Found %s in %s" % (user_id, self.aclrw))
             return False
 
-    def allow_other_change(self, openid):
+    def allow_other_change(self, user_id):
         """ """
-        if openid in self.contentrw:
-            print "FOund %s in %s" % (openid, self.contentrw)
+        if user_id in self.contentrw:
+            dolog("INFO", "Found %s in %s" % (user_id, self.contentrw))
             return True
         else:
-            print "Not FOund %s in %s" % (openid, self.contentrw)
+            dolog("INFO", "Not Found %s in %s" % (user_id, self.contentrw))
             return False
 
 

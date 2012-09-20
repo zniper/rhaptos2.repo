@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
+###  
+# Copyright (c) Rice University 2012
+# This software is subject to
+# the provisions of the GNU Lesser General
+# Public License Version 2.1 (LGPL).
+# See LICENCE.txt for details.
+###
+
 
 '''
 setup.py for rhaptos2
@@ -44,7 +55,7 @@ def main():
               ,"python-memcached"
               ,"nose"
 
-              ,"rhaptos2.common"
+              ,"rhaptos2.common >= 0.0.12"
               ,"unittest-xml-reporting"
               ,"mikado.oss.doctest_additions"
               ,"python-memcached"
