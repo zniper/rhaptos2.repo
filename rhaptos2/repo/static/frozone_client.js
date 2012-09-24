@@ -337,9 +337,16 @@ var data = [
 
     $('#coltree').jstree({
             json_data: {data: data},
-            plugins: ['themes', 'json_data', 'ui', 'crrm', 'hotkeys', 'contextmenu'],
+            plugins: ['themes', 'json_data', 'ui', 'crrm', 'hotkeys', 
+                      'contextmenu', 'dnd'],
             core: { },
-            
+            dnd: {
+                 "drop_finish": function (data) {
+                                                alert("some message");
+                                                },
+
+                 },            
+
             contextmenu: {'select_node': true,
                           'items': {'load': {'label': 'Edit module',
                                            'action': function(obj) {node_load_event(obj);}
