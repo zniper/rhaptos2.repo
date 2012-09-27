@@ -46,6 +46,8 @@ def dolog(lvl, msg, caller=None, statsd=None):
     >>> dolog("ERROR", "whoops", os.path.isdir, ['a.b.c',]) 
 
     """
+
+
     lvls = {
     "CRITICAL" : 50,
     "ERROR"    : 40,

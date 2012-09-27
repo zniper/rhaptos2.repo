@@ -21,6 +21,7 @@ import statsd
 import json
 from functools import wraps
 import uuid
+import requests
 
 from rhaptos2.common import log
 from rhaptos2.common import err
@@ -277,3 +278,37 @@ def logout():
     session.pop('openid', None)
     flash(u'You have been signed out')
     return redirect(model.oid.get_next_url())
+
+
+##############
+@app.route('/persona/logout/', methods=['POST'])
+def logoutpersona():
+    dolog("INFO", "logoutpersona")
+    return "Yes"
+    
+@app.route('/persona/', methods=['POST'])
+def loginpersona():
+    dolog("INFO", "loginpersona")
+    # The request has to have an assertion for us to verify
+    if 'assertion' not in request.form:
+        abort(400)
+ 
+    # Send the assertion to Mozilla's verifier service.
+    data = {'assertion': request.form['assertion'], 'audience': 'http://www.frozone.mikadosoftware.com:80'}
+    resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
+ 
+    # Did the verifier respond?
+    if resp.ok:
+        # Parse the response
+        verification_data = json.loads(resp.content)
+        dolog("INFO", "%s" % repr(verification_data))
+
+ 
+        # Check if the assertion was valid
+        if verification_data['status'] == 'okay':
+            # Log the user in by setting a secure session cookie
+            session.update({'email': verification_data['email']})
+            return resp.content
+ 
+    # Oops, something failed. Abort.
+    abort(500)

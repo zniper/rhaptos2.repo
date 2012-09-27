@@ -10,6 +10,8 @@
     var MODULEURL = 'http://' + FROZONE.e2repoFQDN + '/module/';
     var WORKSPACEURL = 'http://' + FROZONE.e2repoFQDN + '/workspace/';
 
+    var PERSONAURL = 'http://' + FROZONE.e2repoFQDN + '/persona/';
+    var PERSONALOGOUT = 'http://' + FROZONE.e2repoFQDN + '/persona/logout/';
 
 
     function logout(msg) {
@@ -383,6 +385,22 @@ function populate_tree(jsonstr) {
     $.jstree._reference('coltree').refresh(-1);
 }
 
+////////////////////// Persona
+
+function persona_in(){
+   alert("persona in clicked");
+   navigator.id.request();
+
+}
+
+
+function persona_out(){
+   alert("persona out clicked");
+   navigator.id.logout();
+
+}
+
+
 
 
 
@@ -405,6 +423,13 @@ $(document).ready(function() {
     $('#testclick').click(function(e) {test();
                                       e.preventDefault()});
 
+    $('#persona_signin').click(function(e) {persona_in();
+                                            e.preventDefault()
+                                           });
+
+    $('#persona_signout').click(function(e) {persona_out();
+                                      e.preventDefault()});
+
 
     $('#clickLoadTextArea').click(function(e) {load_textarea();
                                               e.preventDefault()});
@@ -413,16 +438,16 @@ $(document).ready(function() {
 
     logout('AJAX will fire at ' + MODULEURL);
 
-    getwhoami();
+//    getwhoami();
 
 
-    start_tree();
+//    start_tree();
 //    var d = '{"data": "title",' +
 //            '"state": "closed"}';
 
 //    populate_tree(d);
 
-    buildHistory();
+//    buildHistory();
 
     //nolink are links that do some jquery function, but should not be links
     $('a.nolink').click(function(event) {
@@ -433,6 +458,46 @@ $(document).ready(function() {
 
 
     });
+//////////////////////
+
+
+alert("settiing up watch");
+
+navigator.id.watch({
+  loggedInEmail: null,
+//whoami['identity_url'], 
+  onlogin: function(assertion) {
+    // A user has logged in! Here you need to:
+    // 1. Send the assertion to your backend for verification and to create a session.
+    // 2. Update your UI.
+    $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
+      type: 'POST',
+      url: PERSONAURL, // This is a URL on your website.
+      data: {assertion: assertion},
+      success: function(res, status, xhr) { alert("login fired??" + res); },
+      error: function(res, status, xhr) { alert("login failure" + res); }
+    });
+  },
+
+  onlogout: function() {
+    // A user has logged out! Here you need to:
+    // Tear down the user's session by redirecting the user or making a call to your backend.
+    //window.location = 'google.com';
+    $.ajax({
+      type: 'POST',
+      url: PERSONALOGOUT, // This is a URL on your website.
+      success: function(res, status, xhr) { window.location.reload(); },
+      error: function(res, status, xhr) { alert("logout failure" + res); }
+    });
+  }
+});
+
+
+
+///////////////////////
+
+
+
 
     $('#savemodule').click(function(event) {
                          saveText();
