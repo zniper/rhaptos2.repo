@@ -286,8 +286,9 @@ def logoutpersona():
     dolog("INFO", "logoutpersona")
     return "Yes"
     
-@app.route('/persona/', methods=['POST'])
+@app.route('/persona/login/', methods=['POST'])
 def loginpersona():
+    """Taken mostly from mozilla quickstart """
     dolog("INFO", "loginpersona")
     # The request has to have an assertion for us to verify
     if 'assertion' not in request.form:

@@ -10,7 +10,7 @@
     var MODULEURL = 'http://' + FROZONE.e2repoFQDN + '/module/';
     var WORKSPACEURL = 'http://' + FROZONE.e2repoFQDN + '/workspace/';
 
-    var PERSONAURL = 'http://' + FROZONE.e2repoFQDN + '/persona/';
+    var PERSONAURL = 'http://' + FROZONE.e2repoFQDN + '/persona/login/';
     var PERSONALOGOUT = 'http://' + FROZONE.e2repoFQDN + '/persona/logout/';
 
 
@@ -434,20 +434,11 @@ $(document).ready(function() {
     $('#clickLoadTextArea').click(function(e) {load_textarea();
                                               e.preventDefault()});
 
-
-
-    logout('AJAX will fire at ' + MODULEURL);
-
 //    getwhoami();
 
 
-//    start_tree();
-//    var d = '{"data": "title",' +
-//            '"state": "closed"}';
-
-//    populate_tree(d);
-
-//    buildHistory();
+    start_tree();
+    buildHistory();
 
     //nolink are links that do some jquery function, but should not be links
     $('a.nolink').click(function(event) {
@@ -461,7 +452,6 @@ $(document).ready(function() {
 //////////////////////
 
 
-alert("settiing up watch");
 
 navigator.id.watch({
   loggedInEmail: null,
@@ -470,9 +460,9 @@ navigator.id.watch({
     // A user has logged in! Here you need to:
     // 1. Send the assertion to your backend for verification and to create a session.
     // 2. Update your UI.
-    $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
+    $.ajax({ 
       type: 'POST',
-      url: PERSONAURL, // This is a URL on your website.
+      url: PERSONAURL, 
       data: {assertion: assertion},
       success: function(res, status, xhr) { alert("login fired??" + res); },
       error: function(res, status, xhr) { alert("login failure" + res); }
@@ -485,7 +475,7 @@ navigator.id.watch({
     //window.location = 'google.com';
     $.ajax({
       type: 'POST',
-      url: PERSONALOGOUT, // This is a URL on your website.
+      url: PERSONALOGOUT, 
       success: function(res, status, xhr) { window.location.reload(); },
       error: function(res, status, xhr) { alert("logout failure" + res); }
     });
