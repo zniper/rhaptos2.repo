@@ -27,7 +27,8 @@ sys.path.append(os.path.abspath('..'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 
               'sphinx.ext.viewcode',
-              'sphinx.ext.autosummary']
+              'sphinx.ext.autosummary',
+              'sphinx.ext.intersphinx', 'sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -242,3 +243,17 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+
+sys.path.append(os.path.abspath('_themes'))
+html_theme_path = ['_themes']
+html_theme = 'flask'
+html_logo = 'rhaptos2userlogo.jpg' 
+
+
+# Example configuration for intersphinx: refer to the Python standard library.
+
+intersphinx_mapping = {
+  'rhaptos2repo': ('http://frozone.readthedocs.org/en/latest/', None),
+  'rhaptos2user': ('http://rhaptos2user.readthedocs.org/en/latest/', None),
+    }
