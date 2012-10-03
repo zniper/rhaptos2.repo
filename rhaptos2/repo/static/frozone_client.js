@@ -70,6 +70,7 @@ function load_textarea(mhashid) {
         request.done(function(data) {
             //why not returned as json???
             var jdata = $.parseJSON(data);
+            alert("sending jdata" + jdata);  
             logout(jdata);
             //weird aloha feature - suffixed textareas.. ask phil.. 
             $('#editarea-aloha').val(jdata['content']);
@@ -173,19 +174,27 @@ function buildHistory() {
 
         success: function(historyarr) {
             historyarr.sort();
-            $.each(historyarr, function(i, elem) {
-                var strelem = "'" + elem[0] + "'";
-                htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
-                jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
-            });
+            if (historyarr.length == 0){
+                alert("No workspace to deal with");
+                                      }
+            else {
 
-            x = jsond.length - 1;
-            y = jsond.substring(0, x);
-            jsond = y + ']';
-            //jsond += ']"';
-            logout(jsond);
-            populate_tree(jsond);
-            $('#workspaces').html(htmlfrag);
+		$.each(historyarr, function(i, elem) {
+		    var strelem = "'" + elem[0] + "'";
+		    htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+		    jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
+		});
+
+
+		x = jsond.length - 1; 
+		y = jsond.substring(0, x);
+		jsond = y + ']';
+		//jsond += ']"';
+		alert("logging jsond" + jsond);
+		logout(jsond);
+		populate_tree(jsond);
+		$('#workspaces').html(htmlfrag);
+	    }
         }
     });
 }
@@ -454,7 +463,7 @@ $(document).ready(function() {
 
 
 navigator.id.watch({
-  loggedInEmail: null,
+  loggedInUser: null,
 //whoami['identity_url'], 
   onlogin: function(assertion) {
     // A user has logged in! Here you need to:
