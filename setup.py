@@ -44,7 +44,7 @@ setup(
 
         "rhaptos2.common >= 0.0.12",
         "unittest-xml-reporting",
-        "mikado.oss.doctest_additions",
+        ##"mikado.oss.doctest_additions",
         "python-memcached",
         ],
     package_data={'rhaptos2.repo': ['templates/*.*',
