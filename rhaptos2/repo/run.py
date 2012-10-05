@@ -20,6 +20,8 @@ def make_app(settings):
     app = Flask('rhaptos2.repo')
     app.config.update(settings)
     set_app(app)
+    # Import the views to initialize them
+    import rhaptos2.repo.views
     return app
 
 def parse_args():
@@ -48,8 +50,6 @@ def main():
     confd = conf.get_config(APPTYPE)
     app = make_app(confd)
     set_logger(APPTYPE, app.config)
-    # Import the views to initialize them
-    import rhaptos2.repo.views
 
     # NOTE Do not use module reloading, even in debug mode, because it
     #      produces new stray processes that supervisor does not ctl.
