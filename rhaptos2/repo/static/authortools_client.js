@@ -304,23 +304,6 @@ function saveText() {
 
     }
 
-function opendialog(dia) {
-
-   $(dia).dialog('open');
-
-}
-
-function test() {
-
-    //alert(whoami.identity_url + "/n" +
-    //      whoami.name + "/n" +
-    //      whoami.email);
-    var s = '#dialog';
-    $(s).dialog('open');
-
-}
-
-
 function start_aloha() {
 
     $('#editarea').aloha();
@@ -417,17 +400,6 @@ $(document).ready(function() {
 
 //    start_aloha();
     phil_aloha_start();
-
-    //mark dialog areas as dialog but not shown
-    var dialogs = ['#dialog_files', '#dialog_metadata',
-                   '#dialog_roles', '#dialog_links',
-                   '#dialog_links', '#dialog_preview',
-                   '#dialog_publish'];
-    $.each(dialogs, function(i, v) {
-//        alert(i + ":" + v);
-        $(v).dialog({ autoOpen: false });
-    });
-
 
     //bind various clicks
     $('#testclick').click(function(e) {test();
