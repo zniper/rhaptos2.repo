@@ -18,6 +18,7 @@ import flask
 import statsd
 import json
 from functools import wraps
+import urlparse
 
 from rhaptos2.common import conf
 from rhaptos2.common import log
@@ -29,7 +30,7 @@ from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from flaskext.openid import OpenID
 import memcache
-
+import requests
 
 app.config.update(
     SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
@@ -92,35 +93,57 @@ ToDO:
 
 class User(object):
     """
-    Is the user from memcache
+    represents the user as looked up by an authneticated identifer
+
+    .. todo:: this is a integration test !!! fix the nose test division stuff.
+
+    >>> u = User('paul@mikadosoftware.com')
+    >>> u.FullName 
+    u'Paul Brian'
 
     """
 
-    def __init__(self, openid_url):
-        """initialise from json doc """
-        self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
+    def __init__(self, authenticated_identifier):
+        """initialise from json doc 
 
+        .. todo:: this is stubbed out - it should always go to user dbase and lookup fromidentifer
+        .. todo:: what should I do if user dbase is unavilable???
+        .. todo:: totally unsafe laoding of user details
 
-    def load_JSON(self, jsondocstr):
-        """ parse and store details of properly formatted JSON doc
-          
-            
         """
-        user_dict = json.loads(jsondocstr)
-        self.__dict__.update(user_dict)
-         
+        try:
+            url = urlparse.urljoin(app.config['bamboo_userserver'], authenticated_identifier) + "/"
+            r = requests.get(url)
+            dolog("INFO", "requesting user info - from url %s" % url)
+            userdetails = r.json         
+            dolog("INFO", str(r))            
+            #self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
+            self.__dict__.update(r.json)
+            for k in r.json['details']:
+                self.__dict__[k] = r.json['details'][k]
+
+
+        except Exception, e:
+            dolog("ERROR", str(e))
+        
+            self.userID = "Err1" 
+
        
 
 class Identity(object):
-    def __init__(self, openid_url):
+    def __init__(self, authenticated_identifier):
         """placeholder - we want to store identiy values somewhere
            but sqlite is limited to one server, so need move to network aware storage
+     
+        .. todo:: rename FUllNAme to fullname
+        .. todo:: in fact fix whole user details
+
         """
-        self.openid_url = openid_url
-        self.user = get_user_from_openid(openid_url)
-        if self.openid_url:
-            self.email = 'john.doe@cnx.org' 
-            self.name = 'John Doe'
+        self.authenticated_identifier = authenticated_identifier
+        self.user = get_user_from_openid(authenticated_identifier)
+        if self.authenticated_identifier:
+            self.email = self.user.email
+            self.name = self.user.FullName
             self.userID = self.user.userID
         else:
             self.email = None
@@ -130,16 +153,16 @@ class Identity(object):
         self.user_id = self.userID
 
     def user_as_dict(self):
-        return {"openid_url": self.openid_url,
+        return {"openid_url": self.authenticated_identifier,
                 "email": self.email,
                 "name": self.name}
 
 
-def get_user_from_openid(openid_url):
+def get_user_from_identifier(authenticated_identifier):
     """
     """
     #supposed to be memcache lookup
-    return User(openid_url)
+    return User(authenticated_identifier)
 
 
 def store_identity(identity_url, **kwds):
