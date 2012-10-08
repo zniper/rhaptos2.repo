@@ -415,7 +415,8 @@ function persona_out(){
 
 $(document).ready(function() {
 
-    start_aloha();
+//    start_aloha();
+    phil_aloha_start();
 
     //mark dialog areas as dialog but not shown
     var dialogs = ['#dialog_files', '#dialog_metadata',
@@ -494,8 +495,6 @@ navigator.id.watch({
 
 
 ///////////////////////
-
-
 
 
     $('#savemodule').click(function(event) {

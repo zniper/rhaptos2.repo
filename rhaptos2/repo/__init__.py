@@ -142,7 +142,7 @@ def get_version():
 
 
 apptype = 'rhaptos2repo'
-confd = conf.get_config(apptype)
+confd = conf.get_config([apptype, 'bamboo'])
 app = Flask(__name__)
 app.config.update(confd)
 
