@@ -41,9 +41,9 @@
     }
 
 function save_validate() {
-    var title = get_title();
-    if (title = '') {
-        jQuery.error('Must have a title');
+    var t = get_title();
+    if (t === '') {
+        alert('Must have a title');
     }
     return;
 }
@@ -160,7 +160,7 @@ function getwhoami() {
 
 
 
-function buildHistory() {
+function build_workspace() {
 
     var jsond = '[';
     var htmlfrag = '<ul>';
@@ -210,7 +210,7 @@ function delete_module(filename) {
 
         success: function() {
             logout('deleted ' + filename);
-            buildHistory();
+            build_workspace();
         },
 
         error: function(jqXHR, textStatus, err) {
@@ -258,7 +258,9 @@ function newText() {
 function saveText() {
          //constants
 
-         save_validate();
+         if (save_validate() == false) {
+             alert("I should stop saving now");
+         };
 
          var requestmethod = 'POST';
          var payload = serialise_form();
@@ -291,7 +293,7 @@ function saveText() {
          request.done(function(data) {
              //$("#responsearea").html(data);
              $.each(data, showres);
-             buildHistory();
+             build_workspace();
          });
 
          request.fail(function(jqXHR, textStatus, err) {
@@ -401,7 +403,7 @@ $(document).ready(function() {
 //    start_aloha();
     phil_aloha_start();
 
-    //bind various clicks
+    //bind various clicks - clearly refactorable
     $('#testclick').click(function(e) {test();
                                       e.preventDefault()});
 
@@ -416,11 +418,25 @@ $(document).ready(function() {
     $('#clickLoadTextArea').click(function(e) {load_textarea();
                                               e.preventDefault()});
 
+
+    $('#savemodule').click(function(event) {
+                         saveText();
+                         event.preventDefault();
+                       }
+                      );
+
+    $('#newmodule').click(function(event) {
+                         newText();
+                         event.preventDefault();
+                       }
+                      );
+
+
 //    getwhoami();
 
 
     start_tree();
-    buildHistory();
+    build_workspace();
 
     //nolink are links that do some jquery function, but should not be links
     $('a.nolink').click(function(event) {
@@ -466,22 +482,6 @@ navigator.id.watch({
 
 
 
-///////////////////////
-
-
-    $('#savemodule').click(function(event) {
-                         saveText();
-                         event.preventDefault();
-                       }
-                      );
-
-
-
-    $('#newmodule').click(function(event) {
-                         newText();
-                         event.preventDefault();
-                       }
-                      );
 
 
 });
