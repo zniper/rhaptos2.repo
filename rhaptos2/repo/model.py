@@ -19,6 +19,7 @@ import statsd
 import json
 from functools import wraps
 import urlparse
+import pprint
 
 from rhaptos2.common import conf
 from rhaptos2.common import log
@@ -31,6 +32,8 @@ from flask import Flask, render_template, request, g, session, flash, \
 from flaskext.openid import OpenID
 import memcache
 import requests
+import urllib
+
 
 app.config.update(
     SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
@@ -97,9 +100,10 @@ class User(object):
 
     .. todo:: this is a integration test !!! fix the nose test division stuff.
 
-    >>> u = User('paul@mikadosoftware.com')
+    >>> u = User('ben@mikadosoftware.com')
     >>> u.FullName 
-    u'Paul Brian'
+    u'Benjamin Franklin'
+
 
     """
 
@@ -111,22 +115,28 @@ class User(object):
         .. todo:: totally unsafe laoding of user details
 
         """
-        try:
-            url = urlparse.urljoin(app.config['bamboo_userserver'], authenticated_identifier) + "/"
-            r = requests.get(url)
-            dolog("INFO", "requesting user info - from url %s" % url)
-            userdetails = r.json         
-            dolog("INFO", str(r))            
-            #self.userID = "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383"
-            self.__dict__.update(r.json)
-            for k in r.json['details']:
-                self.__dict__[k] = r.json['details'][k]
+#        try:
+#        safe_auth_identifier = urllib.quote_plus(authenticated_identifier)
+        payload = {'user':authenticated_identifier}
+ 
+        user_server_url = app.config['bamboo_userserver']
 
+        dolog("INFO", "requesting user info - from url %s and query string %s" % 
+                       (user_server_url, repr(payload)))
 
-        except Exception, e:
-            dolog("ERROR", str(e))
-        
-            self.userID = "Err1" 
+        r = requests.get(user_server_url, params=payload)
+        userdetails = r.json         
+        dolog("INFO", str(userdetails))            
+        self.__dict__.update(r.json)
+        for k in r.json['details']:
+            self.__dict__[k] = r.json['details'][k]
+
+    def __repr__(self):
+        return pprint.pformat(self.__dict__)
+
+#        except Exception, e:
+#            dolog("ERROR", "Failed in User class %s" % str(e))
+#            self.userID = "Err1" 
 
        
 
@@ -138,13 +148,15 @@ class Identity(object):
         .. todo:: rename FUllNAme to fullname
         .. todo:: in fact fix whole user details
 
+ 
+        todo: combine identiy and USer into one class !
         """
         self.authenticated_identifier = authenticated_identifier
-        self.user = get_user_from_openid(authenticated_identifier)
+        self.user = get_user_from_identifier(authenticated_identifier)
         if self.authenticated_identifier:
             self.email = self.user.email
             self.name = self.user.FullName
-            self.userID = self.user.userID
+            self.userID = self.user.id
         else:
             self.email = None
             self.name = None
@@ -153,9 +165,33 @@ class Identity(object):
         self.user_id = self.userID
 
     def user_as_dict(self):
-        return {"openid_url": self.authenticated_identifier,
+        return {"auth_identifier": self.authenticated_identifier,
                 "email": self.email,
                 "name": self.name}
+
+
+def after_authentication(authenticated_identifier, method):
+    """Called after a user has provided a validated ID (openid or peresons)
+
+    method either openid, or persona
+
+    """
+    dolog("INFO", "in after auth - %s %s" % (authenticated_identifier, method))
+    dolog("INFO", "before session - %s" % repr(session))
+    userobj = get_user_from_identifier(authenticated_identifier)
+
+    ##set session, set g, set JS
+    #session update?
+    if method not in ('openid', 'persona'): raise Rhaptos2Error("Incorrect method of authenticating ID")
+    session['authenticated_identifier'] = authenticated_identifier
+    g.user = userobj    
+
+    dolog("INFO", "ALLG:%s" % repr(g))
+    dolog("INFO", "ALLG.user:%s" % repr(g.user))
+    dolog("INFO", "AFTER session %s" % repr(session))
+    
+    return userobj
+    
 
 
 def get_user_from_identifier(authenticated_identifier):
@@ -173,25 +209,35 @@ def retrieve_identity(identity_url, **kwds):
     """no-op but would pull idneity to backend storage ie memcvache """
     pass
 
+    
+
 def whoami():
     '''
     return the identity url stored in session cookie
     TODO: store the userid in session cookie too ?
 
-    '''
-    dolog("INFO", "Whoami called", caller=whoami)    
+    .. todo:: session assumes there will be a key of 'authenticated_identifier'
+    .. todo:: I always go and look this up - decide if this is sensible / secure
+    .. todo:: use secure cookie
 
-    if 'openid' in session:
-        user = Identity(session['openid'])
+    I really need to think about session cookies. Default for now.
+    '''
+    
+    dolog("INFO", "Whoami called", caller=whoami)    
+    
+    if 'authenticated_identifier' in session:
+        user = Identity(session['authenticated_identifier'])
         g.user_id = user.userID
         return user
     else:
         callstatsd("rhaptos2.repo.notloggedin")    
         g.user_id = None
+        g.user = None   
         return None
         #is this alwasys desrireed?
 
 
+## .. todo:: why is there a view in here??
 @app.route("/whoami/", methods=['GET'])
 def whoamiGET():
     ''' 
@@ -208,9 +254,9 @@ def whoamiGET():
 
     '''
     ### todo: return 401 code and let ajax client put up login.
-    identity =  whoami()
+    user =  whoami()
         
-    if identity:
+    if user:
         d = identity.user_as_dict()
         jsond = asjson(d)
         ### make decorators !!!
@@ -220,6 +266,7 @@ def whoamiGET():
         return resp
     else:
         return("Not logged in", 401)
+
 
 def apply_cors(resp):
     '''  '''

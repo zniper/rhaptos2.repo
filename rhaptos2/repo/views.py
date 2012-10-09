@@ -22,6 +22,7 @@ import json
 from functools import wraps
 import uuid
 import requests
+import pprint
 
 from rhaptos2.common import log
 from rhaptos2.common import err
@@ -219,6 +220,22 @@ def burn():
         os._exit(1) #trap _this_
 
 
+################ Admin-y stuff
+@app.route("/admin/config/", methods=["GET",])
+def admin_config():
+    """View the config we are using
+    
+    Clearly quick and dirty fix.
+    Should create a common library for rhaptos2 and web framrwoe
+    """
+    outstr = "<table>"
+    for k in sorted(app.config.keys()):
+        outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
+    outstr += "</table>"
+
+    
+    return outstr
+
 ################ openid views - from flask
 
 
@@ -257,19 +274,22 @@ def login():
 def create_or_login(resp):
     """This is called when login with OpenID succeeded and it's not
     necessary to figure out if this is the users's first login or not.
-    This function has to redirect otherwise the user will be presented
-    with a terrible URL which we certainly don't want.
-    """
-    session['openid'] = resp.identity_url
-    model.store_identity(resp.identity_url,
-                       name=resp.fullname or resp.nickname,
-                       email=resp.email)
-    user = model.whoami()
 
-    if user is not None:
-        flash(u'Successfully signed in')
-        g.user = user
-        return redirect(model.oid.get_next_url())
+    """
+
+#    session['openid'] = resp.identity_url
+#    model.store_identity(resp.identity_url,
+#                       name=resp.fullname or resp.nickname,
+#                       email=resp.email)
+
+    model.after_authentication(resp.identity_url, 'openid')
+#    user = model.whoami()#returns Identity object
+
+#    if user is not None:
+#        flash(u'Successfully signed in')
+#        g.user = user
+
+ 
     return redirect(model.oid.get_next_url())
 
 
@@ -302,14 +322,15 @@ def loginpersona():
     if resp.ok:
         # Parse the response
         verification_data = json.loads(resp.content)
-        dolog("INFO", "%s" % repr(verification_data))
+        dolog("INFO", "Verified persona:%s" % repr(verification_data))
 
  
         # Check if the assertion was valid
         if verification_data['status'] == 'okay':
             # Log the user in by setting a secure session cookie
-            session.update({'email': verification_data['email']})
+#            session.update({'email': verification_data['email']})
+            model.after_authentication(verification_data['email'], 'persona')
             return resp.content
- 
+
     # Oops, something failed. Abort.
     abort(500)

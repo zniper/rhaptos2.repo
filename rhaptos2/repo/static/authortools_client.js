@@ -162,6 +162,7 @@ function getwhoami() {
 
 function build_workspace() {
 
+    logout("In build workspace");
     var jsond = '[';
     var htmlfrag = '<ul>';
     $.ajax({
@@ -190,9 +191,8 @@ function build_workspace() {
 		y = jsond.substring(0, x);
 		jsond = y + ']';
 		//jsond += ']"';
-		alert("logging jsond" + jsond);
+		logout("Building workspace :" + htmlfrag);
 		logout(jsond);
-		populate_tree(jsond);
 		$('#workspaces').html(htmlfrag);
 	    }
         }
@@ -323,62 +323,6 @@ function node_load_event(node) {
 
    }
 
-function start_tree() {
-
-var data = [
- {
- 'data' : false,
- 'attr': {'rel': 'directory'}
- }];
-
-    $('#coltree').jstree({
-            json_data: {data: data},
-            plugins: ['themes', 'json_data', 'ui', 'crrm', 'hotkeys', 
-                      'contextmenu', 'dnd'],
-            core: { },
-            dnd: {
-                 "drop_finish": function (data) {
-                                                alert("some message");
-                                                },
-
-                 },            
-
-            contextmenu: {'select_node': true,
-                          'items': {'load': {'label': 'Edit module',
-                                           'action': function(obj) {node_load_event(obj);}
-                                          },
-                                   'create': false,
-                                   'rename': false,
-                                   'delete': false,
-                                   'edit': false,
-                                   'remove':false,
-                                   'ccp':false
-
-     
-                                 }
-                        }
-
-                         })
-           .bind("delete.jstree", function(e, data) {alert("Delete TBD");
-                                                    });
-
-
-
-}
-
-function populate_tree(jsonstr) {
-
-    logout(jsonstr);
-    x = $.parseJSON(jsonstr);
-
-    var jsTreeSettings = $('#coltree').jstree('get_settings');
-    jsTreeSettings.json_data.data = x; //$.parseJSON(jsonstr);
-    $.jstree._reference('coltree')._set_settings(jsTreeSettings);
-
-    // Refresh whole our tree (-1 means root of tree)
-    $.jstree._reference('coltree').refresh(-1);
-}
-
 ////////////////////// Persona
 
 function persona_in(){
@@ -396,15 +340,25 @@ function persona_out(){
 
 
 
+////////////// adminy
+function test(){
+    build_workspace();
+    alert("start aloha now .."); 
+//    phil_aloha_start();
+    start_aloha(); 
+}
+
+
 
 
 $(document).ready(function() {
+//$(window).load(function() {
 
-//    start_aloha();
-    phil_aloha_start();
+    //start_aloha();
+    //phil_aloha_start();
 
     //bind various clicks - clearly refactorable
-    $('#testclick').click(function(e) {test();
+    $('#testbtn').click(function(e) {test();
                                       e.preventDefault()});
 
     $('#persona_signin').click(function(e) {persona_in();
@@ -431,29 +385,22 @@ $(document).ready(function() {
                        }
                       );
 
-
-//    getwhoami();
-
-
-    start_tree();
-    build_workspace();
-
     //nolink are links that do some jquery function, but should not be links
     $('a.nolink').click(function(event) {
-        logout('click-preventDefault');
         event.preventDefault();
+     });
+
+
+//    getwhomi();
 
 
 
-
-    });
-//////////////////////
+    build_workspace();
 
 
 
 navigator.id.watch({
-  loggedInUser: null,
-//whoami['identity_url'], 
+  loggedInUser: whoami['authenticated_identifier'], 
   onlogin: function(assertion) {
     // A user has logged in! Here you need to:
     // 1. Send the assertion to your backend for verification and to create a session.
@@ -462,7 +409,7 @@ navigator.id.watch({
       type: 'POST',
       url: PERSONAURL, 
       data: {assertion: assertion},
-      success: function(res, status, xhr) { alert("login fired??" + res); },
+      success: function(res, status, xhr) { alert("login success on server" + res); },
       error: function(res, status, xhr) { alert("login failure" + res); }
     });
   },
@@ -474,12 +421,11 @@ navigator.id.watch({
     $.ajax({
       type: 'POST',
       url: PERSONALOGOUT, 
-      success: function(res, status, xhr) { window.location.reload(); },
+      success: function(res, status, xhr) { alert("You whosul be logged out with reload"); },
       error: function(res, status, xhr) { alert("logout failure" + res); }
     });
   }
 });
-
 
 
 

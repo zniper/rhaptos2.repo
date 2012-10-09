@@ -15,7 +15,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
-<script src="https://login.persona.org/include.js"></script>
+<!-- START CSS -->
 
 
         <link rel="stylesheet" href="/static/bootstrap.css">
@@ -24,7 +24,93 @@
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
 .aloha-toolbar { display: none !important; }    
     </style>
+    <link rel="stylesheet" href="{{ wysiwhaturl }}src/css/aloha.css" type="text/css">
+    <style type="text/css">
+        .toolbar-container {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 1;
+    }
 
+figure { counter-increment: figure; }
+figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
+	</style>
+
+    <style>
+      </style>
+
+
+
+        <style>
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+                
+            }
+
+            #editorspan { 
+                               background-color: #FAFAFA; 
+                    
+                               border: 1px solid #ddd;
+	                       -webkit-border-radius: 6px;
+	                       -moz-border-radius: 6px;
+                               border-radius: 6px;  
+            }
+   
+            #collectionspan { background-color: #99CCFF;
+                               border: 1px solid #ddd;
+            }  
+
+         
+        </style>
+
+
+<style type="text/css">
+    .toolbar-container {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 1;
+    }
+
+figure { counter-increment: figure; }
+figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
+
+.aloha-image-upload-drop-box {
+  text-align: center;
+  border: 1px dashed #ccc;
+  width: 400px;
+  padding: 100px 0;
+  cursor: pointer;
+}
+
+/* Metadata fields that occur around the image */
+.aloha-image-attrib {
+  
+}
+.aloha-image-attrib .aloha-image-attr-alt::before {
+  content: "Please provide a description of this image for the visually impaired";
+  color: #ccc;
+  display: block;
+}
+/* Just some formatting of the input boxes */
+.aloha-image-attrib input { display: block; }
+.aloha-image-attrib .aloha-image-attr-alt {
+  width: 400px;
+  display: block;
+}
+    </style>
+
+
+<!--  END CSS -->
+
+
+
+    <script src="https://login.persona.org/include.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js"></script> 
+    <script src="{{ wysiwhaturl }}src/lib/require.js"></script> 
+    <script src="{{ wysiwhaturl }}src/lib/aloha.js" data-aloha-plugins="extra/toolbar,common/ui,common/format,common/paste,common/block,common/list,common/table,extra/draganddropfiles,common/image,extra/figure,extra/ribbon,extra/no-floating"></script>
 
     <script language="javascript">
 
@@ -81,57 +167,13 @@ function phil_aloha_start(){
 
 
 
-
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js"></script> 
-    <script src="{{ wysiwhaturl }}/src/lib/require.js"></script> 
-    <script src="{{ wysiwhaturl }}/src/lib/aloha.js" data-aloha-plugins="extra/toolbar,common/ui,common/format,common/paste,common/block,user/blockdemo,common/list,common/table,extra/draganddropfiles,common/image,extra/figure,extra/ribbon,extra/no-floating"></script>
-
-    <link rel="stylesheet" href="{{ wysiwhaturl }}/src/css/aloha.css" type="text/css">
-    <style type="text/css">
-        .toolbar-container {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      z-index: 1;
-    }
-
-figure { counter-increment: figure; }
-figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weight: bold; }
-	</style>
-
-    <style>
-      </style>
-
-
-
-        <style>
-            body {
-                padding-top: 60px;
-                padding-bottom: 40px;
-                
-            }
-
-            #editorspan { 
-                               background-color: #FAFAFA; 
-                    
-                               border: 1px solid #ddd;
-	                       -webkit-border-radius: 6px;
-	                       -moz-border-radius: 6px;
-                               border-radius: 6px;  
-            }
    
-            #collectionspan { background-color: #99CCFF;
-                               border: 1px solid #ddd;
-            }  
-
-         
-        </style>
-
 
 
 
 <!-- Frozone client -->
 <script type="text/javascript" src="http://{{ confd['rhaptos2repo_www_server_name'] }}/static/conf.js"></script>
+
 <script type="text/javascript" src="http://{{ confd['rhaptos2repo_www_server_name'] }}/static/authortools_client.js"></script>
 
 
@@ -139,25 +181,11 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
       /* To be simple means to get current logged in USer back to JQuery*/
       var whoami = {
           userID      : "{{ g.user.userID }}",
-          identity_url: "{{ g.user.openid_url }}",
+          {% if g.user == None %}authenticated_identifier: null,{% else %}authenticated_identifier: "{{ g.user.authenticated_identifier }}", {% endif %}
           email       : "{{ g.user.email }}",
           name        : "{{ g.user.name }}"
       }
     </script>
-
-
-<script>
-  $(function() {
-  $( "#menu" ).tabs();
-  });
-
-  </script>
-
-
-
-
-
-<script type="text/javascript" src="http://static.jstree.com/v.1.0pre/jquery.jstree.js"></script>
 
 
     </head>
