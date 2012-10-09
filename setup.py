@@ -51,14 +51,11 @@ def main():
               ,"statsd"
               ,"requests"
               ,"pylint"
-              ,"Flask-OpenID"
+              ,"Flask-OpenID==1.0.1"
               ,"python-memcached"
               ,"nose"
-
               ,"rhaptos2.common >= 0.0.12"
               ,"unittest-xml-reporting"
-              ,"mikado.oss.doctest_additions"
-              ,"python-memcached"
                            ],
           scripts=glob.glob('scripts/*'),
 
