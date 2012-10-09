@@ -25,7 +25,7 @@
                                      }
         else                         {
             smsg = msg;
-                                     } 
+                                     }
         var txt = $('#logarea').html();
         $('#logarea').html(txt + '<li> ' + smsg);
         console.log(smsg);
@@ -56,8 +56,8 @@ function get_textarea_html5() {
 
 
 function load_textarea(mhashid) {
-        // 
-        
+        //
+
         var request = $.ajax({
             url: MODULEURL + mhashid,
 
@@ -70,9 +70,9 @@ function load_textarea(mhashid) {
         request.done(function(data) {
             //why not returned as json???
             var jdata = $.parseJSON(data);
-            alert("sending jdata" + jdata);  
+            alert("sending jdata" + jdata);
             logout(jdata);
-            //weird aloha feature - suffixed textareas.. ask phil.. 
+            //weird aloha feature - suffixed textareas.. ask phil..
             $('#editarea-aloha').val(jdata['content']);
             $('#aclrw').val(jdata['aclrw']);
             $('#contentrw').val(jdata['contentrw']);
@@ -180,21 +180,21 @@ function build_workspace() {
                                       }
             else {
 
-		$.each(historyarr, function(i, elem) {
-		    var strelem = "'" + elem[0] + "'";
-		    htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
-		    jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
-		});
+                $.each(historyarr, function(i, elem) {
+                    var strelem = "'" + elem[0] + "'";
+                    htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+                    jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
+                });
 
 
-		x = jsond.length - 1; 
-		y = jsond.substring(0, x);
-		jsond = y + ']';
-		//jsond += ']"';
-		logout("Building workspace :" + htmlfrag);
-		logout(jsond);
-		$('#workspaces').html(htmlfrag);
-	    }
+                x = jsond.length - 1;
+                y = jsond.substring(0, x);
+                jsond = y + ']';
+                //jsond += ']"';
+                logout("Building workspace :" + htmlfrag);
+                logout(jsond);
+                $('#workspaces').html(htmlfrag);
+            }
         }
     });
 }
@@ -343,9 +343,9 @@ function persona_out(){
 ////////////// adminy
 function test(){
     build_workspace();
-    alert("start aloha now .."); 
+    alert("start aloha now ..");
 //    phil_aloha_start();
-    start_aloha(); 
+    start_aloha();
 }
 
 
@@ -398,16 +398,22 @@ $(document).ready(function() {
     build_workspace();
 
 
+    /* Authoring Tools Dropdowns & Modals */
+    $('.dropdown-toggle').dropdown();
+    // Initialize the tool links to display on click.
+    $('import-link').modal({show:false});
+    $('metadata-link').modal({show:false});
+    /* END Authoring Tools Dropdowns & Modals */
 
 navigator.id.watch({
-  loggedInUser: whoami['authenticated_identifier'], 
+  loggedInUser: whoami['authenticated_identifier'],
   onlogin: function(assertion) {
     // A user has logged in! Here you need to:
     // 1. Send the assertion to your backend for verification and to create a session.
     // 2. Update your UI.
-    $.ajax({ 
+    $.ajax({
       type: 'POST',
-      url: PERSONAURL, 
+      url: PERSONAURL,
       data: {assertion: assertion},
       success: function(res, status, xhr) { alert("login success on server" + res); },
       error: function(res, status, xhr) { alert("login failure" + res); }
@@ -420,7 +426,7 @@ navigator.id.watch({
     //window.location = 'google.com';
     $.ajax({
       type: 'POST',
-      url: PERSONALOGOUT, 
+      url: PERSONALOGOUT,
       success: function(res, status, xhr) { alert("You whosul be logged out with reload"); },
       error: function(res, status, xhr) { alert("logout failure" + res); }
     });
