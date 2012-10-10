@@ -6,6 +6,17 @@
 //
 
 
+// Notes
+// This file is the (messy) beginings of Author TOols on browseer
+// It will supply an API for _editor_ to use,
+// It will commiunicate with the unpub repo and user profile server
+// it will make tea
+
+
+// ..todo:: Persona fires through navigator.id.watch at odd times on start up
+
+// pick up some constants, from constants file
+
     var REPOBASEURL = 'http://' + FROZONE.e2repoFQDN;
     var MODULEURL = 'http://' + FROZONE.e2repoFQDN + '/module/';
     var WORKSPACEURL = 'http://' + FROZONE.e2repoFQDN + '/workspace/';
@@ -14,8 +25,10 @@
     var PERSONALOGOUT = 'http://' + FROZONE.e2repoFQDN + '/persona/logout/';
 
 
+
     function logout(msg) {
-        //log to a HTML area all messages
+        //log both to console and to web page, 
+        //splitting out objects as we go for visibility
         var smsg = '';
 
         if (typeof(msg) == 'object') {
@@ -30,6 +43,10 @@
         $('#logarea').html(txt + '<li> ' + smsg);
         console.log(smsg);
     }
+
+// Pull-only commands to interact with the editor area
+// I mean pull only to mean treat ediotor as black box and do things to it, not
+// as I would like where eventually ediotor supplies an API
 
     function get_username() {
         return $('#username').val();
@@ -89,142 +106,6 @@ function load_textarea(mhashid) {
             logout(textStatus);
         });
     }
-
-
-function getLoadHistoryVer(uuid) {
-    // ajax request to retrieve module and parse json and load into textarea
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: MODULEURL + uuid,
-        xhrFields: {
-            withCredentials: true
-        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-
-
-        success: function(nodedoc) {
-            var title = nodedoc['title'];
-            var txtarea = nodedoc['content'];
-
-            var aclrw = nodedoc['aclrw'];
-            var contentrw = nodedoc['contentrw'];
-
-            $('#title').val(title);
-            $('#aclrw').val(aclrw);
-            $('#contentrw').val(contentrw);
-            $('#uuid').val(uuid);
-
-            $('#editarea-aloha').html(txtarea);
-        },
-
-        error: function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
-        },
-
-        complete: function(jqXHR, textStatus, err) {
-            logout('Complete: Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
-        }
-
-
-    });
-}
-
-
-function getwhoami() {
-    // ajax request
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: REPOBASEURL + '/whoami/',
-        xhrFields: {
-            withCredentials: true
-        },
-        //display who I am
-        success: function(jsondoc) {
-
-//            for (var i in jsondoc){
-//               alert(i);
-//            };
-            var user_email = jsondoc['email'];
-            var user_name = jsondoc['name'];
-            $('#usernamedisplay').html(user_name + '-' + user_email);
-        },
-
-        error: function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
-        }
-
-    });
-}
-
-
-
-
-function build_workspace() {
-
-    logout("In build workspace");
-    var jsond = '[';
-    var htmlfrag = '<ul>';
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: WORKSPACEURL,
-        xhrFields: {
-            withCredentials: true
-        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-
-        success: function(historyarr) {
-            historyarr.sort();
-            if (historyarr.length == 0){
-                alert("No workspace to deal with");
-                                      }
-            else {
-
-		$.each(historyarr, function(i, elem) {
-		    var strelem = "'" + elem[0] + "'";
-		    htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
-		    jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
-		});
-
-
-		x = jsond.length - 1; 
-		y = jsond.substring(0, x);
-		jsond = y + ']';
-		//jsond += ']"';
-		logout("Building workspace :" + htmlfrag);
-		logout(jsond);
-		$('#workspaces').html(htmlfrag);
-	    }
-        }
-    });
-}
-
-function delete_module(filename) {
-    $.ajax({
-        type: 'DELETE',
-        dataType: 'json',
-        url: REPOBASEURL + '/module/' + filename,
-        xhrFields: {
-            withCredentials: true
-        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-
-        success: function() {
-            logout('deleted ' + filename);
-            build_workspace();
-        },
-
-        error: function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
-        }
-
-    });
-
-}
-
-function showres(i, elem) {
-
-    logout(i + ': ' + elem);
-}
 
 
 function serialise_form() {
@@ -306,6 +187,150 @@ function saveText() {
 
     }
 
+
+// FUnctions to get worksapce and display it
+
+function getLoadHistoryVer(uuid) {
+    // ajax request to retrieve module and parse json and load into textarea
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: MODULEURL + uuid,
+        xhrFields: {
+            withCredentials: true
+        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+
+
+        success: function(nodedoc) {
+            var title = nodedoc['title'];
+            var txtarea = nodedoc['content'];
+
+            var aclrw = nodedoc['aclrw'];
+            var contentrw = nodedoc['contentrw'];
+
+            $('#title').val(title);
+            $('#aclrw').val(aclrw);
+            $('#contentrw').val(contentrw);
+            $('#uuid').val(uuid);
+
+            $('#editarea-aloha').html(txtarea);
+        },
+
+        error: function(jqXHR, textStatus, err) {
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+        },
+
+        complete: function(jqXHR, textStatus, err) {
+            logout('Complete: Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+        }
+
+
+    });
+}
+
+
+
+
+function build_workspace() {
+
+    logout("In build workspace");
+    var jsond = '[';
+    var htmlfrag = '<ul>';
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: WORKSPACEURL,
+        xhrFields: {
+            withCredentials: true
+        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+
+        success: function(historyarr) {
+            historyarr.sort();
+            if (historyarr.length == 0){
+                logout("Not logged in - no workspace to deal with");
+                                      }
+            else {
+
+		$.each(historyarr, function(i, elem) {
+		    var strelem = "'" + elem[0] + "'";
+		    htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+		    jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
+		});
+
+
+		x = jsond.length - 1; 
+		y = jsond.substring(0, x);
+		jsond = y + ']';
+		//jsond += ']"';
+		logout("Building workspace :" + htmlfrag);
+		logout(jsond);
+		$('#workspaces').html(htmlfrag);
+	    }
+        }
+    });
+}
+
+
+// We are changing how identiy is managed - and need beter secure coiokies
+
+function getwhoami() {
+    // ajax request
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: REPOBASEURL + '/whoami/',
+        xhrFields: {
+            withCredentials: true
+        },
+        //display who I am
+        success: function(jsondoc) {
+
+//            for (var i in jsondoc){
+//               alert(i);
+//            };
+            var user_email = jsondoc['email'];
+            var user_name = jsondoc['name'];
+            $('#usernamedisplay').html(user_name + '-' + user_email);
+        },
+
+        error: function(jqXHR, textStatus, err) {
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+        }
+
+    });
+}
+
+
+
+function delete_module(filename) {
+    $.ajax({
+        type: 'DELETE',
+        dataType: 'json',
+        url: REPOBASEURL + '/module/' + filename,
+        xhrFields: {
+            withCredentials: true
+        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
+
+        success: function() {
+            logout('deleted ' + filename);
+            build_workspace();
+        },
+
+        error: function(jqXHR, textStatus, err) {
+            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+        }
+
+    });
+
+}
+
+function showres(i, elem) {
+
+    logout(i + ': ' + elem);
+}
+
+/////////////// Aloha
+
 function start_aloha() {
 
     $('#editarea').aloha();
@@ -326,14 +351,14 @@ function node_load_event(node) {
 ////////////////////// Persona
 
 function persona_in(){
-   alert("persona in clicked");
+   logout("persona in clicked");
    navigator.id.request();
 
 }
 
 
 function persona_out(){
-   alert("persona out clicked");
+   logout("persona out clicked");
    navigator.id.logout();
 
 }
@@ -343,7 +368,7 @@ function persona_out(){
 ////////////// adminy
 function test(){
     build_workspace();
-    alert("start aloha now .."); 
+    logout("start aloha now .."); 
 //    phil_aloha_start();
     start_aloha(); 
 }
@@ -354,7 +379,7 @@ function test(){
 $(document).ready(function() {
 //$(window).load(function() {
 
-    //start_aloha();
+    
     //phil_aloha_start();
 
     //bind various clicks - clearly refactorable
@@ -396,7 +421,7 @@ $(document).ready(function() {
 
 
     build_workspace();
-
+    start_aloha();
 
 
 navigator.id.watch({
