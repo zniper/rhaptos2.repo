@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-###  
+###
 # Copyright (c) Rice University 2012
 # This software is subject to
 # the provisions of the GNU Lesser General
@@ -10,7 +10,7 @@
 ###
 
 
-''' 
+'''
 Simple file management module.
 We are basing this repo primarily on file storage (at least for now - we intend to prototype and try out new forms of workspoace / collections.)
 
@@ -32,8 +32,10 @@ from rhaptos2.common import log
 from rhaptos2.common import err
 #from rhaptos2.common import conf
 #confd = conf.get_config('rhaptos2')
-from rhaptos2.repo import app 
+from rhaptos2.repo import get_app
 
+
+app = get_app()
 
 def return1():
     print "[logline] this is a log line"
@@ -44,4 +46,3 @@ def rhaptos_file_delete(modname, userspace):
     '''
     f = os.path.join(userspace, modname)
     os.remove(f)
-         
