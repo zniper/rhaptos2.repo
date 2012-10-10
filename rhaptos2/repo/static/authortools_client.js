@@ -401,8 +401,10 @@ $(document).ready(function() {
     /* Authoring Tools Dropdowns & Modals */
     $('.dropdown-toggle').dropdown();
     // Initialize the tool links to display on click.
-    $('import-link').modal({show:false});
-    $('metadata-link').modal({show:false});
+    $('#import-link').modal({show:false});
+    $('#metadata-link').modal({show:false});
+    // Render the data into the modal body.
+    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
     /* END Authoring Tools Dropdowns & Modals */
 
 navigator.id.watch({
