@@ -404,9 +404,11 @@ $(document).ready(function() {
     $('#import-link').modal({show:false});
     $('#metadata-link').modal({show:false});
     $('#sharing-link').modal({show:false});
+    $('#publish-link').modal({show:false});
     // Render the data into the modal body.
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
     $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
+    $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
     /* END Authoring Tools Dropdowns & Modals */
 
 navigator.id.watch({

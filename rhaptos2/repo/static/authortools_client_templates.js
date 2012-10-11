@@ -259,6 +259,28 @@
     </form>\
   </div>';
 
+  exports.publish = '\
+  <div role="popup-content">\
+    <form name="publish-form" action="publish" method="POST">\
+      <legend>Description of the changes</legend>\
+      <input type="text" name="change_description"\
+             class="span2"\
+             placeholder="Description of the change...">\
+      <legend>License</legend\
+      <div>\
+        <p>This work will now be distributed under the terms of the Creative Commons Attribution License (<span>CC-BY 3.0</span>) available at <a style="font-style: italic" href="http://creativecommons.org/licenses/by/3.0/">http://creativecommons.org/licenses/by/3.0/</a>.\
+        </p>\
+        <p>By publishing this content you area to the following statement: I understand that in doing so I</p>\
+        <ol>\
+          <li>retain my copyright in the work and</li>\
+          <li>warrant that I am the author or the owner or have permission to distribute the work in question and</li>\
+          <li>wish this work to be distributed under the terms of the CC-BY 3.0 license (including allowing modification of this work and requiring attribution) and</li>\
+          <li>agree that proper attribution of my work is any attribution that includes the authors\' names, the title of the work, and the Connexions URL to the work.</li>\
+        </ol>\
+      </div>\
+    </form>\
+  </div>';
+
   window.Templates = exports;
 
 }).call(this);
