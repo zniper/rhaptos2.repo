@@ -403,8 +403,10 @@ $(document).ready(function() {
     // Initialize the tool links to display on click.
     $('#import-link').modal({show:false});
     $('#metadata-link').modal({show:false});
+    $('#sharing-link').modal({show:false});
     // Render the data into the modal body.
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
+    $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
     /* END Authoring Tools Dropdowns & Modals */
 
 navigator.id.watch({

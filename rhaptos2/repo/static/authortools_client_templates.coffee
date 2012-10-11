@@ -8,9 +8,12 @@
   Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 ###
 
-window.Templates = {};
+# This variable is attached to the window at the very end,
+# effectively making it global.
+# window.Templates = exports;
+exports = {}
 
-Templates.metadata = '
+exports.metadata = '
   <div role="popup-content" class="span12">
     <form name="metadata-form" action="metadata" method="POST">
       <label>Title</label>
@@ -192,5 +195,65 @@ Templates.metadata = '
         this content to track usage.
       </span>
     </form>
-  </div>
-'
+  </div>'
+
+exports.sharing = '
+  <div role="popup-content">
+    <form name="sharing-form" action="sharing" method="POST">
+      <legend>Sharing Assignments</legend>
+      <!-- The role to user listing table -->
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Author</th>
+            <th>Copyright</th>
+            <th><!-- Other actions --></th>
+          </tr>
+        </thead>
+        <tfoot>
+        </tfoot>
+        <tbody>
+          <tr>
+            <th>Michael</th>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td>
+              <button type="button"
+                      class="btn btn-danger btn-mini">remove</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Ross</th>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td>
+              <button type="button"
+                      class="btn btn-danger btn-mini">remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <form name="sharing-search-form">
+      <legend>Search for people</legend>
+
+      <div id="sharing-search-form-results">
+        <!-- A search for the letter "a" -->
+        <span class="user-result badge badge-info" data-uid="uid">Isabel</span>
+        <!-- Michael shows up in the search results but is disabled --
+          -- since he is already in the list. -->
+        <span class="user-result badge" data-uid="uid">Michael</span>
+        <span class="user-result badge badge-info" data-uid="uid">Paul</span>
+      </div>
+
+      <div class="input-append">
+        <input type="text" name="q"
+               class="span2"
+               placeholder="Type a name...">
+        <button type="submit" class="btn">Search</button>
+      </div>
+    </form>
+  </div>'
+
+window.Templates = exports
