@@ -261,7 +261,7 @@ exports.publish = '
     <form name="publish-form" action="publish" method="POST">
       <legend>Description of the changes</legend>
       <input type="text" name="change_description"
-             class="span2"
+             class="span4"
              placeholder="Description of the change...">
       <legend>License</legend
       <div>
