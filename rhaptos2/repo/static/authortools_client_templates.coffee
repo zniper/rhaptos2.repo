@@ -1,5 +1,5 @@
 ###
-  authoringtools_client_templates.js - Mustache templates for various
+  authoringtools_client_templates.{coffee,js} - Mustache templates for various
     authoring tools interfaces.
 
   Copyright (c) 2012 Rice University
