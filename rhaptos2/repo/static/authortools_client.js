@@ -406,6 +406,7 @@ $(document).ready(function() {
     $('#sharing-link').modal({show:false});
     $('#publish-link').modal({show:false});
     // Render the data into the modal body.
+    $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
     $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
     $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));

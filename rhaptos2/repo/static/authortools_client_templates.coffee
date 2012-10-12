@@ -13,6 +13,12 @@
 # window.Templates = exports;
 exports = {}
 
+exports.import = '
+  <div role="popup-content">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="file" name="file">
+  </div>'
+
 exports.metadata = '
   <div role="popup-content" class="span12">
     <form name="metadata-form" action="metadata" method="POST">
