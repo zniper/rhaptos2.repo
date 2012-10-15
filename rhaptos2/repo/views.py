@@ -54,17 +54,6 @@ def apply_cors(fn):
 
     return newfn
 
-
-### Utter junk just to get round http://openid-selector.googlecode.com quickl
-### We need a CDN approach ...
-
-@app.route('/images/openid-providers-en.png')
-def junk():
-    resp = flask.redirect('/static/images/openid-providers-en.png')
-    return resp
-
-
-
 @app.route('/conf.js')
 def confjs():
     resp = flask.make_response(render_template("conf.js", confd=app.config))
@@ -249,7 +238,15 @@ def after_request(response):
 #    model.db_session.remove()
     return response
 
-
+# XXX A temporary fix for the openid images.
+@app.route('/images/openid-providers-en.png')
+def temp_openid_image_url():
+    """Provides a (temporary) fix for the openid images used
+    on the login page.
+    """
+    # Gets around http://openid-selector.googlecode.com quickly
+    resp = flask.redirect('/static/img/openid-providers-en.png')
+    return resp
 
 @app.route('/login', methods=['GET', 'POST'])
 @model.oid.loginhandler
