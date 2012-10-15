@@ -107,120 +107,99 @@ function phil_aloha_start(){
   </head>
 {% endblock %}
 {% block body %}
-     <body>
-        <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an outdated
-        browser. <a href="http://browsehappy.com/">Upgrade your
-        browser today</a>
-        or <a href="http://www.google.com/chromeframe/?redirect=true">install
-        Google Chrome Frame</a> to better experience this site.</p>
-        <![endif]-->
+  <body>
+    <!--[if lt IE 7]>
+        <p class="chromeframe">You are using an outdated
+          browser. <a href="http://browsehappy.com/">Upgrade your browser today</a>
+          or <a href="http://www.google.com/chromeframe/?redirect=true">install
+          Google Chrome Frame</a> to better experience this site.
+        </p>
+    <![endif]-->
 
-      <!-- Main hero unit  -->
+    {# Start page navigation controls #}
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+	  <ul class="nav">
+	    <li class="active">
+	      <a class="brand" href="#">ConneXions</a>
+	    </li>
+	    <li><a href="#">About</a></li>
+	    <li><a href="#">MyCNX</a></li>
 
-<div class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
+            <li class="dropdown">
+              <a href="#"
+                 class="dropdown-toggle"
+                 data-toggle="dropdown">
+                Tools
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a tabindex="-1" href="#import-modal"
+                     id="import-link"
+                     data-toggle="modal">Import</a>
+                </li>
+                <li><a tabindex="-1" href="#">Preview ...</a></li>
+                <li>
+                  <a tabindex="-1" href="#publish-modal"
+                     id="publish-link"
+                     data-toggle="modal">Publish</a>
+                </li>
+                <li>
+                  <a tabindex="-1" href="#sharing-modal"
+                     id="sharing-link"
+                     data-toggle="modal">Sharing and Access Management</a>
+                </li>
+                <li>
+                  <a tabindex="-1" href="#metadata-modal"
+                     id="metadata-link"
+                     data-toggle="modal">Metadata</a>
+                </li>
+              </ul>
+            </li>
 
-	<ul class="nav">
-	  <li class="active">
-	    <a class="brand" href="#">ConneXions</a>
-	  </li>
-	  <li><a href="#">About</a></li>
-	  <li><a href="#">MyCNX</a></li>
+            <li>
+              {% if g.user %}
+                <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }}]</a>
+              {% else %}
+                <a href="{{ url_for('login') }}">sign in</a>
+              {% endif %}
+            </li>
+          </ul>
 
-          <li class="dropdown">
-           <a href="#"
-              class="dropdown-toggle"
-              data-toggle="dropdown">
-              Tools
-              <b class="caret"></b>
-           </a>
-           <ul class="dropdown-menu">
-             <li>
-               <a tabindex="-1" href="#import-modal"
-                  id="import-link"
-                  data-toggle="modal">Import</a>
-             </li>
-             <li><a tabindex="-1" href="#">Preview ...</a></li>
-             <li>
-               <a tabindex="-1" href="#publish-modal"
-                  id="publish-link"
-                  data-toggle="modal">Publish</a>
-             </li>
-             <li>
-               <a tabindex="-1" href="#sharing-modal"
-                  id="sharing-link"
-                  data-toggle="modal">Sharing and Access
-                  Management</a>
-             </li>
-             <li>
-               <a tabindex="-1" href="#metadata-modal"
-                  id="metadata-link"
-                  data-toggle="modal">Metadata</a>
-             </li>
-           </ul>
-          </li>
+          <ul class="nav pull-right"> 
+            <li>  
+              <div> {{ confd['bamboo_trackid'] }} <!-- test --> </div>
+            </li>
+            <li>
+              <div id="usernamedisplay">fff</div>
+            </li>
+	  </ul>
+        </div>
+      </div>
+    </div> 
+    {# End page navigation controls #}
 
+    <!-- Content well -->
+    <div class="container-fluid">
+      <div class="row-fluid">
 
-
-<li>
-  {% if g.user %}
-   <a href="{{ url_for('logout') }}">sign out [{{ g.user.name }}]</a>
-  {% else %}
-  <a href="{{ url_for('login') }}">sign in</a>
-  {% endif %}
-</li>
-</ul>
-
-<ul class="nav pull-right"> 
-
-<li>  
-  <div> {{ confd['bamboo_trackid'] }} <!-- test --> </div>
-</li>
-
-<li>
-   <div id="usernamedisplay">fff</div>
-</li>
-	</ul>
-
-
-
-
-    </div>
-  </div>
-</div> 
-
-
-<div class="container-fluid">
- <div class="row-fluid">
-
-  <!-- Main content -->
-  <div class="span9" id="editorspan">
-
-
-        <h1>{% block modname %}{% endblock %}</h1>
-        {% block editor %}{% endblock %}
-
-
-
-  </div>
-  <!-- Collection Editor -->   
-  <div class="span3" id="collectionspan">
-
-     <div id="workspaces">   </div>
- 
-  </div>
- </div> 
-
- 
-            <footer>
-      copyright &copy; 2012 connexions | 
-     <a href="http://www.dcarter.co.uk">
-       design by dcarter</a>
-            </footer>
-
-        </div> <!-- /container -->
+        <!-- Main content -->
+        <div class="span9" id="editorspan">
+          <h1>{% block modname %}{% endblock %}</h1>
+          {% block editor %}{% endblock %}
+        </div>
+        <!-- Collection Editor -->   
+        <div class="span3" id="collectionspan">
+          <div id="workspaces"></div>
+        </div>
+      </div>
+      <footer>
+        copyright &copy; 2012 connexions |
+        <a href="http://www.dcarter.co.uk"> design by dcarter</a>
+      </footer>
+    </div> <!-- /.container-fluid -->
 
 
   <!-- Modal structures -->
@@ -290,6 +269,6 @@ function phil_aloha_start(){
     </form>
   </div>
 
-     </body>
-
+  </body>
 {% endblock %}
+</html>
