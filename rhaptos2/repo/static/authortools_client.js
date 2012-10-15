@@ -369,7 +369,6 @@ function persona_out(){
 function test(){
     build_workspace();
     logout("start aloha now ..");
-//    phil_aloha_start();
     start_aloha();
 }
 
@@ -378,9 +377,6 @@ function test(){
 
 $(document).ready(function() {
 //$(window).load(function() {
-
-
-    //phil_aloha_start();
 
     //bind various clicks - clearly refactorable
     $('#testbtn').click(function(e) {test();
