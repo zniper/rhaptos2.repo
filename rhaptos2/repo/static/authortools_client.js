@@ -27,7 +27,7 @@
 
 
     function logout(msg) {
-        //log both to console and to web page, 
+        //log both to console and to web page,
         //splitting out objects as we go for visibility
         var smsg = '';
 
@@ -368,7 +368,7 @@ function persona_out(){
 ////////////// adminy
 function test(){
     build_workspace();
-    logout("start aloha now .."); 
+    logout("start aloha now ..");
 //    phil_aloha_start();
     start_aloha();
 }
@@ -379,7 +379,7 @@ function test(){
 $(document).ready(function() {
 //$(window).load(function() {
 
-    
+
     //phil_aloha_start();
 
     //bind various clicks - clearly refactorable
@@ -421,7 +421,6 @@ $(document).ready(function() {
 
 
     build_workspace();
-    start_aloha();
 
     /* Authoring Tools Dropdowns & Modals */
     Tools.construct()
