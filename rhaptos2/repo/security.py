@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-###  
+###
 # Copyright (c) Rice University 2012
 # This software is subject to
 # the provisions of the GNU Lesser General
@@ -18,8 +18,11 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-from rhaptos2.repo import app, dolog
- #circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
+from rhaptos2.repo import get_app, dolog
+
+
+app = get_app()
+
 
 class WorkSpace(object):
     """Represents the set of NodeDocs the user can currently view
@@ -28,13 +31,13 @@ class WorkSpace(object):
     But for now this totally in efficient method will suffice.
 
     I will open each JSON doc in the repo, when a user makes workspace request
-    and I will read them all and find which ones they are allowed to read / 
+    and I will read them all and find which ones they are allowed to read /
 
     Arrggh
 
 
     TODO: test some means of writing files
-    I want to write os.environ remote_e2repo, then write files to it.  Need 
+    I want to write os.environ remote_e2repo, then write files to it.  Need
     some doctest fixtures ??
 
     >> u = WorkSpace('paul@mikadosoftware.com')
@@ -46,13 +49,13 @@ class WorkSpace(object):
     """
     def __init__(self, user_id):
         """ """
-        dolog("INFO", "in workspace of %s" % user_id, 
+        dolog("INFO", "in workspace of %s" % user_id,
               caller=WorkSpace, statsd=['rhaptos2.repo.workspace.entered',])
-        
+
         self.user_id = user_id
-        repodir = app.config['rhaptos2repo_repodir']    
+        repodir = app.config['rhaptos2repo_repodir']
         plain = []
-        annotated = [] 
+        annotated = []
         files = [os.path.join(repodir, f) for f in os.listdir(repodir)]
         for fpath in files:
             d = json.loads(open(fpath).read())
@@ -63,7 +66,7 @@ class WorkSpace(object):
                                  ])
         self.files_plain = plain
         self.files_annotated = annotated
-    
+
     @property
     def files(self):
         return self.files_plain
@@ -72,17 +75,17 @@ class WorkSpace(object):
     def annotatedfiles(self):
         return self.files_annotated
 
- 
+
 
 class NodeDoc(object):
-    """Represents the node (section) stored on disk 
+    """Represents the node (section) stored on disk
 
     A NodeDoc is a JSON document, holding the following information
 
     v.0.1
-    nodedocversion (0.1) - This will undergo a lot of changes.  
-    uuid : uuid representing this *section* - it is not a versioning tool. 
-           uuid is per document (ie a section or a chapter).  We can have many versions 
+    nodedocversion (0.1) - This will undergo a lot of changes.
+    uuid : uuid representing this *section* - it is not a versioning tool.
+           uuid is per document (ie a section or a chapter).  We can have many versions
            of the same uuid
     title: title of document (unicode)
     content: html5 payload.
@@ -96,23 +99,23 @@ class NodeDoc(object):
     #DELETE
     #GET
 
-    
+
 
     """
 
     def __init__(self):
-        self.nodedocversion = "0.1" 
+        self.nodedocversion = "0.1"
         self.versionkeys = ['aclrw', 'content', 'contentrw', 'title', 'uuid']
 
     def load_from_file(self, uid):
-        """find a file and load up the json doc and store internally 
+        """find a file and load up the json doc and store internally
 
         We load a file if uid is anything other than blank
         Need lots of testing...
-        NB - we MUST load the uid ON OUR DISK.  WE DO NOT TRUST acl settings SENT IN  
+        NB - we MUST load the uid ON OUR DISK.  WE DO NOT TRUST acl settings SENT IN
 
         todo: split out parser and allow for versioning
-        todo: make it vastly better 
+        todo: make it vastly better
 
         Again tests need to be repeatable on Jenkins -
         sort out doctest fixtures
@@ -137,18 +140,18 @@ class NodeDoc(object):
         >> c = NodeDoc()
         >> c.load_from_file('junk')
         >> assert c.uuid is None
-        
-        
+
+
 
         """
         repodir = app.config['rhaptos2repo_repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
- 
+
         try:
             nodedict = json.loads(open(filepath).read())
         except:
-            nodedict = dict(zip(v01keys, [None, None, None, None, None]))  
+            nodedict = dict(zip(v01keys, [None, None, None, None, None]))
 
         if sorted(nodedict.keys()) != v01keys:
             raise  Rhaptos2Error("NodeDoc has incorrect keys - version 0.1" + str(nodedict.keys()) + str(v01keys))
@@ -157,9 +160,9 @@ class NodeDoc(object):
 
 
     def load_from_djson(self, djson):
-        """given a dict (from the JSON POST) create internal object 
+        """given a dict (from the JSON POST) create internal object
 
-        Returns None, its updating internally. 
+        Returns None, its updating internally.
         """
 
 
@@ -171,7 +174,7 @@ class NodeDoc(object):
         if not djson['uuid'] : djson['uuid'] = str(uuid.uuid4())
         self.__dict__.update(djson)
 
-                 
+
 
     def update(self, user_id, **kwds):
         """update internal dict with whatever sent in kwds, plus some checking, """
@@ -180,14 +183,14 @@ class NodeDoc(object):
 
         if change_all == False:
             raise Rhaptos2Error("unauthorised")
-        
+
         for key in kwds:
             if key in self.versionkeys:
-                if key == 'aclrw' and change_acl == False: 
+                if key == 'aclrw' and change_acl == False:
                     raise Rhaptos2Error("Unauthorised")
-                else:        
+                else:
                     self.__dict__[key] = kwds[key]
-        
+
     def save(self):
         """ """
         if self.uuid == None:
@@ -204,7 +207,7 @@ class NodeDoc(object):
 
     def allow_acl_change(self, user_id):
         """ """
-           
+
         if user_id in self.aclrw:
             dolog("INFO", "Found %s in %s" % (user_id, self.aclrw))
             return True

@@ -1,46 +1,48 @@
-#!/usr/bin/env python
-#! -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+"""views.py - View code for the repository application.
 
-###  
-# Copyright (c) Rice University 2012
-# This software is subject to
-# the provisions of the GNU Lesser General
-# Public License Version 2.1 (LGPL).
-# See LICENCE.txt for details.
-###
+Author: Paul Brian
+(C) 2012 Rice University
 
-
-from flask import Flask, render_template, request, g, session, flash,   redirect, url_for, abort
-
-
+This software is subject to the provisions of the GNU Lesser General
+Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
+"""
+import os
+import sys
 import datetime
-import md5, random
-import os, sys
-import flask
-import statsd
+import md5
+import random
 import json
 from functools import wraps
 import uuid
 import requests
 import pprint
+import statsd
+import flask
+from flask import (
+    Flask, render_template,
+    request, g, session, flash,
+    redirect, url_for, abort,
+    )
 
-from rhaptos2.common import log
-from rhaptos2.common import err
-from rhaptos2.common import conf
-
-from rhaptos2.repo import app, dolog
-#circular reference ? see http://flask.pocoo.org/docs/patterns/packages/
-from rhaptos2.repo import model, get_version, security
+from rhaptos2.common import log, err, conf
+from rhaptos2.repo import get_app, dolog, model, get_version, security
 
 
+app = get_app()
+
+@app.before_request
+def requestid():
+    g.requestid = uuid.uuid4()
+    g.request_id = g.requestid
 
 ########################### views
 
 
 def apply_cors(fn):
-    '''decorator to apply the correct CORS friendly header 
+    '''decorator to apply the correct CORS friendly header
 
-       I am assuming all view functions return 
+       I am assuming all view functions return
        just text ..  hmmm
     '''
     @wraps(fn)
@@ -67,7 +69,7 @@ def junk():
 @app.route('/static/conf.js')
 def confjs():
 
-    resp = flask.make_response(render_template("conf.js", confd=app.config))    
+    resp = flask.make_response(render_template("conf.js", confd=app.config))
     resp.content_type='application/javascript'
     return resp
 
@@ -80,22 +82,22 @@ def index():
 def modulePUT():
     dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
     try:
-       
+
 
         d = request.json
-        if d['uuid'] == u'': 
+        if d['uuid'] == u'':
             return ("PUT WITHOUT A UUID" , 400)
 
-        current_nd = model.mod_from_file(d['uuid'])       
+        current_nd = model.mod_from_file(d['uuid'])
         current_nd.load_from_djson(d) #this checks permis
         uid = current_nd.uuid
-        current_nd.save()  
+        current_nd.save()
 
     except Exception, e:
         raise(e)
 
     s = model.asjson({'hashid':uid})
-    resp = flask.make_response(s)    
+    resp = flask.make_response(s)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
 
@@ -112,7 +114,7 @@ def modulePOST():
     dolog("INFO", 'A Module POSTed', caller=modulePOST, statsd=['rhaptos2.repo.module.POST',])
 
     d = request.json
-    if d['uuid'] != u'': 
+    if d['uuid'] != u'':
         return ("POSTED WITH A UUID" , 400)
     else:
         d['uuid'] = None
@@ -138,11 +140,11 @@ def workspaceGET():
     identity = model.whoami()
     if not identity:
         json_dirlist = json.dumps([])
-    else: 
+    else:
         w = security.WorkSpace(identity.userID)
         json_dirlist = json.dumps(w.annotatedfiles)
- 
-    resp = flask.make_response(json_dirlist)    
+
+    resp = flask.make_response(json_dirlist)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
 
@@ -158,16 +160,16 @@ def moduleGET(modname):
     except Exception, e:
         raise e
 
-    resp = flask.make_response(jsonstr) 
-    resp.content_type='application/json'   
+    resp = flask.make_response(jsonstr)
+    resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
     return resp
 
 @app.route("/module/<modname>", methods=['DELETE'])
 def moduleDELETE(modname):
-    '''support deletion of a module                                                                                       
-                                                                                                                        
-    200 - delete file successful                                                                                             202 - queued for deletion 
+    '''support deletion of a module
+
+    200 - delete file successful                                                                                             202 - queued for deletion
     404 - no such file found                                                                                                 '''
 
     status_code = 200
@@ -178,7 +180,7 @@ def moduleDELETE(modname):
         jsonstr = model.delete_module(modname)
     except IOError, e:
         status_code = 404
-    
+
     resp = flask.make_response(jsonstr)
     resp.status_code = status_code
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -193,7 +195,7 @@ def moduleDELETE(modname):
 def versionGET():
     ''' '''
     s = get_version()
-    resp = flask.make_response(s)    
+    resp = flask.make_response(s)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
 

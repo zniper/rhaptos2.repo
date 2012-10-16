@@ -1,75 +1,55 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-###  
-# Copyright (c) Rice University 2012
-# This software is subject to
-# the provisions of the GNU Lesser General
-# Public License Version 2.1 (LGPL).
-# See LICENCE.txt for details.
-###
 
+""" setup.py - rhaptos2.repo package setup
 
-'''
-setup.py for rhaptos2
+Author: Paul Brian
+(C) 2012 Rice University
 
-'''
-
-from distutils.core import setup
+This software is subject to the provisions of the GNU Lesser General
+Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
+"""
+from setuptools import setup, find_packages
 import os, glob
-
-def get_version():
-
-    '''return version from fixed always must exist file
-
-       Making very broad assumptions about the 
-       existence of files '''
-    
-    v = open('rhaptos2/repo/version.txt').read().strip()
-    return v
+from bamboo.setuptools_version import versionlib
 
 
+setup(
+    name='rhaptos2.repo',
+    version=versionlib.get_version('.'),
+    packages=find_packages(),
+    namespace_packages=['rhaptos2'],
+    author='See AUTHORS.txt',
+    author_email='info@cnx.org',
+    url='https://github.com/Connexions/rhaptos2.repo',
+    license='LICENSE.txt',
+    description="New editor / repo / system for cnx.org " \
+                "-rhaptos2.readthedocs.org",
+    install_requires=[
+        "bamboo.setuptools_version", 
+        "fabric >= 1.0.0",
+        "flask >= 0.8",
+        "statsd",
+        "requests",
+        "pylint",
+        "Flask-OpenID",
+        "python-memcached",
+        "nose",
 
-
-def main():
-
-    setup(name='rhaptos2.repo',
-          version=get_version(),
-          packages=['rhaptos2.repo'
-                    ,'rhaptos2.client'
-                   ],
-          namespace_packages = ['rhaptos2'],
-          author='See AUTHORS.txt',
-          author_email='info@cnx.org',
-          url='https://github.com/Connexions/rhaptos2.repo',
-          license='LICENSE.txt',
-          description='New editor / repo / system for cnx.org -rhaptos2.readthedocs.org',
-          long_description='see description',
-          install_requires=[
-              "fabric >= 1.0.0"
-              ,"flask >= 0.8"
-              ,"statsd"
-              ,"requests"
-              ,"pylint"
-              ,"Flask-OpenID==1.0.1"
-              ,"python-memcached"
-              ,"nose"
-              ,"rhaptos2.common >= 0.0.12"
-              ,"unittest-xml-reporting"
-                           ],
-          scripts=glob.glob('scripts/*'),
-
-          package_data={'rhaptos2.repo': ['templates/*.*', 
-                                          'static/*.*', 
-                                           'version.txt', 
-                                           'tests/*.*'],
-                        },
-
-          
-          )
-
-
-
-if __name__ == '__main__':
-    main()
+        "rhaptos2.common >= 0.0.12",
+        "unittest-xml-reporting",
+        ##"mikado.oss.doctest_additions",
+        "python-memcached",
+        ],
+    package_data={'rhaptos2.repo': ['templates/*.*',
+                                    'static/*.*',
+                                    'version.txt',
+                                    'tests/*.*'],
+                  },
+    entry_points = """\
+[console_scripts]
+rhaptos2_runrepo = rhaptos2.repo.run:main
+""",
+    )
 
