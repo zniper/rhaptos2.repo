@@ -1,19 +1,27 @@
 {% extends "master.html" %}
 {% block title %}Sign in{% endblock %}
-{% block body %}
-<!-- Simple OpenID Selector -->
-<link type="text/css" rel="stylesheet" href="http://openid-selector.googlecode.com/svn/trunk/css/openid.css" />
-<script type="text/javascript" src="http://openid-selector.googlecode.com/svn/trunk/js/openid-jquery.js"></script>
-<script type="text/javascript" src="http://openid-selector.googlecode.com/svn/trunk/js/openid-en.js"></script>
-<script type="text/javascript">
-  $(document).ready(function() {
-  openid.init('openid_identifier');
-  openid.setDemoMode(true); //Stops form submission for client javascript-only test purposes
-  });
+{% block css %}
+  {{ super() }}
+  <!-- Simple OpenID Selector -->
+  <link type="text/css" rel="stylesheet" 
+        href="http://openid-selector.googlecode.com/svn/trunk/css/openid.css">
+{% endblock %}
+{% block js %}
+  <script type="text/javascript"
+          src="http://openid-selector.googlecode.com/svn/trunk/js/openid-jquery.js"></script>
+  <script type="text/javascript"
+          src="http://openid-selector.googlecode.com/svn/trunk/js/openid-en.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      openid.init('openid_identifier');
+      // Stops form submission for client javascript-only test purposes
+      openid.setDemoMode(true); 
+    });
   </script>
-<!-- /Simple OpenID Selector -->
+{% endblock %}
 
 
+{% block body %}
 <div class="container-fluid">
  <div class="row-fluid">
   <div class="span4">
