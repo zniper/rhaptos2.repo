@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
+
+
 """ setup.py - rhaptos2.repo package setup
 
 Author: Paul Brian
@@ -10,20 +12,12 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 from setuptools import setup, find_packages
 import os, glob
+from bamboo.setuptools_version import versionlib
 
-
-def get_version():
-    """ Return version from fixed always must exist file
-
-    Making very broad assumptions about the
-    existence of files
-    """
-    v = open('rhaptos2/repo/version.txt').read().strip()
-    return v
 
 setup(
     name='rhaptos2.repo',
-    version=get_version(),
+    version=versionlib.get_version('.'),
     packages=find_packages(),
     namespace_packages=['rhaptos2'],
     author='See AUTHORS.txt',
@@ -33,6 +27,7 @@ setup(
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
     install_requires=[
+        "bamboo.setuptools_version", 
         "fabric >= 1.0.0",
         "flask >= 0.8",
         "statsd",
