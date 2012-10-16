@@ -25,6 +25,9 @@ from flask import (
     )
 from rhaptos2.common import conf, log, err
 
+import pkg_resources  # part of setuptools
+__version__ = pkg_resources.require("rhaptos2.repo")[0].version
+
 APPTYPE = 'rhaptos2repo'
 
 # Globally reference application variable.
