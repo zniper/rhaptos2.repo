@@ -4,16 +4,17 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-{% block head %}
-  <head>
+<head>
+  {% block head %}
     <meta charset="utf-8">
     <!--[if IE]>
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <![endif]-->
-    <title></title>
+    <title>{% block page_title %}{% endblock %}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
+    {% block css %}
     <link rel="stylesheet" href="/static/bootstrap.css">
     <link rel="stylesheet" href="{{ wysiwhaturl }}src/css/jquery-ui/jquery.ui.all.css"
           type="text/css">    
@@ -21,9 +22,15 @@
           type="text/css">
     <link rel="stylesheet" href="/static/css/custom.css"
           type="text/css">
+    {% endblock %}{# css block #}
 
+    {% block _js %}
+    {# Global Javascript that shouldn't be overridden. #}
     <script src="https://login.persona.org/include.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js"></script> 
+    {% endblock %}
+
+    {% block js %}
     <script src="{{ wysiwhaturl }}src/lib/require.js"></script> 
     <script src="{{ wysiwhaturl }}src/lib/aloha.js"
             data-aloha-plugins="extra/toolbar,common/ui,common/format,common/paste,common/block,common/list,common/table,extra/draganddropfiles,common/image,extra/figure,extra/ribbon,extra/no-floating"></script>
@@ -51,11 +58,10 @@
           name        : "{{ g.user.name }}"
       }
     </script>
-
-  </head>
-{% endblock %}
-{% block body %}
-  <body>
+    {% endblock %}{# js block #}
+  {% endblock %}
+</head>
+<body>
     <!--[if lt IE 7]>
         <p class="chromeframe">You are using an outdated
           browser. <a href="http://browsehappy.com/">Upgrade your browser today</a>
@@ -63,6 +69,7 @@
           Google Chrome Frame</a> to better experience this site.
         </p>
     <![endif]-->
+  {% block body %}
 
     {# Start page navigation controls #}
     <div class="navbar navbar-fixed-top">
@@ -216,7 +223,6 @@
       </div>
     </form>
   </div>
-
-  </body>
-{% endblock %}
+  {% endblock %}
+</body>
 </html>
