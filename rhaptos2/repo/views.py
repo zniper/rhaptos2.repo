@@ -26,11 +26,10 @@ from flask import (
     )
 
 from rhaptos2.common import log, err, conf
-from rhaptos2.repo import get_app, dolog, model, get_version, security
+from rhaptos2.repo import get_app, dolog, model, security, VERSION
 
 
 app = get_app()
-
 @app.before_request
 def requestid():
     g.requestid = uuid.uuid4()
@@ -194,7 +193,7 @@ def moduleDELETE(modname):
 #@resp_as_json()
 def versionGET():
     ''' '''
-    s = get_version()
+    s = VERSION
     resp = flask.make_response(s)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"

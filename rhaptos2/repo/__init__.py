@@ -29,6 +29,7 @@ import pkg_resources  # part of setuptools
 __version__ = pkg_resources.require("rhaptos2.repo")[0].version
 
 APPTYPE = 'rhaptos2repo'
+VERSION = __version__
 
 # Globally reference application variable.
 _app = None
@@ -137,26 +138,26 @@ def set_logger(apptype, app_configd):
 
     app.logger.setLevel(confd[loglevel])
 
-def get_version():
-    """Making very broad assumptions about the existence of files"""
-    d = os.path.dirname(__file__)
-    try:
-        v = open(os.path.join(d, 'version.txt')).read().strip()
-        return v
-    except Exception, e:
-        return '0.0.0'
+# def get_version():
+#     """Making very broad assumptions about the existence of files"""
+#     d = os.path.dirname(__file__)
+#     try:
+#         v = open(os.path.join(d, 'version.txt')).read().strip()
+#         return v
+#     except Exception, e:
+#         return '0.0.0'
 
-apptype = 'rhaptos2repo'
-confd = conf.get_config([apptype, 'bamboo'])
-app = Flask(__name__)
-app.config.update(confd)
+# apptype = 'rhaptos2repo'
+# confd = conf.get_config([apptype, 'bamboo'])
+# app = Flask(__name__)
+# print app
+# app.config.update(confd)
+# set_logger(apptype, app.config)
 
-set_logger(apptype, app.config)
+#@app.before_request
+#def requestid():
+#    g.requestid = uuid.uuid4()
+#    g.request_id = g.requestid
 
-@app.before_request
-def requestid():
-    g.requestid = uuid.uuid4()
-    g.request_id = g.requestid
-
-import rhaptos2.repo.views
+#import rhaptos2.repo.views
 
