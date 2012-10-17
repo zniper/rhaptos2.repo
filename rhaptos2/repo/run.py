@@ -11,18 +11,21 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 import os
 from optparse import OptionParser
 from flask import Flask
-from rhaptos2.repo import APPTYPE, set_app, set_logger
+from rhaptos2.repo import APPTYPE, app, set_logger
 from rhaptos2.common import conf
 
 
-def make_app(settings):
-    """Application factory function"""
-    app = Flask('rhaptos2.repo')
-    app.config.update(settings)
-    set_app(app)
-    # Import the views to initialize them
-    import rhaptos2.repo.views
-    return app
+# def make_app(settings):
+#     """Application factory function"""
+#     app = Flask('rhaptos2.repo')
+#     app.config.update(settings)
+#     set_app(app)
+#     #newapp = get_app()
+#     # basically we want a pointer to the _app global stored in __init__
+#     # this is now newapp.  WHilst we are passing in same object, 
+#     # Import the views to initialize them
+#     import rhaptos2.repo.views
+#     return app
 
 def parse_args():
     parser = OptionParser()
@@ -47,9 +50,10 @@ def main():
         s += '\n########### ENV VARS END'
         print(s)
 
-    confd = conf.get_config(APPTYPE)
-    app = make_app(confd)
-    set_logger(APPTYPE, app.config)
+##done in __init__
+#    confd = conf.get_config(APPTYPE)
+#    app = make_app(confd)
+#    set_logger(APPTYPE, app.config)
 
     # NOTE Do not use module reloading, even in debug mode, because it
     #      produces new stray processes that supervisor does not ctl.
