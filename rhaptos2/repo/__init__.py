@@ -31,18 +31,15 @@ __version__ = pkg_resources.require("rhaptos2.repo")[0].version
 APPTYPE = 'rhaptos2repo'
 VERSION = __version__
 
-# Globally reference application variable.
-_app = None
+# def get_app():
+#     """Get the application object"""
+#     global _app
+#     return _app
 
-def get_app():
-    """Get the application object"""
-    global _app
-    return _app
-
-def set_app(app):
-    """Set the global application object"""
-    global _app
-    _app = app
+# def set_app(app):
+#     """Set the global application object"""
+#     global _app
+#     _app = app
 
 def dolog(lvl, msg, caller=None, statsd=None):
     """wrapper function purely for adding context to log stmts
@@ -54,6 +51,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
 
 
     >>> dolog("ERROR", "whoops", os.path.isdir, ['a.b.c',])
+
 
     """
 
@@ -96,8 +94,11 @@ def dolog(lvl, msg, caller=None, statsd=None):
              'user_id': user_id,
              'request_id': request_id}
 
-    app = get_app()
-    app.logger.log(goodlvl, msg, extra=extra)
+
+    try:
+        app.logger.log(goodlvl, msg, extra=extra)
+    except Exception, e:
+        print extra, msg, e
 
 def set_logger(apptype, app_configd):
     """
@@ -107,12 +108,12 @@ def set_logger(apptype, app_configd):
 
     """
     lg = logging.getLogger(apptype)
-    confd = conf.get_config(apptype)
 
     ### Trapping basic missing conf
     uselogging = "%s_use_logging" % apptype
     loglevel = "%s_loglevel" % apptype
 
+    #.. todo:: confd usage is globla
     if uselogging not in confd.keys():
         confd[uselogging] = 'Y'
 
@@ -121,43 +122,40 @@ def set_logger(apptype, app_configd):
     ###
 
     ## define handlers
-    hdlr2 = log.StatsdHandler(app_configd['rhaptos2repo_statsd_host'],
-                    int(app_configd['rhaptos2repo_statsd_port']))
+    hdlr2 = log.StatsdHandler(app.config['rhaptos2repo_statsd_host'],
+                    int(app.config['rhaptos2repo_statsd_port']))
 
     hdlr = logging.StreamHandler()
 
     ## formatters
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s  - %(request_id)s - %(user_id)s - %(message)s')
+#    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s  - %(request_id)s - %(user_id)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s  - %(message)s')
 
     hdlr.setFormatter(formatter)
     #hdlr2 just sends statsd calls so does not need formatter ...
+    hdlr2.setFormatter(formatter)
 
-    app = get_app()
     app.logger.addHandler(hdlr)
     app.logger.addHandler(hdlr2)
 
     app.logger.setLevel(confd[loglevel])
 
-# def get_version():
-#     """Making very broad assumptions about the existence of files"""
-#     d = os.path.dirname(__file__)
-#     try:
-#         v = open(os.path.join(d, 'version.txt')).read().strip()
-#         return v
-#     except Exception, e:
-#         return '0.0.0'
 
-# apptype = 'rhaptos2repo'
-# confd = conf.get_config([apptype, 'bamboo'])
-# app = Flask(__name__)
+
+confd = conf.get_config([APPTYPE, 'bamboo'])
+# Globally reference application variable.
+app = Flask("rhaptos2.repo")
+print app
+
+#app = Flask(__name__)
 # print app
-# app.config.update(confd)
-# set_logger(apptype, app.config)
+app.config.update(confd)
+set_logger(APPTYPE, app.config)
 
-#@app.before_request
-#def requestid():
-#    g.requestid = uuid.uuid4()
-#    g.request_id = g.requestid
+@app.before_request
+def requestid():
+    g.requestid = uuid.uuid4()
+    g.request_id = g.requestid
 
-#import rhaptos2.repo.views
+import rhaptos2.repo.views
 

@@ -26,14 +26,14 @@ from flask import (
     )
 
 from rhaptos2.common import log, err, conf
-from rhaptos2.repo import get_app, dolog, model, security, VERSION
+from rhaptos2.repo import app, dolog, model, security, VERSION
 
 
-app = get_app()
-@app.before_request
-def requestid():
-    g.requestid = uuid.uuid4()
-    g.request_id = g.requestid
+
+#@app.before_request
+#def requestid():
+#    g.requestid = uuid.uuid4()
+#    g.request_id = g.requestid
 
 ########################### views
 

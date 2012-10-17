@@ -30,12 +30,9 @@ from functools import wraps
 
 from rhaptos2.common import log
 from rhaptos2.common import err
-#from rhaptos2.common import conf
-#confd = conf.get_config('rhaptos2')
-from rhaptos2.repo import get_app
+from rhaptos2.repo import app
 
 
-app = get_app()
 
 def return1():
     print "[logline] this is a log line"

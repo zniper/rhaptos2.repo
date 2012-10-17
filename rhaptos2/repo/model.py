@@ -24,7 +24,7 @@ import pprint
 from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
-from rhaptos2.repo import get_app, dolog
+from rhaptos2.repo import app, dolog
 from rhaptos2.repo import files, security
 
 from flask import Flask, render_template, request, g, session, flash, \
@@ -35,7 +35,7 @@ import requests
 import urllib
 
 
-app = get_app()
+#app = get_app()
 app.config.update(
     SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
     DEBUG = True
