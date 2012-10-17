@@ -10,6 +10,7 @@ Author: Paul Brian
 This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
+
 from setuptools import setup, find_packages
 import os, glob
 from bamboo.setuptools_version import versionlib
@@ -29,23 +30,24 @@ setup(
     install_requires=[
         "bamboo.setuptools_version", 
         "fabric >= 1.0.0",
-        "flask >= 0.8",
+        "flask >= 0.9",
         "statsd",
         "requests",
         "pylint",
-        "Flask-OpenID",
+        "Flask-OpenID==1.0.1",
         "python-memcached",
         "nose",
 
-        "rhaptos2.common >= 0.0.12",
+        "rhaptos2.common",
         "unittest-xml-reporting",
         ##"mikado.oss.doctest_additions",
         "python-memcached",
         ],
+    include_package_data=True,
     package_data={'rhaptos2.repo': ['templates/*.*',
                                     'static/*.*',
-                                    'version.txt',
                                     'tests/*.*'],
+                  '':['RELEASE_VERSION',] 
                   },
     entry_points = """\
 [console_scripts]
