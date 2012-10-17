@@ -51,7 +51,7 @@ setup(
                   },
     entry_points = """\
 [console_scripts]
-rhaptos2_runrepo = rhaptos2.repo.run:main
+rhaptos2_runrepo.py = rhaptos2.repo.run:main
 """,
     )
 
