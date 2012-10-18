@@ -54,20 +54,8 @@ def apply_cors(fn):
 
     return newfn
 
-
-### Utter junk just to get round http://openid-selector.googlecode.com quickl
-### We need a CDN approach ...
-
-@app.route('/images/openid-providers-en.png')
-def junk():
-    resp = flask.redirect('/static/images/openid-providers-en.png')
-    return resp
-
-
-
-@app.route('/static/conf.js')
+@app.route('/conf.js')
 def confjs():
-
     resp = flask.make_response(render_template("conf.js", confd=app.config))
     resp.content_type='application/javascript'
     return resp
@@ -225,7 +213,7 @@ def burn():
 @app.route("/admin/config/", methods=["GET",])
 def admin_config():
     """View the config we are using
-    
+
     Clearly quick and dirty fix.
     Should create a common library for rhaptos2 and web framrwoe
     """
@@ -234,7 +222,7 @@ def admin_config():
         outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
     outstr += "</table>"
 
-    
+
     return outstr
 
 ################ openid views - from flask
@@ -250,7 +238,15 @@ def after_request(response):
 #    model.db_session.remove()
     return response
 
-
+# XXX A temporary fix for the openid images.
+@app.route('/images/openid-providers-en.png')
+def temp_openid_image_url():
+    """Provides a (temporary) fix for the openid images used
+    on the login page.
+    """
+    # Gets around http://openid-selector.googlecode.com quickly
+    resp = flask.redirect('/static/img/openid-providers-en.png')
+    return resp
 
 @app.route('/login', methods=['GET', 'POST'])
 @model.oid.loginhandler
@@ -290,7 +286,7 @@ def create_or_login(resp):
 #        flash(u'Successfully signed in')
 #        g.user = user
 
- 
+
     return redirect(model.oid.get_next_url())
 
 
@@ -306,7 +302,7 @@ def logout():
 def logoutpersona():
     dolog("INFO", "logoutpersona")
     return "Yes"
-    
+
 @app.route('/persona/login/', methods=['POST'])
 def loginpersona():
     """Taken mostly from mozilla quickstart """
@@ -314,18 +310,18 @@ def loginpersona():
     # The request has to have an assertion for us to verify
     if 'assertion' not in request.form:
         abort(400)
- 
+
     # Send the assertion to Mozilla's verifier service.
     data = {'assertion': request.form['assertion'], 'audience': 'http://www.frozone.mikadosoftware.com:80'}
     resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
- 
+
     # Did the verifier respond?
     if resp.ok:
         # Parse the response
         verification_data = json.loads(resp.content)
         dolog("INFO", "Verified persona:%s" % repr(verification_data))
 
- 
+
         # Check if the assertion was valid
         if verification_data['status'] == 'okay':
             # Log the user in by setting a secure session cookie
