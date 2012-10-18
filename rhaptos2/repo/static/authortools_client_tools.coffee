@@ -21,10 +21,10 @@ exports.construct = ->
   for modal_link_id in ['#import-link', '#metadata-link', '#sharing-link', '#publish-link']
     $(modal_link_id).modal(show: false)
   # Render the data into the modal body.
-  $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
-  $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
-  $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
-  $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
+  $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}))
+  $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}))
+  $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}))
+  $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}))
 
 
 window.Tools = exports
