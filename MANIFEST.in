@@ -1,0 +1,4 @@
+include RELEASE_VERSION
+recursive-include rhaptos2/repo/templates *
+recursive-include rhaptos2/repo/static *
+

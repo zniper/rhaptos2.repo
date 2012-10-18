@@ -15,6 +15,8 @@ import random
 import json
 from functools import wraps
 import uuid
+import requests
+import pprint
 import statsd
 import flask
 from flask import (
@@ -24,16 +26,14 @@ from flask import (
     )
 
 from rhaptos2.common import log, err, conf
+from rhaptos2.repo import app, dolog, model, security, VERSION
 
-from rhaptos2.repo import get_app, dolog, model, get_version, security
 
 
-app = get_app()
-
-@app.before_request
-def requestid():
-    g.requestid = uuid.uuid4()
-    g.request_id = g.requestid
+#@app.before_request
+#def requestid():
+#    g.requestid = uuid.uuid4()
+#    g.request_id = g.requestid
 
 ########################### views
 
@@ -193,7 +193,7 @@ def moduleDELETE(modname):
 #@resp_as_json()
 def versionGET():
     ''' '''
-    s = get_version()
+    s = VERSION
     resp = flask.make_response(s)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -220,6 +220,22 @@ def burn():
         #Flask traps sys.exit (threads?)
         os._exit(1) #trap _this_
 
+
+################ Admin-y stuff
+@app.route("/admin/config/", methods=["GET",])
+def admin_config():
+    """View the config we are using
+    
+    Clearly quick and dirty fix.
+    Should create a common library for rhaptos2 and web framrwoe
+    """
+    outstr = "<table>"
+    for k in sorted(app.config.keys()):
+        outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
+    outstr += "</table>"
+
+    
+    return outstr
 
 ################ openid views - from flask
 
@@ -259,19 +275,22 @@ def login():
 def create_or_login(resp):
     """This is called when login with OpenID succeeded and it's not
     necessary to figure out if this is the users's first login or not.
-    This function has to redirect otherwise the user will be presented
-    with a terrible URL which we certainly don't want.
-    """
-    session['openid'] = resp.identity_url
-    model.store_identity(resp.identity_url,
-                       name=resp.fullname or resp.nickname,
-                       email=resp.email)
-    user = model.whoami()
 
-    if user is not None:
-        flash(u'Successfully signed in')
-        g.user = user
-        return redirect(model.oid.get_next_url())
+    """
+
+#    session['openid'] = resp.identity_url
+#    model.store_identity(resp.identity_url,
+#                       name=resp.fullname or resp.nickname,
+#                       email=resp.email)
+
+    model.after_authentication(resp.identity_url, 'openid')
+#    user = model.whoami()#returns Identity object
+
+#    if user is not None:
+#        flash(u'Successfully signed in')
+#        g.user = user
+
+ 
     return redirect(model.oid.get_next_url())
 
 
@@ -280,3 +299,39 @@ def logout():
     session.pop('openid', None)
     flash(u'You have been signed out')
     return redirect(model.oid.get_next_url())
+
+
+##############
+@app.route('/persona/logout/', methods=['POST'])
+def logoutpersona():
+    dolog("INFO", "logoutpersona")
+    return "Yes"
+    
+@app.route('/persona/login/', methods=['POST'])
+def loginpersona():
+    """Taken mostly from mozilla quickstart """
+    dolog("INFO", "loginpersona")
+    # The request has to have an assertion for us to verify
+    if 'assertion' not in request.form:
+        abort(400)
+ 
+    # Send the assertion to Mozilla's verifier service.
+    data = {'assertion': request.form['assertion'], 'audience': 'http://www.frozone.mikadosoftware.com:80'}
+    resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
+ 
+    # Did the verifier respond?
+    if resp.ok:
+        # Parse the response
+        verification_data = json.loads(resp.content)
+        dolog("INFO", "Verified persona:%s" % repr(verification_data))
+
+ 
+        # Check if the assertion was valid
+        if verification_data['status'] == 'okay':
+            # Log the user in by setting a secure session cookie
+#            session.update({'email': verification_data['email']})
+            model.after_authentication(verification_data['email'], 'persona')
+            return resp.content
+
+    # Oops, something failed. Abort.
+    abort(500)

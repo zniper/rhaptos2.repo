@@ -18,10 +18,8 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-from rhaptos2.repo import get_app, dolog
+from rhaptos2.repo import app, dolog
 
-
-app = get_app()
 
 
 class WorkSpace(object):

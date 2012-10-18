@@ -1,7 +1,7 @@
 Welcome to frozone's documentation!
 ===================================
 
-Frozone is `Connexions <www.cnx.org>`_ new editor and other components.
+Frozone is `Connexions <http://www.cnx.org>`_ new editor and other components.
 
 
 

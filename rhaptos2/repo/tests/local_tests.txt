@@ -10,6 +10,7 @@ Testing repo run locally (unit tests, plus no network)
 ...      'rhaptos2repo_statsd_port':'8125',
 ...      'rhaptos2repo_www_server_name':'www.frozone.mikadosoftware.com',
 ...      'rhaptos2repo_cdn_server_name':'www.frozone.mikadosoftware.com',
+...      'bamboo_userserver':'www.frozone.mikadosoftware.com:81/user/',
 ...      'BUILD_TAG':'WHATDOWEDOHERE'}
 >>> app.config.update(d)
 >>> app.config["TESTING"] = True

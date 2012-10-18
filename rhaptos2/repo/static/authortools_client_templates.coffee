@@ -1,0 +1,287 @@
+###
+  authoringtools_client_templates.{coffee,js} - Mustache templates for various
+    authoring tools interfaces.
+
+  Copyright (c) 2012 Rice University
+
+  This software is subject to the provisions of the GNU Lesser General
+  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
+###
+
+# This variable is attached to the window at the very end,
+# effectively making it global.
+# window.Templates = exports;
+exports = {}
+
+exports.import = '
+  <div role="popup-content">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="file" name="file">
+  </div>'
+
+exports.metadata = '
+  <div role="popup-content" class="span12">
+    <form name="metadata-form" action="metadata" method="POST">
+      <label>Title</label>
+      <input type="text" name="title" value="{{title}}">
+      <label>Language</label>
+            <select name="master_language">
+              <option value="af">Afrikaans</option>
+              <option value="ay">Aymara</option>
+              <option value="az">Azəri Türkçəsi</option>
+              <option value="id">Bahasa Indonesia</option>
+              <option value="ms">Bahasa Melayu</option>
+              <option value="jw">Basa Jawi</option>
+              <option value="ba">Bashkir</option>
+              <option value="bh">Bihari</option>
+              <option value="bi">Bislama</option>
+              <option value="bs">Bosanski</option>
+              <option value="br">Brezhoneg</option>
+              <option value="my">Burmese</option>
+              <option value="ca">Català</option>
+              <option value="ch">Chamoru</option>
+              <option value="co">Corsu</option>
+              <option value="cy">Cymraeg</option>
+              <option value="da">Dansk</option>
+              <option value="de">Deutsch</option>
+              <option value="et">Eesti</option>
+              <option value="en">English</option>
+              <option selected="selected" value="es">Español</option>
+              <option value="eo">Esperanto</option>
+              <option value="eu">Euskara</option>
+              <option value="fj">Fiji</option>
+              <option value="fr">Français</option>
+              <option value="fy">Frysk</option>
+              <option value="fo">Føroyska</option>
+              <option value="ga">Gaeilge</option>
+              <option value="gv">Gaelg</option>
+              <option value="gl">Galego</option>
+              <option value="kl">Greenlandic</option>
+              <option value="gn">Guarani</option>
+              <option value="gd">Gàidhlig</option>
+              <option value="hr">Hrvatski</option>
+              <option value="ia">Interlingua</option>
+              <option value="ie">Interlingue</option>
+              <option value="ik">Inupiak</option>
+              <option value="it">Italiano</option>
+              <option value="kw">Kernewek</option>
+              <option value="rn">Kirundi</option>
+              <option value="sw">Kiswahili</option>
+              <option value="rw">Kiyarwanda</option>
+              <option value="ku">Kurdí</option>
+              <option value="oc">Languedoc</option>
+              <option value="la">Latin</option>
+              <option value="lv">Latviešu</option>
+              <option value="to">Lea faka-Tonga</option>
+              <option value="lt">Lietuviskai</option>
+              <option value="li">Limburgs</option>
+              <option value="ln">Lingala</option>
+              <option value="lb">Lëtzebuergesch</option>
+              <option value="hu">Magyar</option>
+              <option value="mg">Malagasy</option>
+              <option value="mt">Malti</option>
+              <option value="mi">Maori</option>
+              <option value="mo">Moldavian</option>
+              <option value="na">Nauru</option>
+              <option value="nl">Nederlands</option>
+              <option value="no">Norsk</option>
+              <option value="se">Northern Sámi</option>
+              <option value="nn">Nynorsk</option>
+              <option value="om">Oromo</option>
+              <option value="pl">Polski</option>
+              <option value="pt">Português</option>
+              <option value="qu">Quechua</option>
+              <option value="ro">Română</option>
+              <option value="rm">Rumantsch</option>
+              <option value="sm">Samoan</option>
+              <option value="sg">Sangho</option>
+              <option value="sh">Serbo-Croatian</option>
+              <option value="st">Sesotho</option>
+              <option value="tn">Setswana</option>
+              <option value="sn">Shona</option>
+              <option value="sq">Shqip</option>
+              <option value="sd">Sindhi</option>
+              <option value="si">Singhalese</option>
+              <option value="ss">Siswati</option>
+              <option value="sk">Slovenčina</option>
+              <option value="sl">Slovenščina</option>
+              <option value="so">Somali</option>
+              <option value="su">Sudanese</option>
+              <option value="fi">Suomi</option>
+              <option value="sv">Svenska</option>
+              <option value="tl">Tagalog</option>
+              <option value="vi">Tiếng Việt</option>
+              <option value="ts">Tsonga</option>
+              <option value="tw">Twi</option>
+              <option value="tr">Türkçe</option>
+              <option value="ug">Uigur</option>
+              <option value="vo">Volapük</option>
+              <option value="wa">Walon</option>
+              <option value="wo">Wolof</option>
+              <option value="yo">Yorùbá</option>
+              <option value="za">Zhuang</option>
+              <option value="xh">isiXhosa</option>
+              <option value="zu">isiZulu</option>
+              <option value="jbo">lojban</option>
+              <option value="is">Íslenska</option>
+              <option value="cs">Čeština</option>
+              <option value="el">Ελληνικά</option>
+              <option value="uz">Ўзбекча</option>
+              <option value="be">Беларускі</option>
+              <option value="bg">Български</option>
+              <option value="ky">Кыргыз</option>
+              <option value="mk">Македонски</option>
+              <option value="mn">Монгол</option>
+              <option value="ru">Русский</option>
+              <option value="tg">Тоҷики</option>
+              <option value="uk">Українська</option>
+              <option value="ab">бызшәа</option>
+              <option value="aa">магIарул мацI</option>
+              <option value="sr">српски</option>
+              <option value="tt">татарча</option>
+              <option value="tk">түркmенче</option>
+              <option value="hy">Հայերէն</option>
+              <option value="he">עברית</option>
+              <option value="yi">ײִדיש</option>
+              <option value="ur">اردو</option>
+              <option value="ar">العربية</option>
+              <option value="fa">فارسی</option>
+              <option value="ha">هَوُس</option>
+              <option value="ps">پښتو</option>
+              <option value="ks">काऽशुर</option>
+              <option value="ne">नेपाली</option>
+              <option value="mr">मराठी</option>
+              <option value="sa">संस्कृत</option>
+              <option value="hi">हिंदी</option>
+              <option value="as">অসমিয়া</option>
+              <option value="bn">বাংলা</option>
+              <option value="pa">ਪੰਜਾਬੀ</option>
+              <option value="gu">ગુજરાતી</option>
+              <option value="or">ଓଡ଼ିଆ</option>
+              <option value="ta">தமிழ</option>
+              <option value="te">తెలుగు</option>
+              <option value="kn">ಕನ್ನಡ</option>
+              <option value="ml">മലയാളം</option>
+              <option value="th">ไทย</option>
+              <option value="lo">ພາສາລາວ</option>
+              <option value="bo">བོད་སྐད་</option>
+              <option value="dz">རྫོང་ཁ</option>
+              <option value="ka">ქართული</option>
+              <option value="ti">ትግርኛ</option>
+              <option value="am">አማርኛ</option>
+              <option value="iu">ᐃᓄᒃᑎᑐᑦ</option>
+              <option value="km">ខ្មែរ</option>
+              <option value="zh">中文</option>
+              <option value="ja">日本語</option>
+              <option value="ko">한국어</option>
+              <option value="kk">ﻗﺎﺯﺍﻗﺸﺎ</option>
+            </select>
+      <label>Language variant</label>
+      <select name="language" id="language">
+        <option value="en"></option><option value="en-as">American Samoa</option><option value="en-ai">Anguilla</option><option value="en-ag">Antigua and Barbuda</option><option value="en-au">Australia</option><option value="en-bs">Bahamas</option><option value="en-bb">Barbados</option><option value="en-bz">Belize</option><option value="en-bm">Bermuda</option><option value="en-bw">Botswana</option><option value="en-io">British Indian Ocean Territory</option><option value="en-bn">Brunei Darussalam</option><option value="en-cm">Cameroon</option><option value="en-ca">Canada</option><option value="en-ky">Cayman Islands</option><option value="en-ck">Cook Islands</option><option value="en-dm">Dominica</option><option value="en-er">Eritrea</option><option value="en-et">Ethiopia</option><option value="en-fk">Falkland Islands (Malvinas)</option><option value="en-fj">Fiji</option><option value="en-gm">Gambia</option><option value="en-gh">Ghana</option><option value="en-gi">Gibraltar</option><option value="en-gd">Grenada</option><option value="en-gu">Guam</option><option value="en-gy">Guyana</option><option value="en-ie">Ireland</option><option value="en-il">Israel</option><option value="en-jm">Jamaica</option><option value="en-ke">Kenya</option><option value="en-ki">Kiribati</option><option value="en-ls">Lesotho</option><option value="en-lr">Liberia</option><option value="en-mw">Malawi</option><option value="en-mt">Malta</option><option value="en-mu">Mauritius</option><option value="en-fm">Micronesia, Federated States of</option><option value="en-ms">Montserrat</option><option value="en-na">Namibia</option><option value="en-nr">Nauru</option><option value="en-nz">New Zealand</option><option value="en-ng">Nigeria</option><option value="en-nu">Niue</option><option value="en-nf">Norfolk Island</option><option value="en-mp">Northern Mariana Islands</option><option value="en-pk">Pakistan</option><option value="en-pw">Palau</option><option value="en-pg">Papua New Guinea</option><option value="en-ph">Philippines</option><option value="en-pn">Pitcairn</option><option value="en-pr">Puerto Rico</option><option value="en-rw">Rwanda</option><option value="en-sh">Saint Helena</option><option value="en-kn">Saint Kitts and Nevis</option><option value="en-lc">Saint Lucia</option><option value="en-vc">Saint Vincent and the Grenadines</option><option value="en-ws">Samoa</option><option value="en-sc">Seychelles</option><option value="en-sl">Sierra Leone</option><option value="en-sg">Singapore</option><option value="en-sb">Solomon Islands</option><option value="en-so">Somalia</option><option value="en-za">South Africa</option><option value="en-sz">Swaziland</option><option value="en-tk">Tokelau</option><option value="en-to">Tonga</option><option value="en-tt">Trinidad and Tobago</option><option value="en-tc">Turks and Caicos Islands</option><option value="en-ug">Uganda</option><option value="en-gb">United Kingdom</option><option value="en-us">United States</option><option value="en-vu">Vanuatu</option><option value="en-vg">Virgin Islands, British</option><option value="en-vi">Virgin Islands, U.S.</option><option value="en-zm">Zambia</option><option value="en-zw">Zimbabwe</option>
+      </select>
+      <label>Subjects</label>
+      <input type="text" name="subjects">
+      <span class="help-inline">
+        Start typing a subject to find other
+        commonly used subjects or create your own.
+      </span>
+      <label>Keywords</label>
+      <input type="text" name="keywords">
+      <span class="help-inline">
+        Start typing a keywords to find other
+        commonly used keywords or create your own.
+      </span>
+      <label>Summary</label>
+      <textarea name="summary" rows="3"></textarea>
+      <label>Google Analytics Tracking code</label>
+      <input type="text" name="google">
+      <span class="help-inline">
+        Enter a Google Analytics Tracking Code (e.g. UA-xxxxxxx-x) for
+        this content to track usage.
+      </span>
+    </form>
+  </div>'
+
+exports.sharing = '
+  <div role="popup-content">
+    <form name="sharing-form" action="sharing" method="POST">
+      <legend>Sharing Assignments</legend>
+      <!-- The role to user listing table -->
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Author</th>
+            <th>Copyright</th>
+            <th><!-- Other actions --></th>
+          </tr>
+        </thead>
+        <tfoot>
+        </tfoot>
+        <tbody>
+          <tr>
+            <th>Michael</th>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td>
+              <button type="button"
+                      class="btn btn-danger btn-mini">remove</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Ross</th>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td><input type="checkbox" name="role" value="uid"></td>
+            <td>
+              <button type="button"
+                      class="btn btn-danger btn-mini">remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <form name="sharing-search-form">
+      <legend>Search for people</legend>
+
+      <div id="sharing-search-form-results">
+        <!-- A search for the letter "a" -->
+        <span class="user-result badge badge-info" data-uid="uid">Isabel</span>
+        <!-- Michael shows up in the search results but is disabled --
+          -- since he is already in the list. -->
+        <span class="user-result badge" data-uid="uid">Michael</span>
+        <span class="user-result badge badge-info" data-uid="uid">Paul</span>
+      </div>
+
+      <div class="input-append">
+        <input type="text" name="q"
+               class="span2"
+               placeholder="Type a name...">
+        <button type="submit" class="btn">Search</button>
+      </div>
+    </form>
+  </div>'
+
+exports.publish = '
+  <div role="popup-content">
+    <form name="publish-form" action="publish" method="POST">
+      <legend>Description of the changes</legend>
+      <input type="text" name="change_description"
+             class="span4"
+             placeholder="Description of the change...">
+      <legend>License</legend
+      <div>
+        <p>This work will now be distributed under the terms of the Creative Commons Attribution License (<span>CC-BY 3.0</span>) available at <a style="font-style: italic" href="http://creativecommons.org/licenses/by/3.0/">http://creativecommons.org/licenses/by/3.0/</a>.
+        </p>
+        <p>By publishing this content you area to the following statement: I understand that in doing so I</p>
+        <ol>
+          <li>retain my copyright in the work and</li>
+          <li>warrant that I am the author or the owner or have permission to distribute the work in question and</li>
+          <li>wish this work to be distributed under the terms of the CC-BY 3.0 license (including allowing modification of this work and requiring attribution) and</li>
+          <li>agree that proper attribution of my work is any attribution that includes the authors\' names, the title of the work, and the Connexions URL to the work.</li>
+        </ol>
+      </div>
+    </form>
+  </div>'
+
+window.Templates = exports
