@@ -19,7 +19,7 @@
   exports = {};
 
   exports.construct = function() {
-    var modal_link_id, _i, _len, _ref;
+    var metadata_form_handler, modal_link_id, _i, _len, _ref;
     $('.dropdown-toggle').dropdown();
     _ref = ['#import-link', '#metadata-link', '#sharing-link', '#publish-link'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -30,6 +30,26 @@
     }
     $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
+    metadata_form_handler = function(event) {
+      var data, module_id;
+      data = {};
+      $.map($(this).serializeArray(), function(obj) {
+        return data[obj['name']] = obj['value'];
+      });
+      module_id = '123abc';
+      console.log('Posting metadata for module: ' + module_id);
+      $.ajax({
+        type: 'POST',
+        url: MODULEURL + module_id + '.metadata',
+        data: data,
+        dataType: 'application/json',
+        success: function() {
+          return $('#metadata-modal').modal('hide');
+        }
+      });
+      return false;
+    };
+    $('#metadata-modal form').submit(metadata_form_handler);
     $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
     return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
   };

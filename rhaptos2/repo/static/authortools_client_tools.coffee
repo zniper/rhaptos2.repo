@@ -22,7 +22,30 @@ exports.construct = ->
     $(modal_link_id).modal(show: false)
   # Render the data into the modal body.
   $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}))
+
+  # - Metadata modal
   $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}))
+  metadata_form_handler = (event) ->
+    data = {}
+    # Write the form values to JSON
+    $.map($(@).serializeArray(), (obj) ->
+      data[obj['name']] = obj['value']
+    )
+    # ??? Where do I get the module ID from?
+    module_id = '123abc'
+    # Post the data to the server.
+    console.log('Posting metadata for module: ' + module_id)
+    $.ajax({
+      type: 'POST'
+      url: MODULEURL + module_id + '.metadata'
+      data: data
+      dataType: 'application/json'
+      success: -> $('#metadata-modal').modal('hide')
+    })
+    # Return false to prevent the form from submitting.
+    return false
+  $('#metadata-modal form').submit(metadata_form_handler)
+
   $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}))
   $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}))
 
