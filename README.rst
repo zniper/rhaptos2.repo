@@ -26,6 +26,16 @@ Pre-requisites
      Bash >=4.0      (system dependant)
      Internet access (!)
 
+Other things to check
+::
+   We need to build lxml - so we need headers for the below, as 
+   pip will compile. And easy_install not use requirements!
+   
+   apt-get install libxml2-dev
+   apt-get install libxslt1-dev
+
+
+
 ::
 
    curl -O http://peak.telecommunity.com/dist/ez_setup.py
@@ -182,3 +192,5 @@ Reading
 
 I suspect we shall want to storngly consider the approaches shown here 
 http://stackoverflow.com/questions/4324558/whats-the-proper-way-to-install-pip-virtualenv-and-distribute-for-python
+
+.. http://s3.pixane.com/pip_distribute.png
