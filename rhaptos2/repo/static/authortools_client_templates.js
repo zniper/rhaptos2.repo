@@ -195,14 +195,6 @@
         Start typing a keywords to find other\
         commonly used keywords or create your own.\
       </span>\
-      <label>Summary</label>\
-      <textarea name="summary" rows="3"></textarea>\
-      <label>Google Analytics Tracking code</label>\
-      <input type="text" name="google">\
-      <span class="help-inline">\
-        Enter a Google Analytics Tracking Code (e.g. UA-xxxxxxx-x) for\
-        this content to track usage.\
-      </span>\
     </form>\
   </div>';
 
