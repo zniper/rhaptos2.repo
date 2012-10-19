@@ -39,7 +39,7 @@ exports.construct = ->
     console.log('Posting metadata for module: ' + module_id)
     $.ajax({
       type: 'POST'
-      url: MODULEURL + module_id + '.metadata'
+      url: MODULEURL + module_id + '/metadata'
       data: data
       dataType: 'application/json'
       success: -> $('#metadata-modal').modal('hide')
