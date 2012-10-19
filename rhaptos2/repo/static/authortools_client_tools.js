@@ -36,7 +36,7 @@
       $.map($(this).serializeArray(), function(obj) {
         return data[obj['name']] = obj['value'];
       });
-      module_id = '123abc';
+      module_id = serialise_form().uuid;
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
         type: 'POST',

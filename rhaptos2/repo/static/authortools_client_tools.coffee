@@ -31,8 +31,10 @@ exports.construct = ->
     $.map($(@).serializeArray(), (obj) ->
       data[obj['name']] = obj['value']
     )
-    # ??? Where do I get the module ID from?
-    module_id = '123abc'
+    # XXX The best way to get the module ID at this time is to pull it out
+    #     of the module editor form. The 'serialise_form' function is defined
+    #     globally in the 'authortools_client.js' file.
+    module_id = serialise_form().uuid
     # Post the data to the server.
     console.log('Posting metadata for module: ' + module_id)
     $.ajax({
@@ -45,6 +47,7 @@ exports.construct = ->
     # Return false to prevent the form from submitting.
     return false
   $('#metadata-modal form').submit(metadata_form_handler)
+  
 
   $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}))
   $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}))
