@@ -4,6 +4,8 @@
   A ISO639-1 language code library used in forms to select a language and
   a possible variant language.
 
+  Copyright (c) 2012, Rice University. Original copyright not found.
+
   This piece of code is derived from the Products.PloneLanguageTool
   Python package. This software is subject to the provisions of
   the GNU Lesser General Public License (GPL).
