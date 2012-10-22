@@ -88,10 +88,6 @@
       </table>\
       <label>Keywords</label>\
       <input type="text" name="keywords">\
-      <span class="help-inline">\
-        Start typing a keywords to find other\
-        commonly used keywords or create your own.\
-      </span>\
     </form>\
   </div>';
 
