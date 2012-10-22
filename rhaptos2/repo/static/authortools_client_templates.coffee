@@ -27,6 +27,9 @@ exports.metadata = '
 
       <label>Language</label>
       <select name="language">
+        {{#languages}}
+          <option value="{{code}}">{{native}}</option>
+        {{/languages}}
       </select>
 
       <label>Language variant</label>

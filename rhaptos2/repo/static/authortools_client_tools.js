@@ -14,23 +14,22 @@
 
 
 (function() {
-  var exports;
+  var MetadataModal, exports, _generate_metadata_url;
 
   exports = {};
 
-  exports.construct = function() {
-    var metadata_form_handler, modal_link_id, _i, _len, _ref;
-    $('.dropdown-toggle').dropdown();
-    _ref = ['#import-link', '#metadata-link', '#sharing-link', '#publish-link'];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      modal_link_id = _ref[_i];
-      $(modal_link_id).modal({
-        show: false
-      });
+  _generate_metadata_url = function(id) {
+    return MODULEURL + id + '/metadata';
+  };
+
+  MetadataModal = (function() {
+
+    function MetadataModal() {
+      this.$el = $('#metadata-modal');
+      this.render();
     }
-    $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
-    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
-    metadata_form_handler = function(event) {
+
+    MetadataModal.prototype.submit_handler = function(event) {
       var data, module_id;
       data = {};
       $.map($(this).serializeArray(), function(obj) {
@@ -40,7 +39,7 @@
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
         type: 'POST',
-        url: MODULEURL + module_id + '/metadata',
+        url: _generate_metadata_url(module_id),
         data: data,
         dataType: 'application/json',
         success: function() {
@@ -49,7 +48,48 @@
       });
       return false;
     };
-    $('#metadata-modal form').submit(metadata_form_handler);
+
+    MetadataModal.prototype.render = function() {
+      var data, language_code, languages, value, _ref;
+      data = {};
+      languages = [
+        {
+          code: '',
+          "native": '',
+          english: ''
+        }
+      ];
+      _ref = Language.getLanguages();
+      for (language_code in _ref) {
+        value = _ref[language_code];
+        $.extend(value, {
+          'code': language_code
+        });
+        languages.push(value);
+      }
+      $.extend(data, {
+        'languages': languages
+      });
+      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
+      return $('#metadata-modal form').submit(this.submit_handler);
+    };
+
+    return MetadataModal;
+
+  })();
+
+  exports.construct = function() {
+    var metadata_modal, modal_link_id, _i, _len, _ref;
+    $('.dropdown-toggle').dropdown();
+    _ref = ['#import-link', '#metadata-link', '#sharing-link', '#publish-link'];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      modal_link_id = _ref[_i];
+      $(modal_link_id).modal({
+        show: false
+      });
+    }
+    $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
+    metadata_modal = new MetadataModal();
     $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
     return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
   };
