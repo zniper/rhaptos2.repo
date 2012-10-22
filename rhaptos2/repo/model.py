@@ -377,6 +377,21 @@ def mod_from_file(uid):
     n.load_from_file(uid)
     return n
 
+def create_or_update_metadata(uuid, data):
+    """Given a `uuid` and json `data`, this fucntion will create or update the
+    stored metadata.
+    """
+    filename = "{0}.metadata".format(uuid)
+    file_path = os.path.join(userspace(), filename)
+    stored_data = {}
+    # Grab the existing data if it exists.
+    if os.path.exists(file_path):
+        with open(file_path) as f:
+            stored_data = json.load(f)
+    # Update the data and write it back to disk.
+    stored_data.update(data)
+    with open(file_path, 'w') as f:
+        json.dump(stored_data, f)
 
 
 if __name__ == '__main__':

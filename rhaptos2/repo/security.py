@@ -54,7 +54,10 @@ class WorkSpace(object):
         repodir = app.config['rhaptos2repo_repodir']
         plain = []
         annotated = []
-        files = [os.path.join(repodir, f) for f in os.listdir(repodir)]
+        files = [os.path.join(repodir, f)
+                 for f in os.listdir(repodir)
+                 # Check for the file extension.
+                 if len(f.split('.')) < 2]
         for fpath in files:
             d = json.loads(open(fpath).read())
             if user_id in d['contentrw']:
