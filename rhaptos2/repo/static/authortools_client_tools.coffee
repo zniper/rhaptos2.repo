@@ -50,11 +50,14 @@ class MetadataModal
       if code[..1] == selected_code
         $.extend(value, {code: code})
         variants.push(value)
+    $variant_lang = $('#metadata-modal select[name="variant_language"]')
     if variants.length > 0
       # Insert an empty option into the list.
       variants.splice(0, 0, {code: '', english: ''})
-    template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
-    $('#metadata-modal select[name=variant_language]').html(Mustache.to_html(template, {'variants': variants}))
+      template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
+      $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
+    else
+      $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled')
   render: ->
     data = {}
     languages = [{code: '', native: '', english: ''}]

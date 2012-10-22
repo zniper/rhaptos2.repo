@@ -50,7 +50,7 @@
     };
 
     MetadataModal.prototype.language_handler = function() {
-      var code, selected_code, template, value, variants, _ref;
+      var $variant_lang, code, selected_code, template, value, variants, _ref;
       selected_code = $(this).val();
       variants = [];
       _ref = Language.getCombined();
@@ -63,16 +63,19 @@
           variants.push(value);
         }
       }
+      $variant_lang = $('#metadata-modal select[name="variant_language"]');
       if (variants.length > 0) {
         variants.splice(0, 0, {
           code: '',
           english: ''
         });
+        template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}';
+        return $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {
+          'variants': variants
+        }));
+      } else {
+        return $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled');
       }
-      template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}';
-      return $('#metadata-modal select[name=variant_language]').html(Mustache.to_html(template, {
-        'variants': variants
-      }));
     };
 
     MetadataModal.prototype.render = function() {
