@@ -49,6 +49,32 @@
       return false;
     };
 
+    MetadataModal.prototype.language_handler = function() {
+      var code, selected_code, template, value, variants, _ref;
+      selected_code = $(this).val();
+      variants = [];
+      _ref = Language.getCombined();
+      for (code in _ref) {
+        value = _ref[code];
+        if (code.slice(0, 2) === selected_code) {
+          $.extend(value, {
+            code: code
+          });
+          variants.push(value);
+        }
+      }
+      if (variants.length > 0) {
+        variants.splice(0, 0, {
+          code: '',
+          english: ''
+        });
+      }
+      template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}';
+      return $('#metadata-modal select[name=variant_language]').html(Mustache.to_html(template, {
+        'variants': variants
+      }));
+    };
+
     MetadataModal.prototype.render = function() {
       var data, language_code, languages, value, _ref;
       data = {};
@@ -71,6 +97,7 @@
         'languages': languages
       });
       $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
+      $('#metadata-modal select[name="language"]').change(this.language_handler);
       return $('#metadata-modal form').submit(this.submit_handler);
     };
 

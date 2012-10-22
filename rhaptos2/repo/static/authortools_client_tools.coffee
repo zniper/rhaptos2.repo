@@ -43,6 +43,18 @@ class MetadataModal
     })
     # Return false to prevent the form from submitting.
     return false
+  language_handler: ->
+    selected_code = $(this).val()
+    variants = []
+    for code, value of Language.getCombined()
+      if code[..1] == selected_code
+        $.extend(value, {code: code})
+        variants.push(value)
+    if variants.length > 0
+      # Insert an empty option into the list.
+      variants.splice(0, 0, {code: '', english: ''})
+    template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
+    $('#metadata-modal select[name=variant_language]').html(Mustache.to_html(template, {'variants': variants}))
   render: ->
     data = {}
     languages = [{code: '', native: '', english: ''}]
@@ -51,6 +63,7 @@ class MetadataModal
       languages.push(value)
     $.extend(data, {'languages': languages})
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
+    $('#metadata-modal select[name="language"]').change(@language_handler)
     $('#metadata-modal form').submit(@submit_handler)
     
   
