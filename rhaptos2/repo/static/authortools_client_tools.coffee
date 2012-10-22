@@ -22,10 +22,10 @@ class MetadataModal
   constructor: ->
     @$el = $('#metadata-modal')
     @render()
-  submit_handler: (event) ->
+  submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
-    $.map($(@).serializeArray(), (obj) ->
+    $.map($('#metadata-modal form').serializeArray(), (obj) ->
       data[obj['name']] = obj['value']
     )
     # XXX The best way to get the module ID at this time is to pull it out
@@ -37,8 +37,9 @@ class MetadataModal
     $.ajax({
       type: 'POST'
       url: _generate_metadata_url(module_id)
-      data: data
-      dataType: 'application/json'
+      data: JSON.stringify(data, null, 2)
+      dataType: 'json'
+      contentType: 'application/json'
       success: -> $('#metadata-modal').modal('hide')
     })
     # Return false to prevent the form from submitting.
@@ -67,7 +68,7 @@ class MetadataModal
     $.extend(data, {'languages': languages})
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
     $('#metadata-modal select[name="language"]').change(@language_handler)
-    $('#metadata-modal form').submit(@submit_handler)
+    $('#metadata-modal button[type="submit"]').click(@submit_handler)
     
   
 

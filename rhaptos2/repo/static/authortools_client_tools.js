@@ -14,7 +14,8 @@
 
 
 (function() {
-  var MetadataModal, exports, _generate_metadata_url;
+  var MetadataModal, exports, _generate_metadata_url,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   exports = {};
 
@@ -25,6 +26,7 @@
   MetadataModal = (function() {
 
     function MetadataModal() {
+      this.submit_handler = __bind(this.submit_handler, this);
       this.$el = $('#metadata-modal');
       this.render();
     }
@@ -32,7 +34,7 @@
     MetadataModal.prototype.submit_handler = function(event) {
       var data, module_id;
       data = {};
-      $.map($(this).serializeArray(), function(obj) {
+      $.map($('#metadata-modal form').serializeArray(), function(obj) {
         return data[obj['name']] = obj['value'];
       });
       module_id = serialise_form().uuid;
@@ -40,8 +42,9 @@
       $.ajax({
         type: 'POST',
         url: _generate_metadata_url(module_id),
-        data: data,
-        dataType: 'application/json',
+        data: JSON.stringify(data, null, 2),
+        dataType: 'json',
+        contentType: 'application/json',
         success: function() {
           return $('#metadata-modal').modal('hide');
         }
@@ -101,7 +104,7 @@
       });
       $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
       $('#metadata-modal select[name="language"]').change(this.language_handler);
-      return $('#metadata-modal form').submit(this.submit_handler);
+      return $('#metadata-modal button[type="submit"]').click(this.submit_handler);
     };
 
     return MetadataModal;
