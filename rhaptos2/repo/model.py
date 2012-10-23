@@ -102,14 +102,14 @@ class User(object):
     .. todo:: this is a integration test !!! fix the nose test division stuff.
 
     >>> u = User('ben@mikadosoftware.com')
-    >>> u.FullName 
+    >>> u.FullName
     u'Benjamin Franklin'
 
 
     """
 
     def __init__(self, authenticated_identifier):
-        """initialise from json doc 
+        """initialise from json doc
 
         .. todo:: this is stubbed out - it should always go to user dbase and lookup fromidentifer
         .. todo:: what should I do if user dbase is unavilable???
@@ -119,15 +119,15 @@ class User(object):
 #        try:
 #        safe_auth_identifier = urllib.quote_plus(authenticated_identifier)
         payload = {'user':authenticated_identifier}
- 
+
         user_server_url = app.config['bamboo_userserver']
 
-        dolog("INFO", "requesting user info - from url %s and query string %s" % 
+        dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))
 
         r = requests.get(user_server_url, params=payload)
-        userdetails = r.json         
-        dolog("INFO", str(userdetails))            
+        userdetails = r.json
+        dolog("INFO", str(userdetails))
         self.__dict__.update(r.json)
         for k in r.json['details']:
             self.__dict__[k] = r.json['details'][k]
@@ -137,8 +137,8 @@ class User(object):
 
 #        except Exception, e:
 #            dolog("ERROR", "Failed in User class %s" % str(e))
-#            self.userID = "Err1" 
-       
+#            self.userID = "Err1"
+
 
     def load_JSON(self, jsondocstr):
         """ parse and store details of properly formatted JSON doc
@@ -155,11 +155,11 @@ class Identity(object):
         """placeholder - we want to store identiy values somewhere but
            sqlite is limited to one server, so need move to network
            aware storage
-     
+
         .. todo:: rename FUllNAme to fullname
         .. todo:: in fact fix whole user details
 
- 
+
         todo: combine identiy and USer into one class !
         """
 
@@ -196,14 +196,14 @@ def after_authentication(authenticated_identifier, method):
     #session update?
     if method not in ('openid', 'persona'): raise Rhaptos2Error("Incorrect method of authenticating ID")
     session['authenticated_identifier'] = authenticated_identifier
-    g.user = userobj    
+    g.user = userobj
 
     dolog("INFO", "ALLG:%s" % repr(g))
     dolog("INFO", "ALLG.user:%s" % repr(g.user))
     dolog("INFO", "AFTER session %s" % repr(session))
-    
+
     return userobj
-    
+
 
 
 def get_user_from_identifier(authenticated_identifier):
@@ -221,7 +221,7 @@ def retrieve_identity(identity_url, **kwds):
     """no-op but would pull idneity to backend storage ie memcvache """
     pass
 
-    
+
 
 def whoami():
     '''
@@ -234,7 +234,7 @@ def whoami():
 
     I really need to think about session cookies. Default for now.
     '''
-    dolog("INFO", "Whoami called", caller=whoami)    
+    dolog("INFO", "Whoami called", caller=whoami)
     if 'authenticated_identifier' in session:
         user = Identity(session['authenticated_identifier'])
         g.user_id = user.userID
@@ -242,7 +242,7 @@ def whoami():
     else:
         callstatsd("rhaptos2.repo.notloggedin")
         g.user_id = None
-        g.user = None   
+        g.user = None
         return None
         #is this alwasys desrireed?
 
@@ -265,7 +265,7 @@ def whoamiGET():
     '''
     ### todo: return 401 code and let ajax client put up login.
     user =  whoami()
-        
+
     if user:
         d = identity.user_as_dict()
         jsond = asjson(d)
@@ -377,6 +377,21 @@ def mod_from_file(uid):
     n.load_from_file(uid)
     return n
 
+def create_or_update_metadata(uuid, data):
+    """Given a `uuid` and json `data`, this fucntion will create or update the
+    stored metadata.
+    """
+    filename = "{0}.metadata".format(uuid)
+    file_path = os.path.join(userspace(), filename)
+    stored_data = {}
+    # Grab the existing data if it exists.
+    if os.path.exists(file_path):
+        with open(file_path) as f:
+            stored_data = json.load(f)
+    # Update the data and write it back to disk.
+    stored_data.update(data)
+    with open(file_path, 'w') as f:
+        json.dump(stored_data, f)
 
 
 if __name__ == '__main__':

@@ -14,12 +14,105 @@
 
 
 (function() {
-  var exports;
+  var MetadataModal, exports, _generate_metadata_url,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   exports = {};
 
+  _generate_metadata_url = function(id) {
+    return MODULEURL + id + '/metadata';
+  };
+
+  MetadataModal = (function() {
+
+    function MetadataModal() {
+      this.submit_handler = __bind(this.submit_handler, this);
+      this.$el = $('#metadata-modal');
+      this.render();
+    }
+
+    MetadataModal.prototype.submit_handler = function(event) {
+      var data, module_id;
+      data = {};
+      $.map($('#metadata-modal form').serializeArray(), function(obj) {
+        return data[obj['name']] = obj['value'];
+      });
+      module_id = serialise_form().uuid;
+      console.log('Posting metadata for module: ' + module_id);
+      $.ajax({
+        type: 'POST',
+        url: _generate_metadata_url(module_id),
+        data: JSON.stringify(data, null, 2),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function() {
+          return $('#metadata-modal').modal('hide');
+        }
+      });
+      return false;
+    };
+
+    MetadataModal.prototype.language_handler = function() {
+      var $variant_lang, code, selected_code, template, value, variants, _ref;
+      selected_code = $(this).val();
+      variants = [];
+      _ref = Language.getCombined();
+      for (code in _ref) {
+        value = _ref[code];
+        if (code.slice(0, 2) === selected_code) {
+          $.extend(value, {
+            code: code
+          });
+          variants.push(value);
+        }
+      }
+      $variant_lang = $('#metadata-modal select[name="variant_language"]');
+      if (variants.length > 0) {
+        variants.splice(0, 0, {
+          code: '',
+          english: ''
+        });
+        template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}';
+        return $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {
+          'variants': variants
+        }));
+      } else {
+        return $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled');
+      }
+    };
+
+    MetadataModal.prototype.render = function() {
+      var data, language_code, languages, value, _ref;
+      data = {};
+      languages = [
+        {
+          code: '',
+          "native": '',
+          english: ''
+        }
+      ];
+      _ref = Language.getLanguages();
+      for (language_code in _ref) {
+        value = _ref[language_code];
+        $.extend(value, {
+          'code': language_code
+        });
+        languages.push(value);
+      }
+      $.extend(data, {
+        'languages': languages
+      });
+      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
+      $('#metadata-modal select[name="language"]').change(this.language_handler);
+      return $('#metadata-modal button[type="submit"]').click(this.submit_handler);
+    };
+
+    return MetadataModal;
+
+  })();
+
   exports.construct = function() {
-    var modal_link_id, _i, _len, _ref;
+    var metadata_modal, modal_link_id, _i, _len, _ref;
     $('.dropdown-toggle').dropdown();
     _ref = ['#import-link', '#metadata-link', '#sharing-link', '#publish-link'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -29,7 +122,7 @@
       });
     }
     $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
-    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
+    metadata_modal = new MetadataModal();
     $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
     return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
   };

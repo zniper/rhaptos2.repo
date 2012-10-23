@@ -174,6 +174,8 @@ function saveText() {
          request.done(function(data) {
              //$("#responsearea").html(data);
              $.each(data, showres);
+             // Put the UUID in the form field.
+             $('#uuid').val(data.hashid);
              build_workspace();
          });
 

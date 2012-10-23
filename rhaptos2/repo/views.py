@@ -46,7 +46,7 @@ def apply_cors(fn):
     '''
     @wraps(fn)
     def newfn(*args, **kwds):
-        resp = flask.make_response(fn())
+        resp = flask.make_response(fn(*args, **kwds))
         resp.content_type='application/json'
         resp.headers["Access-Control-Allow-Origin"]= "*"
         resp.headers["Access-Control-Allow-Credentials"]= "true"
@@ -173,8 +173,21 @@ def moduleDELETE(modname):
     resp.headers["Access-Control-Allow-Origin"]= "*"
     return resp
 
+@app.route("/module/<modname>/metadata", methods=['POST', 'PUT'])
+@apply_cors
+def post_metadata(modname):
+    """Receive posted data that will creator or update the metadata storage
+    for a module.
+    """
+    # XXX 'modname' is used for consistancy, but it's not ideal, since
+    #     the value isn't actually a module name.
+    uuid = modname
+    data = request.json
+    model.create_or_update_metadata(uuid, data)
 
-
+    resp = flask.make_response()
+    resp.status_code = 200
+    return resp
 
 
 @app.route("/version/", methods=["GET"])
