@@ -36,7 +36,14 @@
       var data, module_id;
       data = {};
       $.map($('#metadata-modal form').serializeArray(), function(obj) {
-        return data[obj['name']] = obj['value'];
+        if (obj.name === 'subjects') {
+          if (!(obj.name in data)) {
+            data[obj.name] = [];
+          }
+          return data[obj.name].push(obj.value);
+        } else {
+          return data[obj.name] = obj.value;
+        }
       });
       module_id = serialise_form().uuid;
       console.log('Posting metadata for module: ' + module_id);

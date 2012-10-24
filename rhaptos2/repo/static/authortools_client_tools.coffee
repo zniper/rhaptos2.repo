@@ -28,7 +28,12 @@ class MetadataModal
     data = {}
     # Write the form values to JSON
     $.map($('#metadata-modal form').serializeArray(), (obj) ->
-      data[obj['name']] = obj['value']
+      # Special case for the subject list. Probably a better way to do this...
+      if obj.name == 'subjects'
+        if not (obj.name of data) then data[obj.name] = []
+        data[obj.name].push(obj.value)
+      else
+        data[obj.name] = obj.value
     )
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
