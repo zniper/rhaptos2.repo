@@ -27,7 +27,7 @@ class MetadataModal
     @$el = $('#metadata-modal')
     $('#metadata-modal button[type="submit"]').click(@submit_handler)
     # Attach the rendering code to the modal 'show' event.
-    @$el.on('show', @render)
+    @$el.on('show', $.proxy(@render, @))
   submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
@@ -103,7 +103,7 @@ class MetadataModal
         url: _generate_metadata_url(module_id)
         contentType: 'application/json'
       })
-    ).then(renderer)
+    ).then($.proxy(renderer, @))
   
 
 exports.construct = ->

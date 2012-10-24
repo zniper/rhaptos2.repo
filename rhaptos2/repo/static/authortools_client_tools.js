@@ -32,7 +32,7 @@
       this.submit_handler = __bind(this.submit_handler, this);
       this.$el = $('#metadata-modal');
       $('#metadata-modal button[type="submit"]').click(this.submit_handler);
-      this.$el.on('show', this.render);
+      this.$el.on('show', $.proxy(this.render, this));
     }
 
     MetadataModal.prototype.submit_handler = function(event) {
@@ -139,7 +139,7 @@
         type: 'GET',
         url: _generate_metadata_url(module_id),
         contentType: 'application/json'
-      })).then(renderer);
+      })).then($.proxy(renderer, this));
     };
 
     return MetadataModal;
