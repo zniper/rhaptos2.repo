@@ -55,7 +55,7 @@ exports.metadata = '
       {{/subjects}}
 
       <label>Keywords</label>
-      <input type="text" name="keywords">
+      <input type="text" name="keywords" {{#keywords}}value="{{keywords}}"{{/keywords}}>
     </form>
   </div>'
 
