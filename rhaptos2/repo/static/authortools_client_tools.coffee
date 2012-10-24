@@ -21,7 +21,9 @@ _generate_metadata_url = (id) ->
 class MetadataModal
   constructor: ->
     @$el = $('#metadata-modal')
-    @render()
+    $('#metadata-modal button[type="submit"]').click(@submit_handler)
+    # Attach the rendering code to the modal 'show' event.
+    @$el.on('show', @render)
   submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
@@ -60,16 +62,31 @@ class MetadataModal
     else
       $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled')
   render: ->
-    data = {}
-    languages = [{code: '', native: '', english: ''}]
-    for language_code, value of Language.getLanguages()
-      $.extend(value, {'code': language_code})
-      languages.push(value)
-    $.extend(data, {'languages': languages})
-    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
-    $('#metadata-modal select[name="language"]').change(@language_handler)
-    $('#metadata-modal button[type="submit"]').click(@submit_handler)
-    
+    # XXX The best way to get the module ID at this time is to pull it out
+    #     of the module editor form. The 'serialise_form' function is defined
+    #     globally in the 'authortools_client.js' file.
+    module_id = serialise_form().uuid
+
+    renderer = (data) ->
+      # XXX Should check for issues before doing the following...
+      # Render the content of the modal.
+      languages = [{code: '', native: '', english: ''}]
+      for language_code, value of Language.getLanguages()
+        $.extend(value, {code: language_code})
+        if data.language? and data.language == language_code
+          $.extend(value, {selected: 'selected'})
+        languages.push(value)
+      $.extend(data, {'languages': languages})
+      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
+      $('#metadata-modal select[name="language"]').change(@language_handler)
+
+    $.when(
+      $.ajax({
+        type: 'GET'
+        url: _generate_metadata_url(module_id)
+        contentType: 'application/json'
+      })
+    ).then(renderer)
   
 
 exports.construct = ->

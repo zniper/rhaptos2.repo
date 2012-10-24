@@ -28,7 +28,10 @@ exports.metadata = '
       <label>Language</label>
       <select name="language">
         {{#languages}}
-          <option value="{{code}}">{{native}}</option>
+          <option value="{{code}}"
+                  {{#selected}}selected="{{selected}}"{{/selected}}>
+            {{native}}
+          </option>
         {{/languages}}
       </select>
 

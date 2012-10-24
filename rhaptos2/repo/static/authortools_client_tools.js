@@ -28,7 +28,8 @@
     function MetadataModal() {
       this.submit_handler = __bind(this.submit_handler, this);
       this.$el = $('#metadata-modal');
-      this.render();
+      $('#metadata-modal button[type="submit"]').click(this.submit_handler);
+      this.$el.on('show', this.render);
     }
 
     MetadataModal.prototype.submit_handler = function(event) {
@@ -82,29 +83,41 @@
     };
 
     MetadataModal.prototype.render = function() {
-      var data, language_code, languages, value, _ref;
-      data = {};
-      languages = [
-        {
-          code: '',
-          "native": '',
-          english: ''
+      var module_id, renderer;
+      module_id = serialise_form().uuid;
+      renderer = function(data) {
+        var language_code, languages, value, _ref;
+        languages = [
+          {
+            code: '',
+            "native": '',
+            english: ''
+          }
+        ];
+        _ref = Language.getLanguages();
+        for (language_code in _ref) {
+          value = _ref[language_code];
+          $.extend(value, {
+            code: language_code
+          });
+          if ((data.language != null) && data.language === language_code) {
+            $.extend(value, {
+              selected: 'selected'
+            });
+          }
+          languages.push(value);
         }
-      ];
-      _ref = Language.getLanguages();
-      for (language_code in _ref) {
-        value = _ref[language_code];
-        $.extend(value, {
-          'code': language_code
+        $.extend(data, {
+          'languages': languages
         });
-        languages.push(value);
-      }
-      $.extend(data, {
-        'languages': languages
-      });
-      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
-      $('#metadata-modal select[name="language"]').change(this.language_handler);
-      return $('#metadata-modal button[type="submit"]').click(this.submit_handler);
+        $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
+        return $('#metadata-modal select[name="language"]').change(this.language_handler);
+      };
+      return $.when($.ajax({
+        type: 'GET',
+        url: _generate_metadata_url(module_id),
+        contentType: 'application/json'
+      })).then(renderer);
     };
 
     return MetadataModal;
