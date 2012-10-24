@@ -43,52 +43,14 @@
       </select>\
 \
       <label>Subjects</label>\
-      <table>\
-        <tbody>\
-          <tr>\
-            <td>\
-              <label class="checkbox">\
-                <input type="checkbox" name="subject" value="Arts">\
-                Arts\
-              </label>\
-            </td>\
-            <td>\
-              <label class="checkbox">\
-                <input type="checkbox" name="subject" value="Mathematics and Statistics">\
-                Mathematics and Statistics\
-              </label>\
-            </td>\
-          </tr>\
-          <tr>\
-            <td>\
-              <label class="checkbox">\
-                <input type="checkbox" name="subject" value="Business">\
-                Business\
-              </label>\
-            </td>\
-            <td>\
-              <label class="checkbox">\
-                <input type="checkbox" name="subject" value="Science and Technology">\
-                Science and Technology\
-              </label>\
-            </td>\
-          </tr>\
-          <tr>\
-            <td>\
-              <label class="checkbox">\
-                <input type="checkbox" name="subject" value="Humanities">\
-                Humanities\
-              </label>\
-            </td>\
-            <td>\
-              <label class="checkbox">\
-                <input type="checkbox" name="subject" value="Social Sciences">\
-                Social Sciences\
-              </label>\
-            </td>\
-          </tr>\
-        </tbody>\
-      </table>\
+      {{#subjects}}\
+      <label class="checkbox">\
+        <input type="checkbox" name="subjects"\
+               value="{{name}}"\
+               {{#selected}}checked="checked"{{/selected}}> {{name}}\
+      </label>\
+      {{/subjects}}\
+\
       <label>Keywords</label>\
       <input type="text" name="keywords">\
     </form>\

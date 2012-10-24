@@ -15,6 +15,10 @@
 # window.Tools = exports;
 exports = {}
 
+METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business",
+  "Science and Technology", "Humanities", "Social Sciences"]
+
+
 _generate_metadata_url = (id) ->
   return MODULEURL + id + '/metadata'
 
@@ -74,7 +78,7 @@ class MetadataModal
 
     renderer = (data) ->
       # XXX Should check for issues before doing the following...
-      # Render the content of the modal.
+      # Collect the language data.
       languages = [{code: '', native: '', english: ''}]
       for language_code, value of Language.getLanguages()
         $.extend(value, {code: language_code})
@@ -82,6 +86,14 @@ class MetadataModal
           $.extend(value, {selected: 'selected'})
         languages.push(value)
       $.extend(data, {'languages': languages})
+      # Collect the subject data.
+      subjects = []
+      for subject in METADATA_SUBJECTS
+        value = {name: subject}
+        if data.subjects? and subject in data.subjects
+          value.selected = 'checked'
+        subjects.push(value)
+      data.subjects = subjects
       $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
       $('#metadata-modal select[name="language"]').change(@language_handler)
 

@@ -14,10 +14,13 @@
 
 
 (function() {
-  var MetadataModal, exports, _generate_metadata_url,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var METADATA_SUBJECTS, MetadataModal, exports, _generate_metadata_url,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   exports = {};
+
+  METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business", "Science and Technology", "Humanities", "Social Sciences"];
 
   _generate_metadata_url = function(id) {
     return MODULEURL + id + '/metadata';
@@ -93,7 +96,7 @@
       var module_id, renderer;
       module_id = serialise_form().uuid;
       renderer = function(data) {
-        var language_code, languages, value, _ref;
+        var language_code, languages, subject, subjects, value, _i, _len, _ref;
         languages = [
           {
             code: '',
@@ -117,6 +120,18 @@
         $.extend(data, {
           'languages': languages
         });
+        subjects = [];
+        for (_i = 0, _len = METADATA_SUBJECTS.length; _i < _len; _i++) {
+          subject = METADATA_SUBJECTS[_i];
+          value = {
+            name: subject
+          };
+          if ((data.subjects != null) && __indexOf.call(data.subjects, subject) >= 0) {
+            value.selected = 'checked';
+          }
+          subjects.push(value);
+        }
+        data.subjects = subjects;
         $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
         return $('#metadata-modal select[name="language"]').change(this.language_handler);
       };
