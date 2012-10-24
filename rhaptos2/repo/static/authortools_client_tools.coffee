@@ -36,9 +36,6 @@ MODAL_SPINNER_OPTIONS = {
   left: '265px'  # Left position relative to parent in px
 }
 
-# XXX
-window._spinopts = MODAL_SPINNER_OPTIONS
-
 _generate_metadata_url = (id) ->
   return MODULEURL + id + '/metadata'
 

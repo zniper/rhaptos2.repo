@@ -40,8 +40,6 @@
     left: '265px'
   };
 
-  window._spinopts = MODAL_SPINNER_OPTIONS;
-
   _generate_metadata_url = function(id) {
     return MODULEURL + id + '/metadata';
   };

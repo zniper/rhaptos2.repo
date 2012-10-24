@@ -316,6 +316,10 @@
   //   define(function() { return Spinner })
   // else
   //   window.Spinner = Spinner
+
+  // XXX The above is commentted out because this application is not
+  //     setup to use the AMD system even though we have it within the
+  //     application.
   window.Spinner = Spinner
 
 }(window, document);
