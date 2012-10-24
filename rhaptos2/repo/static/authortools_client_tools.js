@@ -14,13 +14,33 @@
 
 
 (function() {
-  var METADATA_SUBJECTS, MetadataModal, exports, _generate_metadata_url,
+  var METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataModal, exports, _generate_metadata_url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   exports = {};
 
   METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business", "Science and Technology", "Humanities", "Social Sciences"];
+
+  MODAL_SPINNER_OPTIONS = {
+    lines: 13,
+    length: 16,
+    width: 6,
+    radius: 27,
+    corners: 1,
+    rotate: 0,
+    color: '#444',
+    speed: 0.9,
+    trail: 69,
+    shadow: false,
+    hwaccel: false,
+    className: 'spinner',
+    zIndex: 2e9,
+    top: 'auto',
+    left: '265px'
+  };
+
+  window._spinopts = MODAL_SPINNER_OPTIONS;
 
   _generate_metadata_url = function(id) {
     return MODULEURL + id + '/metadata';
@@ -93,7 +113,7 @@
     };
 
     MetadataModal.prototype.render = function() {
-      var module_id, renderer;
+      var $target, module_id, opts, renderer, spinner, wrapped_renderer;
       module_id = serialise_form().uuid;
       renderer = function(data) {
         var language_code, languages, subject, subjects, value, variant_languages, _i, _len, _ref, _ref1;
@@ -159,11 +179,22 @@
         $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
         return $('#metadata-modal select[name="language"]').change(this.language_handler);
       };
+      $target = $('#metadata-modal .modal-body');
+      opts = MODAL_SPINNER_OPTIONS;
+      $.extend(opts, {
+        top: $target.height() / 2,
+        left: $target.width() / 2
+      });
+      spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0]);
+      wrapped_renderer = function(data) {
+        spinner.stop();
+        return renderer(data);
+      };
       return $.when($.ajax({
         type: 'GET',
         url: _generate_metadata_url(module_id),
         contentType: 'application/json'
-      })).then($.proxy(renderer, this));
+      })).then($.proxy(wrapped_renderer, this));
     };
 
     return MetadataModal;

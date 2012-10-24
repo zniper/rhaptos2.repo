@@ -18,6 +18,26 @@ exports = {}
 METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business",
   "Science and Technology", "Humanities", "Social Sciences"]
 
+MODAL_SPINNER_OPTIONS = {
+  lines: 13  # The number of lines to draw
+  length: 16  # The length of each line
+  width: 6  # The line thickness
+  radius: 27  # The radius of the inner circle
+  corners: 1  # Corner roundness (0..1)
+  rotate: 0  # The rotation offset
+  color: '#444'  # #rgb or #rrggbb
+  speed: 0.9  # Rounds per second
+  trail: 69  # Afterglow percentage
+  shadow: false  # Whether to render a shadow
+  hwaccel: false  # Whether to use hardware acceleration
+  className: 'spinner'  # The CSS class to assign to the spinner
+  zIndex: 2e9  # The z-index (defaults to 2000000000)
+  top: 'auto'  # Top position relative to parent in px
+  left: '265px'  # Left position relative to parent in px
+}
+
+# XXX
+window._spinopts = MODAL_SPINNER_OPTIONS
 
 _generate_metadata_url = (id) ->
   return MODULEURL + id + '/metadata'
@@ -110,6 +130,14 @@ class MetadataModal
       # Render to the page.
       $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
       $('#metadata-modal select[name="language"]').change(@language_handler)
+    $target = $('#metadata-modal .modal-body')
+    opts = MODAL_SPINNER_OPTIONS
+    $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
+    spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
+
+    wrapped_renderer = (data) ->
+      spinner.stop()
+      renderer(data)
 
     $.when(
       $.ajax({
@@ -117,8 +145,8 @@ class MetadataModal
         url: _generate_metadata_url(module_id)
         contentType: 'application/json'
       })
-    ).then($.proxy(renderer, @))
-  
+    ).then($.proxy(wrapped_renderer, @))
+
 
 exports.construct = ->
   $('.dropdown-toggle').dropdown()

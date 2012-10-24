@@ -62,3 +62,7 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
   width: 400px;
   display: block;
 }
+
+.modal-body {
+  min-height: 200px;
+}
