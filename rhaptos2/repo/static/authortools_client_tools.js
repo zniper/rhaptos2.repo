@@ -96,7 +96,7 @@
       var module_id, renderer;
       module_id = serialise_form().uuid;
       renderer = function(data) {
-        var language_code, languages, subject, subjects, value, _i, _len, _ref;
+        var language_code, languages, subject, subjects, value, variant_languages, _i, _len, _ref, _ref1;
         languages = [
           {
             code: '',
@@ -117,9 +117,33 @@
           }
           languages.push(value);
         }
-        $.extend(data, {
-          'languages': languages
-        });
+        data.languages = languages;
+        if (data.language != null) {
+          variant_languages = [
+            {
+              code: '',
+              "native": '',
+              english: ''
+            }
+          ];
+          _ref1 = Language.getCombined();
+          for (language_code in _ref1) {
+            value = _ref1[language_code];
+            if (language_code.slice(0, 2) !== data.language) {
+              continue;
+            }
+            $.extend(value, {
+              code: language_code
+            });
+            if ((data.variant_language != null) && data.variant_language === language_code) {
+              $.extend(value, {
+                selected: 'selected'
+              });
+            }
+            variant_languages.push(value);
+          }
+          data.variant_languages = variant_languages;
+        }
         subjects = [];
         for (_i = 0, _len = METADATA_SUBJECTS.length; _i < _len; _i++) {
           subject = METADATA_SUBJECTS[_i];

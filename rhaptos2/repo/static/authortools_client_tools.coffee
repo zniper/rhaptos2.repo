@@ -78,6 +78,7 @@ class MetadataModal
 
     renderer = (data) ->
       # XXX Should check for issues before doing the following...
+
       # Collect the language data.
       languages = [{code: '', native: '', english: ''}]
       for language_code, value of Language.getLanguages()
@@ -85,7 +86,18 @@ class MetadataModal
         if data.language? and data.language == language_code
           $.extend(value, {selected: 'selected'})
         languages.push(value)
-      $.extend(data, {'languages': languages})
+      data.languages = languages
+      if data.language?
+        variant_languages = [{code: '', native: '', english: ''}]
+        for language_code, value of Language.getCombined()
+          if language_code[..1] != data.language
+            continue
+          $.extend(value, {code: language_code})
+          if data.variant_language? and data.variant_language == language_code
+            $.extend(value, {selected: 'selected'})
+          variant_languages.push(value)
+        data.variant_languages = variant_languages
+
       # Collect the subject data.
       subjects = []
       for subject in METADATA_SUBJECTS
@@ -94,6 +106,8 @@ class MetadataModal
           value.selected = 'checked'
         subjects.push(value)
       data.subjects = subjects
+
+      # Render to the page.
       $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
       $('#metadata-modal select[name="language"]').change(@language_handler)
 

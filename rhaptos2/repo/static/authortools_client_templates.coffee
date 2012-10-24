@@ -27,16 +27,22 @@ exports.metadata = '
 
       <label>Language</label>
       <select name="language">
-        {{#languages}}
-          <option value="{{code}}"
-                  {{#selected}}selected="{{selected}}"{{/selected}}>
-            {{native}}
-          </option>
-        {{/languages}}
+      {{#languages}}
+        <option value="{{code}}"
+                {{#selected}}selected="{{selected}}"{{/selected}}>
+          {{native}}
+        </option>
+      {{/languages}}
       </select>
 
       <label>Language variant</label>
       <select name="variant_language">
+      {{#variant_languages}}
+        <option value="{{code}}"
+                {{#selected}}selected="{{selected}}"{{/selected}}>
+          {{english}}  {{! There is not a `native` value in the variants }}
+        </option>
+      {{/variant_languages}}
       </select>
 
       <label>Subjects</label>
