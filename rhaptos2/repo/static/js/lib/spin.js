@@ -312,9 +312,10 @@
       useCssAnimations = vendor(s, 'animation')
   })()
 
-  if (typeof define == 'function' && define.amd)
-    define(function() { return Spinner })
-  else
-    window.Spinner = Spinner
+  // if (typeof define == 'function' && define.amd)
+  //   define(function() { return Spinner })
+  // else
+  //   window.Spinner = Spinner
+  window.Spinner = Spinner
 
 }(window, document);
