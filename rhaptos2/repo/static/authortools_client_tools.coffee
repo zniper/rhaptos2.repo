@@ -70,6 +70,7 @@ class MetadataModal
     $('#metadata-modal select[name="language"]').change(@language_handler)
     $('#metadata-modal button[type="submit"]').click(@submit_handler)
 
+ROLES = ["Author", "Maintainer", "Copyright Holder"]
 
 class RolesModal
   constructor: ->
@@ -77,8 +78,24 @@ class RolesModal
     @render()
   render: ->
     data = {}
+    entries = [
+      {name: 'Michael', roles: ['Maintainer', 'Copyright Holder']}
+      {name: 'Isabel', roles: ['Author']}
+      ]
+    for entry in entries
+      roles = []
+      for role in ROLES
+        value = {name: role}
+        if role in entry.roles
+          value.selected = true
+        roles.push(value)
+      entry.roles = roles
+    data.entries = entries
+    data.roles_vocabulary = ROLES
     $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data))
-
+    # $('#role-entry-form button').click(@handle_addition)
+  handle_addition: (event) ->
+    
 
 exports.construct = ->
   $('.dropdown-toggle').dropdown()

@@ -96,36 +96,27 @@ exports.roles = '
       <table class="table table-condensed">
         <thead>
           <tr>
-            <th></th>
-            <th>Author</th>
-            <th>Maintainer</th>
-            <th>Copyright</th>
+            <th>{{!The name column}}</th>
+            {{#roles_vocabulary}}
+              <th>{{.}}</th>
+            {{/roles_vocabulary}}
             <th><!-- Other actions --></th>
           </tr>
         </thead>
         <tfoot>
         </tfoot>
         <tbody>
-          <tr>
-            <th>Michael</th>
-            <td><input type="checkbox" name="role" value="uid"></td>
-            <td><input type="checkbox" name="role" value="uid"></td>
-            <td><input type="checkbox" name="role" value="uid"></td>
-            <td>
-              <button type="button"
-                      class="btn btn-danger btn-mini">remove</button>
-            </td>
-          </tr>
-          <tr>
-            <th>Isabel</th>
-            <td><input type="checkbox" name="role" value="uid"></td>
-            <td><input type="checkbox" name="role" value="uid"></td>
-            <td><input type="checkbox" name="role" value="uid"></td>
-            <td>
-              <button type="button"
-                      class="btn btn-danger btn-mini">remove</button>
-            </td>
-          </tr>
+          {{#entries}}
+            <tr>
+              <td>{{name}}</td>
+              {{#roles}}
+                <td>
+                  <input type="checkbox" name="roles" value="{{name}}"
+                         {{#selected}}checked="checked"{{/selected}}>
+                </td>
+              {{/roles}}
+              <td class="roles-other-actions-column"></td>
+          {{/entries}}
         </tbody>
       </table>
     </form>

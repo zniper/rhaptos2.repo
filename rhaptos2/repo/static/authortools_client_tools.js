@@ -14,8 +14,9 @@
 
 
 (function() {
-  var MetadataModal, RolesModal, exports, _generate_metadata_url,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var MetadataModal, ROLES, RolesModal, exports, _generate_metadata_url,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   exports = {};
 
@@ -111,6 +112,8 @@
 
   })();
 
+  ROLES = ["Author", "Maintainer", "Copyright Holder"];
+
   RolesModal = (function() {
 
     function RolesModal() {
@@ -119,10 +122,38 @@
     }
 
     RolesModal.prototype.render = function() {
-      var data;
+      var data, entries, entry, role, roles, value, _i, _j, _len, _len1;
       data = {};
+      entries = [
+        {
+          name: 'Michael',
+          roles: ['Maintainer', 'Copyright Holder']
+        }, {
+          name: 'Isabel',
+          roles: ['Author']
+        }
+      ];
+      for (_i = 0, _len = entries.length; _i < _len; _i++) {
+        entry = entries[_i];
+        roles = [];
+        for (_j = 0, _len1 = ROLES.length; _j < _len1; _j++) {
+          role = ROLES[_j];
+          value = {
+            name: role
+          };
+          if (__indexOf.call(entry.roles, role) >= 0) {
+            value.selected = true;
+          }
+          roles.push(value);
+        }
+        entry.roles = roles;
+      }
+      data.entries = entries;
+      data.roles_vocabulary = ROLES;
       return $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data));
     };
+
+    RolesModal.prototype.handle_addition = function(event) {};
 
     return RolesModal;
 
