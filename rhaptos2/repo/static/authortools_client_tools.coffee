@@ -87,20 +87,32 @@ class RolesModal
       {name: 'Isabel', roles: ['Author']}
       ]
     for entry in entries
-      roles = []
-      for role in ROLES
-        value = {name: role}
-        if role in entry.roles
-          value.selected = true
-        roles.push(value)
-      entry.roles = roles
+      @_transform_entry_roles_to_object(entry)
     data.entries = entries
     data.roles_vocabulary = ROLES
     partials = {roles_name_entry: Templates.roles_name_entry}
     $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data, partials))
-    # $('#role-entry-form button').click(@handle_addition)
-  handle_addition: (event) ->
-    
+    $('form[name="role-entry-form"] button').click(@handle_addition)
+  _transform_entry_roles_to_object: (entry) ->
+    roles = []
+    for role in ROLES
+      value = {name: role}
+      if role in entry.roles
+        value.selected = true
+      roles.push(value)
+    $.extend(entry, {roles: roles})
+    return entry
+  handle_addition: (event) =>
+    $form = $('form[name="role-entry-form"]')
+    form_data = _form_values_to_object($form)
+    $.extend(form_data, {roles: []})
+    @_transform_entry_roles_to_object(form_data)
+    # TODO Add info to set up and attach events for the "other actions".
+    $('#roles-modal tbody').append(Mustache.to_html(Templates.roles_name_entry, form_data))
+    # Clear the field(s)
+    $form[0].reset()
+    return false
+
 
 exports.construct = ->
   $('.dropdown-toggle').dropdown()
