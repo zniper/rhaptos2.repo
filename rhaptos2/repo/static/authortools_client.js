@@ -434,8 +434,8 @@ navigator.id.watch({
       type: 'POST',
       url: PERSONAURL,
       data: {assertion: assertion},
-      success: function(res, status, xhr) { alert("login success on server" + res); },
-      error: function(res, status, xhr) { alert("login failure" + res); }
+      success: function(res, status, xhr) { console.log("login success on server" + res); },
+      error: function(res, status, xhr) { console.log("login failure" + res); }
     });
   },
 
@@ -446,8 +446,8 @@ navigator.id.watch({
     $.ajax({
       type: 'POST',
       url: PERSONALOGOUT,
-      success: function(res, status, xhr) { alert("You whosul be logged out with reload"); },
-      error: function(res, status, xhr) { alert("logout failure" + res); }
+      success: function(res, status, xhr) { console.log("You whosul be logged out with reload"); },
+      error: function(res, status, xhr) { console.log("logout failure" + res); }
     });
   }
 });
