@@ -91,16 +91,17 @@
     </form>\
   </div>';
 
-  exports.sharing = '\
+  exports.roles = '\
   <div role="popup-content">\
-    <form name="sharing-form" action="sharing" method="POST">\
-      <legend>Sharing Assignments</legend>\
+    <form name="roles-form" action="roles" method="POST">\
+      <legend>Role Assignments</legend>\
       <!-- The role to user listing table -->\
       <table class="table table-condensed">\
         <thead>\
           <tr>\
             <th></th>\
             <th>Author</th>\
+            <th>Maintainer</th>\
             <th>Copyright</th>\
             <th><!-- Other actions --></th>\
           </tr>\
@@ -111,6 +112,57 @@
           <tr>\
             <th>Michael</th>\
             <td><input type="checkbox" name="role" value="uid"></td>\
+            <td><input type="checkbox" name="role" value="uid"></td>\
+            <td><input type="checkbox" name="role" value="uid"></td>\
+            <td>\
+              <button type="button"\
+                      class="btn btn-danger btn-mini">remove</button>\
+            </td>\
+          </tr>\
+          <tr>\
+            <th>Isabel</th>\
+            <td><input type="checkbox" name="role" value="uid"></td>\
+            <td><input type="checkbox" name="role" value="uid"></td>\
+            <td><input type="checkbox" name="role" value="uid"></td>\
+            <td>\
+              <button type="button"\
+                      class="btn btn-danger btn-mini">remove</button>\
+            </td>\
+          </tr>\
+        </tbody>\
+      </table>\
+    </form>\
+    <form name="role-entry-form">\
+      <legend>Add a person to the roles</legend>\
+      <div class="input-append">\
+        <input type="text" name="name"\
+               class="span2"\
+               placeholder="Type a name...">\
+        <button type="submit" class="btn">Add</button>\
+      </div>\
+    </form>\
+  </div>';
+
+  exports.sharing = '\
+  <div role="popup-content">\
+    <form name="sharing-form" action="sharing" method="POST">\
+      <legend>Sharing Assignments</legend>\
+      <!-- The role to user listing table -->\
+      <table class="table table-condensed">\
+        <thead>\
+          <tr>\
+            <th></th>\
+            <th>Author</th>\
+            <th>Maintainer</th>\
+            <th>Copyright</th>\
+            <th><!-- Other actions --></th>\
+          </tr>\
+        </thead>\
+        <tfoot>\
+        </tfoot>\
+        <tbody>\
+          <tr>\
+            <th>Michael</th>\
             <td><input type="checkbox" name="role" value="uid"></td>\
             <td>\
               <button type="button"\

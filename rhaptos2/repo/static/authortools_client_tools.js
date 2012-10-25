@@ -14,7 +14,7 @@
 
 
 (function() {
-  var MetadataModal, exports, _generate_metadata_url,
+  var MetadataModal, RolesModal, exports, _generate_metadata_url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   exports = {};
@@ -111,10 +111,27 @@
 
   })();
 
+  RolesModal = (function() {
+
+    function RolesModal() {
+      this.$el = $('#roles-modal');
+      this.render();
+    }
+
+    RolesModal.prototype.render = function() {
+      var data;
+      data = {};
+      return $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data));
+    };
+
+    return RolesModal;
+
+  })();
+
   exports.construct = function() {
-    var metadata_modal, modal_link_id, _i, _len, _ref;
+    var metadata_modal, modal_link_id, roles_modal, _i, _len, _ref;
     $('.dropdown-toggle').dropdown();
-    _ref = ['#import-link', '#metadata-link', '#sharing-link', '#publish-link'];
+    _ref = ['#import-link', '#metadata-link', '#roles-link', '#sharing-link', '#publish-link'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       modal_link_id = _ref[_i];
       $(modal_link_id).modal({
@@ -123,6 +140,7 @@
     }
     $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
     metadata_modal = new MetadataModal();
+    roles_modal = new RolesModal();
     $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
     return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
   };

@@ -69,17 +69,26 @@ class MetadataModal
     $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
     $('#metadata-modal select[name="language"]').change(@language_handler)
     $('#metadata-modal button[type="submit"]').click(@submit_handler)
-    
-  
+
+
+class RolesModal
+  constructor: ->
+    @$el = $('#roles-modal')
+    @render()
+  render: ->
+    data = {}
+    $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data))
+
 
 exports.construct = ->
   $('.dropdown-toggle').dropdown()
   # Initialize the tool links to display on click.
-  for modal_link_id in ['#import-link', '#metadata-link', '#sharing-link', '#publish-link']
+  for modal_link_id in ['#import-link', '#metadata-link', '#roles-link', '#sharing-link', '#publish-link']
     $(modal_link_id).modal(show: false)
   # Render the data into the modal body.
   $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}))
   metadata_modal = new MetadataModal()
+  roles_modal = new RolesModal()
   $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}))
   $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}))
 
