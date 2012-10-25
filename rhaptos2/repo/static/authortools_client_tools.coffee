@@ -92,7 +92,8 @@ class RolesModal
       entry.roles = roles
     data.entries = entries
     data.roles_vocabulary = ROLES
-    $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data))
+    partials = {roles_name_entry: Templates.roles_name_entry}
+    $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data, partials))
     # $('#role-entry-form button').click(@handle_addition)
   handle_addition: (event) ->
     

@@ -122,7 +122,7 @@
     }
 
     RolesModal.prototype.render = function() {
-      var data, entries, entry, role, roles, value, _i, _j, _len, _len1;
+      var data, entries, entry, partials, role, roles, value, _i, _j, _len, _len1;
       data = {};
       entries = [
         {
@@ -150,7 +150,10 @@
       }
       data.entries = entries;
       data.roles_vocabulary = ROLES;
-      return $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data));
+      partials = {
+        roles_name_entry: Templates.roles_name_entry
+      };
+      return $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data, partials));
     };
 
     RolesModal.prototype.handle_addition = function(event) {};

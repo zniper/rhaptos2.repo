@@ -91,6 +91,18 @@
     </form>\
   </div>';
 
+  exports.roles_name_entry = '\
+  <tr>\
+    <td>{{name}}</td>\
+    {{#roles}}\
+      <td>\
+        <input type="checkbox" name="roles" value="{{name}}"\
+               {{#selected}}checked="checked"{{/selected}}>\
+      </td>\
+    {{/roles}}\
+    <td class="roles-other-actions-column"></td>\
+  </tr>';
+
   exports.roles = '\
   <div role="popup-content">\
     <form name="roles-form" action="roles" method="POST">\
@@ -110,15 +122,7 @@
         </tfoot>\
         <tbody>\
           {{#entries}}\
-            <tr>\
-              <td>{{name}}</td>\
-              {{#roles}}\
-                <td>\
-                  <input type="checkbox" name="roles" value="{{name}}"\
-                         {{#selected}}checked="checked"{{/selected}}>\
-                </td>\
-              {{/roles}}\
-              <td class="roles-other-actions-column"></td>\
+            {{>roles_name_entry}}\
           {{/entries}}\
         </tbody>\
       </table>\
