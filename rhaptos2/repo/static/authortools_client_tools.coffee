@@ -18,16 +18,20 @@ exports = {}
 _generate_metadata_url = (id) ->
   return MODULEURL + id + '/metadata'
 
+_form_values_to_object = (selector) ->
+  data = {}
+  $.map($(selector).serializeArray(), (obj) ->
+    data[obj['name']] = obj['value']
+  )
+  return data
+
+
 class MetadataModal
   constructor: ->
     @$el = $('#metadata-modal')
     @render()
   submit_handler: (event) =>
-    data = {}
-    # Write the form values to JSON
-    $.map($('#metadata-modal form').serializeArray(), (obj) ->
-      data[obj['name']] = obj['value']
-    )
+    data = _form_values_to_object('#metadata-modal form')
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.

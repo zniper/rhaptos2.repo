@@ -14,7 +14,7 @@
 
 
 (function() {
-  var MetadataModal, ROLES, RolesModal, exports, _generate_metadata_url,
+  var MetadataModal, ROLES, RolesModal, exports, _form_values_to_object, _generate_metadata_url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -22,6 +22,15 @@
 
   _generate_metadata_url = function(id) {
     return MODULEURL + id + '/metadata';
+  };
+
+  _form_values_to_object = function(selector) {
+    var data;
+    data = {};
+    $.map($(selector).serializeArray(), function(obj) {
+      return data[obj['name']] = obj['value'];
+    });
+    return data;
   };
 
   MetadataModal = (function() {
@@ -34,10 +43,7 @@
 
     MetadataModal.prototype.submit_handler = function(event) {
       var data, module_id;
-      data = {};
-      $.map($('#metadata-modal form').serializeArray(), function(obj) {
-        return data[obj['name']] = obj['value'];
-      });
+      data = _form_values_to_object('#metadata-modal form');
       module_id = serialise_form().uuid;
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
