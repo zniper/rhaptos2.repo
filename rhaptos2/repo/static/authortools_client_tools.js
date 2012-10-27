@@ -164,7 +164,7 @@
       /*
             Removes the given entry from this collection object.
       */
-      return this.entries.pop(this.entries.indexOf(entry));
+      return this.entries.splice(this.entries.indexOf(entry), 1);
     };
 
     return RoleCollection;

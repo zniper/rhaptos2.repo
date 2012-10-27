@@ -107,7 +107,7 @@ class RoleCollection
     ###
       Removes the given entry from this collection object.
     ###
-    @entries.pop(@entries.indexOf(entry))
+    @entries.splice(@entries.indexOf(entry), 1)
 
 
 class RolesModal
