@@ -15,8 +15,11 @@
 # window.Tools = exports;
 exports = {}
 
+_generate_url = (area, id) ->
+   return MODULEURL + id + '/' + area
+
 _generate_metadata_url = (id) ->
-  return MODULEURL + id + '/metadata'
+  return _generate_url('metadata', id)
 
 _form_values_to_object = (selector) ->
   data = {}
@@ -114,6 +117,8 @@ class RolesModal
   constructor: ->
     @$el = $('#roles-modal')
     @render()
+    # Bind the submit event handler.
+    $('button[type="submit"]', @$el).click(@submit_handler)
   render: ->
     # TODO Pull entry data from server
     entries = [
@@ -141,6 +146,24 @@ class RolesModal
     $('.role-removal-action', $rendered_entry).click(@_role_removal_handler(entry))
     # Append the entry to the modal.
     $('#roles-modal tbody tr:last').before($rendered_entry)
+  submit_handler: (event) =>
+    # XXX The best way to get the module ID at this time is to pull it out
+    #     of the module editor form. The 'serialise_form' function is defined
+    #     globally in the 'authortools_client.js' file.
+    module_id = serialise_form().uuid
+    # Post the data to the server.
+    console.log('Posting metadata for module: ' + module_id)
+    data = ({name: e.name, roles: e.roles} for e in @collection.entries)
+    $.ajax({
+      type: 'POST'
+      url: _generate_url('roles', module_id)
+      data: JSON.stringify(data, null, 2)
+      dataType: 'json'
+      contentType: 'application/json'
+      success: -> @$el.modal('hide')
+    })
+    # Return false to prevent the form from submitting.
+    return false
   _prepare_entry_for_rendering: (entry) ->
     ###
       Create a Mustache compatible RoleEntry representation.

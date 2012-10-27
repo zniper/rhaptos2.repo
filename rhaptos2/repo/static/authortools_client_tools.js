@@ -14,14 +14,18 @@
 
 
 (function() {
-  var MetadataModal, ROLES, RoleCollection, RoleEntry, RolesModal, exports, _form_values_to_object, _generate_metadata_url,
+  var MetadataModal, ROLES, RoleCollection, RoleEntry, RolesModal, exports, _form_values_to_object, _generate_metadata_url, _generate_url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   exports = {};
 
+  _generate_url = function(area, id) {
+    return MODULEURL + id + '/' + area;
+  };
+
   _generate_metadata_url = function(id) {
-    return MODULEURL + id + '/metadata';
+    return _generate_url('metadata', id);
   };
 
   _form_values_to_object = function(selector) {
@@ -174,8 +178,10 @@
   RolesModal = (function() {
 
     function RolesModal() {
+      this.submit_handler = __bind(this.submit_handler, this);
       this.$el = $('#roles-modal');
       this.render();
+      $('button[type="submit"]', this.$el).click(this.submit_handler);
     }
 
     RolesModal.prototype.render = function() {
@@ -206,6 +212,36 @@
       $('input[type="checkbox"]', $rendered_entry).click(this._role_selected_handler(entry));
       $('.role-removal-action', $rendered_entry).click(this._role_removal_handler(entry));
       return $('#roles-modal tbody tr:last').before($rendered_entry);
+    };
+
+    RolesModal.prototype.submit_handler = function(event) {
+      var data, e, module_id;
+      module_id = serialise_form().uuid;
+      console.log('Posting metadata for module: ' + module_id);
+      data = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.collection.entries;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          e = _ref[_i];
+          _results.push({
+            name: e.name,
+            roles: e.roles
+          });
+        }
+        return _results;
+      }).call(this);
+      $.ajax({
+        type: 'POST',
+        url: _generate_url('roles', module_id),
+        data: JSON.stringify(data, null, 2),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function() {
+          return this.$el.modal('hide');
+        }
+      });
+      return false;
     };
 
     RolesModal.prototype._prepare_entry_for_rendering = function(entry) {
