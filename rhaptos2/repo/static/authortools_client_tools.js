@@ -187,6 +187,7 @@
           roles: roles
         });
         $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data));
+        $('input[type="checkbox"]', $rendered_entry).click(this._role_selected_handler(entry));
         _results.push($('#roles-modal tbody').append($rendered_entry));
       }
       return _results;

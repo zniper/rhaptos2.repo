@@ -119,6 +119,8 @@ class RolesModal
       $.extend(data, {roles: roles})
       # Render the entry...
       $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
+      # Attach the event handlers
+      $('input[type="checkbox"]', $rendered_entry).click(@_role_selected_handler(entry))
       # Append the entry to the modal.
       $('#roles-modal tbody').append($rendered_entry)
   _role_selected_handler: (entry) ->
