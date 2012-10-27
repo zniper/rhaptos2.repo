@@ -102,6 +102,20 @@ exports.roles_name_entry = '
     </td>
   </tr>'
 
+exports.roles_add_entry = '
+  <tr>
+    <td><input type="text" name="name"></td>
+    {{#roles}}
+      <td>
+        <input type="checkbox" name="roles" value="{{name}}"
+               {{#selected}}checked="checked"{{/selected}}>
+      </td>
+    {{/roles}}
+    <td>
+      <button type="button" class="btn role-add-action"><i class="icon-plus"></i></button>
+    </td>
+  </tr>'
+
 exports.roles = '
   <div role="popup-content">
     <form name="roles-form" action="roles" method="POST">

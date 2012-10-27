@@ -126,8 +126,8 @@
     */
 
     function RoleEntry(name, roles, collection) {
-      this.name = name;
-      this.roles = roles;
+      this.name = name || "";
+      this.roles = roles || [];
       this.collection = collection || null;
     }
 
@@ -149,6 +149,17 @@
       }
     }
 
+    RoleCollection.prototype.add = function(entry) {
+      /*
+            Adds an entry to this collection object.
+      */
+
+      var i;
+      entry.collection = this;
+      i = this.entries.push(entry);
+      return this.entries[i - 1];
+    };
+
     RoleCollection.prototype.remove = function(entry) {
       /*
             Removes the given entry from this collection object.
@@ -168,37 +179,76 @@
     }
 
     RolesModal.prototype.render = function() {
-      var $rendered_entry, collection, data, entries, entry, role, roles, value, _i, _j, _len, _len1, _ref, _results;
+      var $add_entry, entries, entry, _i, _len, _ref, _results;
       entries = [new RoleEntry('Michael', ['Maintainer', 'Copyright Holder']), new RoleEntry('Isabel', ['Author'])];
-      collection = new RoleCollection(entries);
+      this.collection = new RoleCollection(entries);
       $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {
         roles_vocabulary: ROLES
       }));
-      _ref = collection.entries;
+      entry = new RoleEntry();
+      $add_entry = $(Mustache.to_html(Templates.roles_add_entry, this._prepare_entry_for_rendering(entry)));
+      $('input[type="checkbox"]', $add_entry).click(this._role_selected_handler(entry));
+      $('.role-add-action', $add_entry).click(this._role_add_handler(entry));
+      $('#roles-modal tbody').append($add_entry);
+      _ref = this.collection.entries;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         entry = _ref[_i];
-        data = $.extend({}, entry);
-        roles = [];
-        for (_j = 0, _len1 = ROLES.length; _j < _len1; _j++) {
-          role = ROLES[_j];
-          value = {
-            name: role
-          };
-          if (__indexOf.call(entry.roles, role) >= 0) {
-            value.selected = true;
-          }
-          roles.push(value);
-        }
-        $.extend(data, {
-          roles: roles
-        });
-        $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data));
-        $('input[type="checkbox"]', $rendered_entry).click(this._role_selected_handler(entry));
-        $('.role-removal-action', $rendered_entry).click(this._role_removal_handler(entry));
-        _results.push($('#roles-modal tbody').append($rendered_entry));
+        _results.push(this.render_entry(entry));
       }
       return _results;
+    };
+
+    RolesModal.prototype.render_entry = function(entry) {
+      var $rendered_entry, data;
+      data = this._prepare_entry_for_rendering(entry);
+      $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data));
+      $('input[type="checkbox"]', $rendered_entry).click(this._role_selected_handler(entry));
+      $('.role-removal-action', $rendered_entry).click(this._role_removal_handler(entry));
+      return $('#roles-modal tbody tr:last').before($rendered_entry);
+    };
+
+    RolesModal.prototype._prepare_entry_for_rendering = function(entry) {
+      /*
+            Create a Mustache compatible RoleEntry representation.
+      */
+
+      var data, role, roles, value, _i, _len;
+      data = $.extend({}, entry);
+      roles = [];
+      for (_i = 0, _len = ROLES.length; _i < _len; _i++) {
+        role = ROLES[_i];
+        value = {
+          name: role
+        };
+        if (__indexOf.call(data.roles, role) >= 0) {
+          value.selected = true;
+        }
+        roles.push(value);
+      }
+      $.extend(data, {
+        roles: roles
+      });
+      return data;
+    };
+
+    RolesModal.prototype._role_add_handler = function(entry) {
+      /*
+            Create an event handler that will add a RoleEntry
+            to the collection and render it.
+      */
+
+      var event_handler, _entry,
+        _this = this;
+      _entry = entry;
+      event_handler = function(event) {
+        var name;
+        name = $(event.target).parents('tr').find('input[name="name"]').val();
+        _entry = _this.collection.add(new RoleEntry(name, entry.roles));
+        console.log("Added '" + name + "' to the roles collection.");
+        return _this.render_entry(_entry);
+      };
+      return event_handler;
     };
 
     RolesModal.prototype._role_selected_handler = function(entry) {
@@ -235,7 +285,7 @@
       event_handler = function(event) {
         $(event.target).parents('tr').remove();
         entry.collection.remove(entry);
-        return console.log("Removed '" + entry.name + "' from the roles listing.");
+        return console.log("Removed '" + entry.name + "' from the roles collection.");
       };
       return event_handler;
     };

@@ -82,8 +82,8 @@ class RoleEntry
     Data for a single role.
   ###
   constructor: (name, roles, collection) ->
-    @name = name
-    @roles = roles
+    @name = name || ""
+    @roles = roles || []
     @collection = collection || null
 
 
@@ -96,11 +96,19 @@ class RoleCollection
     # Associate the entries with this collection for back referencing.
     for entry in entries
       entry.collection = @
+  add: (entry) ->
+    ###
+      Adds an entry to this collection object.
+    ###
+    entry.collection = @
+    i = @entries.push(entry)
+    return @entries[i-1]
   remove: (entry) ->
     ###
       Removes the given entry from this collection object.
     ###
     @entries.pop(@entries.indexOf(entry))
+
 
 class RolesModal
   constructor: ->
@@ -112,24 +120,59 @@ class RolesModal
       new RoleEntry('Michael', ['Maintainer', 'Copyright Holder'])
       new RoleEntry('Isabel', ['Author'])
       ]
-    collection = new RoleCollection(entries)
+    @collection = new RoleCollection(entries)
     $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
-    for entry in collection.entries
-      data = $.extend({}, entry)
-      roles = []
-      for role in ROLES
-        value = {name: role}
-        if role in entry.roles
-          value.selected = true
-        roles.push(value)
-      $.extend(data, {roles: roles})
-      # Render the entry...
-      $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
-      # Attach the event handlers
-      $('input[type="checkbox"]', $rendered_entry).click(@_role_selected_handler(entry))
-      $('.role-removal-action', $rendered_entry).click(@_role_removal_handler(entry))
-      # Append the entry to the modal.
-      $('#roles-modal tbody').append($rendered_entry)
+
+    # Create a row for entering new entries to the roles listing.
+    entry = new RoleEntry()
+    $add_entry = $(Mustache.to_html(Templates.roles_add_entry, @_prepare_entry_for_rendering(entry)))
+    $('input[type="checkbox"]', $add_entry).click(@_role_selected_handler(entry))
+    $('.role-add-action', $add_entry).click(@_role_add_handler(entry))
+    $('#roles-modal tbody').append($add_entry)
+
+    for entry in @collection.entries
+      @render_entry(entry)
+  render_entry: (entry) ->
+    data = @_prepare_entry_for_rendering(entry)
+    # Render the entry...
+    $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
+    # Attach the event handlers
+    $('input[type="checkbox"]', $rendered_entry).click(@_role_selected_handler(entry))
+    $('.role-removal-action', $rendered_entry).click(@_role_removal_handler(entry))
+    # Append the entry to the modal.
+    $('#roles-modal tbody tr:last').before($rendered_entry)
+  _prepare_entry_for_rendering: (entry) ->
+    ###
+      Create a Mustache compatible RoleEntry representation.
+    ###
+    # Copy/clone the object.
+    data = $.extend({}, entry)
+    roles = []
+    for role in ROLES
+      value = {name: role}
+      if role in data.roles
+        value.selected = true
+      roles.push(value)
+    $.extend(data, {roles: roles})
+    return data
+  _role_add_handler: (entry) ->
+    ###
+      Create an event handler that will add a RoleEntry
+      to the collection and render it.
+    ###
+    _entry = entry
+    # XXX What I'm doing here is horrible... seriously...
+    #     The loosely coupled nature of the following statements
+    #     is aweful.
+    event_handler = (event) =>
+      # Grab the name from the input field
+      name = $(event.target).parents('tr').find('input[name="name"]').val()
+      # Add the entry to the collection.
+      _entry = @collection.add(new RoleEntry(name, entry.roles))
+      console.log("Added '#{name}' to the roles collection.")
+      @render_entry(_entry)
+      # TODO Reset the entry object and the input fields.
+    return event_handler
   _role_selected_handler: (entry) ->
     ###
       Creates an event handler that will modify the given RoleEntry based
@@ -154,7 +197,7 @@ class RolesModal
     event_handler = (event) =>
       $(event.target).parents('tr').remove()
       entry.collection.remove(entry)
-      console.log("Removed '#{entry.name}' from the roles listing.")
+      console.log("Removed '#{entry.name}' from the roles collection.")
     return event_handler
 
 
