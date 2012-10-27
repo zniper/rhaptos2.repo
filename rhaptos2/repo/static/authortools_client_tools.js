@@ -14,7 +14,7 @@
 
 
 (function() {
-  var MetadataModal, ROLES, RolesModal, exports, _form_values_to_object, _generate_metadata_url,
+  var MetadataModal, ROLES, RoleCollection, RoleEntry, RolesModal, exports, _form_values_to_object, _generate_metadata_url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -120,6 +120,39 @@
 
   ROLES = ["Author", "Maintainer", "Copyright Holder"];
 
+  RoleEntry = (function() {
+    /*
+        Data for a single role.
+    */
+
+    function RoleEntry(name, roles, collection) {
+      this.name = name;
+      this.roles = roles;
+      this.collection = collection || null;
+    }
+
+    return RoleEntry;
+
+  })();
+
+  RoleCollection = (function() {
+    /*
+        A collection/container of RoleEntry objects.
+    */
+
+    function RoleCollection(entries) {
+      var entry, _i, _len;
+      this.entries = entries || [];
+      for (_i = 0, _len = entries.length; _i < _len; _i++) {
+        entry = entries[_i];
+        entry.collection = this;
+      }
+    }
+
+    return RoleCollection;
+
+  })();
+
   RolesModal = (function() {
 
     function RolesModal() {
@@ -128,22 +161,17 @@
     }
 
     RolesModal.prototype.render = function() {
-      var entries, entry, role, roles, value, _i, _j, _len, _len1, _results;
-      entries = [
-        {
-          name: 'Michael',
-          roles: ['Maintainer', 'Copyright Holder']
-        }, {
-          name: 'Isabel',
-          roles: ['Author']
-        }
-      ];
+      var $rendered_entry, collection, data, entries, entry, role, roles, value, _i, _j, _len, _len1, _ref, _results;
+      entries = [new RoleEntry('Michael', ['Maintainer', 'Copyright Holder']), new RoleEntry('Isabel', ['Author'])];
+      collection = new RoleCollection(entries);
       $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {
         roles_vocabulary: ROLES
       }));
+      _ref = collection.entries;
       _results = [];
-      for (_i = 0, _len = entries.length; _i < _len; _i++) {
-        entry = entries[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        data = $.extend({}, entry);
         roles = [];
         for (_j = 0, _len1 = ROLES.length; _j < _len1; _j++) {
           role = ROLES[_j];
@@ -155,10 +183,11 @@
           }
           roles.push(value);
         }
-        $.extend(entry, {
+        $.extend(data, {
           roles: roles
         });
-        _results.push($('#roles-modal tbody').append(Mustache.to_html(Templates.roles_name_entry, entry)));
+        $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data));
+        _results.push($('#roles-modal tbody').append($rendered_entry));
       }
       return _results;
     };

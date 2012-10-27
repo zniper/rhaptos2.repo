@@ -77,6 +77,25 @@ class MetadataModal
 
 ROLES = ["Author", "Maintainer", "Copyright Holder"]
 
+class RoleEntry
+  ###
+    Data for a single role.
+  ###
+  constructor: (name, roles, collection) ->
+    @name = name
+    @roles = roles
+    @collection = collection || null
+
+
+class RoleCollection
+  ###
+    A collection/container of RoleEntry objects.
+  ###
+  constructor: (entries) ->
+    @entries = entries || []
+    for entry in entries
+      entry.collection = @
+
 class RolesModal
   constructor: ->
     @$el = $('#roles-modal')
@@ -84,19 +103,24 @@ class RolesModal
   render: ->
     # TODO Pull entry data from server
     entries = [
-      {name: 'Michael', roles: ['Maintainer', 'Copyright Holder']}
-      {name: 'Isabel', roles: ['Author']}
+      new RoleEntry('Michael', ['Maintainer', 'Copyright Holder'])
+      new RoleEntry('Isabel', ['Author'])
       ]
+    collection = new RoleCollection(entries)
     $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
-    for entry in entries
+    for entry in collection.entries
+      data = $.extend({}, entry)
       roles = []
       for role in ROLES
         value = {name: role}
         if role in entry.roles
           value.selected = true
         roles.push(value)
-      $.extend(entry, {roles: roles})
-      $('#roles-modal tbody').append(Mustache.to_html(Templates.roles_name_entry, entry))
+      $.extend(data, {roles: roles})
+      # Render the entry...
+      $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
+      # Append the entry to the modal.
+      $('#roles-modal tbody').append($rendered_entry)
 
 
 exports.construct = ->
