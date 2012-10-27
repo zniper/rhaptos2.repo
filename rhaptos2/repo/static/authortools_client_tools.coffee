@@ -160,18 +160,22 @@ class RolesModal
       Create an event handler that will add a RoleEntry
       to the collection and render it.
     ###
-    _entry = entry
     # XXX What I'm doing here is horrible... seriously...
     #     The loosely coupled nature of the following statements
     #     is aweful.
     event_handler = (event) =>
       # Grab the name from the input field
-      name = $(event.target).parents('tr').find('input[name="name"]').val()
+      $row = $(event.target).parents('tr')
+      $name_field = $row.find('input[name="name"]')
+      name = $name_field.val()
       # Add the entry to the collection.
       _entry = @collection.add(new RoleEntry(name, entry.roles))
       console.log("Added '#{name}' to the roles collection.")
       @render_entry(_entry)
-      # TODO Reset the entry object and the input fields.
+      # Reset the entry object and the input fields.
+      $name_field.val('')
+      $row.find('input[type="checkbox"]').attr('checked', false)
+      entry.roles = []
     return event_handler
   _role_selected_handler: (entry) ->
     ###

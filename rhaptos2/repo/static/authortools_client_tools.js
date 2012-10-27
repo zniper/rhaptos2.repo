@@ -238,15 +238,19 @@
             to the collection and render it.
       */
 
-      var event_handler, _entry,
+      var event_handler,
         _this = this;
-      _entry = entry;
       event_handler = function(event) {
-        var name;
-        name = $(event.target).parents('tr').find('input[name="name"]').val();
+        var $name_field, $row, name, _entry;
+        $row = $(event.target).parents('tr');
+        $name_field = $row.find('input[name="name"]');
+        name = $name_field.val();
         _entry = _this.collection.add(new RoleEntry(name, entry.roles));
         console.log("Added '" + name + "' to the roles collection.");
-        return _this.render_entry(_entry);
+        _this.render_entry(_entry);
+        $name_field.val('');
+        $row.find('input[type="checkbox"]').attr('checked', false);
+        return entry.roles = [];
       };
       return event_handler;
     };
