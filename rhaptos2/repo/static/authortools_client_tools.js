@@ -123,14 +123,12 @@
   RolesModal = (function() {
 
     function RolesModal() {
-      this.handle_addition = __bind(this.handle_addition, this);
       this.$el = $('#roles-modal');
       this.render();
     }
 
     RolesModal.prototype.render = function() {
-      var data, entries, entry, partials, _i, _len;
-      data = {};
+      var entries, entry, role, roles, value, _i, _j, _len, _len1, _results;
       entries = [
         {
           name: 'Michael',
@@ -140,49 +138,29 @@
           roles: ['Author']
         }
       ];
+      $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {
+        roles_vocabulary: ROLES
+      }));
+      _results = [];
       for (_i = 0, _len = entries.length; _i < _len; _i++) {
         entry = entries[_i];
-        this._transform_entry_roles_to_object(entry);
-      }
-      data.entries = entries;
-      data.roles_vocabulary = ROLES;
-      partials = {
-        roles_name_entry: Templates.roles_name_entry
-      };
-      $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, data, partials));
-      return $('form[name="role-entry-form"] button').click(this.handle_addition);
-    };
-
-    RolesModal.prototype._transform_entry_roles_to_object = function(entry) {
-      var role, roles, value, _i, _len;
-      roles = [];
-      for (_i = 0, _len = ROLES.length; _i < _len; _i++) {
-        role = ROLES[_i];
-        value = {
-          name: role
-        };
-        if (__indexOf.call(entry.roles, role) >= 0) {
-          value.selected = true;
+        roles = [];
+        for (_j = 0, _len1 = ROLES.length; _j < _len1; _j++) {
+          role = ROLES[_j];
+          value = {
+            name: role
+          };
+          if (__indexOf.call(entry.roles, role) >= 0) {
+            value.selected = true;
+          }
+          roles.push(value);
         }
-        roles.push(value);
+        $.extend(entry, {
+          roles: roles
+        });
+        _results.push($('#roles-modal tbody').append(Mustache.to_html(Templates.roles_name_entry, entry)));
       }
-      $.extend(entry, {
-        roles: roles
-      });
-      return entry;
-    };
-
-    RolesModal.prototype.handle_addition = function(event) {
-      var $form, form_data;
-      $form = $('form[name="role-entry-form"]');
-      form_data = _form_values_to_object($form);
-      $.extend(form_data, {
-        roles: []
-      });
-      this._transform_entry_roles_to_object(form_data);
-      $('#roles-modal tbody').append(Mustache.to_html(Templates.roles_name_entry, form_data));
-      $form[0].reset();
-      return false;
+      return _results;
     };
 
     return RolesModal;

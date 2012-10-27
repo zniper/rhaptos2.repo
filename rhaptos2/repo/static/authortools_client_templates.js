@@ -100,7 +100,7 @@
                {{#selected}}checked="checked"{{/selected}}>\
       </td>\
     {{/roles}}\
-    <td class="roles-other-actions-column"></td>\
+    <td class="roles-other-actions-column">{{#entry_actions}}{{.}}{{/entry_actions}}</td>\
   </tr>';
 
   exports.roles = '\
@@ -121,9 +121,7 @@
         <tfoot>\
         </tfoot>\
         <tbody>\
-          {{#entries}}\
-            {{>roles_name_entry}}\
-          {{/entries}}\
+\
         </tbody>\
       </table>\
     </form>\
