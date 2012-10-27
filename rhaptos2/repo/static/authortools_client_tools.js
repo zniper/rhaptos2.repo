@@ -192,6 +192,29 @@
       return _results;
     };
 
+    RolesModal.prototype._role_selected_handler = function(entry) {
+      /*
+             Creates an event handler that will modify the given RoleEntry based
+             on the selection.
+      */
+
+      var event_handler,
+        _this = this;
+      event_handler = function(event) {
+        var $target, role_name;
+        $target = $(event.target);
+        role_name = $target.val();
+        if ($target.is(':checked')) {
+          entry.roles.push(role_name);
+          return console.log("Gave the '" + role_name + "' role to '" + entry.name + "'.");
+        } else {
+          entry.roles.pop(entry.roles.indexOf(role_name));
+          return console.log("Took the '" + role_name + "' role away from '" + entry.name + "'.");
+        }
+      };
+      return event_handler;
+    };
+
     return RolesModal;
 
   })();
