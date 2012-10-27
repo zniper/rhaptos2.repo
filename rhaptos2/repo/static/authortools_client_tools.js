@@ -194,8 +194,8 @@
 
     RolesModal.prototype._role_selected_handler = function(entry) {
       /*
-             Creates an event handler that will modify the given RoleEntry based
-             on the selection.
+            Creates an event handler that will modify the given RoleEntry based
+            on the selection.
       */
 
       var event_handler,

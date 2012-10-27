@@ -121,22 +121,22 @@ class RolesModal
       $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
       # Append the entry to the modal.
       $('#roles-modal tbody').append($rendered_entry)
-   _role_selected_handler: (entry) ->
-     ###
-       Creates an event handler that will modify the given RoleEntry based
-       on the selection.
-     ###
-     event_handler = (event) =>
-       $target = $(event.target)
-       role_name = $target.val()
-       if $target.is(':checked')
-         # Add the role to the entry.
-         entry.roles.push(role_name)
-         console.log("Gave the '#{role_name}' role to '#{entry.name}'.")
-       else
-         entry.roles.pop(entry.roles.indexOf(role_name))
-         console.log("Took the '#{role_name}' role away from '#{entry.name}'.")
-     return event_handler
+  _role_selected_handler: (entry) ->
+    ###
+      Creates an event handler that will modify the given RoleEntry based
+      on the selection.
+    ###
+    event_handler = (event) =>
+      $target = $(event.target)
+      role_name = $target.val()
+      if $target.is(':checked')
+        # Add the role to the entry.
+        entry.roles.push(role_name)
+        console.log("Gave the '#{role_name}' role to '#{entry.name}'.")
+      else
+        entry.roles.pop(entry.roles.indexOf(role_name))
+        console.log("Took the '#{role_name}' role away from '#{entry.name}'.")
+    return event_handler
 
 
 exports.construct = ->
