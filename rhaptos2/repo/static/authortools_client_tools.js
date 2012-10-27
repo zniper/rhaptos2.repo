@@ -149,6 +149,13 @@
       }
     }
 
+    RoleCollection.prototype.remove = function(entry) {
+      /*
+            Removes the given entry from this collection object.
+      */
+      return this.entries.pop(this.entries.indexOf(entry));
+    };
+
     return RoleCollection;
 
   })();
@@ -188,6 +195,7 @@
         });
         $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data));
         $('input[type="checkbox"]', $rendered_entry).click(this._role_selected_handler(entry));
+        $('.role-removal-action', $rendered_entry).click(this._role_removal_handler(entry));
         _results.push($('#roles-modal tbody').append($rendered_entry));
       }
       return _results;
@@ -212,6 +220,22 @@
           entry.roles.pop(entry.roles.indexOf(role_name));
           return console.log("Took the '" + role_name + "' role away from '" + entry.name + "'.");
         }
+      };
+      return event_handler;
+    };
+
+    RolesModal.prototype._role_removal_handler = function(entry) {
+      /*
+            Creates an event handler that will remove the given RoleEntry from the
+            page and from the collection.
+      */
+
+      var event_handler,
+        _this = this;
+      event_handler = function(event) {
+        $(event.target).parents('tr').remove();
+        entry.collection.remove(entry);
+        return console.log("Removed '" + entry.name + "' from the roles listing.");
       };
       return event_handler;
     };

@@ -97,7 +97,9 @@ exports.roles_name_entry = '
                {{#selected}}checked="checked"{{/selected}}>
       </td>
     {{/roles}}
-    <td class="roles-other-actions-column">{{#entry_actions}}{{.}}{{/entry_actions}}</td>
+    <td class="roles-other-actions-column">
+      <i class="icon-trash role-removal-action"></i>
+    </td>
   </tr>'
 
 exports.roles = '

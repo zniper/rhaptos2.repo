@@ -93,8 +93,14 @@ class RoleCollection
   ###
   constructor: (entries) ->
     @entries = entries || []
+    # Associate the entries with this collection for back referencing.
     for entry in entries
       entry.collection = @
+  remove: (entry) ->
+    ###
+      Removes the given entry from this collection object.
+    ###
+    @entries.pop(@entries.indexOf(entry))
 
 class RolesModal
   constructor: ->
@@ -121,6 +127,7 @@ class RolesModal
       $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
       # Attach the event handlers
       $('input[type="checkbox"]', $rendered_entry).click(@_role_selected_handler(entry))
+      $('.role-removal-action', $rendered_entry).click(@_role_removal_handler(entry))
       # Append the entry to the modal.
       $('#roles-modal tbody').append($rendered_entry)
   _role_selected_handler: (entry) ->
@@ -138,6 +145,16 @@ class RolesModal
       else
         entry.roles.pop(entry.roles.indexOf(role_name))
         console.log("Took the '#{role_name}' role away from '#{entry.name}'.")
+    return event_handler
+  _role_removal_handler: (entry) ->
+    ###
+      Creates an event handler that will remove the given RoleEntry from the
+      page and from the collection.
+    ###
+    event_handler = (event) =>
+      $(event.target).parents('tr').remove()
+      entry.collection.remove(entry)
+      console.log("Removed '#{entry.name}' from the roles listing.")
     return event_handler
 
 
