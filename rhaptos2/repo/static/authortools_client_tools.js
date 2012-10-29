@@ -14,7 +14,7 @@
 
 
 (function() {
-  var METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataModal, ROLES, RoleCollection, RoleEntry, RolesModal, exports, _generate_metadata_url, _generate_url,
+  var METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataModal, ROLES, RoleCollection, RoleEntry, RolesModal, exports, _generate_url,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -43,11 +43,11 @@
   };
 
   _generate_url = function(area, id) {
+    /*
+        Returns a URL for given area and id. This is a simple abstraction for
+        acquiring the URL.
+    */
     return MODULEURL + id + '/' + area;
-  };
-
-  _generate_metadata_url = function(id) {
-    return _generate_url('metadata', id);
   };
 
   MetadataModal = (function() {
@@ -76,7 +76,7 @@
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
         type: 'POST',
-        url: _generate_metadata_url(module_id),
+        url: _generate_url('metadata', module_id),
         data: JSON.stringify(data, null, 2),
         dataType: 'json',
         contentType: 'application/json',
@@ -196,7 +196,7 @@
       };
       return $.when($.ajax({
         type: 'GET',
-        url: _generate_metadata_url(module_id),
+        url: _generate_url('metadata', module_id),
         contentType: 'application/json'
       })).then($.proxy(wrapped_renderer, this));
     };

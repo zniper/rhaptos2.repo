@@ -38,10 +38,11 @@ MODAL_SPINNER_OPTIONS = {
 }
 
 _generate_url = (area, id) ->
-   return MODULEURL + id + '/' + area
-
-_generate_metadata_url = (id) ->
-  return _generate_url('metadata', id)
+  ###
+    Returns a URL for given area and id. This is a simple abstraction for
+    acquiring the URL.
+  ###
+  return MODULEURL + id + '/' + area
 
 
 class MetadataModal
@@ -69,7 +70,7 @@ class MetadataModal
     console.log('Posting metadata for module: ' + module_id)
     $.ajax({
       type: 'POST'
-      url: _generate_metadata_url(module_id)
+      url: _generate_url('metadata', module_id)
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'
@@ -144,7 +145,7 @@ class MetadataModal
     $.when(
       $.ajax({
         type: 'GET'
-        url: _generate_metadata_url(module_id)
+        url: _generate_url('metadata', module_id)
         contentType: 'application/json'
       })
     ).then($.proxy(wrapped_renderer, @))
