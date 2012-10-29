@@ -14,10 +14,31 @@
 
 
 (function() {
-  var MetadataModal, exports, _generate_metadata_url,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataModal, exports, _generate_metadata_url,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   exports = {};
+
+  METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business", "Science and Technology", "Humanities", "Social Sciences"];
+
+  MODAL_SPINNER_OPTIONS = {
+    lines: 13,
+    length: 16,
+    width: 6,
+    radius: 27,
+    corners: 1,
+    rotate: 0,
+    color: '#444',
+    speed: 0.9,
+    trail: 69,
+    shadow: false,
+    hwaccel: false,
+    className: 'spinner',
+    zIndex: 2e9,
+    top: 'auto',
+    left: '265px'
+  };
 
   _generate_metadata_url = function(id) {
     return MODULEURL + id + '/metadata';
@@ -28,14 +49,22 @@
     function MetadataModal() {
       this.submit_handler = __bind(this.submit_handler, this);
       this.$el = $('#metadata-modal');
-      this.render();
+      $('#metadata-modal button[type="submit"]').click(this.submit_handler);
+      this.$el.on('show', $.proxy(this.render, this));
     }
 
     MetadataModal.prototype.submit_handler = function(event) {
       var data, module_id;
       data = {};
       $.map($('#metadata-modal form').serializeArray(), function(obj) {
-        return data[obj['name']] = obj['value'];
+        if (obj.name === 'subjects') {
+          if (!(obj.name in data)) {
+            data[obj.name] = [];
+          }
+          return data[obj.name].push(obj.value);
+        } else {
+          return data[obj.name] = obj.value;
+        }
       });
       module_id = serialise_form().uuid;
       console.log('Posting metadata for module: ' + module_id);
@@ -82,29 +111,88 @@
     };
 
     MetadataModal.prototype.render = function() {
-      var data, language_code, languages, value, _ref;
-      data = {};
-      languages = [
-        {
-          code: '',
-          "native": '',
-          english: ''
+      var $target, module_id, opts, renderer, spinner, wrapped_renderer;
+      module_id = serialise_form().uuid;
+      renderer = function(data) {
+        var language_code, languages, subject, subjects, value, variant_languages, _i, _len, _ref, _ref1;
+        languages = [
+          {
+            code: '',
+            "native": '',
+            english: ''
+          }
+        ];
+        _ref = Language.getLanguages();
+        for (language_code in _ref) {
+          value = _ref[language_code];
+          $.extend(value, {
+            code: language_code
+          });
+          if ((data.language != null) && data.language === language_code) {
+            $.extend(value, {
+              selected: 'selected'
+            });
+          }
+          languages.push(value);
         }
-      ];
-      _ref = Language.getLanguages();
-      for (language_code in _ref) {
-        value = _ref[language_code];
-        $.extend(value, {
-          'code': language_code
-        });
-        languages.push(value);
-      }
-      $.extend(data, {
-        'languages': languages
+        data.languages = languages;
+        if (data.language != null) {
+          variant_languages = [
+            {
+              code: '',
+              "native": '',
+              english: ''
+            }
+          ];
+          _ref1 = Language.getCombined();
+          for (language_code in _ref1) {
+            value = _ref1[language_code];
+            if (language_code.slice(0, 2) !== data.language) {
+              continue;
+            }
+            $.extend(value, {
+              code: language_code
+            });
+            if ((data.variant_language != null) && data.variant_language === language_code) {
+              $.extend(value, {
+                selected: 'selected'
+              });
+            }
+            variant_languages.push(value);
+          }
+          data.variant_languages = variant_languages;
+        }
+        subjects = [];
+        for (_i = 0, _len = METADATA_SUBJECTS.length; _i < _len; _i++) {
+          subject = METADATA_SUBJECTS[_i];
+          value = {
+            name: subject
+          };
+          if ((data.subjects != null) && __indexOf.call(data.subjects, subject) >= 0) {
+            value.selected = 'checked';
+          }
+          subjects.push(value);
+        }
+        data.subjects = subjects;
+        $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
+        return $('#metadata-modal select[name="language"]').change(this.language_handler);
+      };
+      $target = $('#metadata-modal .modal-body');
+      opts = MODAL_SPINNER_OPTIONS;
+      $.extend(opts, {
+        top: $target.height() / 2,
+        left: $target.width() / 2
       });
-      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
-      $('#metadata-modal select[name="language"]').change(this.language_handler);
-      return $('#metadata-modal button[type="submit"]').click(this.submit_handler);
+      spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0]);
+      wrapped_renderer = function(data) {
+        spinner.stop();
+        return renderer(data);
+      };
+      return $.when($.ajax({
+        type: 'GET',
+        url: _generate_metadata_url(module_id),
+        contentType: 'application/json'
+      })).then($.proxy(wrapped_renderer, this));
     };
 
     return MetadataModal;

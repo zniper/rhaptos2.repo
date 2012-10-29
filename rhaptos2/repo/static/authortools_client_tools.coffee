@@ -15,18 +15,46 @@
 # window.Tools = exports;
 exports = {}
 
+METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business",
+  "Science and Technology", "Humanities", "Social Sciences"]
+
+MODAL_SPINNER_OPTIONS = {
+  lines: 13  # The number of lines to draw
+  length: 16  # The length of each line
+  width: 6  # The line thickness
+  radius: 27  # The radius of the inner circle
+  corners: 1  # Corner roundness (0..1)
+  rotate: 0  # The rotation offset
+  color: '#444'  # #rgb or #rrggbb
+  speed: 0.9  # Rounds per second
+  trail: 69  # Afterglow percentage
+  shadow: false  # Whether to render a shadow
+  hwaccel: false  # Whether to use hardware acceleration
+  className: 'spinner'  # The CSS class to assign to the spinner
+  zIndex: 2e9  # The z-index (defaults to 2000000000)
+  top: 'auto'  # Top position relative to parent in px
+  left: '265px'  # Left position relative to parent in px
+}
+
 _generate_metadata_url = (id) ->
   return MODULEURL + id + '/metadata'
 
 class MetadataModal
   constructor: ->
     @$el = $('#metadata-modal')
-    @render()
+    $('#metadata-modal button[type="submit"]').click(@submit_handler)
+    # Attach the rendering code to the modal 'show' event.
+    @$el.on('show', $.proxy(@render, @))
   submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
     $.map($('#metadata-modal form').serializeArray(), (obj) ->
-      data[obj['name']] = obj['value']
+      # Special case for the subject list. Probably a better way to do this...
+      if obj.name == 'subjects'
+        if not (obj.name of data) then data[obj.name] = []
+        data[obj.name].push(obj.value)
+      else
+        data[obj.name] = obj.value
     )
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
@@ -60,17 +88,62 @@ class MetadataModal
     else
       $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled')
   render: ->
-    data = {}
-    languages = [{code: '', native: '', english: ''}]
-    for language_code, value of Language.getLanguages()
-      $.extend(value, {'code': language_code})
-      languages.push(value)
-    $.extend(data, {'languages': languages})
-    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
-    $('#metadata-modal select[name="language"]').change(@language_handler)
-    $('#metadata-modal button[type="submit"]').click(@submit_handler)
-    
-  
+    # XXX The best way to get the module ID at this time is to pull it out
+    #     of the module editor form. The 'serialise_form' function is defined
+    #     globally in the 'authortools_client.js' file.
+    module_id = serialise_form().uuid
+
+    renderer = (data) ->
+      # XXX Should check for issues before doing the following...
+
+      # Collect the language data.
+      languages = [{code: '', native: '', english: ''}]
+      for language_code, value of Language.getLanguages()
+        $.extend(value, {code: language_code})
+        if data.language? and data.language == language_code
+          $.extend(value, {selected: 'selected'})
+        languages.push(value)
+      data.languages = languages
+      if data.language?
+        variant_languages = [{code: '', native: '', english: ''}]
+        for language_code, value of Language.getCombined()
+          if language_code[..1] != data.language
+            continue
+          $.extend(value, {code: language_code})
+          if data.variant_language? and data.variant_language == language_code
+            $.extend(value, {selected: 'selected'})
+          variant_languages.push(value)
+        data.variant_languages = variant_languages
+
+      # Collect the subject data.
+      subjects = []
+      for subject in METADATA_SUBJECTS
+        value = {name: subject}
+        if data.subjects? and subject in data.subjects
+          value.selected = 'checked'
+        subjects.push(value)
+      data.subjects = subjects
+
+      # Render to the page.
+      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
+      $('#metadata-modal select[name="language"]').change(@language_handler)
+    $target = $('#metadata-modal .modal-body')
+    opts = MODAL_SPINNER_OPTIONS
+    $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
+    spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
+
+    wrapped_renderer = (data) ->
+      spinner.stop()
+      renderer(data)
+
+    $.when(
+      $.ajax({
+        type: 'GET'
+        url: _generate_metadata_url(module_id)
+        contentType: 'application/json'
+      })
+    ).then($.proxy(wrapped_renderer, @))
+
 
 exports.construct = ->
   $('.dropdown-toggle').dropdown()
