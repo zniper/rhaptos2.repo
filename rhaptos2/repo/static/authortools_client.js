@@ -67,7 +67,7 @@ function save_validate() {
 
 function get_textarea_html5() {
         //retrieve, as JSON, the contents of the edit-area
-        var txtarea = $('#editarea-aloha').html();
+        var txtarea = $('#editarea').html();
         return txtarea;
     }
 
@@ -90,7 +90,7 @@ function load_textarea(mhashid) {
             alert("sending jdata" + jdata);
             logout(jdata);
             //weird aloha feature - suffixed textareas.. ask phil..
-            $('#editarea-aloha').val(jdata['content']);
+            $('#editarea').val(jdata['content']);
             $('#aclrw').val(jdata['aclrw']);
             $('#contentrw').val(jdata['contentrw']);
             $('#title').val(jdata['title']);
@@ -131,7 +131,7 @@ function newText() {
     $('#contentrw').val(whoami['userID']);
     $('#title').val('Enter title here ...');
     $('#uuid').val('');
-    $('#editarea-aloha').html('Enter your text here...');
+    $('#editarea').html('Enter your text here...');
 
 
 }
@@ -215,7 +215,7 @@ function getLoadHistoryVer(uuid) {
             $('#contentrw').val(contentrw);
             $('#uuid').val(uuid);
 
-            $('#editarea-aloha').html(txtarea);
+            $('#editarea').html(txtarea);
         },
 
         error: function(jqXHR, textStatus, err) {
