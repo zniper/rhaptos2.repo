@@ -260,30 +260,52 @@
 
     function RolesModal() {
       this.submit_handler = __bind(this.submit_handler, this);
+
+      this.render = __bind(this.render, this);
       this.$el = $('#roles-modal');
-      this.render();
       $('button[type="submit"]', this.$el).click(this.submit_handler);
+      this.$el.on('show', this.render);
     }
 
     RolesModal.prototype.render = function() {
-      var $add_entry, entries, entry, _i, _len, _ref, _results;
-      entries = [new RoleEntry('Michael', ['Maintainer', 'Copyright Holder']), new RoleEntry('Isabel', ['Author'])];
-      this.collection = new RoleCollection(entries);
-      $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {
-        roles_vocabulary: ROLES
-      }));
-      entry = new RoleEntry();
-      $add_entry = $(Mustache.to_html(Templates.roles_add_entry, this._prepare_entry_for_rendering(entry)));
-      $('input[type="checkbox"]', $add_entry).click(this._role_selected_handler(entry));
-      $('.role-add-action', $add_entry).click(this._role_add_handler(entry));
-      $('#roles-modal tbody').append($add_entry);
-      _ref = this.collection.entries;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        entry = _ref[_i];
-        _results.push(this.render_entry(entry));
-      }
-      return _results;
+      var $target, module_id, opts, renderer, spinner, wrapped_renderer,
+        _this = this;
+      module_id = serialise_form().uuid;
+      renderer = function(entries) {
+        var $add_entry, entry, _i, _len, _ref, _results;
+        _this.collection = new RoleCollection(entries);
+        $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {
+          roles_vocabulary: ROLES
+        }));
+        entry = new RoleEntry();
+        $add_entry = $(Mustache.to_html(Templates.roles_add_entry, _this._prepare_entry_for_rendering(entry)));
+        $('input[type="checkbox"]', $add_entry).click(_this._role_selected_handler(entry));
+        $('.role-add-action', $add_entry).click(_this._role_add_handler(entry));
+        $('#roles-modal tbody').append($add_entry);
+        _ref = _this.collection.entries;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          entry = _ref[_i];
+          _results.push(_this.render_entry(entry));
+        }
+        return _results;
+      };
+      $target = $('#roles-modal .modal-body');
+      opts = MODAL_SPINNER_OPTIONS;
+      $.extend(opts, {
+        top: $target.height() / 2,
+        left: $target.width() / 2
+      });
+      spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0]);
+      wrapped_renderer = function(data) {
+        spinner.stop();
+        return renderer(data);
+      };
+      return $.when($.ajax({
+        type: 'GET',
+        url: _generate_url('roles', module_id),
+        contentType: 'application/json'
+      })).then(wrapped_renderer);
     };
 
     RolesModal.prototype.render_entry = function(entry) {

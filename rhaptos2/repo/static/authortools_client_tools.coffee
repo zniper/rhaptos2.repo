@@ -188,27 +188,46 @@ class RoleCollection
 class RolesModal
   constructor: ->
     @$el = $('#roles-modal')
-    @render()
     # Bind the submit event handler.
     $('button[type="submit"]', @$el).click(@submit_handler)
-  render: ->
-    # TODO Pull entry data from server
-    entries = [
-      new RoleEntry('Michael', ['Maintainer', 'Copyright Holder'])
-      new RoleEntry('Isabel', ['Author'])
-      ]
-    @collection = new RoleCollection(entries)
-    $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
+    # Bind the rendering code to the modal 'show' event.
+    @$el.on('show', @render)
+  render: =>
+    # XXX The best way to get the module ID at this time is to pull it out
+    #     of the module editor form. The 'serialise_form' function is defined
+    #     globally in the 'authortools_client.js' file.
+    module_id = serialise_form().uuid
 
-    # Create a row for entering new entries to the roles listing.
-    entry = new RoleEntry()
-    $add_entry = $(Mustache.to_html(Templates.roles_add_entry, @_prepare_entry_for_rendering(entry)))
-    $('input[type="checkbox"]', $add_entry).click(@_role_selected_handler(entry))
-    $('.role-add-action', $add_entry).click(@_role_add_handler(entry))
-    $('#roles-modal tbody').append($add_entry)
+    renderer = (entries) =>
+      @collection = new RoleCollection(entries)
+      $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
 
-    for entry in @collection.entries
-      @render_entry(entry)
+      # Create a row for entering new entries to the roles listing.
+      entry = new RoleEntry()
+      $add_entry = $(Mustache.to_html(Templates.roles_add_entry, @_prepare_entry_for_rendering(entry)))
+      $('input[type="checkbox"]', $add_entry).click(@_role_selected_handler(entry))
+      $('.role-add-action', $add_entry).click(@_role_add_handler(entry))
+      $('#roles-modal tbody').append($add_entry)
+
+      for entry in @collection.entries
+        @render_entry(entry)
+
+    $target = $('#roles-modal .modal-body')
+    opts = MODAL_SPINNER_OPTIONS
+    $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
+    spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
+
+    wrapped_renderer = (data) =>
+      spinner.stop()
+      renderer(data)
+
+    $.when(
+      $.ajax({
+        type: 'GET'
+        url: _generate_url('roles', module_id)
+        contentType: 'application/json'
+      })
+    ).then(wrapped_renderer)
   render_entry: (entry) ->
     data = @_prepare_entry_for_rendering(entry)
     # Render the entry...
