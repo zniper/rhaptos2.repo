@@ -232,7 +232,7 @@ class RolesModal
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'
-      success: -> @$el.modal('hide')
+      success: => @$el.modal('hide')
     })
     # Return false to prevent the form from submitting.
     return false

@@ -296,7 +296,8 @@
     };
 
     RolesModal.prototype.submit_handler = function(event) {
-      var data, e, module_id;
+      var data, e, module_id,
+        _this = this;
       module_id = serialise_form().uuid;
       console.log('Posting metadata for module: ' + module_id);
       data = (function() {
@@ -319,7 +320,7 @@
         dataType: 'json',
         contentType: 'application/json',
         success: function() {
-          return this.$el.modal('hide');
+          return _this.$el.modal('hide');
         }
       });
       return false;
