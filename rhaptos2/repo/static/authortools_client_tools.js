@@ -53,10 +53,12 @@
   MetadataModal = (function() {
 
     function MetadataModal() {
+      this.render = __bind(this.render, this);
+
       this.submit_handler = __bind(this.submit_handler, this);
       this.$el = $('#metadata-modal');
       $('#metadata-modal button[type="submit"]').click(this.submit_handler);
-      this.$el.on('show', $.proxy(this.render, this));
+      this.$el.on('show', this.render);
     }
 
     MetadataModal.prototype.submit_handler = function(event) {
@@ -117,7 +119,8 @@
     };
 
     MetadataModal.prototype.render = function() {
-      var $target, module_id, opts, renderer, spinner, wrapped_renderer;
+      var $target, module_id, opts, renderer, spinner, wrapped_renderer,
+        _this = this;
       module_id = serialise_form().uuid;
       renderer = function(data) {
         var language_code, languages, subject, subjects, value, variant_languages, _i, _len, _ref, _ref1;
@@ -181,7 +184,7 @@
         }
         data.subjects = subjects;
         $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
-        return $('#metadata-modal select[name="language"]').change(this.language_handler);
+        return $('#metadata-modal select[name="language"]').change(_this.language_handler);
       };
       $target = $('#metadata-modal .modal-body');
       opts = MODAL_SPINNER_OPTIONS;
@@ -198,7 +201,7 @@
         type: 'GET',
         url: _generate_url('metadata', module_id),
         contentType: 'application/json'
-      })).then($.proxy(wrapped_renderer, this));
+      })).then(wrapped_renderer);
     };
 
     return MetadataModal;

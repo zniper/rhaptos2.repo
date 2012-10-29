@@ -50,7 +50,7 @@ class MetadataModal
     @$el = $('#metadata-modal')
     $('#metadata-modal button[type="submit"]').click(@submit_handler)
     # Attach the rendering code to the modal 'show' event.
-    @$el.on('show', $.proxy(@render, @))
+    @$el.on('show', @render)
   submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
@@ -93,13 +93,13 @@ class MetadataModal
       $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
     else
       $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled')
-  render: ->
+  render: =>
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
     module_id = serialise_form().uuid
 
-    renderer = (data) ->
+    renderer = (data) =>
       # XXX Should check for issues before doing the following...
 
       # Collect the language data.
@@ -138,7 +138,7 @@ class MetadataModal
     $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
     spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
 
-    wrapped_renderer = (data) ->
+    wrapped_renderer = (data) =>
       spinner.stop()
       renderer(data)
 
@@ -148,7 +148,7 @@ class MetadataModal
         url: _generate_url('metadata', module_id)
         contentType: 'application/json'
       })
-    ).then($.proxy(wrapped_renderer, @))
+    ).then(wrapped_renderer)
 
 
 class RoleEntry
