@@ -189,6 +189,19 @@ def post_metadata(modname):
     resp.status_code = 200
     return resp
 
+@app.route("/module/<modname>/metadata", methods=['GET'])
+@apply_cors
+def get_metadata(modname):
+    """Return data for the requested module."""
+    # XXX 'modname' is used for consistancy, but it's not ideal, since
+    #     the value isn't actually a module name.
+    uuid = modname
+    data = model.get_metadata(uuid)
+
+    resp = flask.make_response(data)
+    resp.status_code = 200
+    resp.content_type='application/json'
+    return resp
 
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()

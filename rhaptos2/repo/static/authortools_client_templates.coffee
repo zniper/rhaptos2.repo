@@ -27,64 +27,35 @@ exports.metadata = '
 
       <label>Language</label>
       <select name="language">
-        {{#languages}}
-          <option value="{{code}}">{{native}}</option>
-        {{/languages}}
+      {{#languages}}
+        <option value="{{code}}"
+                {{#selected}}selected="{{selected}}"{{/selected}}>
+          {{native}}
+        </option>
+      {{/languages}}
       </select>
 
       <label>Language variant</label>
       <select name="variant_language">
+      {{#variant_languages}}
+        <option value="{{code}}"
+                {{#selected}}selected="{{selected}}"{{/selected}}>
+          {{english}}  {{! There is not a `native` value in the variants }}
+        </option>
+      {{/variant_languages}}
       </select>
 
       <label>Subjects</label>
-      <table>
-        <tbody>
-          <tr>
-            <td>
-              <label class="checkbox">
-                <input type="checkbox" name="subject" value="Arts">
-                Arts
-              </label>
-            </td>
-            <td>
-              <label class="checkbox">
-                <input type="checkbox" name="subject" value="Mathematics and Statistics">
-                Mathematics and Statistics
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label class="checkbox">
-                <input type="checkbox" name="subject" value="Business">
-                Business
-              </label>
-            </td>
-            <td>
-              <label class="checkbox">
-                <input type="checkbox" name="subject" value="Science and Technology">
-                Science and Technology
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label class="checkbox">
-                <input type="checkbox" name="subject" value="Humanities">
-                Humanities
-              </label>
-            </td>
-            <td>
-              <label class="checkbox">
-                <input type="checkbox" name="subject" value="Social Sciences">
-                Social Sciences
-              </label>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {{#subjects}}
+      <label class="checkbox">
+        <input type="checkbox" name="subjects"
+               value="{{name}}"
+               {{#selected}}checked="checked"{{/selected}}> {{name}}
+      </label>
+      {{/subjects}}
+
       <label>Keywords</label>
-      <input type="text" name="keywords">
+      <input type="text" name="keywords" {{#keywords}}value="{{keywords}}"{{/keywords}}>
     </form>
   </div>'
 

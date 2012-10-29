@@ -378,7 +378,7 @@ def mod_from_file(uid):
     return n
 
 def create_or_update_metadata(uuid, data):
-    """Given a `uuid` and json `data`, this fucntion will create or update the
+    """Given a `uuid` and json `data`, this function will create or update the
     stored metadata.
     """
     filename = "{0}.metadata".format(uuid)
@@ -393,6 +393,16 @@ def create_or_update_metadata(uuid, data):
     with open(file_path, 'w') as f:
         json.dump(stored_data, f)
 
+def get_metadata(uuid):
+    """Given a `uuid`, return the metadata information in a json format."""
+    filename = "{0}.metadata".format(uuid)
+    file_path = os.path.join(userspace(), filename)
+    try:
+        with open(file_path) as f:
+            data = json.load(f)
+    except IOError:
+        data = {}
+    return json.dumps(data)
 
 if __name__ == '__main__':
     import doctest
