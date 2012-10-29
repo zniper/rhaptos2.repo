@@ -17,6 +17,7 @@ exports = {}
 
 METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business",
   "Science and Technology", "Humanities", "Social Sciences"]
+ROLES = ["Author", "Maintainer", "Copyright Holder"]
 
 MODAL_SPINNER_OPTIONS = {
   lines: 13  # The number of lines to draw
@@ -148,9 +149,6 @@ class MetadataModal
       })
     ).then($.proxy(wrapped_renderer, @))
 
-
-
-ROLES = ["Author", "Maintainer", "Copyright Holder"]
 
 class RoleEntry
   ###

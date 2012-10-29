@@ -22,6 +22,8 @@
 
   METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business", "Science and Technology", "Humanities", "Social Sciences"];
 
+  ROLES = ["Author", "Maintainer", "Copyright Holder"];
+
   MODAL_SPINNER_OPTIONS = {
     lines: 13,
     length: 16,
@@ -202,8 +204,6 @@
     return MetadataModal;
 
   })();
-
-  ROLES = ["Author", "Maintainer", "Copyright Holder"];
 
   RoleEntry = (function() {
     /*
