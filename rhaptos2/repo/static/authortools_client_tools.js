@@ -226,6 +226,7 @@
       _ref = Language.getLanguages();
       for (languageCode in _ref) {
         value = _ref[languageCode];
+        value = $.extend({}, value);
         $.extend(value, {
           code: languageCode
         });

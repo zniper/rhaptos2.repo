@@ -166,6 +166,7 @@ class MetadataModal extends BaseModal
     # Collect the language data.
     languages = [{code: '', native: '', english: ''}]
     for languageCode, value of Language.getLanguages()
+      value = $.extend({}, value)  # Clone the value.
       $.extend(value, {code: languageCode})
       if data.language? and data.language == languageCode
         $.extend(value, {selected: 'selected'})
