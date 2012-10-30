@@ -78,7 +78,7 @@
 
   exports.roles_add_entry = '\
   <tr>\
-    <td><input type="text" name="name"></td>\
+    <td><input type="text" name="name" placeholder="Type a name..."></td>\
     {{#roles}}\
       <td>\
         <input type="checkbox" name="roles" value="{{name}}"\
