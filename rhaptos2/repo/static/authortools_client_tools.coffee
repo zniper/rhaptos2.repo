@@ -153,7 +153,7 @@ class MetadataModal extends BaseModal
       if code[..1] == selectedCode
         $.extend(value, {code: code})
         variants.push(value)
-    $variantLang = @$('select[name="variant_language"]')
+    $variantLang = @$('select[name="variantLanguage"]')
     if variants.length > 0
       # Insert an empty option into the list.
       variants.splice(0, 0, {code: '', english: ''})

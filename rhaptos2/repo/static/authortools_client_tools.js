@@ -199,7 +199,7 @@
           variants.push(value);
         }
       }
-      $variantLang = this.$('select[name="variant_language"]');
+      $variantLang = this.$('select[name="variantLanguage"]');
       if (variants.length > 0) {
         variants.splice(0, 0, {
           code: '',
