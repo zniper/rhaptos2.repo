@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """views.py - View code for the repository application.
 
 Author: Paul Brian
@@ -22,7 +23,8 @@ import flask
 from flask import (
     Flask, render_template,
     request, g, session, flash,
-    redirect, url_for, abort,
+    redirect, url_for, abort, 
+    send_from_directory
     )
 
 from rhaptos2.common import log, err, conf
@@ -53,6 +55,31 @@ def apply_cors(fn):
         return resp
 
     return newfn
+
+
+@app.route("/aloha/<path:filename>")
+def serve_aloha(filename):
+    """ serve static files for development purposes
+ 
+    We would expect that these routes would be "overwritten" by say
+    the front portion of the reverse proxy we expect flask to sit
+    behind.  So these will only ever be called by requests 
+    during development, but the URL /aloha/... would still
+    exist, possibly on a CDN.
+
+    
+    """
+    #os.path.isfile is checked by the below function in Flask.
+    dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo_aloha_staging_dir"], filename)
+
+
+@app.route("/js/<path:filename>/")
+def serve_other_thirdpartyjs(filename):
+    """ see :def:serve_aloha """
+    dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo_js_staging_dir"], filename)
+
 
 @app.route('/conf.js')
 def confjs():
