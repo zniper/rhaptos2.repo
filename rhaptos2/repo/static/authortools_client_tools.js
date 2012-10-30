@@ -67,6 +67,8 @@
       this._clean_up = __bind(this._clean_up, this);
 
       this._stateful_renderer = __bind(this._stateful_renderer, this);
+
+      this.$ = __bind(this.$, this);
       if (!(this.selector != null)) {
         throw new Error("Required property 'selector' is undefined.");
       }
@@ -95,6 +97,13 @@
 
     };
 
+    BaseModal.prototype.$ = function(arg) {
+      /*
+            Contextualized jQuery just like Backbone.View does it.
+      */
+      return $(arg, this.$el);
+    };
+
     /*
         -- Private methods --
     */
@@ -108,7 +117,7 @@
 
       var $target, opts, spinner, state_wrapper,
         _this = this;
-      $target = $('.modal-body', this.$el);
+      $target = this.$('.modal-body');
       opts = MODAL_SPINNER_OPTIONS;
       $.extend(opts, {
         top: $target.height() / 2,
@@ -126,7 +135,7 @@
       /*
             Clear the modal body and so that we have a fresh state for the next time.
       */
-      return $('.modal-body', this.$el).html('');
+      return this.$('.modal-body').html('');
     };
 
     return BaseModal;
@@ -142,13 +151,14 @@
     function MetadataModal() {
       this.submit_handler = __bind(this.submit_handler, this);
       MetadataModal.__super__.constructor.call(this);
-      $('button[type="submit"]', this.$el).click(this.submit_handler);
+      this.$('button[type="submit"]').click(this.submit_handler);
     }
 
     MetadataModal.prototype.submit_handler = function(event) {
-      var data, module_id;
+      var data, module_id,
+        _this = this;
       data = {};
-      $.map($('#metadata-modal form').serializeArray(), function(obj) {
+      $.map(this.$('form').serializeArray(), function(obj) {
         if (obj.name === 'subjects') {
           if (!(obj.name in data)) {
             data[obj.name] = [];
@@ -167,7 +177,7 @@
         dataType: 'json',
         contentType: 'application/json',
         success: function() {
-          return $('#metadata-modal').modal('hide');
+          return _this.$el.modal('hide');
         }
       });
       return false;
@@ -187,7 +197,7 @@
           variants.push(value);
         }
       }
-      $variant_lang = $('#metadata-modal select[name="variant_language"]');
+      $variant_lang = this.$('select[name="variant_language"]');
       if (variants.length > 0) {
         variants.splice(0, 0, {
           code: '',
@@ -198,7 +208,7 @@
           'variants': variants
         }));
       } else {
-        return $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled');
+        return this.$('select[name="variant_language"]').html('').attr('disabled', 'disabled');
       }
     };
 
@@ -263,8 +273,8 @@
         subjects.push(value);
       }
       data.subjects = subjects;
-      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
-      return $('#metadata-modal select[name="language"]').change(this.language_handler);
+      this.$('.modal-body').html(Mustache.to_html(Templates.metadata, data));
+      return this.$('select[name="language"]').change(this.language_handler);
     };
 
     MetadataModal.prototype.get_data = function() {
@@ -341,14 +351,14 @@
     function RolesModal() {
       this.submit_handler = __bind(this.submit_handler, this);
       RolesModal.__super__.constructor.call(this);
-      $('button[type="submit"]', this.$el).click(this.submit_handler);
+      this.$('button[type="submit"]').click(this.submit_handler);
     }
 
     RolesModal.prototype.render = function(data) {
       var $add_entry, entries, entry, _i, _len, _ref, _results;
       entries = data;
       this.collection = new RoleCollection(entries);
-      $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {
+      this.$('.modal-body').html(Mustache.to_html(Templates.roles, {
         roles_vocabulary: ROLES
       }));
       entry = new RoleEntry();

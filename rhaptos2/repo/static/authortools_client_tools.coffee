@@ -80,6 +80,11 @@ class BaseModal
       Acquire the data that is used to display the modal.
     ###
 
+  $: (arg) =>
+    ###
+      Contextualized jQuery just like Backbone.View does it.
+    ###
+    return $(arg, @$el)
 
   ###
     -- Private methods --
@@ -90,7 +95,7 @@ class BaseModal
       Render with state awareness... Display a loading state, connection
       errors, etc.
     ###
-    $target = $('.modal-body', @$el)
+    $target = @$('.modal-body')
     opts = MODAL_SPINNER_OPTIONS
     $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
     spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
@@ -104,18 +109,18 @@ class BaseModal
     ###
       Clear the modal body and so that we have a fresh state for the next time.
     ###
-    $('.modal-body', @$el).html('')
+    @$('.modal-body').html('')
 
 
 class MetadataModal extends BaseModal
   selector: '#metadata-modal'
   constructor: ->
     super()
-    $('button[type="submit"]', @$el).click(@submit_handler)
+    @$('button[type="submit"]').click(@submit_handler)
   submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
-    $.map($('#metadata-modal form').serializeArray(), (obj) ->
+    $.map(@$('form').serializeArray(), (obj) ->
       # Special case for the subject list. Probably a better way to do this...
       if obj.name == 'subjects'
         if not (obj.name of data) then data[obj.name] = []
@@ -135,7 +140,7 @@ class MetadataModal extends BaseModal
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'
-      success: -> $('#metadata-modal').modal('hide')
+      success: => @$el.modal('hide')
     })
     # Return false to prevent the form from submitting.
     return false
@@ -146,14 +151,14 @@ class MetadataModal extends BaseModal
       if code[..1] == selected_code
         $.extend(value, {code: code})
         variants.push(value)
-    $variant_lang = $('#metadata-modal select[name="variant_language"]')
+    $variant_lang = @$('select[name="variant_language"]')
     if variants.length > 0
       # Insert an empty option into the list.
       variants.splice(0, 0, {code: '', english: ''})
       template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
       $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
     else
-      $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled')
+      @$('select[name="variant_language"]').html('').attr('disabled', 'disabled')
   render: (data) ->
     # Collect the language data.
     languages = [{code: '', native: '', english: ''}]
@@ -186,8 +191,8 @@ class MetadataModal extends BaseModal
     data.subjects = subjects
 
     # Render to the page.
-    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
-    $('#metadata-modal select[name="language"]').change(@language_handler)
+    @$('.modal-body').html(Mustache.to_html(Templates.metadata, data))
+    @$('select[name="language"]').change(@language_handler)
 
   get_data: ->
     # XXX The best way to get the module ID at this time is to pull it out
@@ -239,12 +244,12 @@ class RolesModal extends BaseModal
   constructor: ->
     super()
     # Bind the submit event handler.
-    $('button[type="submit"]', @$el).click(@submit_handler)
+    @$('button[type="submit"]').click(@submit_handler)
 
   render: (data) ->
     entries = data
     @collection = new RoleCollection(entries)
-    $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
+    @$('.modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
 
     # Create a row for entering new entries to the roles listing.
     entry = new RoleEntry()
