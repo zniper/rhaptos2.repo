@@ -37,7 +37,7 @@ MODAL_SPINNER_OPTIONS = {
   left: '265px'  # Left position relative to parent in px
 }
 
-_generate_url = (area, id) ->
+_generateUrl = (area, id) ->
   ###
     Returns a URL for given area and id. This is a simple abstraction for
     acquiring the URL.
@@ -62,9 +62,9 @@ class BaseModal
     @$el = $(@selector)
     @el = @$el.first()[0]
     # Bind the 'render' method to the modal 'show' event.
-    @$el.on('show', @_stateful_renderer)
+    @$el.on('show', @_statefulRenderer)
     # Bind a method for cleaning up the modal body.
-    @$el.on('hidden', @_clean_up)
+    @$el.on('hidden', @_cleanUp)
 
   ###
     -- Public api methods --
@@ -75,7 +75,7 @@ class BaseModal
       Display logic for this modal
     ###
 
-  get_data: ->
+  loadData: ->
     ###
       Acquire the data that is used to display the modal.
     ###
@@ -90,7 +90,7 @@ class BaseModal
     -- Private methods --
   ###
 
-  _stateful_renderer: =>
+  _statefulRenderer: =>
     ###
       Render with state awareness... Display a loading state, connection
       errors, etc.
@@ -100,12 +100,12 @@ class BaseModal
     $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
     spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
 
-    state_wrapper = (data) =>
+    stateWrapper = (data) =>
       spinner.stop()
       @render(data)
-    $.when(@get_data()).done(state_wrapper)
+    $.when(@loadData()).done(stateWrapper)
 
-  _clean_up: =>
+  _cleanUp: =>
     ###
       Clear the modal body and so that we have a fresh state for the next time.
     ###
@@ -116,8 +116,9 @@ class MetadataModal extends BaseModal
   selector: '#metadata-modal'
   constructor: ->
     super()
-    @$('button[type="submit"]').click(@submit_handler)
-  submit_handler: (event) =>
+    @$('button[type="submit"]').click(@submitHandler)
+
+  submitHandler: (event) =>
     data = {}
     # Write the form values to JSON
     $.map(@$('form').serializeArray(), (obj) ->
@@ -136,7 +137,7 @@ class MetadataModal extends BaseModal
     console.log('Posting metadata for module: ' + module_id)
     $.ajax({
       type: 'POST'
-      url: _generate_url('metadata', module_id)
+      url: _generateUrl('metadata', module_id)
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'
@@ -144,42 +145,44 @@ class MetadataModal extends BaseModal
     })
     # Return false to prevent the form from submitting.
     return false
-  language_handler: ->
-    selected_code = $(this).val()
+
+  languageHandler: (event) =>
+    selectedCode = $(event.target).val()
     variants = []
     for code, value of Language.getCombined()
-      if code[..1] == selected_code
+      if code[..1] == selectedCode
         $.extend(value, {code: code})
         variants.push(value)
-    $variant_lang = @$('select[name="variant_language"]')
+    $variantLang = @$('select[name="variant_language"]')
     if variants.length > 0
       # Insert an empty option into the list.
       variants.splice(0, 0, {code: '', english: ''})
       template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
-      $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
+      $variantLang.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
     else
       @$('select[name="variant_language"]').html('').attr('disabled', 'disabled')
+
   render: (data) ->
     # Collect the language data.
     languages = [{code: '', native: '', english: ''}]
-    for language_code, value of Language.getLanguages()
-      $.extend(value, {code: language_code})
-      if data.language? and data.language == language_code
+    for languageCode, value of Language.getLanguages()
+      $.extend(value, {code: languageCode})
+      if data.language? and data.language == languageCode
         $.extend(value, {selected: 'selected'})
       languages.push(value)
     data.languages = languages
 
     # Collect the variant languages, if there are any.
     if data.language?
-      variant_languages = [{code: '', native: '', english: ''}]
-      for language_code, value of Language.getCombined()
-        if language_code[..1] != data.language
+      variantLanguages = [{code: '', native: '', english: ''}]
+      for languageCode, value of Language.getCombined()
+        if languageCode[..1] != data.language
           continue
-        $.extend(value, {code: language_code})
-        if data.variant_language? and data.variant_language == language_code
+        $.extend(value, {code: languageCode})
+        if data.variantLanguage? and data.variantLanguage == languageCode
           $.extend(value, {selected: 'selected'})
-        variant_languages.push(value)
-      data.variant_languages = variant_languages
+        variantLanguages.push(value)
+      data.variantLanguages = variantLanguages
 
     # Collect the subject data.
     subjects = []
@@ -192,16 +195,16 @@ class MetadataModal extends BaseModal
 
     # Render to the page.
     @$('.modal-body').html(Mustache.to_html(Templates.metadata, data))
-    @$('select[name="language"]').change(@language_handler)
+    @$('select[name="language"]').change(@languageHandler)
 
-  get_data: ->
+  loadData: ->
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
     module_id = serialise_form().uuid
     return $.ajax({
       type: 'GET'
-      url: _generate_url('metadata', module_id)
+      url: _generateUrl('metadata', module_id)
       contentType: 'application/json'
       })
 
@@ -210,10 +213,7 @@ class RoleEntry
   ###
     Data for a single role.
   ###
-  constructor: (name, roles, collection) ->
-    @name = name || ""
-    @roles = roles || []
-    @collection = collection || null
+  constructor: (@name='', @roles=[], @collection=null) ->
 
 
 class RoleCollection
@@ -244,7 +244,7 @@ class RolesModal extends BaseModal
   constructor: ->
     super()
     # Bind the submit event handler.
-    @$('button[type="submit"]').click(@submit_handler)
+    @$('button[type="submit"]').click(@submitHandler)
 
   render: (data) ->
     entries = data
@@ -253,35 +253,36 @@ class RolesModal extends BaseModal
 
     # Create a row for entering new entries to the roles listing.
     entry = new RoleEntry()
-    $add_entry = $(Mustache.to_html(Templates.roles_add_entry, @_prepare_entry_for_rendering(entry)))
-    $('input[type="checkbox"]', $add_entry).click(@_role_selected_handler(entry))
-    $('.role-add-action', $add_entry).click(@_role_add_handler(entry))
-    $('#roles-modal tbody').append($add_entry)
+    $addEntry = $(Mustache.to_html(Templates.rolesAddEntry, @_prepareEntryForRendering(entry)))
+    $('input[type="checkbox"]', $addEntry).click(@_roleSelectedHandler(entry))
+    $('.role-add-action', $addEntry).click(@_roleAddHandler(entry))
+    @$('tbody').append($addEntry)
 
     for entry in @collection.entries
-      @render_entry(entry)
+      @renderEntry(entry)
 
-  get_data: ->
+  loadData: ->
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
     module_id = serialise_form().uuid
     return $.ajax({
       type: 'GET'
-      url: _generate_url('roles', module_id)
+      url: _generateUrl('roles', module_id)
       contentType: 'application/json'
       })
 
-  render_entry: (entry) ->
-    data = @_prepare_entry_for_rendering(entry)
+  renderEntry: (entry) ->
+    data = @_prepareEntryForRendering(entry)
     # Render the entry...
-    $rendered_entry = $(Mustache.to_html(Templates.roles_name_entry, data))
+    $renderedEntry = $(Mustache.to_html(Templates.rolesNameEntry, data))
     # Attach the event handlers
-    $('input[type="checkbox"]', $rendered_entry).click(@_role_selected_handler(entry))
-    $('.role-removal-action', $rendered_entry).click(@_role_removal_handler(entry))
+    $('input[type="checkbox"]', $renderedEntry).click(@_roleSelectedHandler(entry))
+    $('.role-removal-action', $renderedEntry).click(@_roleRemovalHandler(entry))
     # Append the entry to the modal.
-    $('#roles-modal tbody tr:last').before($rendered_entry)
-  submit_handler: (event) =>
+    @$('tbody tr:last').before($renderedEntry)
+
+  submitHandler: (event) =>
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
@@ -291,7 +292,7 @@ class RolesModal extends BaseModal
     data = ({name: e.name, roles: e.roles} for e in @collection.entries)
     $.ajax({
       type: 'POST'
-      url: _generate_url('roles', module_id)
+      url: _generateUrl('roles', module_id)
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'
@@ -299,7 +300,8 @@ class RolesModal extends BaseModal
     })
     # Return false to prevent the form from submitting.
     return false
-  _prepare_entry_for_rendering: (entry) ->
+
+  _prepareEntryForRendering: (entry) ->
     ###
       Create a Mustache compatible RoleEntry representation.
     ###
@@ -313,7 +315,8 @@ class RolesModal extends BaseModal
       roles.push(value)
     $.extend(data, {roles: roles})
     return data
-  _role_add_handler: (entry) ->
+
+  _roleAddHandler: (entry) ->
     ###
       Create an event handler that will add a RoleEntry
       to the collection and render it.
@@ -321,26 +324,27 @@ class RolesModal extends BaseModal
     # XXX What I'm doing here is horrible... seriously...
     #     The loosely coupled nature of the following statements
     #     is aweful.
-    event_handler = (event) =>
+    eventHandler = (event) =>
       # Grab the name from the input field
       $row = $(event.target).parents('tr')
-      $name_field = $row.find('input[name="name"]')
-      name = $name_field.val()
+      $nameField = $row.find('input[name="name"]')
+      name = $nameField.val()
       # Add the entry to the collection.
       _entry = @collection.add(new RoleEntry(name, entry.roles))
       console.log("Added '#{name}' to the roles collection.")
-      @render_entry(_entry)
+      @renderEntry(_entry)
       # Reset the entry object and the input fields.
-      $name_field.val('')
+      $nameField.val('')
       $row.find('input[type="checkbox"]').attr('checked', false)
       entry.roles = []
-    return event_handler
-  _role_selected_handler: (entry) ->
+    return eventHandler
+
+  _roleSelectedHandler: (entry) ->
     ###
       Creates an event handler that will modify the given RoleEntry based
       on the selection.
     ###
-    event_handler = (event) =>
+    eventHandler = (event) =>
       $target = $(event.target)
       role_name = $target.val()
       if $target.is(':checked')
@@ -350,17 +354,18 @@ class RolesModal extends BaseModal
       else
         entry.roles.pop(entry.roles.indexOf(role_name))
         console.log("Took the '#{role_name}' role away from '#{entry.name}'.")
-    return event_handler
-  _role_removal_handler: (entry) ->
+    return eventHandler
+
+  _roleRemovalHandler: (entry) ->
     ###
       Creates an event handler that will remove the given RoleEntry from the
       page and from the collection.
     ###
-    event_handler = (event) =>
+    eventHandler = (event) =>
       $(event.target).parents('tr').remove()
       entry.collection.remove(entry)
       console.log("Removed '#{entry.name}' from the roles collection.")
-    return event_handler
+    return eventHandler
 
 
 exports.construct = ->

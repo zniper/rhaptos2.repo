@@ -59,7 +59,7 @@ exports.metadata = '
     </form>
   </div>'
 
-exports.roles_name_entry = '
+exports.rolesNameEntry = '
   <tr>
     <td>{{name}}</td>
     {{#roles}}
@@ -73,7 +73,7 @@ exports.roles_name_entry = '
     </td>
   </tr>'
 
-exports.roles_add_entry = '
+exports.rolesAddEntry = '
   <tr>
     <td><input type="text" name="name" placeholder="Type a name..."></td>
     {{#roles}}
