@@ -45,12 +45,73 @@ _generate_url = (area, id) ->
   return MODULEURL + id + '/' + area
 
 
-class MetadataModal
+class BaseModal
+  ###
+    A base class for common modal behavior and state.
+  ###
+
+  # A class defined selector used to assign 'el' and '$el'.
+  selector: null
+  # Alight with the Backbone.View properties:
+  el: null
+  $el: null
+
   constructor: ->
-    @$el = $('#metadata-modal')
-    $('#metadata-modal button[type="submit"]').click(@submit_handler)
-    # Attach the rendering code to the modal 'show' event.
-    @$el.on('show', @render)
+    if !@selector?
+      throw new Error("Required property 'selector' is undefined.")
+    @$el = $(@selector)
+    @el = @$el.first()[0]
+    # Bind the 'render' method to the modal 'show' event.
+    @$el.on('show', @_stateful_renderer)
+    # Bind a method for cleaning up the modal body.
+    @$el.on('hidden', @_clean_up)
+
+  ###
+    -- Public api methods --
+  ###
+
+  render: (data) ->
+    ###
+      Display logic for this modal
+    ###
+
+  get_data: ->
+    ###
+      Acquire the data that is used to display the modal.
+    ###
+
+
+  ###
+    -- Private methods --
+  ###
+
+  _stateful_renderer: =>
+    ###
+      Render with state awareness... Display a loading state, connection
+      errors, etc.
+    ###
+    $target = $('.modal-body', @$el)
+    opts = MODAL_SPINNER_OPTIONS
+    $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
+    spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
+
+    state_wrapper = (data) =>
+      spinner.stop()
+      @render(data)
+    $.when(@get_data()).done(state_wrapper)
+
+  _clean_up: =>
+    ###
+      Clear the modal body and so that we have a fresh state for the next time.
+    ###
+    $('.modal-body', @$el).html('')
+
+
+class MetadataModal extends BaseModal
+  selector: '#metadata-modal'
+  constructor: ->
+    super()
+    $('button[type="submit"]', @$el).click(@submit_handler)
   submit_handler: (event) =>
     data = {}
     # Write the form values to JSON
@@ -93,62 +154,51 @@ class MetadataModal
       $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
     else
       $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled')
-  render: =>
+  render: (data) ->
+    # Collect the language data.
+    languages = [{code: '', native: '', english: ''}]
+    for language_code, value of Language.getLanguages()
+      $.extend(value, {code: language_code})
+      if data.language? and data.language == language_code
+        $.extend(value, {selected: 'selected'})
+      languages.push(value)
+    data.languages = languages
+
+    # Collect the variant languages, if there are any.
+    if data.language?
+      variant_languages = [{code: '', native: '', english: ''}]
+      for language_code, value of Language.getCombined()
+        if language_code[..1] != data.language
+          continue
+        $.extend(value, {code: language_code})
+        if data.variant_language? and data.variant_language == language_code
+          $.extend(value, {selected: 'selected'})
+        variant_languages.push(value)
+      data.variant_languages = variant_languages
+
+    # Collect the subject data.
+    subjects = []
+    for subject in METADATA_SUBJECTS
+      value = {name: subject}
+      if data.subjects? and subject in data.subjects
+        value.selected = 'checked'
+      subjects.push(value)
+    data.subjects = subjects
+
+    # Render to the page.
+    $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
+    $('#metadata-modal select[name="language"]').change(@language_handler)
+
+  get_data: ->
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
     module_id = serialise_form().uuid
-
-    renderer = (data) =>
-      # XXX Should check for issues before doing the following...
-
-      # Collect the language data.
-      languages = [{code: '', native: '', english: ''}]
-      for language_code, value of Language.getLanguages()
-        $.extend(value, {code: language_code})
-        if data.language? and data.language == language_code
-          $.extend(value, {selected: 'selected'})
-        languages.push(value)
-      data.languages = languages
-      if data.language?
-        variant_languages = [{code: '', native: '', english: ''}]
-        for language_code, value of Language.getCombined()
-          if language_code[..1] != data.language
-            continue
-          $.extend(value, {code: language_code})
-          if data.variant_language? and data.variant_language == language_code
-            $.extend(value, {selected: 'selected'})
-          variant_languages.push(value)
-        data.variant_languages = variant_languages
-
-      # Collect the subject data.
-      subjects = []
-      for subject in METADATA_SUBJECTS
-        value = {name: subject}
-        if data.subjects? and subject in data.subjects
-          value.selected = 'checked'
-        subjects.push(value)
-      data.subjects = subjects
-
-      # Render to the page.
-      $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data))
-      $('#metadata-modal select[name="language"]').change(@language_handler)
-    $target = $('#metadata-modal .modal-body')
-    opts = MODAL_SPINNER_OPTIONS
-    $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
-    spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
-
-    wrapped_renderer = (data) =>
-      spinner.stop()
-      renderer(data)
-
-    $.when(
-      $.ajax({
-        type: 'GET'
-        url: _generate_url('metadata', module_id)
-        contentType: 'application/json'
+    return $.ajax({
+      type: 'GET'
+      url: _generate_url('metadata', module_id)
+      contentType: 'application/json'
       })
-    ).then(wrapped_renderer)
 
 
 class RoleEntry
@@ -184,49 +234,39 @@ class RoleCollection
     @entries.splice(@entries.indexOf(entry), 1)
 
 
-class RolesModal
+class RolesModal extends BaseModal
+  selector: '#roles-modal'
   constructor: ->
-    @$el = $('#roles-modal')
+    super()
     # Bind the submit event handler.
     $('button[type="submit"]', @$el).click(@submit_handler)
-    # Bind the rendering code to the modal 'show' event.
-    @$el.on('show', @render)
-  render: =>
+
+  render: (data) ->
+    entries = data
+    @collection = new RoleCollection(entries)
+    $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
+
+    # Create a row for entering new entries to the roles listing.
+    entry = new RoleEntry()
+    $add_entry = $(Mustache.to_html(Templates.roles_add_entry, @_prepare_entry_for_rendering(entry)))
+    $('input[type="checkbox"]', $add_entry).click(@_role_selected_handler(entry))
+    $('.role-add-action', $add_entry).click(@_role_add_handler(entry))
+    $('#roles-modal tbody').append($add_entry)
+
+    for entry in @collection.entries
+      @render_entry(entry)
+
+  get_data: ->
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
     module_id = serialise_form().uuid
-
-    renderer = (entries) =>
-      @collection = new RoleCollection(entries)
-      $('#roles-modal .modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
-
-      # Create a row for entering new entries to the roles listing.
-      entry = new RoleEntry()
-      $add_entry = $(Mustache.to_html(Templates.roles_add_entry, @_prepare_entry_for_rendering(entry)))
-      $('input[type="checkbox"]', $add_entry).click(@_role_selected_handler(entry))
-      $('.role-add-action', $add_entry).click(@_role_add_handler(entry))
-      $('#roles-modal tbody').append($add_entry)
-
-      for entry in @collection.entries
-        @render_entry(entry)
-
-    $target = $('#roles-modal .modal-body')
-    opts = MODAL_SPINNER_OPTIONS
-    $.extend(opts, {top: $target.height()/2, left: $target.width()/2})
-    spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0])
-
-    wrapped_renderer = (data) =>
-      spinner.stop()
-      renderer(data)
-
-    $.when(
-      $.ajax({
-        type: 'GET'
-        url: _generate_url('roles', module_id)
-        contentType: 'application/json'
+    return $.ajax({
+      type: 'GET'
+      url: _generate_url('roles', module_id)
+      contentType: 'application/json'
       })
-    ).then(wrapped_renderer)
+
   render_entry: (entry) ->
     data = @_prepare_entry_for_rendering(entry)
     # Render the entry...
