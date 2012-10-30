@@ -57,15 +57,17 @@ def apply_cors(fn):
     return newfn
 
 
-@app.route("/aloha/<path:filename>")
+##### route thridparty static files
+
+@app.route("/cdn/aloha/<path:filename>")
 def serve_aloha(filename):
     """ serve static files for development purposes
  
     We would expect that these routes would be "overwritten" by say
     the front portion of the reverse proxy we expect flask to sit
     behind.  So these will only ever be called by requests 
-    during development, but the URL /aloha/... would still
-    exist, possibly on a CDN.
+    during development, but the URL /cdn/aloha/... would still
+    exist, possibly on a CDN, certainly a good cache server.
 
     
     """
@@ -74,11 +76,20 @@ def serve_aloha(filename):
     return send_from_directory(app.config["rhaptos2repo_aloha_staging_dir"], filename)
 
 
-@app.route("/js/<path:filename>/")
+@app.route("/cdn/js/<path:filename>/")
 def serve_other_thirdpartyjs(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
+    dolog("INFO", repr((app.config["rhaptos2repo_js_staging_dir"], filename)))
     return send_from_directory(app.config["rhaptos2repo_js_staging_dir"], filename)
+
+
+@app.route("/cdn/css/<path:filename>/")
+def serve_other_thirdpartycss(filename):
+    """ see :def:serve_aloha """
+    dolog("INFO", repr((app.config["rhaptos2repo_css_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo_css_staging_dir"], filename)
+
+##### /thirdparty static files
 
 
 @app.route('/conf.js')
@@ -91,6 +102,9 @@ def confjs():
 def index():
     dolog("INFO", "THis is request %s" % g.requestid)
     return render_template('index.html', confd=app.config)
+
+
+
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
