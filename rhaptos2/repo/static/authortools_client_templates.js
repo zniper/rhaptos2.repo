@@ -72,7 +72,7 @@
       </td>\
     {{/roles}}\
     <td class="roles-other-actions-column">\
-      <i class="icon-trash role-removal-action"></i>\
+      <button type="button" class="btn btn-small role-removal-action"><i class="icon-trash"></i></button>\
     </td>\
   </tr>';
 
@@ -86,7 +86,7 @@
       </td>\
     {{/roles}}\
     <td>\
-      <button type="button" class="btn role-add-action"><i class="icon-plus"></i></button>\
+      <button type="button" class="btn btn-small role-add-action"><i class="icon-plus"></i></button>\
     </td>\
   </tr>';
 
