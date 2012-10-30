@@ -59,6 +59,8 @@ def apply_cors(fn):
 
 ##### route thridparty static files
 
+
+
 @app.route("/cdn/aloha/<path:filename>")
 def serve_aloha(filename):
     """ serve static files for development purposes
@@ -244,6 +246,9 @@ def get_metadata(modname):
     resp.content_type='application/json'
     return resp
 
+
+######################## Development only
+
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
 def versionGET():
@@ -276,7 +281,6 @@ def burn():
         os._exit(1) #trap _this_
 
 
-################ Admin-y stuff
 @app.route("/admin/config/", methods=["GET",])
 def admin_config():
     """View the config we are using
@@ -302,7 +306,6 @@ def before_request():
 
 @app.after_request
 def after_request(response):
-#    model.db_session.remove()
     return response
 
 # XXX A temporary fix for the openid images.
@@ -341,19 +344,7 @@ def create_or_login(resp):
 
     """
 
-#    session['openid'] = resp.identity_url
-#    model.store_identity(resp.identity_url,
-#                       name=resp.fullname or resp.nickname,
-#                       email=resp.email)
-
     model.after_authentication(resp.identity_url, 'openid')
-#    user = model.whoami()#returns Identity object
-
-#    if user is not None:
-#        flash(u'Successfully signed in')
-#        g.user = user
-
-
     return redirect(model.oid.get_next_url())
 
 
