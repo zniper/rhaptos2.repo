@@ -174,6 +174,18 @@ venv, run unit tests, and deploy into the web servers set in config,
 using sshkeys set in config etc.
 
 
+Third Party code
+----------------
+
+We rely on thirdparty code. Some / much is currently checked into our repo (!)
+We need to have ::
+
+  In config set: rhaptos2repo_aloha_staging_dir=/my/path
+  cd /my/path
+  git clone https://github.com/wysiwhat/Aloha-Editor.git
+  
+
+
 Issues
 ------
 
