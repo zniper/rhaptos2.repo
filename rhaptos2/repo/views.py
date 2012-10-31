@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """views.py - View code for the repository application.
 
 Author: Paul Brian
@@ -22,7 +23,8 @@ import flask
 from flask import (
     Flask, render_template,
     request, g, session, flash,
-    redirect, url_for, abort,
+    redirect, url_for, abort, 
+    send_from_directory
     )
 
 from rhaptos2.common import log, err, conf
@@ -54,6 +56,44 @@ def apply_cors(fn):
 
     return newfn
 
+
+##### route thridparty static files
+
+
+
+@app.route("/cdn/aloha/<path:filename>")
+def serve_aloha(filename):
+    """ serve static files for development purposes
+ 
+    We would expect that these routes would be "overwritten" by say
+    the front portion of the reverse proxy we expect flask to sit
+    behind.  So these will only ever be called by requests 
+    during development, but the URL /cdn/aloha/... would still
+    exist, possibly on a CDN, certainly a good cache server.
+
+    
+    """
+    #os.path.isfile is checked by the below function in Flask.
+    dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo_aloha_staging_dir"], filename)
+
+
+@app.route("/cdn/js/<path:filename>/")
+def serve_other_thirdpartyjs(filename):
+    """ see :def:serve_aloha """
+    dolog("INFO", repr((app.config["rhaptos2repo_js_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo_js_staging_dir"], filename)
+
+
+@app.route("/cdn/css/<path:filename>/")
+def serve_other_thirdpartycss(filename):
+    """ see :def:serve_aloha """
+    dolog("INFO", repr((app.config["rhaptos2repo_css_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo_css_staging_dir"], filename)
+
+##### /thirdparty static files
+
+
 @app.route('/conf.js')
 def confjs():
     resp = flask.make_response(render_template("conf.js", confd=app.config))
@@ -64,6 +104,9 @@ def confjs():
 def index():
     dolog("INFO", "THis is request %s" % g.requestid)
     return render_template('index.html', confd=app.config)
+
+
+
 
 @app.route("/module/", methods=['PUT'])
 def modulePUT():
@@ -265,7 +308,6 @@ def burn():
         os._exit(1) #trap _this_
 
 
-################ Admin-y stuff
 @app.route("/admin/config/", methods=["GET",])
 def admin_config():
     """View the config we are using
@@ -291,7 +333,6 @@ def before_request():
 
 @app.after_request
 def after_request(response):
-#    model.db_session.remove()
     return response
 
 # XXX A temporary fix for the openid images.
@@ -330,19 +371,7 @@ def create_or_login(resp):
 
     """
 
-#    session['openid'] = resp.identity_url
-#    model.store_identity(resp.identity_url,
-#                       name=resp.fullname or resp.nickname,
-#                       email=resp.email)
-
     model.after_authentication(resp.identity_url, 'openid')
-#    user = model.whoami()#returns Identity object
-
-#    if user is not None:
-#        flash(u'Successfully signed in')
-#        g.user = user
-
-
     return redirect(model.oid.get_next_url())
 
 
