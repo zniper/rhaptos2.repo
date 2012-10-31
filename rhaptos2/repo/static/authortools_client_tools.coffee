@@ -195,7 +195,7 @@ class MetadataModal extends BaseModal
     data.subjects = subjects
 
     # Render to the page.
-    @$('.modal-body').html(Mustache.to_html(Templates.metadata, data))
+    @$('.modal-body').html(Mustache.to_html(Templates.METADATA, data))
     @$('select[name="language"]').change(@languageHandler)
 
   loadData: ->
@@ -250,11 +250,11 @@ class RolesModal extends BaseModal
   render: (data) ->
     entries = data
     @collection = new RoleCollection(entries)
-    @$('.modal-body').html(Mustache.to_html(Templates.roles, {roles_vocabulary: ROLES}))
+    @$('.modal-body').html(Mustache.to_html(Templates.ROLES, {roles_vocabulary: ROLES}))
 
     # Create a row for entering new entries to the roles listing.
     entry = new RoleEntry()
-    $addEntry = $(Mustache.to_html(Templates.rolesAddEntry, @_prepareEntryForRendering(entry)))
+    $addEntry = $(Mustache.to_html(Templates.ROLES_ADD_ENTRY, @_prepareEntryForRendering(entry)))
     $('input[type="checkbox"]', $addEntry).click(@_roleSelectedHandler(entry))
     $('.role-add-action', $addEntry).click(@_roleAddHandler(entry))
     @$('tbody').append($addEntry)
@@ -276,7 +276,7 @@ class RolesModal extends BaseModal
   renderEntry: (entry) ->
     data = @_prepareEntryForRendering(entry)
     # Render the entry...
-    $renderedEntry = $(Mustache.to_html(Templates.rolesNameEntry, data))
+    $renderedEntry = $(Mustache.to_html(Templates.ROLES_NAME_ENTRY, data))
     # Attach the event handlers
     $('input[type="checkbox"]', $renderedEntry).click(@_roleSelectedHandler(entry))
     $('.role-removal-action', $renderedEntry).click(@_roleRemovalHandler(entry))
@@ -375,10 +375,10 @@ exports.construct = ->
   for modal_link_id in ['#import-link', '#metadata-link', '#roles-link', '#sharing-link', '#publish-link']
     $(modal_link_id).modal(show: false)
   # Render the data into the modal body.
-  $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}))
+  $('#import-modal .modal-body').html(Mustache.to_html(Templates.IMPORT, {}))
   metadata_modal = new MetadataModal()
   roles_modal = new RolesModal()
-  $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}))
-  $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}))
+  $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.SHARING, {}))
+  $('#publish-modal .modal-body').html(Mustache.to_html(Templates.PUBLISH, {}))
 
 window.Tools = exports

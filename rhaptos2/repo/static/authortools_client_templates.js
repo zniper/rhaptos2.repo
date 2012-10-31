@@ -16,13 +16,13 @@
 
   exports = {};
 
-  exports["import"] = '\
+  exports.IMPORT = '\
   <div role="popup-content">\
     <input type="hidden" name="id" value="{{id}}">\
     <input type="file" name="file">\
   </div>';
 
-  exports.metadata = '\
+  exports.METADATA = '\
   <div role="popup-content" class="span12">\
     <form name="metadata-form" action="metadata" method="POST">\
       <label>Title</label>\
@@ -62,7 +62,7 @@
     </form>\
   </div>';
 
-  exports.rolesNameEntry = '\
+  exports.ROLES_NAME_ENTRY = '\
   <tr>\
     <td>{{name}}</td>\
     {{#roles}}\
@@ -76,7 +76,7 @@
     </td>\
   </tr>';
 
-  exports.rolesAddEntry = '\
+  exports.ROLES_ADD_ENTRY = '\
   <tr>\
     <td><input type="text" name="name" placeholder="Type a name..."></td>\
     {{#roles}}\
@@ -90,7 +90,7 @@
     </td>\
   </tr>';
 
-  exports.roles = '\
+  exports.ROLES = '\
   <div role="popup-content">\
     <form name="roles-form" action="roles" method="POST">\
       <legend>Role Assignments</legend>\
@@ -114,7 +114,7 @@
     </form>\
   </div>';
 
-  exports.sharing = '\
+  exports.SHARING = '\
   <div role="popup-content">\
     <form name="sharing-form" action="sharing" method="POST">\
       <legend>Sharing Assignments</legend>\
@@ -173,7 +173,7 @@
     </form>\
   </div>';
 
-  exports.publish = '\
+  exports.PUBLISH = '\
   <div role="popup-content">\
     <form name="publish-form" action="publish" method="POST">\
       <legend>Description of the changes</legend>\

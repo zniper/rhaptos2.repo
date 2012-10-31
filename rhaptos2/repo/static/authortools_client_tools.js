@@ -276,7 +276,7 @@
         subjects.push(value);
       }
       data.subjects = subjects;
-      this.$('.modal-body').html(Mustache.to_html(Templates.metadata, data));
+      this.$('.modal-body').html(Mustache.to_html(Templates.METADATA, data));
       return this.$('select[name="language"]').change(this.languageHandler);
     };
 
@@ -361,11 +361,11 @@
       var $addEntry, entries, entry, _i, _len, _ref, _results;
       entries = data;
       this.collection = new RoleCollection(entries);
-      this.$('.modal-body').html(Mustache.to_html(Templates.roles, {
+      this.$('.modal-body').html(Mustache.to_html(Templates.ROLES, {
         roles_vocabulary: ROLES
       }));
       entry = new RoleEntry();
-      $addEntry = $(Mustache.to_html(Templates.rolesAddEntry, this._prepareEntryForRendering(entry)));
+      $addEntry = $(Mustache.to_html(Templates.ROLES_ADD_ENTRY, this._prepareEntryForRendering(entry)));
       $('input[type="checkbox"]', $addEntry).click(this._roleSelectedHandler(entry));
       $('.role-add-action', $addEntry).click(this._roleAddHandler(entry));
       this.$('tbody').append($addEntry);
@@ -391,7 +391,7 @@
     RolesModal.prototype.renderEntry = function(entry) {
       var $renderedEntry, data;
       data = this._prepareEntryForRendering(entry);
-      $renderedEntry = $(Mustache.to_html(Templates.rolesNameEntry, data));
+      $renderedEntry = $(Mustache.to_html(Templates.ROLES_NAME_ENTRY, data));
       $('input[type="checkbox"]', $renderedEntry).click(this._roleSelectedHandler(entry));
       $('.role-removal-action', $renderedEntry).click(this._roleRemovalHandler(entry));
       return this.$('tbody tr:last').before($renderedEntry);
@@ -528,11 +528,11 @@
         show: false
       });
     }
-    $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
+    $('#import-modal .modal-body').html(Mustache.to_html(Templates.IMPORT, {}));
     metadata_modal = new MetadataModal();
     roles_modal = new RolesModal();
-    $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
-    return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
+    $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.SHARING, {}));
+    return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.PUBLISH, {}));
   };
 
   window.Tools = exports;

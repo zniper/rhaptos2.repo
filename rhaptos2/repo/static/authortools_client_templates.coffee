@@ -13,13 +13,13 @@
 # window.Templates = exports;
 exports = {}
 
-exports.import = '
+exports.IMPORT = '
   <div role="popup-content">
     <input type="hidden" name="id" value="{{id}}">
     <input type="file" name="file">
   </div>'
 
-exports.metadata = '
+exports.METADATA = '
   <div role="popup-content" class="span12">
     <form name="metadata-form" action="metadata" method="POST">
       <label>Title</label>
@@ -59,7 +59,7 @@ exports.metadata = '
     </form>
   </div>'
 
-exports.rolesNameEntry = '
+exports.ROLES_NAME_ENTRY = '
   <tr>
     <td>{{name}}</td>
     {{#roles}}
@@ -73,7 +73,7 @@ exports.rolesNameEntry = '
     </td>
   </tr>'
 
-exports.rolesAddEntry = '
+exports.ROLES_ADD_ENTRY = '
   <tr>
     <td><input type="text" name="name" placeholder="Type a name..."></td>
     {{#roles}}
@@ -87,7 +87,7 @@ exports.rolesAddEntry = '
     </td>
   </tr>'
 
-exports.roles = '
+exports.ROLES = '
   <div role="popup-content">
     <form name="roles-form" action="roles" method="POST">
       <legend>Role Assignments</legend>
@@ -111,7 +111,7 @@ exports.roles = '
     </form>
   </div>'
 
-exports.sharing = '
+exports.SHARING = '
   <div role="popup-content">
     <form name="sharing-form" action="sharing" method="POST">
       <legend>Sharing Assignments</legend>
@@ -170,7 +170,7 @@ exports.sharing = '
     </form>
   </div>'
 
-exports.publish = '
+exports.PUBLISH = '
   <div role="popup-content">
     <form name="publish-form" action="publish" method="POST">
       <legend>Description of the changes</legend>
