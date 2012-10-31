@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width">
 
     {% block css %}
-    <link rel="stylesheet" href="/static/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
     <link rel="stylesheet" href="{{ wysiwhaturl }}src/css/jquery-ui/jquery.ui.all.css"
           type="text/css">    
     <link rel="stylesheet" href="{{ wysiwhaturl }}src/css/aloha.css"
@@ -104,6 +104,11 @@
                   <a tabindex="-1" href="#publish-modal"
                      id="publish-link"
                      data-toggle="modal">Publish</a>
+                </li>
+                <li>
+                  <a tabindex="-1" href="#roles-modal"
+                     id="roles-link"
+                     data-toggle="modal">Roles Management</a>
                 </li>
                 <li>
                   <a tabindex="-1" href="#sharing-modal"
@@ -208,6 +213,23 @@
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn" data-dismiss="modal">Cancel</button>
       </div>
+    </form>
+  </div>
+
+  <div class="modal hide fade in" id="roles-modal">
+    <form name="roles-form" action="roles" method="POST">
+    <div class="modal-header">
+      <button type="button" class="close"
+              data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="modal-header-label">Roles</h3>
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+    </div>
     </form>
   </div>
 
