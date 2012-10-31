@@ -14,13 +14,17 @@
 
 
 (function() {
-  var METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataModal, exports, _generate_metadata_url,
+  var BaseModal, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataModal, ROLES, RoleCollection, RoleEntry, RolesModal, exports, _generateUrl,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   exports = {};
 
   METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business", "Science and Technology", "Humanities", "Social Sciences"];
+
+  ROLES = ["Author", "Maintainer", "Copyright Holder"];
 
   MODAL_SPINNER_OPTIONS = {
     lines: 13,
@@ -40,23 +44,123 @@
     left: '265px'
   };
 
-  _generate_metadata_url = function(id) {
-    return MODULEURL + id + '/metadata';
+  _generateUrl = function(area, id) {
+    /*
+        Returns a URL for given area and id. This is a simple abstraction for
+        acquiring the URL.
+    */
+    return MODULEURL + id + '/' + area;
   };
 
-  MetadataModal = (function() {
+  BaseModal = (function() {
+    /*
+        A base class for common modal behavior and state.
+    */
 
-    function MetadataModal() {
-      this.submit_handler = __bind(this.submit_handler, this);
-      this.$el = $('#metadata-modal');
-      $('#metadata-modal button[type="submit"]').click(this.submit_handler);
-      this.$el.on('show', $.proxy(this.render, this));
+    BaseModal.prototype.selector = null;
+
+    BaseModal.prototype.el = null;
+
+    BaseModal.prototype.$el = null;
+
+    function BaseModal() {
+      this._cleanUp = __bind(this._cleanUp, this);
+
+      this._statefulRenderer = __bind(this._statefulRenderer, this);
+
+      this.$ = __bind(this.$, this);
+      if (!(this.selector != null)) {
+        throw new Error("Required property 'selector' is undefined.");
+      }
+      this.$el = $(this.selector);
+      this.el = this.$el.first()[0];
+      this.$el.on('show', this._statefulRenderer);
+      this.$el.on('hidden', this._cleanUp);
     }
 
-    MetadataModal.prototype.submit_handler = function(event) {
-      var data, module_id;
+    /*
+        -- Public api methods --
+    */
+
+
+    BaseModal.prototype.render = function(data) {
+      /*
+            Display logic for this modal
+      */
+
+    };
+
+    BaseModal.prototype.loadData = function() {
+      /*
+            Acquire the data that is used to display the modal.
+      */
+
+    };
+
+    BaseModal.prototype.$ = function(arg) {
+      /*
+            Contextualized jQuery just like Backbone.View does it.
+      */
+      return $(arg, this.$el);
+    };
+
+    /*
+        -- Private methods --
+    */
+
+
+    BaseModal.prototype._statefulRenderer = function() {
+      /*
+            Render with state awareness... Display a loading state, connection
+            errors, etc.
+      */
+
+      var $target, opts, spinner, stateWrapper,
+        _this = this;
+      $target = this.$('.modal-body');
+      opts = MODAL_SPINNER_OPTIONS;
+      $.extend(opts, {
+        top: $target.height() / 2,
+        left: $target.width() / 2
+      });
+      spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0]);
+      stateWrapper = function(data) {
+        spinner.stop();
+        return _this.render(data);
+      };
+      return $.when(this.loadData()).done(stateWrapper);
+    };
+
+    BaseModal.prototype._cleanUp = function() {
+      /*
+            Clear the modal body and so that we have a fresh state for the next time.
+      */
+      return this.$('.modal-body').html('');
+    };
+
+    return BaseModal;
+
+  })();
+
+  MetadataModal = (function(_super) {
+
+    __extends(MetadataModal, _super);
+
+    MetadataModal.prototype.selector = '#metadata-modal';
+
+    function MetadataModal() {
+      this.languageHandler = __bind(this.languageHandler, this);
+
+      this.submitHandler = __bind(this.submitHandler, this);
+      MetadataModal.__super__.constructor.call(this);
+      this.$('button[type="submit"]').click(this.submitHandler);
+    }
+
+    MetadataModal.prototype.submitHandler = function(event) {
+      var data, module_id,
+        _this = this;
       data = {};
-      $.map($('#metadata-modal form').serializeArray(), function(obj) {
+      $.map(this.$('form').serializeArray(), function(obj) {
         if (obj.name === 'subjects') {
           if (!(obj.name in data)) {
             data[obj.name] = [];
@@ -70,149 +174,365 @@
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
         type: 'POST',
-        url: _generate_metadata_url(module_id),
+        url: _generateUrl('metadata', module_id),
         data: JSON.stringify(data, null, 2),
         dataType: 'json',
         contentType: 'application/json',
         success: function() {
-          return $('#metadata-modal').modal('hide');
+          return _this.$el.modal('hide');
         }
       });
       return false;
     };
 
-    MetadataModal.prototype.language_handler = function() {
-      var $variant_lang, code, selected_code, template, value, variants, _ref;
-      selected_code = $(this).val();
+    MetadataModal.prototype.languageHandler = function(event) {
+      var $variantLang, code, selectedCode, template, value, variants, _ref;
+      selectedCode = $(event.target).val();
       variants = [];
       _ref = Language.getCombined();
       for (code in _ref) {
         value = _ref[code];
-        if (code.slice(0, 2) === selected_code) {
+        if (code.slice(0, 2) === selectedCode) {
           $.extend(value, {
             code: code
           });
           variants.push(value);
         }
       }
-      $variant_lang = $('#metadata-modal select[name="variant_language"]');
+      $variantLang = this.$('select[name="variantLanguage"]');
       if (variants.length > 0) {
         variants.splice(0, 0, {
           code: '',
           english: ''
         });
         template = '{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}';
-        return $variant_lang.removeAttr('disabled').html(Mustache.to_html(template, {
+        return $variantLang.removeAttr('disabled').html(Mustache.to_html(template, {
           'variants': variants
         }));
       } else {
-        return $('#metadata-modal select[name="variant_language"]').html('').attr('disabled', 'disabled');
+        return this.$('select[name="variant_language"]').html('').attr('disabled', 'disabled');
       }
     };
 
-    MetadataModal.prototype.render = function() {
-      var $target, module_id, opts, renderer, spinner, wrapped_renderer;
-      module_id = serialise_form().uuid;
-      renderer = function(data) {
-        var language_code, languages, subject, subjects, value, variant_languages, _i, _len, _ref, _ref1;
-        languages = [
+    MetadataModal.prototype.render = function(data) {
+      var languageCode, languages, subject, subjects, value, variantLanguages, _i, _len, _ref, _ref1;
+      languages = [
+        {
+          code: '',
+          "native": '',
+          english: ''
+        }
+      ];
+      _ref = Language.getLanguages();
+      for (languageCode in _ref) {
+        value = _ref[languageCode];
+        value = $.extend({}, value);
+        $.extend(value, {
+          code: languageCode
+        });
+        if ((data.language != null) && data.language === languageCode) {
+          $.extend(value, {
+            selected: 'selected'
+          });
+        }
+        languages.push(value);
+      }
+      data.languages = languages;
+      if (data.language != null) {
+        variantLanguages = [
           {
             code: '',
             "native": '',
             english: ''
           }
         ];
-        _ref = Language.getLanguages();
-        for (language_code in _ref) {
-          value = _ref[language_code];
+        _ref1 = Language.getCombined();
+        for (languageCode in _ref1) {
+          value = _ref1[languageCode];
+          if (languageCode.slice(0, 2) !== data.language) {
+            continue;
+          }
           $.extend(value, {
-            code: language_code
+            code: languageCode
           });
-          if ((data.language != null) && data.language === language_code) {
+          if ((data.variantLanguage != null) && data.variantLanguage === languageCode) {
             $.extend(value, {
               selected: 'selected'
             });
           }
-          languages.push(value);
+          variantLanguages.push(value);
         }
-        data.languages = languages;
-        if (data.language != null) {
-          variant_languages = [
-            {
-              code: '',
-              "native": '',
-              english: ''
-            }
-          ];
-          _ref1 = Language.getCombined();
-          for (language_code in _ref1) {
-            value = _ref1[language_code];
-            if (language_code.slice(0, 2) !== data.language) {
-              continue;
-            }
-            $.extend(value, {
-              code: language_code
-            });
-            if ((data.variant_language != null) && data.variant_language === language_code) {
-              $.extend(value, {
-                selected: 'selected'
-              });
-            }
-            variant_languages.push(value);
-          }
-          data.variant_languages = variant_languages;
+        data.variantLanguages = variantLanguages;
+      }
+      subjects = [];
+      for (_i = 0, _len = METADATA_SUBJECTS.length; _i < _len; _i++) {
+        subject = METADATA_SUBJECTS[_i];
+        value = {
+          name: subject
+        };
+        if ((data.subjects != null) && __indexOf.call(data.subjects, subject) >= 0) {
+          value.selected = 'checked';
         }
-        subjects = [];
-        for (_i = 0, _len = METADATA_SUBJECTS.length; _i < _len; _i++) {
-          subject = METADATA_SUBJECTS[_i];
-          value = {
-            name: subject
-          };
-          if ((data.subjects != null) && __indexOf.call(data.subjects, subject) >= 0) {
-            value.selected = 'checked';
-          }
-          subjects.push(value);
-        }
-        data.subjects = subjects;
-        $('#metadata-modal .modal-body').html(Mustache.to_html(Templates.metadata, data));
-        return $('#metadata-modal select[name="language"]').change(this.language_handler);
-      };
-      $target = $('#metadata-modal .modal-body');
-      opts = MODAL_SPINNER_OPTIONS;
-      $.extend(opts, {
-        top: $target.height() / 2,
-        left: $target.width() / 2
-      });
-      spinner = new Spinner(MODAL_SPINNER_OPTIONS).spin($target[0]);
-      wrapped_renderer = function(data) {
-        spinner.stop();
-        return renderer(data);
-      };
-      return $.when($.ajax({
+        subjects.push(value);
+      }
+      data.subjects = subjects;
+      this.$('.modal-body').html(Mustache.to_html(Templates.METADATA, data));
+      return this.$('select[name="language"]').change(this.languageHandler);
+    };
+
+    MetadataModal.prototype.loadData = function() {
+      var module_id;
+      module_id = serialise_form().uuid;
+      return $.ajax({
         type: 'GET',
-        url: _generate_metadata_url(module_id),
+        url: _generateUrl('metadata', module_id),
         contentType: 'application/json'
-      })).then($.proxy(wrapped_renderer, this));
+      });
     };
 
     return MetadataModal;
 
+  })(BaseModal);
+
+  RoleEntry = (function() {
+    /*
+        Data for a single role.
+    */
+
+    function RoleEntry(name, roles, collection) {
+      this.name = name != null ? name : '';
+      this.roles = roles != null ? roles : [];
+      this.collection = collection != null ? collection : null;
+    }
+
+    return RoleEntry;
+
   })();
 
+  RoleCollection = (function() {
+    /*
+        A collection/container of RoleEntry objects.
+    */
+
+    function RoleCollection(entries) {
+      var entry, _i, _len;
+      this.entries = entries || [];
+      for (_i = 0, _len = entries.length; _i < _len; _i++) {
+        entry = entries[_i];
+        entry.collection = this;
+      }
+    }
+
+    RoleCollection.prototype.add = function(entry) {
+      /*
+            Adds an entry to this collection object.
+      */
+
+      var i;
+      entry.collection = this;
+      i = this.entries.push(entry);
+      return this.entries[i - 1];
+    };
+
+    RoleCollection.prototype.remove = function(entry) {
+      /*
+            Removes the given entry from this collection object.
+      */
+      return this.entries.splice(this.entries.indexOf(entry), 1);
+    };
+
+    return RoleCollection;
+
+  })();
+
+  RolesModal = (function(_super) {
+
+    __extends(RolesModal, _super);
+
+    RolesModal.prototype.selector = '#roles-modal';
+
+    function RolesModal() {
+      this.submitHandler = __bind(this.submitHandler, this);
+      RolesModal.__super__.constructor.call(this);
+      this.$('button[type="submit"]').click(this.submitHandler);
+    }
+
+    RolesModal.prototype.render = function(data) {
+      var $addEntry, entries, entry, _i, _len, _ref, _results;
+      entries = data;
+      this.collection = new RoleCollection(entries);
+      this.$('.modal-body').html(Mustache.to_html(Templates.ROLES, {
+        roles_vocabulary: ROLES
+      }));
+      entry = new RoleEntry();
+      $addEntry = $(Mustache.to_html(Templates.ROLES_ADD_ENTRY, this._prepareEntryForRendering(entry)));
+      $('input[type="checkbox"]', $addEntry).click(this._roleSelectedHandler(entry));
+      $('.role-add-action', $addEntry).click(this._roleAddHandler(entry));
+      this.$('tbody').append($addEntry);
+      _ref = this.collection.entries;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        _results.push(this.renderEntry(entry));
+      }
+      return _results;
+    };
+
+    RolesModal.prototype.loadData = function() {
+      var module_id;
+      module_id = serialise_form().uuid;
+      return $.ajax({
+        type: 'GET',
+        url: _generateUrl('roles', module_id),
+        contentType: 'application/json'
+      });
+    };
+
+    RolesModal.prototype.renderEntry = function(entry) {
+      var $renderedEntry, data;
+      data = this._prepareEntryForRendering(entry);
+      $renderedEntry = $(Mustache.to_html(Templates.ROLES_NAME_ENTRY, data));
+      $('input[type="checkbox"]', $renderedEntry).click(this._roleSelectedHandler(entry));
+      $('.role-removal-action', $renderedEntry).click(this._roleRemovalHandler(entry));
+      return this.$('tbody tr:last').before($renderedEntry);
+    };
+
+    RolesModal.prototype.submitHandler = function(event) {
+      var data, e, module_id,
+        _this = this;
+      module_id = serialise_form().uuid;
+      console.log('Posting metadata for module: ' + module_id);
+      data = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.collection.entries;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          e = _ref[_i];
+          _results.push({
+            name: e.name,
+            roles: e.roles
+          });
+        }
+        return _results;
+      }).call(this);
+      $.ajax({
+        type: 'POST',
+        url: _generateUrl('roles', module_id),
+        data: JSON.stringify(data, null, 2),
+        dataType: 'json',
+        contentType: 'application/json',
+        success: function() {
+          return _this.$el.modal('hide');
+        }
+      });
+      return false;
+    };
+
+    RolesModal.prototype._prepareEntryForRendering = function(entry) {
+      /*
+            Create a Mustache compatible RoleEntry representation.
+      */
+
+      var data, role, roles, value, _i, _len;
+      data = $.extend({}, entry);
+      roles = [];
+      for (_i = 0, _len = ROLES.length; _i < _len; _i++) {
+        role = ROLES[_i];
+        value = {
+          name: role
+        };
+        if (__indexOf.call(data.roles, role) >= 0) {
+          value.selected = true;
+        }
+        roles.push(value);
+      }
+      $.extend(data, {
+        roles: roles
+      });
+      return data;
+    };
+
+    RolesModal.prototype._roleAddHandler = function(entry) {
+      /*
+            Create an event handler that will add a RoleEntry
+            to the collection and render it.
+      */
+
+      var eventHandler,
+        _this = this;
+      eventHandler = function(event) {
+        var $nameField, $row, name, _entry;
+        $row = $(event.target).parents('tr');
+        $nameField = $row.find('input[name="name"]');
+        name = $nameField.val();
+        _entry = _this.collection.add(new RoleEntry(name, entry.roles));
+        console.log("Added '" + name + "' to the roles collection.");
+        _this.renderEntry(_entry);
+        $nameField.val('');
+        $row.find('input[type="checkbox"]').attr('checked', false);
+        return entry.roles = [];
+      };
+      return eventHandler;
+    };
+
+    RolesModal.prototype._roleSelectedHandler = function(entry) {
+      /*
+            Creates an event handler that will modify the given RoleEntry based
+            on the selection.
+      */
+
+      var eventHandler,
+        _this = this;
+      eventHandler = function(event) {
+        var $target, role_name;
+        $target = $(event.target);
+        role_name = $target.val();
+        if ($target.is(':checked')) {
+          entry.roles.push(role_name);
+          return console.log("Gave the '" + role_name + "' role to '" + entry.name + "'.");
+        } else {
+          entry.roles.pop(entry.roles.indexOf(role_name));
+          return console.log("Took the '" + role_name + "' role away from '" + entry.name + "'.");
+        }
+      };
+      return eventHandler;
+    };
+
+    RolesModal.prototype._roleRemovalHandler = function(entry) {
+      /*
+            Creates an event handler that will remove the given RoleEntry from the
+            page and from the collection.
+      */
+
+      var eventHandler,
+        _this = this;
+      eventHandler = function(event) {
+        $(event.target).parents('tr').remove();
+        entry.collection.remove(entry);
+        return console.log("Removed '" + entry.name + "' from the roles collection.");
+      };
+      return eventHandler;
+    };
+
+    return RolesModal;
+
+  })(BaseModal);
+
   exports.construct = function() {
-    var metadata_modal, modal_link_id, _i, _len, _ref;
+    var metadata_modal, modal_link_id, roles_modal, _i, _len, _ref;
     $('.dropdown-toggle').dropdown();
-    _ref = ['#import-link', '#metadata-link', '#sharing-link', '#publish-link'];
+    _ref = ['#import-link', '#metadata-link', '#roles-link', '#sharing-link', '#publish-link'];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       modal_link_id = _ref[_i];
       $(modal_link_id).modal({
         show: false
       });
     }
-    $('#import-modal .modal-body').html(Mustache.to_html(Templates.metadata, {}));
+    $('#import-modal .modal-body').html(Mustache.to_html(Templates.IMPORT, {}));
     metadata_modal = new MetadataModal();
-    $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.sharing, {}));
-    return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.publish, {}));
+    roles_modal = new RolesModal();
+    $('#sharing-modal .modal-body').html(Mustache.to_html(Templates.SHARING, {}));
+    return $('#publish-modal .modal-body').html(Mustache.to_html(Templates.PUBLISH, {}));
   };
 
   window.Tools = exports;

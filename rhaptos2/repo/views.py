@@ -246,8 +246,35 @@ def get_metadata(modname):
     resp.content_type='application/json'
     return resp
 
+@app.route("/module/<modname>/roles", methods=['POST', 'PUT'])
+@apply_cors
+def post_roles(modname):
+    """Receive a list of metadata roles and store them with the metadata."""
+    # XXX 'modname' is used for consistancy, but it's not ideal, since
+    #     the value isn't actually a module name.
+    uuid = modname
+    data = request.json
+    model.create_or_update_metadata(uuid, {'roles': data})
 
-######################## Development only
+    resp = flask.make_response()
+    resp.status_code = 200
+    return resp
+
+@app.route("/module/<modname>/roles", methods=['GET'])
+@apply_cors
+def get_roles(modname):
+    """Send the metadata roles for the requested module."""
+    # XXX 'modname' is used for consistancy, but it's not ideal, since
+    #     the value isn't actually a module name.
+    uuid = modname
+    complete_data = model.get_metadata(uuid)
+    data = json.loads(complete_data).get('roles', [])
+    data = json.dumps(data)
+
+    resp = flask.make_response(data)
+    resp.status_code = 200
+    resp.content_type='application/json'
+    return resp
 
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()

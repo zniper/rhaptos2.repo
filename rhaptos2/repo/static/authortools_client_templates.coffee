@@ -13,13 +13,13 @@
 # window.Templates = exports;
 exports = {}
 
-exports.import = '
+exports.IMPORT = '
   <div role="popup-content">
     <input type="hidden" name="id" value="{{id}}">
     <input type="file" name="file">
   </div>'
 
-exports.metadata = '
+exports.METADATA = '
   <div role="popup-content" class="span12">
     <form name="metadata-form" action="metadata" method="POST">
       <label>Title</label>
@@ -36,13 +36,13 @@ exports.metadata = '
       </select>
 
       <label>Language variant</label>
-      <select name="variant_language">
-      {{#variant_languages}}
+      <select name="variantLanguage">
+      {{#variantLanguages}}
         <option value="{{code}}"
                 {{#selected}}selected="{{selected}}"{{/selected}}>
           {{english}}  {{! There is not a `native` value in the variants }}
         </option>
-      {{/variant_languages}}
+      {{/variantLanguages}}
       </select>
 
       <label>Subjects</label>
@@ -59,7 +59,59 @@ exports.metadata = '
     </form>
   </div>'
 
-exports.sharing = '
+exports.ROLES_NAME_ENTRY = '
+  <tr>
+    <td>{{name}}</td>
+    {{#roles}}
+      <td>
+        <input type="checkbox" name="roles" value="{{name}}"
+               {{#selected}}checked="checked"{{/selected}}>
+      </td>
+    {{/roles}}
+    <td class="roles-other-actions-column">
+      <button type="button" class="btn btn-small role-removal-action"><i class="icon-trash"></i></button>
+    </td>
+  </tr>'
+
+exports.ROLES_ADD_ENTRY = '
+  <tr>
+    <td><input type="text" name="name" placeholder="Type a name..."></td>
+    {{#roles}}
+      <td>
+        <input type="checkbox" name="roles" value="{{name}}"
+               {{#selected}}checked="checked"{{/selected}}>
+      </td>
+    {{/roles}}
+    <td>
+      <button type="button" class="btn btn-small role-add-action"><i class="icon-plus"></i></button>
+    </td>
+  </tr>'
+
+exports.ROLES = '
+  <div role="popup-content">
+    <form name="roles-form" action="roles" method="POST">
+      <legend>Role Assignments</legend>
+      <!-- The role to user listing table -->
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th>{{!The name column}}</th>
+            {{#roles_vocabulary}}
+              <th>{{.}}</th>
+            {{/roles_vocabulary}}
+            <th><!-- Other actions --></th>
+          </tr>
+        </thead>
+        <tfoot>
+        </tfoot>
+        <tbody>
+
+        </tbody>
+      </table>
+    </form>
+  </div>'
+
+exports.SHARING = '
   <div role="popup-content">
     <form name="sharing-form" action="sharing" method="POST">
       <legend>Sharing Assignments</legend>
@@ -69,6 +121,7 @@ exports.sharing = '
           <tr>
             <th></th>
             <th>Author</th>
+            <th>Maintainer</th>
             <th>Copyright</th>
             <th><!-- Other actions --></th>
           </tr>
@@ -78,7 +131,6 @@ exports.sharing = '
         <tbody>
           <tr>
             <th>Michael</th>
-            <td><input type="checkbox" name="role" value="uid"></td>
             <td><input type="checkbox" name="role" value="uid"></td>
             <td>
               <button type="button"
@@ -118,7 +170,7 @@ exports.sharing = '
     </form>
   </div>'
 
-exports.publish = '
+exports.PUBLISH = '
   <div role="popup-content">
     <form name="publish-form" action="publish" method="POST">
       <legend>Description of the changes</legend>
