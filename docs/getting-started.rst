@@ -32,7 +32,7 @@ suring build and adjust views.
 
 This is a slightly longer term project.
 
-For now I should supply a zip or contine to serve them as was.
+For now I shall contine to serve them as was.  ALoha is fixed however.
 
 
 
