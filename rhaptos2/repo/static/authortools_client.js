@@ -418,6 +418,7 @@ $(document).ready(function() {
 
 
     newText();
+    start_aloha();
     build_workspace();
 
     /* Authoring Tools Dropdowns & Modals */
