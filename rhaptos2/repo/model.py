@@ -109,7 +109,7 @@ class User(object):
     """
 
     def __init__(self, authenticated_identifier):
-        """initialise from json doc
+        """initialise from a id we have had verified by third party
 
         .. todo:: this is stubbed out - it should always go to user dbase and lookup fromidentifer
         .. todo:: what should I do if user dbase is unavilable???
@@ -118,31 +118,32 @@ class User(object):
         """
 #        try:
 #        safe_auth_identifier = urllib.quote_plus(authenticated_identifier)
+
         payload = {'user':authenticated_identifier}
 
-        user_server_url = app.config['bamboo_userserver']
+        user_server_url = app.config['bamboo_userserver'].replace("/user", "/openid")
 
         dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))
 
         r = requests.get(user_server_url, params=payload)
         userdetails = r.json
-        dolog("INFO", str(userdetails))
-        self.__dict__.update(r.json)
-        for k in r.json['details']:
-            self.__dict__[k] = r.json['details'][k]
+
+        dolog("INFO", "Got back %s " % str(userdetails))
+        if userdetails:
+            self.__dict__.update(r.json)
+        else:
+            ### needs rethinkgin - time of deamo dday too close
+            self.email = "Unknown User"
+            self.fullname = "Unknown User"
+            self.user_id = "Unknownuser"
+
 
     def __repr__(self):
         return pprint.pformat(self.__dict__)
 
-#        except Exception, e:
-#            dolog("ERROR", "Failed in User class %s" % str(e))
-#            self.userID = "Err1"
-
-
     def load_JSON(self, jsondocstr):
         """ parse and store details of properly formatted JSON doc
-
         """
         user_dict = json.loads(jsondocstr)
         self.__dict__.update(user_dict)
@@ -151,6 +152,10 @@ class User(object):
 
 
 class Identity(object):
+    """ THis 'owns' User - its rubbish to have two clases doing the same basic thing.
+        I should merge them but need longer to test (demo day)
+    """
+
     def __init__(self, authenticated_identifier):
         """placeholder - we want to store identiy values somewhere but
            sqlite is limited to one server, so need move to network
@@ -158,17 +163,17 @@ class Identity(object):
 
         .. todo:: rename FUllNAme to fullname
         .. todo:: in fact fix whole user details
+        .. todo:: combine identiy and USer into one class !
 
-
-        todo: combine identiy and USer into one class !
         """
 
         self.authenticated_identifier = authenticated_identifier
         self.user = get_user_from_identifier(authenticated_identifier)
-        if self.authenticated_identifier:
+
+        if self.user:
             self.email = self.user.email
-            self.name = self.user.FullName
-            self.userID = self.user.id
+            self.name = self.user.fullname
+            self.userID = self.user.user_id
         else:
             self.email = None
             self.name = None
@@ -267,7 +272,7 @@ def whoamiGET():
     user =  whoami()
 
     if user:
-        d = identity.user_as_dict()
+        d = user.user_as_dict()
         jsond = asjson(d)
         ### make decorators !!!
         resp = flask.make_response(jsond)
