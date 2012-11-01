@@ -378,6 +378,7 @@ def create_or_login(resp):
 @app.route('/logout')
 def logout():
     session.pop('openid', None)
+    session.pop('authenticated_identifier', None)
     flash(u'You have been signed out')
     return redirect(model.oid.get_next_url())
 
