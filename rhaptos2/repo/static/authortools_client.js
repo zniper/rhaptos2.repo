@@ -1,4 +1,4 @@
-⇧// Copyright (c) Rice University 2012
+// Copyright (c) Rice University 2012
 // This software is subject to
 // the provisions of the GNU Lesser General
 // Public License Version 2.1 (LGPL).
@@ -372,6 +372,7 @@ function test(){
     build_workspace();
     logger("start aloha now ..");
     start_aloha();
+
 }
 
 
@@ -418,12 +419,14 @@ $(document).ready(function() {
 
 
     newText();
-    start_aloha();
     build_workspace();
 
     /* Authoring Tools Dropdowns & Modals */
     Tools.construct()
     /* END Authoring Tools Dropdowns & Modals */
+
+
+   
 
 navigator.id.watch({
   loggedInUser: whoami['authenticated_identifier'],
@@ -456,4 +459,18 @@ navigator.id.watch({
 
 
 
+});
+
+
+Aloha.ready( function() {
+    Aloha.jQuery('.document').aloha();
+      // Wait until Aloha is started before loading MathJax
+
+      // pbrian - not clear how to start MathJax...
+
+      // Also, wrap all math in a span/div. MathJax replaces the MathJax element
+      // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
+//      $('math').wrap('<span class="math-element"></span>')
+//      MathJax.Hub.Configured();
+      //$('*[rel=tooltip]').tooltip();
 });

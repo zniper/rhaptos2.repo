@@ -35,21 +35,19 @@
     {% block js %}
     <script src="{{ cdnaloha }}/src/lib/require.js"></script> 
     <script>define('jquery', [], function () { return window.jQuery; });</script>
-    <script src="{{ wysiwhaturl }}src/lib/aloha.js" data-aloha-plugins="
-						         extra/toolbar,
-							   common/ui,
-							     common/format,
-							       common/link,
-							         common/paste,
-								   common/block,
-								     
-								       common/list,
-								         common/table,
-									   extra/draganddropfiles,
-									     common/image,
-									       extra/oer-math,
-									         extra/bubble
-										 "></script>
+    <script src="{{ cdnaloha }}/src/lib/aloha.js" data-aloha-plugins="
+						  extra/toolbar,
+						  common/ui,
+						  common/format,
+						  common/link,
+						  common/paste,
+						  common/block,
+						  common/list,
+						  common/table,
+						  extra/draganddropfiles,
+						  common/image,
+						  extra/oer-math,
+						  extra/bubble"></script>
 
 
     <script src="http://{{confd['rhaptos2repo_www_server_name']}}/static/js/lib/bootstrap.js"
