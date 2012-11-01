@@ -1,4 +1,4 @@
-// Copyright (c) Rice University 2012
+⇧// Copyright (c) Rice University 2012
 // This software is subject to
 // the provisions of the GNU Lesser General
 // Public License Version 2.1 (LGPL).
@@ -26,7 +26,7 @@
 
 
 
-    function logout(msg) {
+    function logger(msg) {
         //log both to console and to web page,
         //splitting out objects as we go for visibility
         var smsg = '';
@@ -88,7 +88,7 @@ function load_textarea(mhashid) {
             //why not returned as json???
             var jdata = $.parseJSON(data);
             alert("sending jdata" + jdata);
-            logout(jdata);
+            logger(jdata);
             //weird aloha feature - suffixed textareas.. ask phil..
             $('#editarea').val(jdata['content']);
             $('#aclrw').val(jdata['aclrw']);
@@ -99,11 +99,11 @@ function load_textarea(mhashid) {
         });
 
         request.fail(function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+            logger('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         });
 
         request.always(function(jqXHR, textStatus) {
-            logout(textStatus);
+            logger(textStatus);
         });
     }
 
@@ -180,11 +180,11 @@ function saveText() {
          });
 
          request.fail(function(jqXHR, textStatus, err) {
-             logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+             logger('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
          });
 
          request.always(function(jqXHR, textStatus) {
-             logout(textStatus);
+             logger(textStatus);
          });
 
     }
@@ -219,11 +219,11 @@ function getLoadHistoryVer(uuid) {
         },
 
         error: function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+            logger('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         },
 
         complete: function(jqXHR, textStatus, err) {
-            logout('Complete: Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+            logger('Complete: Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         }
 
 
@@ -235,7 +235,7 @@ function getLoadHistoryVer(uuid) {
 
 function build_workspace() {
 
-    logout("In build workspace");
+    logger("In build workspace");
     var jsond = '[';
     var htmlfrag = '<ul>';
     $.ajax({
@@ -249,7 +249,7 @@ function build_workspace() {
         success: function(historyarr) {
             historyarr.sort();
             if (historyarr.length == 0){
-                logout("Not logged in - no workspace to deal with");
+                logger("Not logged in - no workspace to deal with");
                                       }
             else {
 
@@ -264,8 +264,8 @@ function build_workspace() {
                 y = jsond.substring(0, x);
                 jsond = y + ']';
                 //jsond += ']"';
-                logout("Building workspace :" + htmlfrag);
-                logout(jsond);
+                logger("Building workspace :" + htmlfrag);
+                logger(jsond);
                 $('#workspaces').html(htmlfrag);
             }
         }
@@ -296,7 +296,7 @@ function getwhoami() {
         },
 
         error: function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+            logger('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         }
 
     });
@@ -314,12 +314,12 @@ function delete_module(filename) {
         },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
 
         success: function() {
-            logout('deleted ' + filename);
+            logger('deleted ' + filename);
             build_workspace();
         },
 
         error: function(jqXHR, textStatus, err) {
-            logout('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
+            logger('Request failed: ' + textStatus + ':' + err + ':' + jqXHR.status);
         }
 
     });
@@ -328,7 +328,7 @@ function delete_module(filename) {
 
 function showres(i, elem) {
 
-    logout(i + ': ' + elem);
+    logger(i + ': ' + elem);
 }
 
 /////////////// Aloha
@@ -336,7 +336,7 @@ function showres(i, elem) {
 function start_aloha() {
 
     $('#editarea').aloha();
-    logout('started aloha');
+    logger('started aloha');
 }
 
 function node_load_event(node) {
@@ -345,7 +345,7 @@ function node_load_event(node) {
    var moduleuuid = node.attr('id');
    getLoadHistoryVer(moduleuuid);
 //   var s = "Calling load_textarea(" + moduleuuid + ")";
-//   logout(s);
+//   logger(s);
 //   load_textarea(moduleuuid);
 
    }
@@ -353,14 +353,14 @@ function node_load_event(node) {
 ////////////////////// Persona
 
 function persona_in(){
-   logout("persona in clicked");
+   logger("persona in clicked");
    navigator.id.request();
 
 }
 
 
 function persona_out(){
-   logout("persona out clicked");
+   logger("persona out clicked");
    navigator.id.logout();
 
 }
@@ -370,7 +370,7 @@ function persona_out(){
 ////////////// adminy
 function test(){
     build_workspace();
-    logout("start aloha now ..");
+    logger("start aloha now ..");
     start_aloha();
 }
 
@@ -417,7 +417,7 @@ $(document).ready(function() {
 //    getwhomi();
 
 
-
+    newText();
     build_workspace();
 
     /* Authoring Tools Dropdowns & Modals */
