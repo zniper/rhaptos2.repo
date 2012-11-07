@@ -13,12 +13,27 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 from setuptools import setup, find_packages
 import os, glob
-from bamboo.setuptools_version import versionlib
+
+
+
+def get_version():
+    """ return a version number, or error string.
+    
+    We are assuming a file version.txt always exists. By convention
+    populate that file with output of git describe
+    """
+
+    try:
+        v = open("version.txt").read().strip()
+    except:
+        v = "UNABLE_TO_FIND_RELEASE_VERSION_FILE"
+    return v
+
 
 
 setup(
     name='rhaptos2.repo',
-    version=versionlib.get_version('.'),
+    version=get_version(),
     packages=find_packages(),
     namespace_packages=['rhaptos2'],
     author='See AUTHORS.txt',
@@ -37,7 +52,6 @@ setup(
         "Flask-OpenID==1.0.1",
         "python-memcached",
         "nose",
-
         "rhaptos2.common",
         "unittest-xml-reporting",
         ##"mikado.oss.doctest_additions",
@@ -47,11 +61,10 @@ setup(
     package_data={'rhaptos2.repo': ['templates/*.*',
                                     'static/*.*',
                                     'tests/*.*'],
-                  '':['RELEASE_VERSION',] 
                   },
     entry_points = """\
 [console_scripts]
-rhaptos2_runrepo.py = rhaptos2.repo.run:main
+rhaptos2_runrepo = rhaptos2.repo.run:main
 """,
     )
 
