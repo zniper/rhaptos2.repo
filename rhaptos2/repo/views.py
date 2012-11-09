@@ -292,22 +292,26 @@ def upload(modname):
     #   (e.g. data:image/png;base64,<data>).
     data = StringIO(request.data.split(',')[1].decode('base64'))
     filename = request.headers.get('X-File-Name', 'unknown')
-    model.create_or_update_upload(uuid, data, filename)
+    mimetype = None  # TODO
+    metadata = model.create_or_update_upload(uuid, data, mimetype,
+                                             name=filename)
 
-    url = "/module/{0}/resource/{1}".format(uuid, filename)
+    url = "/module/{0}/resource/{1}/{2}".format(uuid, metadata['id'],
+                                                metadata.get('name', ''))
     resp = flask.make_response(url)
     resp.status_code = 200
     return resp
 
-@app.route("/module/<modname>/resource/<filename>", methods=['GET'])
-def resource(modname, filename):
+@app.route("/module/<modname>/resource/<id>/<name>", methods=['GET'])
+@app.route("/module/<modname>/resource/<id>/", methods=['GET'])
+def resource(modname, id, name=None):
     """Send the resource data in the response."""
     # XXX 'modname' is used for consistancy, but it's not ideal, since
     #     the value isn't actually a module name.
     uuid = modname
-    data = model.get_resource(uuid, filename).read()
+    data_stream, metadata = model.get_resource(uuid, id)
 
-    resp = flask.make_response(data)
+    resp = flask.make_response(data_stream.read())
     # XXX No mime-type headers... The following content-type
     #     is strictly temporary.
     resp.content_type = 'image/png'

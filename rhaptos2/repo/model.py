@@ -14,7 +14,7 @@ import datetime
 import datetime
 import md5, random
 import os, sys
-import flask
+import hashlib
 import statsd
 import json
 from functools import wraps
@@ -27,6 +27,7 @@ from rhaptos2.common.err import Rhaptos2Error
 from rhaptos2.repo import app, dolog
 from rhaptos2.repo import files, security
 
+import flask
 from flask import Flask, render_template, request, g, session, flash, \
      redirect, url_for, abort
 from flaskext.openid import OpenID
@@ -409,28 +410,59 @@ def get_metadata(uuid):
         data = {}
     return json.dumps(data)
 
-def create_or_update_upload(uuid, data, name):
-    """Given a `uuid` and the file like object as `data` with a `name`,
-    store the data with an optional `name`.
+def _xxx_get_resource_metadata(uuid, hash):
+    """XXX Temporary function to return the metadata for a specific resource.
+    This is temporary because we are working with the file system as storage.
     """
-    filename = name
+    return {'id': hash}
+
+def _xxx_set_resource_metadata(uuid, hash, **kwargs):
+    """XXX Temporary function to set the metadata for a specific resource.
+    This is temporary because we are working with the file system as storage.
+    """
+    metadata_file = os.path.join(userspace(), "{0}.resources".format(uuid),
+                                 'metadata')
+    metadata = {}
+    if os.path.exists(metadata_file):
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
+    metadata[hash] = kwargs
+    with open(metadata_file, 'w') as f:
+        f.write(json.dumps(metadata))
+
+def create_or_update_upload(uuid, data, mimetype, name=None):
+    """Given a `uuid` and the file like object as `data`,
+    store the data. A mimetype should be provided to reliably adapt the
+    data at a later time. Optionally, a human readable `name` can be given.
+    with an optional `name`.
+    Information about the stored upload is returned.
+    """
+    data = data.read()
+    id = filename = hashlib.sha1(data).hexdigest()
     resources_dir_name = "{0}.resources".format(uuid)
     resources_dir_path = os.path.join(userspace(), resources_dir_name)
     file_path = os.path.join(resources_dir_path, filename)
+
+    # Store the metadata about the resource metadata
+    _xxx_set_resource_metadata(uuid, id, mimetype=mimetype, name=name)
+
+    # Store the file data.
     if not os.path.exists(resources_dir_path):
         os.mkdir(resources_dir_path)
     with open(file_path, 'wb') as f:
-        f.write(data.read())
+        f.write(data)
+    return _xxx_get_resource_metadata(uuid, id)
 
-def get_resource(uuid, name):
+def get_resource(uuid, id):
     """Given a `uuid` and a `filename`, return the contents of the
     resource as a file like object / stream.
     """
-    filename = name
+    filename = id
     resources_dir_name = "{0}.resources".format(uuid)
     resources_dir_path = os.path.join(userspace(), resources_dir_name)
     file_path = os.path.join(resources_dir_path, filename)
-    return open(file_path, 'rb')
+    metadata = _xxx_get_resource_metadata(uuid, id)
+    return [open(file_path, 'rb'), metadata]
 
 if __name__ == '__main__':
     import doctest
