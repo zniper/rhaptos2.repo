@@ -38,7 +38,7 @@ import urllib
 #app = get_app()
 app.config.update(
     SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
-    DEBUG = True
+    DEBUG = app.debug
 )
 
 # setup flask-openid

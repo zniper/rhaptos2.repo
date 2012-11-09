@@ -33,8 +33,8 @@ def parse_args():
                       help="hostname to listen on")
     parser.add_option("--port", dest="port",
                       help="port to listen on", type="int")
-    parser.add_option("--debug", dest="debug",
-                      help="debug on or off.", default=False)
+    parser.add_option("--debug", dest="debug", action="store_true",
+                      help="debug on.", default=False)
 
     (options, args) = parser.parse_args()
     return (options, args)

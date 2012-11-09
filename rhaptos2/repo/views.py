@@ -246,6 +246,7 @@ def get_metadata(modname):
     resp.content_type='application/json'
     return resp
 
+
 @app.route("/module/<modname>/roles", methods=['POST', 'PUT'])
 @apply_cors
 def post_roles(modname):
@@ -276,6 +277,7 @@ def get_roles(modname):
     resp.content_type='application/json'
     return resp
 
+
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
 def versionGET():
@@ -295,7 +297,8 @@ def crash():
     if app.debug == True:
         dolog("INFO", 'crash command called', caller=crash, statsd=['rhaptos2.repo.crash',])
         raise exceptions.Rhaptos2Error('Crashing on demand')
-
+    else:
+        abort(404)
 
 @app.route("/burn/", methods=["GET"])
 def burn():
@@ -306,7 +309,8 @@ def burn():
         #sys.exit(1)
         #Flask traps sys.exit (threads?)
         os._exit(1) #trap _this_
-
+    else:
+        abort(404)
 
 @app.route("/admin/config/", methods=["GET",])
 def admin_config():
@@ -315,13 +319,16 @@ def admin_config():
     Clearly quick and dirty fix.
     Should create a common library for rhaptos2 and web framrwoe
     """
-    outstr = "<table>"
-    for k in sorted(app.config.keys()):
-        outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
-    outstr += "</table>"
+    if app.debug == True:
+        outstr = "<table>"
+        for k in sorted(app.config.keys()):
+            outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
+        outstr += "</table>"
 
 
-    return outstr
+        return outstr
+    else:
+        abort(404)
 
 ################ openid views - from flask
 
