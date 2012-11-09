@@ -422,6 +422,16 @@ def create_or_update_upload(uuid, data, name):
     with open(file_path, 'wb') as f:
         f.write(data.read())
 
+def get_resource(uuid, name):
+    """Given a `uuid` and a `filename`, return the contents of the
+    resource as a file like object / stream.
+    """
+    filename = name
+    resources_dir_name = "{0}.resources".format(uuid)
+    resources_dir_path = os.path.join(userspace(), resources_dir_name)
+    file_path = os.path.join(resources_dir_path, filename)
+    return open(file_path, 'rb')
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

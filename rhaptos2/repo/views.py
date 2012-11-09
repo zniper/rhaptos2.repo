@@ -299,6 +299,21 @@ def upload(modname):
     resp.status_code = 200
     return resp
 
+@app.route("/module/<modname>/resource/<filename>", methods=['GET'])
+def resource(modname, filename):
+    """Send the resource data in the response."""
+    # XXX 'modname' is used for consistancy, but it's not ideal, since
+    #     the value isn't actually a module name.
+    uuid = modname
+    data = model.get_resource(uuid, filename).read()
+
+    resp = flask.make_response(data)
+    # XXX No mime-type headers... The following content-type
+    #     is strictly temporary.
+    resp.content_type = 'image/png'
+    resp.status_code = 200
+    return resp
+
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
 def versionGET():
