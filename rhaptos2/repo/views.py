@@ -15,6 +15,11 @@ import md5
 import random
 import json
 from functools import wraps
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 import uuid
 import requests
 import pprint
@@ -23,7 +28,7 @@ import flask
 from flask import (
     Flask, render_template,
     request, g, session, flash,
-    redirect, url_for, abort, 
+    redirect, url_for, abort,
     send_from_directory
     )
 
@@ -64,14 +69,14 @@ def apply_cors(fn):
 @app.route("/cdn/aloha/<path:filename>")
 def serve_aloha(filename):
     """ serve static files for development purposes
- 
+
     We would expect that these routes would be "overwritten" by say
     the front portion of the reverse proxy we expect flask to sit
-    behind.  So these will only ever be called by requests 
+    behind.  So these will only ever be called by requests
     during development, but the URL /cdn/aloha/... would still
     exist, possibly on a CDN, certainly a good cache server.
 
-    
+
     """
     #os.path.isfile is checked by the below function in Flask.
     dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
@@ -274,6 +279,24 @@ def get_roles(modname):
     resp = flask.make_response(data)
     resp.status_code = 200
     resp.content_type='application/json'
+    return resp
+
+@app.route("/module/<modname>/upload", methods=['POST', 'PUT'])
+@apply_cors
+def upload(modname):
+    """Receives file uploads."""
+    # XXX 'modname' is used for consistancy, but it's not ideal, since
+    #     the value isn't actually a module name.
+    uuid = modname
+    # The data is coming in as a Data URI.
+    #   (e.g. data:image/png;base64,<data>).
+    data = StringIO(request.data.split(',')[1].decode('base64'))
+    filename = request.headers.get('X-File-Name', 'unknown')
+    model.create_or_update_upload(uuid, data, filename)
+
+    url = "/module/{0}/resource/{1}".format(uuid, filename)
+    resp = flask.make_response(url)
+    resp.status_code = 200
     return resp
 
 @app.route("/version/", methods=["GET"])

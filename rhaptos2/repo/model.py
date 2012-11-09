@@ -409,6 +409,19 @@ def get_metadata(uuid):
         data = {}
     return json.dumps(data)
 
+def create_or_update_upload(uuid, data, name):
+    """Given a `uuid` and the file like object as `data` with a `name`,
+    store the data with an optional `name`.
+    """
+    filename = name
+    resources_dir_name = "{0}.resources".format(uuid)
+    resources_dir_path = os.path.join(userspace(), resources_dir_name)
+    file_path = os.path.join(resources_dir_path, filename)
+    if not os.path.exists(resources_dir_path):
+        os.mkdir(resources_dir_path)
+    with open(file_path, 'wb') as f:
+        f.write(data.read())
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
