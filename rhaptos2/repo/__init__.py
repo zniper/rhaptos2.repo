@@ -102,7 +102,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
     except Exception, e:
         print extra, msg, e
 
-def set_logger(apptype, confd):
+def set_logger(apptype, confd=None):
     """
     useage:
         lg.warn("Help", extra={'statsd':['rhaptos2.repo.module',
@@ -111,21 +111,9 @@ def set_logger(apptype, confd):
     """
     lg = logging.getLogger(apptype)
 
-    ### Trapping basic missing conf
-    uselogging = "%s_use_logging" % apptype
-    loglevel = "%s_loglevel" % apptype
-
-    #.. todo:: confd usage is globla
-    if uselogging not in confd.keys():
-        confd[uselogging] = 'Y'
-
-    if loglevel not in confd.keys():
-        confd[loglevel] = 'DEBUG'
-    ###
-
     ## define handlers
-    hdlr2 = log.StatsdHandler(app.config['rhaptos2repo_statsd_host'],
-                    int(app.config['rhaptos2repo_statsd_port']))
+    hdlr2 = log.StatsdHandler(app.config['bamboo_global']['statsd_host'],
+                    int(app.config['bamboo_global']['statsd_port']))
 
     hdlr = logging.StreamHandler()
 
@@ -140,7 +128,7 @@ def set_logger(apptype, confd):
     app.logger.addHandler(hdlr)
     app.logger.addHandler(hdlr2)
 
-    app.logger.setLevel(confd[loglevel])
+    app.logger.setLevel(app.config["bamboo_global"]["loglevel"])
 
 
 

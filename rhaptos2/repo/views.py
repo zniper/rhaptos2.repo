@@ -74,22 +74,22 @@ def serve_aloha(filename):
     
     """
     #os.path.isfile is checked by the below function in Flask.
-    dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo_aloha_staging_dir"], filename)
+    dolog("INFO", repr((app.config["rhaptos2repo"]["aloha_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo"]["aloha_staging_dir"], filename)
 
 
 @app.route("/cdn/js/<path:filename>/")
 def serve_other_thirdpartyjs(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo_js_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo_js_staging_dir"], filename)
+    dolog("INFO", repr((app.config["rhaptos2repo"]["js_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo"]["js_staging_dir"], filename)
 
 
 @app.route("/cdn/css/<path:filename>/")
 def serve_other_thirdpartycss(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo_css_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo_css_staging_dir"], filename)
+    dolog("INFO", repr((app.config["rhaptos2repo"]["css_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo"]["css_staging_dir"], filename)
 
 ##### /thirdparty static files
 
@@ -323,6 +323,7 @@ def admin_config():
         outstr = "<table>"
         for k in sorted(app.config.keys()):
             outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
+ 
         outstr += "</table>"
 
 

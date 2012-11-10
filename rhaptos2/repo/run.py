@@ -43,11 +43,7 @@ def main():
     opts, args = parse_args()
 
     confd = conf.get_config(opts.conf)
-
-    d2 = {}
-    d2.update(confd["repo"]) ### hack to avoid changing all variable names now
-    app = make_app(d2)
-
+    app = make_app(confd)
     set_logger(APPTYPE, app.config)
     print app, "<-- Intialised app"
 
