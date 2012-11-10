@@ -31,15 +31,17 @@ __version__ = pkg_resources.require("rhaptos2.repo")[0].version
 APPTYPE = 'rhaptos2repo'
 VERSION = __version__
 
-# def get_app():
-#     """Get the application object"""
-#     global _app
-#     return _app
+app = None
 
-# def set_app(app):
-#     """Set the global application object"""
-#     global _app
-#     _app = app
+def get_app():
+    """Get the application object"""
+    global app
+    return app
+
+def set_app(app_in):
+    """Set the global application object"""
+    global app
+    app = app_in
 
 def dolog(lvl, msg, caller=None, statsd=None):
     """wrapper function purely for adding context to log stmts
@@ -100,7 +102,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
     except Exception, e:
         print extra, msg, e
 
-def set_logger(apptype, app_configd):
+def set_logger(apptype, confd):
     """
     useage:
         lg.warn("Help", extra={'statsd':['rhaptos2.repo.module',
@@ -142,20 +144,4 @@ def set_logger(apptype, app_configd):
 
 
 
-confd = conf.get_config([APPTYPE, 'bamboo'])
-# Globally reference application variable.
-app = Flask("rhaptos2.repo")
-print app
-
-#app = Flask(__name__)
-# print app
-app.config.update(confd)
-set_logger(APPTYPE, app.config)
-
-@app.before_request
-def requestid():
-    g.requestid = uuid.uuid4()
-    g.request_id = g.requestid
-
-import rhaptos2.repo.views
 

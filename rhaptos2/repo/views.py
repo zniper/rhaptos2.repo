@@ -32,10 +32,10 @@ from rhaptos2.repo import app, dolog, model, security, VERSION
 
 
 
-#@app.before_request
-#def requestid():
-#    g.requestid = uuid.uuid4()
-#    g.request_id = g.requestid
+@app.before_request
+def requestid():
+    g.requestid = uuid.uuid4()
+    g.request_id = g.requestid
 
 ########################### views
 
