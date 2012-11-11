@@ -414,9 +414,15 @@ def _xxx_get_resource_metadata(uuid, hash):
     """XXX Temporary function to return the metadata for a specific resource.
     This is temporary because we are working with the file system as storage.
     """
-    return {'id': hash}
+    metadata_file = os.path.join(userspace(), "{0}.resources".format(uuid),
+                                 'metadata')
+    with open(metadata_file, 'r') as f:
+        metadata = json.load(f)
+    value = {'id': hash}
+    value.update(metadata[hash])
+    return value
 
-def _xxx_set_resource_metadata(uuid, hash, **kwargs):
+def _xxx_set_resource_metadata(uuid, hash, mimetype, **kwargs):
     """XXX Temporary function to set the metadata for a specific resource.
     This is temporary because we are working with the file system as storage.
     """
@@ -426,7 +432,10 @@ def _xxx_set_resource_metadata(uuid, hash, **kwargs):
     if os.path.exists(metadata_file):
         with open(metadata_file, 'r') as f:
             metadata = json.load(f)
-    metadata[hash] = kwargs
+
+    value = {'mimetype': mimetype}
+    value.update(kwargs)
+    metadata[hash] = value
     with open(metadata_file, 'w') as f:
         f.write(json.dumps(metadata))
 
@@ -443,12 +452,14 @@ def create_or_update_upload(uuid, data, mimetype, name=None):
     resources_dir_path = os.path.join(userspace(), resources_dir_name)
     file_path = os.path.join(resources_dir_path, filename)
 
+    # Create the containing directory if necessary.
+    if not os.path.exists(resources_dir_path):
+        os.mkdir(resources_dir_path)
+
     # Store the metadata about the resource metadata
     _xxx_set_resource_metadata(uuid, id, mimetype=mimetype, name=name)
 
     # Store the file data.
-    if not os.path.exists(resources_dir_path):
-        os.mkdir(resources_dir_path)
     with open(file_path, 'wb') as f:
         f.write(data)
     return _xxx_get_resource_metadata(uuid, id)

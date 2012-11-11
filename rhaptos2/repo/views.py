@@ -292,7 +292,7 @@ def upload(modname):
     #   (e.g. data:image/png;base64,<data>).
     data = StringIO(request.data.split(',')[1].decode('base64'))
     filename = request.headers.get('X-File-Name', 'unknown')
-    mimetype = None  # TODO
+    mimetype = request.content_type.split(';')[0]
     metadata = model.create_or_update_upload(uuid, data, mimetype,
                                              name=filename)
 
@@ -314,7 +314,7 @@ def resource(modname, id, name=None):
     resp = flask.make_response(data_stream.read())
     # XXX No mime-type headers... The following content-type
     #     is strictly temporary.
-    resp.content_type = 'image/png'
+    resp.content_type = metadata['mimetype']
     resp.status_code = 200
     return resp
 
