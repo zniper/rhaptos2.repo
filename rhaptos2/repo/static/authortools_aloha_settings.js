@@ -16,20 +16,6 @@ Aloha.settings = {
     // errorhandling : true,
     plugins: {
         draganddropfiles: {
-        //     config : {
-        //         'drop': {
-        //             'max_file_size': '200000',
-        //             'upload': {
-        //                 'config': {
-        //                     'url': '/content/',
-        //                     'extra_headers':{'Accept':'application/json'},
-        //                     'additional_params': {"location":""},
-        //                     'www_encoded': false,
-        //                 },
-        //             },
-        //         },
-        //     },
-        // },
             upload: {
                 config: {
                     method: "POST",
