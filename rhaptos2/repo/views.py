@@ -37,10 +37,10 @@ from rhaptos2.repo import app, dolog, model, security, VERSION
 
 
 
-#@app.before_request
-#def requestid():
-#    g.requestid = uuid.uuid4()
-#    g.request_id = g.requestid
+@app.before_request
+def requestid():
+    g.requestid = uuid.uuid4()
+    g.request_id = g.requestid
 
 ########################### views
 
@@ -79,22 +79,22 @@ def serve_aloha(filename):
 
     """
     #os.path.isfile is checked by the below function in Flask.
-    dolog("INFO", repr((app.config["rhaptos2repo_aloha_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo_aloha_staging_dir"], filename)
+    dolog("INFO", repr((app.config["rhaptos2repo"]["aloha_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo"]["aloha_staging_dir"], filename)
 
 
 @app.route("/cdn/js/<path:filename>/")
 def serve_other_thirdpartyjs(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo_js_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo_js_staging_dir"], filename)
+    dolog("INFO", repr((app.config["rhaptos2repo"]["js_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo"]["js_staging_dir"], filename)
 
 
 @app.route("/cdn/css/<path:filename>/")
 def serve_other_thirdpartycss(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo_css_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo_css_staging_dir"], filename)
+    dolog("INFO", repr((app.config["rhaptos2repo"]["css_staging_dir"], filename)))
+    return send_from_directory(app.config["rhaptos2repo"]["css_staging_dir"], filename)
 
 ##### /thirdparty static files
 
@@ -337,7 +337,8 @@ def crash():
     if app.debug == True:
         dolog("INFO", 'crash command called', caller=crash, statsd=['rhaptos2.repo.crash',])
         raise exceptions.Rhaptos2Error('Crashing on demand')
-
+    else:
+        abort(404)
 
 @app.route("/burn/", methods=["GET"])
 def burn():
@@ -348,7 +349,8 @@ def burn():
         #sys.exit(1)
         #Flask traps sys.exit (threads?)
         os._exit(1) #trap _this_
-
+    else:
+        abort(404)
 
 @app.route("/admin/config/", methods=["GET",])
 def admin_config():
@@ -357,13 +359,17 @@ def admin_config():
     Clearly quick and dirty fix.
     Should create a common library for rhaptos2 and web framrwoe
     """
-    outstr = "<table>"
-    for k in sorted(app.config.keys()):
-        outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
-    outstr += "</table>"
+    if app.debug == True:
+        outstr = "<table>"
+        for k in sorted(app.config.keys()):
+            outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
+ 
+        outstr += "</table>"
 
 
-    return outstr
+        return outstr
+    else:
+        abort(404)
 
 ################ openid views - from flask
 

@@ -42,33 +42,35 @@
 						  extra/toolbar,
 						  common/ui,
 						  common/format,
-						  common/link,
 						  common/paste,
 						  common/block,
 						  common/list,
 						  common/table,
 						  extra/draganddropfiles,
 						  common/image,
-						  extra/oer-math,
-						  extra/bubble"></script>
+                          oerpub/popover,
+                          oerpub/math,
+                          oerpub/assorted,
+                          oerpub/oerui,
+                          oerpub/image"></script>
 
 
-    <script src="http://{{confd['rhaptos2repo_www_server_name']}}/static/js/lib/bootstrap.js"
+    <script src="http://{{confd['rhaptos2repo']['www_server_name']}}/static/js/lib/bootstrap.js"
             type="text/javascript"></script>
-    <script src="http://{{confd['rhaptos2repo_www_server_name']}}/static/js/lib/mustache.js"
+    <script src="http://{{confd['rhaptos2repo']['www_server_name']}}/static/js/lib/mustache.js"
             type="text/javascript"></script>
-    <script src="http://{{confd['rhaptos2repo_www_server_name']}}/static/js/lib/spin.js"
+    <script src="http://{{confd['rhaptos2repo']['www_server_name']}}/static/js/lib/spin.js"
             type="text/javascript"></script>
     <script src="/static/js/languagelib.js" 
             type="text/javascript"></script>
 
-    <script src="http://{{ confd['rhaptos2repo_www_server_name'] }}/conf.js"
+    <script src="http://{{ confd['rhaptos2repo']['www_server_name'] }}/conf.js"
             type="text/javascript"></script>
-    <script src="http://{{ confd['rhaptos2repo_www_server_name'] }}/static/authortools_client_templates.js"
+    <script src="http://{{ confd['rhaptos2repo']['www_server_name'] }}/static/authortools_client_templates.js"
             type="text/javascript"></script>
-    <script src="http://{{ confd['rhaptos2repo_www_server_name'] }}/static/authortools_client_tools.js"
+    <script src="http://{{ confd['rhaptos2repo']['www_server_name'] }}/static/authortools_client_tools.js"
             type="text/javascript"></script>
-    <script src="http://{{ confd['rhaptos2repo_www_server_name'] }}/static/authortools_client.js"
+    <script src="http://{{ confd['rhaptos2repo']['www_server_name'] }}/static/authortools_client.js"
             type="text/javascript"></script>
 
     <script type="text/javascript">
@@ -151,11 +153,8 @@
           </ul>
 
           <ul class="nav pull-right"> 
-            <li>  
-              <div> {{ confd['bamboo_trackid'] }} <!-- test --> </div>
-            </li>
             <li>
-              <div id="usernamedisplay">fff</div>
+              <div id="usernamedisplay"></div>
             </li>
 	  </ul>
         </div>

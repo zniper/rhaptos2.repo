@@ -38,8 +38,8 @@ import urllib
 
 #app = get_app()
 app.config.update(
-    SECRET_KEY = app.config['rhaptos2repo_openid_secretkey'],
-    DEBUG = True
+    SECRET_KEY = app.config['rhaptos2repo']['openid_secretkey'],
+    DEBUG = app.debug
 )
 
 # setup flask-openid
@@ -122,7 +122,7 @@ class User(object):
 
         payload = {'user':authenticated_identifier}
 
-        user_server_url = app.config['bamboo_userserver'].replace("/user", "/openid")
+        user_server_url = app.config['bamboo_global']['userserver'].replace("/user", "/openid")
 
         dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))
@@ -309,7 +309,7 @@ def add_location_header_to_response(fn):
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    userspace = app.config['rhaptos2repo_repodir']
+    userspace = app.config['rhaptos2repo']['repodir']
 
     if os.path.isdir(userspace):
         return userspace
@@ -325,8 +325,8 @@ def userspace():
 
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(app.config['rhaptos2repo_statsd_host'],
-                       int(app.config['rhaptos2repo_statsd_port']))
+    c = statsd.StatsClient(app.config['bamboo_global']['statsd_host'],
+                       int(app.config['bamboo_global']['statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 

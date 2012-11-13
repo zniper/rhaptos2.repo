@@ -51,7 +51,7 @@ class WorkSpace(object):
               caller=WorkSpace, statsd=['rhaptos2.repo.workspace.entered',])
 
         self.user_id = user_id
-        repodir = app.config['rhaptos2repo_repodir']
+        repodir = app.config['rhaptos2repo']['repodir']
         plain = []
         annotated = []
         files = [os.path.join(repodir, f)
@@ -145,7 +145,7 @@ class NodeDoc(object):
 
 
         """
-        repodir = app.config['rhaptos2repo_repodir']
+        repodir = app.config['rhaptos2repo']['repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
 
@@ -197,7 +197,7 @@ class NodeDoc(object):
         if self.uuid == None:
             raise Rhaptos2Error("Need a UUID to save")
         print "Saving"
-        repodir = app.config['rhaptos2repo_repodir']
+        repodir = app.config['rhaptos2repo']['repodir']
         filepath = os.path.join(repodir, self.uuid)
         ###aaarrgh check keys
         d = {}
