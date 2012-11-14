@@ -15,22 +15,9 @@ Aloha.settings = {
     // logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
     // errorhandling : true,
     plugins: {
-        draganddropfiles: {
-            upload: {
-                config: {
-                    method: "POST",
-                    url: function() {
-                        var url, uid;
-                        id = serialise_form().uuid;
-                        url = MODULEURL + id + '/upload';
-                        return url;
-                    },
-                    callback: function(resp) {
-                        Aloha.jQuery('#' + this.id).attr('src', resp);
-                        console.log('Updated Image src as a result of upload');
-                    },
-                },
-            },
+        image: {
+            uploadurl: "/resource",
+            parseresponse: function(xhr) { return xhr.response; },
         },
         block: {
             defaults : {
