@@ -281,35 +281,25 @@ def get_roles(modname):
     resp.content_type='application/json'
     return resp
 
-@app.route("/module/<modname>/upload", methods=['POST', 'PUT'])
+@app.route("/resource", methods=['POST', 'PUT'])
 @apply_cors
-def upload(modname):
-    """Receives file uploads."""
-    # XXX 'modname' is used for consistancy, but it's not ideal, since
-    #     the value isn't actually a module name.
-    uuid = modname
-    # The data is coming in as a Data URI.
-    #   (e.g. data:image/png;base64,<data>).
-    data = StringIO(request.data.split(',')[1].decode('base64'))
-    filename = request.headers.get('X-File-Name', 'unknown')
-    mimetype = request.content_type.split(';')[0]
-    metadata = model.create_or_update_upload(uuid, data, mimetype,
-                                             name=filename)
+def post_resource():
+    """Receives file resource uploads."""
+    file = request.files['upload']
+    # FIXME We should use magic to determine the mimetype. See also,
+    #       https://github.com/Connexions/rhaptos2.repo/commit/7452bee85ecbbbec66232f3c04e4f2e40d72be1c
+    mimetype = file.mimetype
+    metadata = model.create_or_update_resource(file.stream, mimetype)
 
-    url = "/module/{0}/resource/{1}/{2}".format(uuid, metadata['id'],
-                                                metadata.get('name', ''))
+    url = "/resource/{0}".format(metadata['id'])
     resp = flask.make_response(url)
     resp.status_code = 200
     return resp
 
-@app.route("/module/<modname>/resource/<id>/<name>", methods=['GET'])
-@app.route("/module/<modname>/resource/<id>/", methods=['GET'])
-def resource(modname, id, name=None):
+@app.route("/resource/<id>", methods=['GET'])
+def get_resource(id):
     """Send the resource data in the response."""
-    # XXX 'modname' is used for consistancy, but it's not ideal, since
-    #     the value isn't actually a module name.
-    uuid = modname
-    data_stream, metadata = model.get_resource(uuid, id)
+    data_stream, metadata = model.obtain_resource(id)
 
     resp = flask.make_response(data_stream.read())
     # XXX No mime-type headers... The following content-type
@@ -363,7 +353,7 @@ def admin_config():
         outstr = "<table>"
         for k in sorted(app.config.keys()):
             outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
- 
+
         outstr += "</table>"
 
 

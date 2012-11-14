@@ -36,11 +36,13 @@ import requests
 import urllib
 
 
-#app = get_app()
 app.config.update(
     SECRET_KEY = app.config['rhaptos2repo']['openid_secretkey'],
     DEBUG = app.debug
 )
+RESOURCES_DIR_PATH = os.path.join(app.config['rhaptos2repo']['repodir'],
+                                  'resources')
+METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH, 'resource-metadata')
 
 # setup flask-openid
 oid = OpenID(app)
@@ -410,36 +412,33 @@ def get_metadata(uuid):
         data = {}
     return json.dumps(data)
 
-def _xxx_get_resource_metadata(uuid, hash):
+def _xxx_get_resource_metadata(hash):
     """XXX Temporary function to return the metadata for a specific resource.
     This is temporary because we are working with the file system as storage.
     """
-    metadata_file = os.path.join(userspace(), "{0}.resources".format(uuid),
-                                 'metadata')
-    with open(metadata_file, 'r') as f:
+    metadata_file = os.path.join(RESOURCES_DIR_PATH, 'metadata')
+    with open(METADATA_FILE_PATH, 'r') as f:
         metadata = json.load(f)
     value = {'id': hash}
     value.update(metadata[hash])
     return value
 
-def _xxx_set_resource_metadata(uuid, hash, mimetype, **kwargs):
+def _xxx_set_resource_metadata(hash, mimetype, **kwargs):
     """XXX Temporary function to set the metadata for a specific resource.
     This is temporary because we are working with the file system as storage.
     """
-    metadata_file = os.path.join(userspace(), "{0}.resources".format(uuid),
-                                 'metadata')
     metadata = {}
-    if os.path.exists(metadata_file):
-        with open(metadata_file, 'r') as f:
+    if os.path.exists(METADATA_FILE_PATH):
+        with open(METADATA_FILE_PATH, 'r') as f:
             metadata = json.load(f)
 
     value = {'mimetype': mimetype}
     value.update(kwargs)
     metadata[hash] = value
-    with open(metadata_file, 'w') as f:
+    with open(METADATA_FILE_PATH, 'w') as f:
         f.write(json.dumps(metadata))
 
-def create_or_update_upload(uuid, data, mimetype, name=None):
+def create_or_update_resource(data, mimetype, name=None):
     """Given a `uuid` and the file like object as `data`,
     store the data. A mimetype should be provided to reliably adapt the
     data at a later time. Optionally, a human readable `name` can be given.
@@ -448,32 +447,28 @@ def create_or_update_upload(uuid, data, mimetype, name=None):
     """
     data = data.read()
     id = filename = hashlib.sha1(data).hexdigest()
-    resources_dir_name = "{0}.resources".format(uuid)
-    resources_dir_path = os.path.join(userspace(), resources_dir_name)
-    file_path = os.path.join(resources_dir_path, filename)
+    file_path = os.path.join(RESOURCES_DIR_PATH, filename)
 
     # Create the containing directory if necessary.
-    if not os.path.exists(resources_dir_path):
-        os.mkdir(resources_dir_path)
+    if not os.path.exists(RESOURCES_DIR_PATH):
+        os.mkdir(RESOURCES_DIR_PATH)
 
     # Store the metadata about the resource metadata
-    _xxx_set_resource_metadata(uuid, id, mimetype=mimetype, name=name)
+    _xxx_set_resource_metadata(id, mimetype=mimetype, name=name)
 
     # Store the file data.
     with open(file_path, 'wb') as f:
         f.write(data)
-    return _xxx_get_resource_metadata(uuid, id)
+    return _xxx_get_resource_metadata(id)
 
-def get_resource(uuid, id):
+def obtain_resource(id):
     """Given a `uuid` and a `filename`, return the contents of the
     resource as a file like object / stream.
     """
     filename = id
-    resources_dir_name = "{0}.resources".format(uuid)
-    resources_dir_path = os.path.join(userspace(), resources_dir_name)
-    file_path = os.path.join(resources_dir_path, filename)
-    metadata = _xxx_get_resource_metadata(uuid, id)
-    return [open(file_path, 'rb'), metadata]
+    file_path = os.path.join(RESOURCES_DIR_PATH, filename)
+    metadata = _xxx_get_resource_metadata(id)
+    return (open(file_path, 'rb'), metadata,)
 
 if __name__ == '__main__':
     import doctest
