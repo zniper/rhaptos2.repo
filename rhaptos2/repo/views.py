@@ -406,7 +406,8 @@ def loginpersona():
         abort(400)
 
     # Send the assertion to Mozilla's verifier service.
-    data = {'assertion': request.form['assertion'], 'audience': 'http://www.frozone.mikadosoftware.com:80'}
+    audience="http://%s" % app.config['rhaptos2repo']['www_server_name']
+    data = {'assertion': request.form['assertion'], 'audience': audience }
     resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
 
     # Did the verifier respond?
