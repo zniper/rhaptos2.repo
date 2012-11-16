@@ -35,6 +35,87 @@
     {% block js %}
     <script src="{{ cdnaloha }}/src/lib/require.js"></script> 
     <script>define('jquery', [], function () { return window.jQuery; });</script>
+  <script src="{{ cdnaloha }}/src/plugins/extra/math/lib/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
+
+
+  <!-- ============================= -->
+  <!--  Configure MathJax and Aloha  -->
+  <!-- ============================= -->
+  <script type="text/x-mathjax-config">MathJax.Hub.Config({
+    jax: ["input/MathML", "input/TeX", "input/AsciiMath", "output/NativeMML", "output/HTML-CSS"],
+    extensions: ["asciimath2jax.js", "tex2jax.js","mml2jax.js","MathMenu.js","MathZoom.js"],
+    tex2jax: { inlineMath: [["[TEX_START]","[TEX_END]"], ["\\(", "\\)"]] },
+    // Apparently we can't change the escape sequence for ASCIIMath (MathJax doesn't find it)
+    // asciimath2jax: { inlineMath: [["[ASCIIMATH_START]", "[ASCIIMATH_END]"]], },
+
+    // The default for Firefox is "HTML" for some reason so change it to MML
+    MMLorHTML: {prefer:{MSIE:"MML",Firefox:"MML",Opera:"HTML",Chrome:"HTML",Safari:"HTML",other:"HTML"}},
+    TeX: {
+      extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"], noErrors: { disabled: true }
+    },
+    AsciiMath: { noErrors: { disabled: true } }
+        });
+  </script>
+	<script type="text/javascript">
+		Aloha = window.Aloha || {};
+
+		Aloha.settings = {
+			jQuery: window.jQuery,
+			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+			errorhandling : true,
+
+			plugins: {
+			  // This whole thing is what's needed to:
+			  // - set a custom URL to send files to
+			  // - register a callback that updates the IMG with the new src
+			  draganddropfiles: {
+          upload: {
+            config: {
+              method: 'POST',
+              url: '/resources',
+              fieldName: 'data',
+              send_multipart_form: true,
+              callback: function(resp) {
+                //TODO: add xhr to Aloha.trigger('aloha-upload-*') in dropfilesrepository.js
+                // dropfilesrepository.js triggers 'aloha-upload-success'
+                // and 'aloha-upload-failure' but does not provide the
+                // response text (URL).
+                // We should probably change dropfilesrepository.js to be
+                //  Aloha.trigger('aloha-upload-success', that, xhr);
+
+                // Then, instead of configuring a callback we could just listen to that event
+
+                // If the response is a URL then change the Image source to it
+                // The URL could be absolute (/^http/) or relative (/\// or [a-z])
+                if (resp.match(/^http/) || resp.match(/^\//) || resp.match(/^[a-z]/) ) {
+                } else {
+                  alert('You dropped a file and we sent a message to the server to do something with it.\nIt responded with some gibberish so we are showing you some other file to show it worked');
+                  resp = "src/test/AlohaEditorLogo.png";
+                }
+
+                Aloha.jQuery('#' + this.id).attr('src', resp);
+                console.log('Updated Image src as a result of upload');
+              }
+            }
+          }
+			  },
+				block: {
+					defaults : {
+						'.default-block': {
+						},
+						'figure': {
+							'aloha-block-type': 'EditableImageBlock'
+						},
+					}
+				}
+			},
+			bundles: {
+				// Path for custom bundle relative from require.js path
+				user: '../demo/block'
+			}
+		};
+
+	</script>
     <script src="{{ cdnaloha }}/src/lib/aloha.js" data-aloha-plugins="
                           extra/toolbar,
                           common/ui,
@@ -48,7 +129,6 @@
                           oerpub/popover,
                           oerpub/math,
                           oerpub/assorted,
-                          oerpub/oerui,
                           oerpub/image"></script>
 
 
@@ -81,6 +161,22 @@
     </script>
     {% endblock %}{# js block #}
   {% endblock %}
+
+<!-- =============== -->
+<!-- Aloha Startup -->
+<!-- =============== -->
+  <script type="text/javascript">
+    Aloha.ready( function() {
+      Aloha.jQuery('.document').aloha().focus();
+      // Wait until Aloha is started before loading MathJax
+      // Also, wrap all math in a span/div. MathJax replaces the MathJax element
+      // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
+      // add aloha-cleanme so this span is unwrapped
+      jQuery('math').wrap('<span class="math-element aloha-cleanme"></span>')
+      MathJax.Hub.Configured();
+      //$('*[rel=tooltip]').tooltip();
+    });
+  </script>
 </head>
 <body>
     <!--[if lt IE 7]>
