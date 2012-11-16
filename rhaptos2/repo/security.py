@@ -59,12 +59,13 @@ class WorkSpace(object):
                  # Check for the file extension.
                  if len(f.split('.')) < 2]
         for fpath in files:
-            d = json.loads(open(fpath).read())
-            if user_id in d['contentrw']:
-                plain.append(os.path.basename(fpath))
-                annotated.append([os.path.basename(fpath),
-                                 d['title']
-                                 ])
+            if not os.path.isdir(fpath):
+                d = json.loads(open(fpath).read())
+                if user_id in d['contentrw']:
+                    plain.append(os.path.basename(fpath))
+                    annotated.append([os.path.basename(fpath),
+                                     d['title']
+                                     ])
         self.files_plain = plain
         self.files_annotated = annotated
 

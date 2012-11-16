@@ -15,6 +15,11 @@ import md5
 import random
 import json
 from functools import wraps
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 import uuid
 import requests
 import pprint
@@ -23,7 +28,7 @@ import flask
 from flask import (
     Flask, render_template,
     request, g, session, flash,
-    redirect, url_for, abort, 
+    redirect, url_for, abort,
     send_from_directory
     )
 
@@ -64,14 +69,14 @@ def apply_cors(fn):
 @app.route("/cdn/aloha/<path:filename>")
 def serve_aloha(filename):
     """ serve static files for development purposes
- 
+
     We would expect that these routes would be "overwritten" by say
     the front portion of the reverse proxy we expect flask to sit
-    behind.  So these will only ever be called by requests 
+    behind.  So these will only ever be called by requests
     during development, but the URL /cdn/aloha/... would still
     exist, possibly on a CDN, certainly a good cache server.
 
-    
+
     """
     #os.path.isfile is checked by the below function in Flask.
     dolog("INFO", repr((app.config["rhaptos2repo"]["aloha_staging_dir"], filename)))
@@ -246,7 +251,6 @@ def get_metadata(modname):
     resp.content_type='application/json'
     return resp
 
-
 @app.route("/module/<modname>/roles", methods=['POST', 'PUT'])
 @apply_cors
 def post_roles(modname):
@@ -277,6 +281,32 @@ def get_roles(modname):
     resp.content_type='application/json'
     return resp
 
+@app.route("/resource", methods=['POST', 'PUT'])
+@apply_cors
+def post_resource():
+    """Receives file resource uploads."""
+    file = request.files['upload']
+    # FIXME We should use magic to determine the mimetype. See also,
+    #       https://github.com/Connexions/rhaptos2.repo/commit/7452bee85ecbbbec66232f3c04e4f2e40d72be1c
+    mimetype = file.mimetype
+    metadata = model.create_or_update_resource(file.stream, mimetype)
+
+    url = "/resource/{0}".format(metadata['id'])
+    resp = flask.make_response(url)
+    resp.status_code = 200
+    return resp
+
+@app.route("/resource/<id>", methods=['GET'])
+def get_resource(id):
+    """Send the resource data in the response."""
+    data_stream, metadata = model.obtain_resource(id)
+
+    resp = flask.make_response(data_stream.read())
+    # XXX No mime-type headers... The following content-type
+    #     is strictly temporary.
+    resp.content_type = metadata['mimetype']
+    resp.status_code = 200
+    return resp
 
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
@@ -323,7 +353,7 @@ def admin_config():
         outstr = "<table>"
         for k in sorted(app.config.keys()):
             outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
- 
+
         outstr += "</table>"
 
 
