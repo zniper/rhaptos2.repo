@@ -50,8 +50,8 @@ Aloha.settings = {
           upload: {
             config: {
               method: 'POST',
-              url: '/resources',
-              fieldName: 'data',
+              url: '/resource',
+              fieldName: 'upload',
               send_multipart_form: true,
               callback: function(resp) {
                 //TODO: add xhr to Aloha.trigger('aloha-upload-*') in dropfilesrepository.js
@@ -65,6 +65,7 @@ Aloha.settings = {
 
                 // If the response is a URL then change the Image source to it
                 // The URL could be absolute (/^http/) or relative (/\// or [a-z])
+                // alert('posted file: ' + resp);
                 if (resp.match(/^http/) || resp.match(/^\//) || resp.match(/^[a-z]/) ) {
                 } else {
                   alert('You dropped a file and we sent a message to the server to do something with it.\nIt responded with some gibberish so we are showing you some other file to show it worked');
