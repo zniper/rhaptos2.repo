@@ -15,13 +15,18 @@
    <a href="#" id="newmodule" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white icon-file"></i> New</a>
 
+
+   {% if confd['rhaptos2repo']['persona_on_toggle'] == 'True' %}
    <a href="#" id="testbtn" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white"></i>development testing</a>
-
+   
    <a href="#" id="persona_signin" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white"></i>Persona Signin</a>
    <a href="#" id="persona_signout" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white"></i>Persona signout</a>
+   {% else %}
+   
+   {% endif %}
 
 
   </div>
