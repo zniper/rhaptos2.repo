@@ -129,8 +129,12 @@ class User(object):
         dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))
 
-        r = requests.get(user_server_url, params=payload)
-        userdetails = r.json
+        try:
+            r = requests.get(user_server_url, params=payload)
+            userdetails = r.json
+        except Exception, e:
+            #.. todo:: not sure what to do here ... the user dbase is down
+            userdetails = None
 
         dolog("INFO", "Got back %s " % str(userdetails))
         if userdetails:
