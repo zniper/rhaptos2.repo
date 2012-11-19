@@ -237,15 +237,14 @@ function build_workspace() {
 
     logger("In build workspace");
     var jsond = '[';
-    var htmlfrag = '<ul>';
+    var htmlfrag = '<table class="table table-condensed table-hover table-striped" >';
     $.ajax({
         type: 'GET',
         dataType: 'json',
         url: WORKSPACEURL,
         xhrFields: {
             withCredentials: true
-        },  //http://stackoverflow.com/questions/2870371/why-jquery-ajax-not-sending-session-cookie
-
+        },  
         success: function(historyarr) {
             historyarr.sort();
             if (historyarr.length == 0){
@@ -255,7 +254,8 @@ function build_workspace() {
 
                 $.each(historyarr, function(i, elem) {
                     var strelem = "'" + elem[0] + "'";
-                    htmlfrag += '<li><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a>' + '<a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a>';
+                      
+                    htmlfrag += '<tr><td><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a></td>' + '<td><a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a></td></tr>';
                     jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
                 });
 

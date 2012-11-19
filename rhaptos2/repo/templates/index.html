@@ -3,10 +3,6 @@
 
     <form name="fakeeditor" id="form1" >
      <fieldset name="Editor" > 
-      <div class="field">
-       <label class="input-label" for="title" >Title</label>
-       <div class="input"> <input type="text" id="title" name="title" value="" > </div>
-      </div>
 
  <div class="btn-toolbar">
   <div class="btn-group"> 
@@ -15,13 +11,18 @@
    <a href="#" id="newmodule" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white icon-file"></i> New</a>
 
+
+   {% if confd['rhaptos2repo']['persona_on_toggle'] == 'True' %}
    <a href="#" id="testbtn" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white"></i>development testing</a>
-
+   
    <a href="#" id="persona_signin" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white"></i>Persona Signin</a>
    <a href="#" id="persona_signout" class="btn btn-inverse btn-mini nolink">
      <i class="icon-white"></i>Persona signout</a>
+   {% else %}
+   
+   {% endif %}
 
 
   </div>
@@ -29,19 +30,25 @@
 
     </fieldset>
 
-    <fieldset name="hidden ACLs">
+    <fieldset  name="hidden ACLs">
+    
 
-      <div class="field">
+      <div class="field hide">
+       <label class="input-label" for="title" >Title</label>
+       <div class="input"> <input type="input" id="title" name="title" value="" > </div>
+      </div>
+
+      <div class="field hide">
        <label class="input-label muted" for="uuid" >uuid</label>
        <div class="input"> <input id="uuid" name="uuid" value="" class="muted"> </div>
       </div>
 
-      <div class="field">
+      <div class="field hide">
        <label class="input-label muted" for="aclrw" >aclrw</label>
        <div class="input"> <input id="aclrw" name="aclrw" value="" class="muted"> </div>
       </div>
 
-      <div class="field">
+      <div class="field hide">
        <label class="input-label muted" for="contentrw" >contentrw</label>
        <div class="input"> <input id="contentrw" name="contentrw" value="" class="muted"> </div>
       </div>
