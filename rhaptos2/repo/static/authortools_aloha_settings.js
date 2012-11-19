@@ -72,7 +72,9 @@ Aloha.settings = {
                   resp = "src/test/AlohaEditorLogo.png";
                 }
 
-                Aloha.jQuery('#' + this.id).attr('src', resp);
+                $img = Aloha.jQuery('.aloha-image-uploading');
+                $img.attr('src', resp);
+                $img.removeClass('aloha-image-uploading');
                 console.log('Updated Image src as a result of upload');
               }
             }
