@@ -21,6 +21,22 @@ from rhaptos2.common.err import Rhaptos2Error
 from rhaptos2.repo import app, dolog
 
 
+#### Alert - this is stright opy from model - cannot import as model imports security...
+#### .. todo:: sort out circular imports and responsibilities.
+
+def get_metadata(uuid):
+    """Given a `uuid`, return the metadata information in a json format."""
+    filename = "{0}.metadata".format(uuid)
+    repodir = app.config['rhaptos2repo']['repodir']
+    file_path = os.path.join(repodir, filename)
+    try:
+        with open(file_path) as f:
+            data = json.load(f)
+    except IOError:
+        data = {}
+    return json.dumps(data)
+#########################################
+
 
 class WorkSpace(object):
     """Represents the set of NodeDocs the user can currently view
@@ -58,13 +74,15 @@ class WorkSpace(object):
                  for f in os.listdir(repodir)
                  # Check for the file extension.
                  if len(f.split('.')) < 2]
+
         for fpath in files:
             if not os.path.isdir(fpath):
-                d = json.loads(open(fpath).read())
-                if user_id in d['contentrw']:
+                ndoc = NodeDoc()
+                ndoc.load_from_file(fpath)
+                if user_id in ndoc.contentrw:
                     plain.append(os.path.basename(fpath))
                     annotated.append([os.path.basename(fpath),
-                                     d['title']
+                                     ndoc.title
                                      ])
         self.files_plain = plain
         self.files_annotated = annotated
@@ -146,6 +164,9 @@ class NodeDoc(object):
 
 
         """
+        #retrieve any metadata assoc with this, 
+        metad = json.loads(get_metadata(uid))
+
         repodir = app.config['rhaptos2repo']['repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
@@ -159,7 +180,7 @@ class NodeDoc(object):
             raise  Rhaptos2Error("NodeDoc has incorrect keys - version 0.1" + str(nodedict.keys()) + str(v01keys))
 
         self.__dict__.update(nodedict)
-
+        self.__dict__.update(metad)
 
     def load_from_djson(self, djson):
         """given a dict (from the JSON POST) create internal object
