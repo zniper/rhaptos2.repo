@@ -120,9 +120,9 @@ exports.SHARING = '
         <thead>
           <tr>
             <th></th>
-            <th>Author</th>
-            <th>Maintainer</th>
-            <th>Copyright</th>
+            <th>Owner</th>
+            <th>Editor</th>
+            <th>Reviewer</th>
             <th><!-- Other actions --></th>
           </tr>
         </thead>
