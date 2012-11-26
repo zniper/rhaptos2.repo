@@ -55,7 +55,9 @@ exports.METADATA = '
       {{/subjects}}
 
       <label>Keywords</label>
-      <input type="text" name="keywords" {{#keywords}}value="{{keywords}}"{{/keywords}}>
+      <ul id="metadata-keywords" class="tagit">
+        {{! This gets populated by the jquery-tagit plugin. }}
+      </ul>
     </form>
   </div>'
 
