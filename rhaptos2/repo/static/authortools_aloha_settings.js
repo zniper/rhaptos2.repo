@@ -72,7 +72,13 @@ Aloha.settings = {
                   resp = "src/test/AlohaEditorLogo.png";
                 }
 
-                $img = Aloha.jQuery('.aloha-image-uploading');
+                /* Drag and Drop creates an <img id="{this.id}"> element but the
+                 * "New Image" plugin doesn't have access to the UploadFile object (this)
+                 * so all it can do is add a class.
+                 * If I combine both then we can set the attribute consistently.
+                 * FIXME: Don't assume only 1 image can be uploaded at a time
+                 */
+                $img = Aloha.jQuery('.aloha-image-uploading').add('#' + this.id);
                 $img.attr('src', resp);
                 $img.removeClass('aloha-image-uploading');
                 console.log('Updated Image src as a result of upload');
