@@ -308,6 +308,26 @@ def get_resource(id):
     resp.status_code = 200
     return resp
 
+@app.route("/keywords", methods=["GET"])
+def keywords():
+    """Returns a list of keywords for the authenticated user."""
+    # XXX We really need a database search here. With the current
+    #     state of the storage (file system), we would need to open
+    #     every module's keywords in order to compile a comprehensive
+    #     list of available keywords created by the user.
+    #     We should come back to this after we have created a storage
+    #     that can be queried (e.g. a SQL database).
+    XXX_JUNK_KEYWORDS = ("Quantum Physics", "Information Technology",
+                         "Biology", "Anthropology", "Philosophy", "Psychology",
+                         "Physics", "Socialogy", "Plumbing", "Engine Repair",
+                         "Programming", "Window Washing", "Cooking", "Hunting",
+                         "Fishing", "Surfing",
+                         )
+    resp = flask.make_response(json.dumps(XXX_JUNK_KEYWORDS))
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
 def versionGET():
