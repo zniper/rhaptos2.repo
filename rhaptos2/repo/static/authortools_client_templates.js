@@ -126,7 +126,6 @@
             <th>Owner</th>\
             <th>Editor</th>\
             <th>Reviewer</th>\
-            <th>Reader</th>\
             <th><!-- Other actions --></th>\
           </tr>\
         </thead>\
@@ -140,8 +139,6 @@
               <button type="button"\
                       class="btn btn-danger btn-mini">remove</button>\
             </td>\
-            <td/>\
-            <td/>\
           </tr>\
           <tr>\
             <th>Ross</th>\
@@ -151,7 +148,6 @@
               <button type="button"\
                       class="btn btn-danger btn-mini">remove</button>\
             </td>\
-            <td/>\
           </tr>\
         </tbody>\
       </table>\
