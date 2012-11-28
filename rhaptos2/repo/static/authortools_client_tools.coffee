@@ -129,6 +129,10 @@ class MetadataModal extends BaseModal
       else
         data[obj.name] = obj.value
     )
+    # Grab the keywords differently, because they are not part
+    #   of the form. They are entered as 'li' entries.
+    data['keywords'] = @$('#metadata-keywords').tagit('tags')
+
     # XXX The best way to get the module ID at this time is to pull it out
     #     of the module editor form. The 'serialise_form' function is defined
     #     globally in the 'authortools_client.js' file.
@@ -197,6 +201,22 @@ class MetadataModal extends BaseModal
     # Render to the page.
     @$('.modal-body').html(Mustache.to_html(Templates.METADATA, data))
     @$('select[name="language"]').change(@languageHandler)
+    keywordCallback = (request, response) ->
+      $.ajax({
+        type: 'GET'
+        url: '/keywords'
+        contentType: 'application/json'
+        success: (data) ->
+          response(data)
+        })
+    @$('#metadata-keywords').tagit(
+      tagSource: keywordCallback
+      initialTags: data.keywords
+      minLength: 3
+      # The 'space' character has been removed to allow for multi-word
+      #   keywords. (e.g. Quantum Physics)
+      triggerKeys: ['enter', 'comma', 'tab']
+      )
 
   loadData: ->
     # XXX The best way to get the module ID at this time is to pull it out

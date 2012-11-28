@@ -170,6 +170,7 @@
           return data[obj.name] = obj.value;
         }
       });
+      data['keywords'] = this.$('#metadata-keywords').tagit('tags');
       module_id = serialise_form().uuid;
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
@@ -215,7 +216,7 @@
     };
 
     MetadataModal.prototype.render = function(data) {
-      var languageCode, languages, subject, subjects, value, variantLanguages, _i, _len, _ref, _ref1;
+      var keywordCallback, languageCode, languages, subject, subjects, value, variantLanguages, _i, _len, _ref, _ref1;
       languages = [
         {
           code: '',
@@ -277,7 +278,23 @@
       }
       data.subjects = subjects;
       this.$('.modal-body').html(Mustache.to_html(Templates.METADATA, data));
-      return this.$('select[name="language"]').change(this.languageHandler);
+      this.$('select[name="language"]').change(this.languageHandler);
+      keywordCallback = function(request, response) {
+        return $.ajax({
+          type: 'GET',
+          url: '/keywords',
+          contentType: 'application/json',
+          success: function(data) {
+            return response(data);
+          }
+        });
+      };
+      return this.$('#metadata-keywords').tagit({
+        tagSource: keywordCallback,
+        initialTags: data.keywords,
+        minLength: 3,
+        triggerKeys: ['enter', 'comma', 'tab']
+      });
     };
 
     MetadataModal.prototype.loadData = function() {
