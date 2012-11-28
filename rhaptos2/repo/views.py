@@ -221,7 +221,7 @@ def moduleDELETE(modname):
     resp.headers["Access-Control-Allow-Origin"]= "*"
     return resp
 
-@app.route("/module/<modname>/metadata", methods=['POST', 'PUT'])
+@app.route("/module/<modname>/metadata/", methods=['POST', 'PUT'])
 @apply_cors
 def post_metadata(modname):
     """Receive posted data that will creator or update the metadata storage
@@ -237,7 +237,7 @@ def post_metadata(modname):
     resp.status_code = 200
     return resp
 
-@app.route("/module/<modname>/metadata", methods=['GET'])
+@app.route("/module/<modname>/metadata/", methods=['GET'])
 @apply_cors
 def get_metadata(modname):
     """Return data for the requested module."""
@@ -251,7 +251,7 @@ def get_metadata(modname):
     resp.content_type='application/json'
     return resp
 
-@app.route("/module/<modname>/roles", methods=['POST', 'PUT'])
+@app.route("/module/<modname>/roles/", methods=['POST', 'PUT'])
 @apply_cors
 def post_roles(modname):
     """Receive a list of metadata roles and store them with the metadata."""
@@ -265,7 +265,7 @@ def post_roles(modname):
     resp.status_code = 200
     return resp
 
-@app.route("/module/<modname>/roles", methods=['GET'])
+@app.route("/module/<modname>/roles/", methods=['GET'])
 @apply_cors
 def get_roles(modname):
     """Send the metadata roles for the requested module."""
@@ -281,7 +281,7 @@ def get_roles(modname):
     resp.content_type='application/json'
     return resp
 
-@app.route("/resource", methods=['POST', 'PUT'])
+@app.route("/resource/", methods=['POST', 'PUT'])
 @apply_cors
 def post_resource():
     """Receives file resource uploads."""
@@ -296,7 +296,7 @@ def post_resource():
     resp.status_code = 200
     return resp
 
-@app.route("/resource/<id>", methods=['GET'])
+@app.route("/resource/<id>/", methods=['GET'])
 def get_resource(id):
     """Send the resource data in the response."""
     data_stream, metadata = model.obtain_resource(id)
@@ -308,7 +308,7 @@ def get_resource(id):
     resp.status_code = 200
     return resp
 
-@app.route("/keywords", methods=["GET"])
+@app.route("/keywords/", methods=["GET"])
 def keywords():
     """Returns a list of keywords for the authenticated user."""
     # XXX We really need a database search here. With the current
