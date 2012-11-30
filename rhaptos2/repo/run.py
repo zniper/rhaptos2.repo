@@ -8,20 +8,16 @@ Author: Paul Brian
 This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
-import os
-from optparse import OptionParser
-from flask import Flask
-from rhaptos2.repo import APPTYPE, app, set_app, get_app, set_logger
-from rhaptos2.common import conf
+
+from rhaptos2.common import runner
+from rhaptos2.repo import make_app
 
 
-def make_app(confd):
-    """Application factory function"""
-    app = Flask('rhaptos2.repo')
-    app.config.update(confd)
-    set_app(app)
-    import rhaptos2.repo.views
-    return app
+def main():
+    """Run the application, to be used to start up one instance"""
+    runner.main(make_app)
+
+
 
 def parse_args():
     parser = OptionParser()
@@ -38,7 +34,7 @@ def parse_args():
     (options, args) = parser.parse_args()
     return (options, args)
 
-def main():
+def mainold():
     """Run the application, to be used to start up one instance"""
     opts, args = parse_args()
 
