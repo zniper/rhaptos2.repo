@@ -141,7 +141,7 @@ class MetadataModal extends BaseModal
     console.log('Posting metadata for module: ' + module_id)
     $.ajax({
       type: 'POST'
-      url: _generateUrl('metadata', module_id)
+      url: _generateUrl('metadata/', module_id)
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'
@@ -225,7 +225,7 @@ class MetadataModal extends BaseModal
     module_id = serialise_form().uuid
     return $.ajax({
       type: 'GET'
-      url: _generateUrl('metadata', module_id)
+      url: _generateUrl('metadata/', module_id)
       contentType: 'application/json'
       })
 
@@ -289,7 +289,7 @@ class RolesModal extends BaseModal
     module_id = serialise_form().uuid
     return $.ajax({
       type: 'GET'
-      url: _generateUrl('roles', module_id)
+      url: _generateUrl('roles/', module_id)
       contentType: 'application/json'
       })
 
@@ -313,7 +313,7 @@ class RolesModal extends BaseModal
     data = ({name: e.name, roles: e.roles} for e in @collection.entries)
     $.ajax({
       type: 'POST'
-      url: _generateUrl('roles', module_id)
+      url: _generateUrl('roles/', module_id)
       data: JSON.stringify(data, null, 2)
       dataType: 'json'
       contentType: 'application/json'

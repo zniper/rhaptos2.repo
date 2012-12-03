@@ -175,7 +175,7 @@
       console.log('Posting metadata for module: ' + module_id);
       $.ajax({
         type: 'POST',
-        url: _generateUrl('metadata', module_id),
+        url: _generateUrl('metadata/', module_id),
         data: JSON.stringify(data, null, 2),
         dataType: 'json',
         contentType: 'application/json',
@@ -302,7 +302,7 @@
       module_id = serialise_form().uuid;
       return $.ajax({
         type: 'GET',
-        url: _generateUrl('metadata', module_id),
+        url: _generateUrl('metadata/', module_id),
         contentType: 'application/json'
       });
     };
@@ -400,7 +400,7 @@
       module_id = serialise_form().uuid;
       return $.ajax({
         type: 'GET',
-        url: _generateUrl('roles', module_id),
+        url: _generateUrl('roles/', module_id),
         contentType: 'application/json'
       });
     };
@@ -434,7 +434,7 @@
       }).call(this);
       $.ajax({
         type: 'POST',
-        url: _generateUrl('roles', module_id),
+        url: _generateUrl('roles/', module_id),
         data: JSON.stringify(data, null, 2),
         dataType: 'json',
         contentType: 'application/json',
