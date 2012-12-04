@@ -24,7 +24,7 @@ import pprint
 from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
-from rhaptos2.repo import app, dolog
+from rhaptos2.repo import get_app, dolog
 from rhaptos2.repo import files, security
 
 import flask
@@ -35,12 +35,14 @@ import memcache
 import requests
 import urllib
 
+### XXX This needs to be wrapped in makeapp function ...
+app = get_app()
 
 app.config.update(
-    SECRET_KEY = app.config['rhaptos2repo']['openid_secretkey'],
-    DEBUG = app.debug
+    SECRET_KEY = app.config['openid_secretkey'],
+    DEBUG      = app.debug
 )
-RESOURCES_DIR_PATH = os.path.join(app.config['rhaptos2repo']['repodir'],
+RESOURCES_DIR_PATH = os.path.join(app.config['repodir'],
                                   'resources')
 METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH, 'resource-metadata')
 
@@ -124,7 +126,7 @@ class User(object):
 
         payload = {'user':authenticated_identifier}
 
-        user_server_url = app.config['bamboo_global']['userserver'].replace("/user", "/openid")
+        user_server_url = app.config['globals']['bamboo_global']['userserver'].replace("/user", "/openid")
 
         dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))
@@ -315,7 +317,7 @@ def add_location_header_to_response(fn):
 #@property ## need to evolve a class here I feel...
 def userspace():
     ''' '''
-    userspace = app.config['rhaptos2repo']['repodir']
+    userspace = app.config['repodir']
 
     if os.path.isdir(userspace):
         return userspace
@@ -331,8 +333,8 @@ def userspace():
 
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(app.config['bamboo_global']['statsd_host'],
-                       int(app.config['bamboo_global']['statsd_port']))
+    c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
+                       int(app.config['globals']['bamboo_global']['statsd_port']))
     c.incr(dottedcounter)
     #todo: really return c and keep elsewhere for efficieny I suspect
 

@@ -18,16 +18,17 @@ from rhaptos2.common import conf
 from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 
-from rhaptos2.repo import app, dolog
-
-
-#### Alert - this is stright opy from model - cannot import as model imports security...
-#### .. todo:: sort out circular imports and responsibilities.
+from rhaptos2.repo import get_app, dolog
+app = get_app()
 
 def get_metadata(uuid):
-    """Given a `uuid`, return the metadata information in a json format."""
+    """Given a `uuid`, return the metadata information in a json format.
+
+    Alert - this is stright copy from model - cannot import as model imports security...
+    .. todo:: sort out circular imports and responsibilities.
+    """
     filename = "{0}.metadata".format(uuid)
-    repodir = app.config['rhaptos2repo']['repodir']
+    repodir = app.config['repodir']
     file_path = os.path.join(repodir, filename)
     try:
         with open(file_path) as f:
@@ -67,7 +68,7 @@ class WorkSpace(object):
               caller=WorkSpace, statsd=['rhaptos2.repo.workspace.entered',])
 
         self.user_id = user_id
-        repodir = app.config['rhaptos2repo']['repodir']
+        repodir = app.config['repodir']
         plain = []
         annotated = []
         files = [os.path.join(repodir, f)
@@ -167,7 +168,7 @@ class NodeDoc(object):
         #retrieve any metadata assoc with this, 
         metad = json.loads(get_metadata(uid))
 
-        repodir = app.config['rhaptos2repo']['repodir']
+        repodir = app.config['repodir']
         filepath = os.path.join(repodir, uid)
         v01keys = self.versionkeys
 
@@ -219,7 +220,7 @@ class NodeDoc(object):
         if self.uuid == None:
             raise Rhaptos2Error("Need a UUID to save")
         print "Saving"
-        repodir = app.config['rhaptos2repo']['repodir']
+        repodir = app.config['repodir']
         filepath = os.path.join(repodir, self.uuid)
         ###aaarrgh check keys
         d = {}

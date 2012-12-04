@@ -30,8 +30,8 @@ from functools import wraps
 
 from rhaptos2.common import log
 from rhaptos2.common import err
-from rhaptos2.repo import app
-
+from rhaptos2.repo import get_app
+app=get_app()
 
 
 def return1():

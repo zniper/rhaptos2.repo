@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
-"""__init__.py (rhaptos.repo) - Rhaptos application package
+###
+# Copyright (c) Rice University 2012
+# This software is subject to
+# the provisions of the GNU Lesser General
+# Public License Version 2.1 (LGPL).
+# See LICENCE.txt for details.
+###
+"""Rhaptos Repo profile web application
 
-Author: Paul Brian
-(C) 2012 Rice University
+The application is initialized using the application factory (`make_app`).
+
+To acquire the application from anywhere in this package or extra packages,
+use the `get_app` function.
+
+Author: Paul Brian, Michael Mulich
+Copyright (c) 2012 Rice University
 
 This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
@@ -18,11 +30,13 @@ import logging
 import uuid
 import flask  # XXX Why is this imported twice (see 2 lines down)?
 from functools import wraps
+
 from flask import (
     Flask, render_template,
     request, g, session, flash,
     redirect, url_for, abort,
     )
+
 from rhaptos2.common import conf, log, err
 
 import pkg_resources  # part of setuptools
@@ -30,18 +44,33 @@ __version__ = pkg_resources.require("rhaptos2.repo")[0].version
 
 APPTYPE = 'rhaptos2repo'
 VERSION = __version__
-
-app = None
+_app = None
 
 def get_app():
     """Get the application object"""
-    global app
-    return app
+    global _app
+    return _app
 
-def set_app(app_in):
+def set_app(app):
     """Set the global application object"""
-    global app
-    app = app_in
+    global _app
+    _app = app
+    return _app
+
+def make_app(config):
+    """Application factory"""
+    app = Flask(__name__)
+    app.config.update(config)
+
+    set_up_logging(app)
+
+    # Set the application
+    app = set_app(app)
+
+    # Initialize the views
+    from rhaptos2.repo import views
+
+    return app
 
 def dolog(lvl, msg, caller=None, statsd=None):
     """wrapper function purely for adding context to log stmts
@@ -98,38 +127,38 @@ def dolog(lvl, msg, caller=None, statsd=None):
 
 
     try:
-        app.logger.log(goodlvl, msg, extra=extra)
+        _app.logger.log(goodlvl, msg, extra=extra)
     except Exception, e:
         print extra, msg, e
 
-def set_logger(apptype, confd=None):
-    """
-    useage:
-        lg.warn("Help", extra={'statsd':['rhaptos2.repo.module',
-                                         'bamboo.foo.bar']})
+def set_up_logging(app):
+    """Set up the logging within the application.
+
+    useage::
+        logger.warn("Help",
+                    extra={'statsd': ['rhaptos2.repo.module',
+                                      'bamboo.foo.bar']})
 
     """
-    lg = logging.getLogger(apptype)
+    config = app.config
 
-    ## define handlers
-    hdlr2 = log.StatsdHandler(app.config['bamboo_global']['statsd_host'],
-                    int(app.config['bamboo_global']['statsd_port']))
+    # Define the logging handlers
+    statsd_host = config['globals']['bamboo_global']['statsd_host']
+    statsd_port = config['globals']['bamboo_global']['statsd_port']
+    statsd_handler = log.StatsdHandler(statsd_host, statsd_port)
+    stream_handler = logging.StreamHandler()
 
-    hdlr = logging.StreamHandler()
+    # Define the log formatting. Reduced this as bug #39 prevents
+    #   extra being used.
+    # formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s  "
+    #                               "- %(request_id)s - %(user_id)s "
+    #                               "- %(message)s")
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s  "
+                                  "- %(message)s")
 
-    ## formatters
-#    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s  - %(request_id)s - %(user_id)s - %(message)s')
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s  - %(message)s')
+    statsd_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
 
-    hdlr.setFormatter(formatter)
-    #hdlr2 just sends statsd calls so does not need formatter ...
-    hdlr2.setFormatter(formatter)
-
-    app.logger.addHandler(hdlr)
-    app.logger.addHandler(hdlr2)
-
-    app.logger.setLevel(app.config["bamboo_global"]["loglevel"])
-
-
-
-
+    # Set the handlers on the application.
+    for handler in (statsd_handler, stream_handler,):
+        app.logger.addHandler(handler)

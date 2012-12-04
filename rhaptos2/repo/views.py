@@ -33,8 +33,8 @@ from flask import (
     )
 
 from rhaptos2.common import log, err, conf
-from rhaptos2.repo import app, dolog, model, security, VERSION
-
+from rhaptos2.repo import get_app, dolog, model, security, VERSION
+app = get_app()
 
 
 @app.before_request
@@ -79,22 +79,22 @@ def serve_aloha(filename):
 
     """
     #os.path.isfile is checked by the below function in Flask.
-    dolog("INFO", repr((app.config["rhaptos2repo"]["aloha_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo"]["aloha_staging_dir"], filename)
+    dolog("INFO", repr((app.config["aloha_staging_dir"], filename)))
+    return send_from_directory(app.config["aloha_staging_dir"], filename)
 
 
 @app.route("/cdn/js/<path:filename>/")
 def serve_other_thirdpartyjs(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo"]["js_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo"]["js_staging_dir"], filename)
+    dolog("INFO", repr((app.config["js_staging_dir"], filename)))
+    return send_from_directory(app.config["js_staging_dir"], filename)
 
 
 @app.route("/cdn/css/<path:filename>/")
 def serve_other_thirdpartycss(filename):
     """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["rhaptos2repo"]["css_staging_dir"], filename)))
-    return send_from_directory(app.config["rhaptos2repo"]["css_staging_dir"], filename)
+    dolog("INFO", repr((app.config["css_staging_dir"], filename)))
+    return send_from_directory(app.config["css_staging_dir"], filename)
 
 ##### /thirdparty static files
 
@@ -456,7 +456,7 @@ def loginpersona():
         abort(400)
 
     # Send the assertion to Mozilla's verifier service.
-    audience="http://%s" % app.config['rhaptos2repo']['www_server_name']
+    audience="http://%s" % app.config['www_server_name']
     data = {'assertion': request.form['assertion'], 'audience': audience }
     resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
 
