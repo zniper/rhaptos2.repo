@@ -35,16 +35,16 @@ function download_src(){
     ### This is fantastically brittle but needs to exist to make the
     ### overall easy-to-install process work
 
-    mkdir -p -m 0755 $TGTDIR/src
-    mkdir -p -m 0755 $TGTDIR/venvs
-    cd $TGTDIR/src
+    mkdir -p -m 0755 $ABSDIR/src
+    mkdir -p -m 0755 $ABSDIR/venvs
+    cd $ABSDIR/src
     curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/buildvenv.sh
     git clone https://github.com/Connexions/rhaptos2.repo.git
     git clone https://github.com/Connexions/rhaptos2.common.git
     git clone https://github.com/wysiwhat/Aloha-Editor.git aloha
     cd aloha
     git checkout cnx-master
-    cd $TGTDIR
+    cd $ABSDIR
 
 }
 
@@ -54,10 +54,10 @@ function inifile() {
     echo "*****************************"
     echo ""
     echo "You need to change the following parts of the ini file:"
-    echo "rhaptos2repo_aloha_staging_dir=$TGTDIR/src/aloha"
+    echo "rhaptos2repo_aloha_staging_dir=$ABSDIR/src/aloha"
     echo "then you can "
-    echo "cd $TGTDIR/venvs/vrepo; source bin/activate"
-    echo "cd $TGTDIR/src/rhaptos2.repo/rhaptos2/repo;"
+    echo "cd $ABSDIR/venvs/vrepo; source bin/activate"
+    echo "cd $ABSDIR/src/rhaptos2.repo/rhaptos2/repo;"
     echo "python run.py --debug --config=../../local.ini"
     echo "At this point you should see a runing instance"
 }
@@ -65,13 +65,13 @@ function inifile() {
 ### main:
 
 TGTDIR=$1
-SCRIPTPATH=$( cd $TGTDIR ; pwd -P )
-isempty $SCRIPTPATH
+ABSDIR=$( cd $TGTDIR ; pwd -P )
+isempty $ABSDIR
 
 
 echo "I shall now download the sources for RHAPTOS2 REPO and setup a venv for it"
 download_src
 
-. $TGTDIR/src/buildvenv.sh $TGTDIR/venvs/vrepo $TGTDIR/src/rhaptos2.common  $TGTDIR/src/rhaptos2.repo
+. $ABSDIR/src/buildvenv.sh $ABSDIR/venvs/vrepo $ABSDIR/src/rhaptos2.common  $ABSDIR/src/rhaptos2.repo
 
 inifile
