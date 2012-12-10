@@ -14,6 +14,39 @@ deployed using the bamboo setup files.
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
+
+Quick developer install 
+-----------------------
+
+This will install repo, with simple defaults, ready for developer use
+Basically curl the startup script (quickdownload.sh).  Run that with 
+an argument of an *empty* dir you want to use for the source and repos.
+THen this will download the repo, and dependancies, setup the virtualenv
+and tell you what commands to then run.
+
+::
+
+   $ cd ~
+   $ curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/quickdownload.sh
+   $ bash quickdownload.sh /tmp/testrepo1 # <- replace with any empty dir you like
+ 
+You will now be given a set of commands to run::
+
+    You need to change the following parts of the ini file:
+    rhaptos2repo_aloha_staging_dir=/tmp/testrepo1/src/aloha
+    then you can 
+    cd /tmp/testrepo1/venvs/vrepo; source bin/activate
+    cd /tmp/testrepo1/src/rhaptos2.repo/rhaptos2/repo;
+    python run.py --debug config=../../local.ini
+    At this point you should see a runing instance
+
+
+Known Issues
+------------
+
+1. With a localhost install you cannot sign in with OpenID.  This will
+   need to be fixed with a workaround. TBD
+
 Install
 -------
 
@@ -39,6 +72,7 @@ Python setup::
 Other things to check
 
 ::
+
    We need to build lxml - so we need headers for the below, as 
    pip will compile. And easy_install not use requirements!
    
