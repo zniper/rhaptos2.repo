@@ -426,37 +426,37 @@ jQuery(document).ready(function() {
     /* END Authoring Tools Dropdowns & Modals */
 
 
-   
+// FIXME: This navigator code only works in some browsers
+if (navigator.id) {
 
-navigator.id.watch({
-  loggedInUser: whoami['authenticated_identifier'],
-  onlogin: function(assertion) {
-    // A user has logged in! Here you need to:
-    // 1. Send the assertion to your backend for verification and to create a session.
-    // 2. Update your UI.
-    $.ajax({
-      type: 'POST',
-      url: PERSONAURL,
-      data: {assertion: assertion},
-      success: function(res, status, xhr) { console.log("login success on server" + res); },
-      error: function(res, status, xhr) { console.log("login failure" + res); }
-    });
-  },
+  navigator.id.watch({
+    loggedInUser: whoami['authenticated_identifier'],
+    onlogin: function(assertion) {
+      // A user has logged in! Here you need to:
+      // 1. Send the assertion to your backend for verification and to create a session.
+      // 2. Update your UI.
+      $.ajax({
+        type: 'POST',
+        url: PERSONAURL,
+        data: {assertion: assertion},
+        success: function(res, status, xhr) { console.log("login success on server" + res); },
+        error: function(res, status, xhr) { console.log("login failure" + res); }
+      });
+    },
 
-  onlogout: function() {
-    // A user has logged out! Here you need to:
-    // Tear down the user's session by redirecting the user or making a call to your backend.
-    //window.location = 'google.com';
-    $.ajax({
-      type: 'POST',
-      url: PERSONALOGOUT,
-      success: function(res, status, xhr) { console.log("You whosul be logged out with reload"); },
-      error: function(res, status, xhr) { console.log("logout failure" + res); }
-    });
-  }
-});
-
-
+    onlogout: function() {
+      // A user has logged out! Here you need to:
+      // Tear down the user's session by redirecting the user or making a call to your backend.
+      //window.location = 'google.com';
+      $.ajax({
+        type: 'POST',
+        url: PERSONALOGOUT,
+        success: function(res, status, xhr) { console.log("You whosul be logged out with reload"); },
+        error: function(res, status, xhr) { console.log("logout failure" + res); }
+      });
+    }
+  });
+}
 
 
 });
