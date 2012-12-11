@@ -17,12 +17,12 @@
 
 // pick up some constants, from constants file
 
-    var REPOBASEURL = 'http://' + FROZONE.e2repoFQDN;
-    var MODULEURL = 'http://' + FROZONE.e2repoFQDN + '/module/';
-    var WORKSPACEURL = 'http://' + FROZONE.e2repoFQDN + '/workspace/';
+    var REPOBASEURL = FROZONE.e2repoFQDN;
+    var MODULEURL = FROZONE.e2repoFQDN + '/module/';
+    var WORKSPACEURL = FROZONE.e2repoFQDN + '/workspace/';
 
-    var PERSONAURL = 'http://' + FROZONE.e2repoFQDN + '/persona/login/';
-    var PERSONALOGOUT = 'http://' + FROZONE.e2repoFQDN + '/persona/logout/';
+    var PERSONAURL = FROZONE.e2repoFQDN + '/persona/login/';
+    var PERSONALOGOUT = FROZONE.e2repoFQDN + '/persona/logout/';
 
 
 
