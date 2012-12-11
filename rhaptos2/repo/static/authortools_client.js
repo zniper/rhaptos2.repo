@@ -422,7 +422,10 @@ jQuery(document).ready(function() {
     build_workspace();
 
     /* Authoring Tools Dropdowns & Modals */
-    Tools.construct()
+    // FIXME: These should all be registered and managed via backbone.js
+    if (window.Tools) {
+      Tools.construct();
+    }
     /* END Authoring Tools Dropdowns & Modals */
 
 
