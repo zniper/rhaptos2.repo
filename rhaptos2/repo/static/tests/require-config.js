@@ -9,6 +9,9 @@ require.config({
 
     bootstrap: '../js/lib/bootstrap',
     underscore: '../js/lib/underscore-1.4.3',
+    jasmine: '../js/lib/jasmine',
+    'jasmine-html': '../js/lib/jasmine-html',
+    'jasmine-ajax': '../js/lib/jasmine-ajax',
     mustache: '../js/lib/mustache',
     tagit: '../js/lib/tagit',
     spin: '../js/lib/spin',
