@@ -14,20 +14,65 @@ deployed using the bamboo setup files.
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
+
+Quick developer install 
+-----------------------
+
+This will install repo, with simple defaults, ready for developer use
+Basically curl the startup script (quickdownload.sh).  Run that with 
+an argument of an *empty* dir you want to use for the source and repos.
+THen this will download the repo, and dependancies, setup the virtualenv
+and tell you what commands to then run.
+
+::
+
+   $ cd ~
+   $ curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/quickdownload.sh
+   $ bash quickdownload.sh /tmp/testrepo1 # <- replace with any empty dir you like
+ 
+You will now be given a set of commands to run::
+
+    You need to change the following parts of the ini file:
+    rhaptos2repo_aloha_staging_dir=/tmp/testrepo1/src/aloha
+    then you can 
+    cd /tmp/testrepo1/venvs/vrepo; source bin/activate
+    cd /tmp/testrepo1/src/rhaptos2.repo/rhaptos2/repo;
+    python run.py --debug config=../../local.ini
+    At this point you should see a runing instance
+
+
+Known Issues
+------------
+
+1. With a localhost install you cannot sign in with OpenID.  This will
+   need to be fixed with a workaround. TBD
+
 Install
 -------
 
 The following will setup a development install. For instructions about
 a production deployment, go to http://connexions.github.com/ .
 
-Pre-requisites
+Pre-requisites::
 
      Python 2.7 (with header files)
      Bash >=4.0      (system dependant)
      Internet access (!)
 
+Python setup::
+
+   We will need the system version of Python to
+   have pip and virtualenv installed.
+
+   curl -O http://peak.telecommunity.com/dist/ez_setup.py
+   sudo python ez_setup.py
+   sudo easy_install pip      
+   sudo pip install virtualenv
+   
 Other things to check
+
 ::
+
    We need to build lxml - so we need headers for the below, as 
    pip will compile. And easy_install not use requirements!
    
@@ -35,16 +80,10 @@ Other things to check
    apt-get install libxslt1-dev
 
 
+You should now have correct system environment, and we shall 
+build our own virtual environments to work on.
 
-::
-
-   curl -O http://peak.telecommunity.com/dist/ez_setup.py
-   sudo python ez_setup.py
-   sudo easy_install pip      
-   sudo pip install virtualenv
-
-You should now have correct environment.
-We shall build firstly the developer venv
+1. Download source code
 
 ::
    
@@ -57,101 +96,40 @@ We shall build firstly the developer venv
    cd src
    git clone https://github.com/Connexions/rhaptos2.repo.git
    git clone https://github.com/Connexions/rhaptos2.common.git
-   git clone https://github.com/Connexions/bamboo.scaffold.git
 
    $ ll
-   drwxr-xr-x  7 pbrian  pbrian  14 Oct 18 18:22 bamboo.scaffold
    drwxr-xr-x  5 pbrian  pbrian  11 Oct 18 18:22 rhaptos2.common
    drwxr-xr-x  6 pbrian  pbrian  15 Oct 18 18:22 rhaptos2.repo
 
-   
-You will now need 
+There is a "helper" script in rhaptos2.repo -> "buildvenv.sh"
 
-:file:`requirements.txt`
+It is explicitly designed to install a virtualenv and can be run as follows::
 
-::
+   $ bash buildenv.sh ~/venvs/myvenv ~/src/rhaptos2.common ~/src/rhaptos2.repo
 
-    Fabric==1.4.3
-    Flask==0.9
-    Flask-OpenID==1.0.1
-    Jinja2==2.6
-    Werkzeug==0.8.3
-    bamboo.setuptools-version==0.1.0
-    logilab-astng==0.24.1
-    logilab-common==0.58.1
-    nose==1.2.1
-    pycrypto==2.6
-    pylint==0.26.0
-    python-memcached==1.48
-    python-openid==2.2.5
-    requests==0.14.1
-    ssh==1.7.14
-    statsd==1.0.0
-    unittest-xml-reporting==1.4.1
-    wsgiref==0.1.2
+This will create a virtualenv in ~/venvs/myenv and look for requirements.txt files in the folders pointed to by all subsequent arguments.  These requirements.txt will be installed in the venv.
 
-and now either follow the below cmds or create a bash script::
+FInally :command:`setup.py develop` will be run in the pkgdir argument locations (src/rhaptos2.common etc)
 
-    ### You will need to have a python system installed
-    ### You will need to have virtualenv in your system install too
-    ### You will also need to get the requirements.txt file from 
-    ### the same location as this file.  Place it at $reqmts
+2. ALter local.ini
 
-    reqmts=~/requirements.txt
-    venv=~/venvs/dev
-    mkdir -p -m 0755 ~/venvs
+ (TBC)
 
-    virtualenv $venv 
-    cd $venv
-    . bin/activate
-
-
-    $venv/bin/pip install -r ~/requirements.txt
-    ## Install the foolish circular dependancy (SHould be with requirements but...)
-    $venv/bin/pip install -y bamboo.setuptools_version
-
-
-    #### Now we want to have the source code we are working on avail
-    #### in the venv.
-
-    list="rhaptos2.repo rhaptos2.common bamboo.scaffold"
-
-    for d in $list
-    do
-	echo "Working on $d"
-
-	pip uninstall -y $d || echo "$d not installed"
-	cd /home/pbrian/src/$d
-	$venv/bin/python setup.py develop
-
-    done
-
-
-We should now have a working virtualenv in :file:`~/venvs/dev`
-Check that it is a developer specific one by ::
-
-    $ ls ~/venvs/dev3/lib/python2.7/site-packages/ | grep link
-    bamboo.scaffold.egg-link
-    rhaptos2.common.egg-link
-    rhaptos2.repo.egg-link
 
 lets run the repo::
 
    cd ~/venvs/dev
    . bin/activate
-   (dev) cd ~/src/rhaptos2.repo/rhaptos2/repo
-   (dev) . ~/src/bamboo.scaffold/bamboo/scaffold/scripts/repo_config.sh 
-   (dev) python run.py
-   * Running on http://127.0.0.1:5000/
+   (dev) python run.py --debug --config=../../local.ini --port=8000
+   * Running on http://127.0.0.1:8000/
 
 So what just happend?
 
-1. We have created a venv for a developer, where the code they are likely to change (rhaptos2.repo, common)
-   are effectively symlinked into the venv (not quite true - see setup.py develop)
+1. We have created a venv for a developer, where the code they are
+   likely to change (rhaptos2.repo, common) are effectively symlinked
+   into the venv (not quite true - see setup.py develop)
 
-2. then we activate this venv, cd to the main directory of the repo and 
-
-3. push a config file into the system environment.
+2. then we activate this venv
 
 4. run a script that instantiates the repo correctly.  Host and port are configurable.
 
@@ -173,36 +151,21 @@ The above will stage (move files, apply patches), build, create a
 venv, run unit tests, and deploy into the web servers set in config,
 using sshkeys set in config etc.
 
-
 Third Party code
 ----------------
 
-We rely on thirdparty code. Some / much is currently checked into our repo (!)
-We need to have ::
+We rely on third party code.  
+Eventually we shall pull all dependancies out into a stageing process.
+For now pretty much all dependnacies (ie bootstrap.css) is in the static folder of Flask.  However, we are developing in parallel with Aloha, 
+so we track the cnx-master branch of that - to do so clone Aloha into
+a directory and point Flask at it (Flask will serve that cloned dir from 
+localhost) ::
 
-  In config set: rhaptos2repo_aloha_staging_dir=/my/path
+  In local.ini set: rhaptos2repo_aloha_staging_dir=/my/path
   cd /my/path
   git clone https://github.com/wysiwhat/Aloha-Editor.git
-  
+  git checkout cnx-master
 
 
-Issues
-------
 
-A fair number !
 
-Firstly the config in the environment - only one developer prefers
-this so we shall migrate to conf.ini files - but not before Oct 29.
-
-Secondly there is a foolish circular dependancy on
-bamboo.setuptools_version.  Extracting meaningful version numbers is
-an interesting problem.
-
-Thirdly 
-
-Reading
-
-I suspect we shall want to storngly consider the approaches shown here 
-http://stackoverflow.com/questions/4324558/whats-the-proper-way-to-install-pip-virtualenv-and-distribute-for-python
-
-.. http://s3.pixane.com/pip_distribute.png
