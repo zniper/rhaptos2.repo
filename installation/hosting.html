@@ -1,0 +1,151 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A clever solution to the wrong problem &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="a-clever-solution-to-the-wrong-problem">
+<h1>A clever solution to the wrong problem<a class="headerlink" href="#a-clever-solution-to-the-wrong-problem" title="Permalink to this headline">¶</a></h1>
+<p>I have completed a clever solution to a problem.  Unfortunately, its
+probably the wrong problem.</p>
+<p>The problem was fairly simple.  I had built a simple web services
+demonstration, and then surrounded it with supporting services, like
+logging, continuous builds, statsd/graphite servers.  All good,
+eco-system like stuff.</p>
+<p>And hosted on virtual servers on a private IP address space.</p>
+<p>So, you had to be on my LAN in my office to view it. Since I was
+working remotely, and was the only person actually in my office, this
+was a bit of a problem.  In fact this is the <em>real</em> problem.</p>
+<p>I could get you to tunnel in, VPN in, and see it but it seemed better
+if I rebuilt the system over in your neck of the woods.  So initially
+I set up the service on frozone.office.mikadosoftware.com, a rackspace
+hosted server.  That worked, but there was only a web server and a
+repository, no CI, no logging server, no messaging server.</p>
+<p>So, I decided to recreate my LAN in your LAN, that way we can use one
+location as the &#8216;most recent build&#8217; or the &#8216;beta&#8217; service.  But we
+only had one physical host, and with only one routable IP <a class="footnote-reference" href="#id2" id="id1">[1]</a></p>
+<p>And, well, with some help, it worked.  I can now build a virtual,
+NAT&#8217;d LAN inside a Linux host, which is pretty cool and has some
+interesting, useful and cost-saving applications.</p>
+<p>Its just that its still not on your LAN.  Its on another (virtual)
+NAT&#8217;d LAN just like my office.  It took me a while to notice.  I was
+wondering what that vague nagging feeling had been.</p>
+<p>So, a comment Kathi made come back to me - they buy racksp[ace virtual
+instances when they need a new server.</p>
+<p>Well why don&#8217;t I just expand the one server I was using as a demo, but
+three or more as I need.</p>
+<p>And I did that.  And got oddly scared.  Not scared so much, more,
+well, here are 3 hosts on the public internet, I am about to make one
+a logging server, one a jenkins server.  How do I lock those down on
+the <em>public</em> internet?</p>
+<p>And then ...</p>
+<p>This really will be developing in the open.</p>
+<p>Release the code, test it in the open, build it on public servers.</p>
+<p>I am a big advocate of DevOps - building the operational systems and
+support at the same time as the &#8216;real&#8217; code, so that the solutions to
+managing a system are baked-in deeply and naturally, not tacked on at
+the last minute by harrased sysadmins.</p>
+<p>Now, even so the final release to live is usually a big deal, security
+issues come to the front, lots of performance testing, SecPen,
+reworking and rethinking.</p>
+<p>But what if all of that had already been done - built alongside the
+apps themselves.</p>
+<p>This asumptions that each server is on its own in a hostile
+environment, is attractive to the idea we design complex systems in a
+eco-system, and that they should be capable of surviving without the
+DMZ.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>technically two NIC cards and a backplane and ... but effectively just one server one IP.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/hosting.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

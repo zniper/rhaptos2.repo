@@ -1,0 +1,118 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Misc &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="misc">
+<h1>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h1>
+<p>ReadTheDocs: seems to not like modules with _ in the names.
+Not sure how they are configuring Sphonx but its an easy workaround</p>
+<p>The Flask internal webserver is HTTP/1.0 only, which after three hours I finally noticed, and solved the ajax problems</p>
+<p>JQuery - broken pipes on AJAX calls.  usually this is because the browser, which sends off an AJAX request, then breaks that connection.  Usually this is because the browser has fired the ajax call off a &lt;a&gt; link, and then carried on with the action the link has - that is to move to a new page.  So the entire running code on the page (incl the bit waiting for a reply from server) gets garbage collected, the server has its socket killed, broken pipe.  The fix
+- to add event.preventDefault()  - see John Resig tutorial.</p>
+<p>This is such a common issue we need to build in solutions.  Assume it will always happen.  Use httplib and do a good test too.</p>
+<ul>
+<li><p class="first">ImportError: No module named site
+Caused by trying to run (uwsgi) in a virtualenv when there is not one.
+&#8211;home arg is not what it said :-)</p>
+</li>
+<li><p class="first"><a class="reference external" href="http://lists.unbit.it/pipermail/uwsgi/2010-March/000188.html">http://lists.unbit.it/pipermail/uwsgi/2010-March/000188.html</a>
+invalid request block size: 21573</p>
+<p>ET as little endian is 21573, but GET sent by HTTP <em>to</em> a wsgi server is going to be funny - cos wsgi servers are not http servers...</p>
+</li>
+<li><p class="first">when booting a container (seemingly the last numbered/built container)
+it&#8217;s netowkr stack does not come up.  You need to login to console
+(lxc-console -n cnx4) and just ping anywhere.
+I have modified rc.local to ping -c 3 www.google.com just to acheive thois</p>
+</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/devops/weirdbugs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

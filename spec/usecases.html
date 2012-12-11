@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Use cases &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="use-cases">
+<h1>Use cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h1>
+<p>This is a discussion about the likely use cases for the
+editor/repository combination and then links into a expected API
+design to allow the use cases to be supported, and also discusses the
+likely technology choices.</p>
+<div class="section" id="u1-simplest-possible-use-case">
+<h2>U1. Simplest possible use case<a class="headerlink" href="#u1-simplest-possible-use-case" title="Permalink to this headline">¶</a></h2>
+<p>Professor Aardvark is the current holder of the Simon Cowell Chair for
+the Public Appreciation of Music and wishes to write the definitive
+work on the history of 80&#8217;s band A Flock of Seagulls, soon to be
+required reading for all Freshmen at MIT.</p>
+<p>He decides to publish it through Connexions and creates an account at
+cnx.org (username: bighaircut).</p>
+<p>He uses his personal workspace, and the EIP editor, and creates
+chapter after chapter, words flowing from him as if he was reading
+from inside his own skull.  He never corrects any saved work and never
+needs to go back and re-edit.</p>
+<p>After 20 chapters, he stops.</p>
+<p>He needs to link all the 20 modules / chapters into one book.</p>
+<p>He does this by</p>
+<ol class="arabic simple">
+<li>clicking create a book in his workspace home page. and entering in
+the book title &#8216;Flocking good music&#8217;.  The workspace home page is
+divided into two - the left is modules, a long unsorted list of
+work he has done, and their versions.  The right hand side is a set
+of books (collections) - each expandable into a sorted list of
+modules (i.e. chapters)</li>
+<li>dragging modules from his workspace into the correct collection on
+the RHS, and the chapters then appear in the book underneath the
+previous chapter.</li>
+<li>He then clicks &#8216;proof-read&#8217; - and can see an HTML version of the
+book in a pop up window.</li>
+</ol>
+<p>He proof reads the whole book, and finds just one spelling mistake (&#8220;I
+rum away&#8221; (!)).</p>
+<p>He opens his workspace again, locates the chapter in the collection,
+and opens the module in the editor by clicking &#8216;edit&#8217; next to the
+chapter name.</p>
+<p>He changes the spelling mistake (Chortling that he could get something
+so obvious wrong) and presses &#8216;save&#8217;.</p>
+<p>Now the book is at version 1, all chapters apart from chapter 9 is at
+version 1 and chapter 9 (with the spelling mistake corrected) is
+version 2.</p>
+<p>He clicks &#8216;freeze book&#8217; - which tags the book collection at the
+current versions.</p>
+<p>And he publishes the frozen version.  The pdf looks great, and it soon
+rises to the top of the cnx.org bestseller list.</p>
+</div>
+<div class="section" id="u2-simple-editing">
+<h2>U2. Simple Editing<a class="headerlink" href="#u2-simple-editing" title="Permalink to this headline">¶</a></h2>
+<p>&#8216;Simon just loves it Dahling&#8217;.  Our Professor is overjoyed and decides
+that his dry prose could be enlivened with some photos.  He digs
+through his sock drawer and finds his old kodak-color prints of the
+amazing &#8216;83 concert.  After scanning in all 24 of them, he creates an
+entirely new chapter in his workspace, imports each photo and lovingly
+adds a caption, and then in the collection view, he drags it over to
+the right place in the list of chapters.</p>
+<p>He freezes the new book and publishes.</p>
+<p>Like Hotcakes.  No, seriously, people are lapping it up.</p>
+</div>
+<div class="section" id="u3-rearranging-chapter-order">
+<h2>U3. Rearranging chapter order<a class="headerlink" href="#u3-rearranging-chapter-order" title="Permalink to this headline">¶</a></h2>
+<p>But there is a problem now.</p>
+<p>Professor A wants to re-emphasise the vital role that videos played in
+the band&#8217;s development, and the America billboard smash.  And he cannot
+do this with 20 chapters.</p>
+<p>He thinks he needs to split out many chapters into different parts and
+re-arrange them - but he does not want to muck about too much as he is
+planning to make every instance of a band members name UPPERCASE, and
+is only part way through that.</p>
+<p>He needs to branch.</p>
+<p>This can be represented as a new workspace - he just checkouts a workspace,
+and it is a new branch, he names it &#8216;video-version&#8217;.</p>
+</div>
+<div class="section" id="u4-bringing-in-someone-else-s-work">
+<h2>U4. Bringing in someone else&#8217;s work<a class="headerlink" href="#u4-bringing-in-someone-else-s-work" title="Permalink to this headline">¶</a></h2>
+<p>Professor A decides it is time to pull in the remarkable work of
+leading music critic T.I. Near and his world famous, Word doc. of
+band reviews.</p>
+<p>Professor clicks &#8216;create new module from word doc&#8217;, enters the URL of
+the word doc, and imports it into his workspace called
+&#8216;video-version&#8217;.  The word doc is converted as best as possible into
+HTML5 and stored as tinear.doc.html</p>
+<p>However, there is a problem with the doc - it has bold and normal text
+only and no other styling information.</p>
+<p>So the HTML is just &lt;strong&gt; and &lt;p&gt;</p>
+<p>The professor very nicely goes through the document assigning a
+&#8216;header&#8217; to the bold and &#8216;section&#8217; to the paragraphs.  He then notices
+the phil-o-matic tool that would have done this for him.</p>
+<p>THe professor now drags the tinear.doc.html into the book in workspace
+&#8216;video-version&#8217;, just after the photo chapters.</p>
+<p>He freezes the book in this new workspace.  He decides to publish from here -
+and does so.</p>
+<p>MTV runs a retrospective on the Professor&#8217;s career.  Prime time !</p>
+</div>
+<div class="section" id="u5-working-with-others">
+<h2>U5. Working with others<a class="headerlink" href="#u5-working-with-others" title="Permalink to this headline">¶</a></h2>
+<p>After his triumphant appearance on Good Morning America plugging the
+new book, several other promient academics emailed our Professor to
+ask if they could collaborate to create the definitive encyclopaedia
+of 1980&#8217;s New Romantics.</p>
+<p>This is looking good.  He emails Professor Xavier and Professor Zoltan
+and tells them to create accounts on cnx.org, and to then checkout his
+workspace &#8216;video-version&#8217; - he gives their accounts permission to do
+this.</p>
+<p>They are &#8216;authors&#8217; roles and he is a &#8216;editor&#8217; role</p>
+<p>Unfortunately both Professors edit the skeleton chapter &#8216;Her Name is
+Duran Duran&#8217;, with Professor X writing about the origin of the name in
+the film Barbarella.  But Professor Z just ranted on about Jane Fonda&#8217;s
+later career.  No-one mentioned the floating upside down bit.</p>
+<p>Both men send in &#8216;please add to book&#8217; requests.</p>
+<p>Clearly both chapters cannot be put into the same book - so Professer
+A first reviews them - and sends back several spelling and style
+corrections.  And does mention the floating upside down bit.</p>
+<p>The men make the changes and repeat the &#8216;add to book&#8217; request.</p>
+<p>Professor A now has to use the merge tool to decide which parts of the
+two requests will be kept and which discarded.</p>
+<div class="sidebar">
+<p class="first sidebar-title">Help.</p>
+<p class="last">(This is a difficult and trickly area.  Not sure how to approach
+this - merging HTML ! But we are merging <em>strucutred</em> html - is
+this helpful?  Comments anyone?)</p>
+</div>
+</div>
+<div class="section" id="u6-outside-of-cnx-org">
+<h2>U6. Outside of cnx.org<a class="headerlink" href="#u6-outside-of-cnx-org" title="Permalink to this headline">¶</a></h2>
+<p>The respected Professor Q has heard about the project and sends in his
+own chapter by email.  It was created in notepad, and is valid html5 (cnxml?)</p>
+<p>The same process as above is followed, firstly a spell check and corrections
+then a merge process.</p>
+<p>The imported document is taken using a URL.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Use cases</a><ul>
+<li><a class="reference internal" href="#u1-simplest-possible-use-case">U1. Simplest possible use case</a></li>
+<li><a class="reference internal" href="#u2-simple-editing">U2. Simple Editing</a></li>
+<li><a class="reference internal" href="#u3-rearranging-chapter-order">U3. Rearranging chapter order</a></li>
+<li><a class="reference internal" href="#u4-bringing-in-someone-else-s-work">U4. Bringing in someone else&#8217;s work</a></li>
+<li><a class="reference internal" href="#u5-working-with-others">U5. Working with others</a></li>
+<li><a class="reference internal" href="#u6-outside-of-cnx-org">U6. Outside of cnx.org</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/usecases.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

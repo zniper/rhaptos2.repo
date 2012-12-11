@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Logging - proposals &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="logging-proposals">
+<h1>Logging - proposals<a class="headerlink" href="#logging-proposals" title="Permalink to this headline">¶</a></h1>
+<p>I intend to keep logging as simple and as comprehensive as possible</p>
+<p>Principles:</p>
+<ol class="arabic simple">
+<li>Log through stdout</li>
+<li>add as much checking as possible to make auditing simpler</li>
+<li>write tools and centralise stuff (dashboard) to encourage reuse of tools</li>
+<li>use metrics as a guide.</li>
+</ol>
+<div class="section" id="example-use">
+<h2>Example use<a class="headerlink" href="#example-use" title="Permalink to this headline">¶</a></h2>
+<p>We have a rhaptos2.common project which contains the generic logging code.
+This means all projects (even if they want projects not to do with CNX)
+can use the same API to log their events, and do so in a consistent manner</p>
+<p>The code is set up to use a custom python logger, and a statsd-client
+to send audit logs to a centralised sysloging server, and a metric gathering
+graphite server</p>
+<p>Example call:</p>
+<div class="highlight-python"><pre>app.logger.info(
+           msg="PUT of module abcd-1234-4443-44 by userid xxx"
+           events=["rhaptos2.repo.module.put", "cnx.users.xxx"]
+           )</pre>
+</div>
+</div>
+<div class="section" id="context">
+<h2>context<a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h2>
+<p>Whilst a log message can contain whatever the developer needs to say,
+we can expect to always get the below data passed in - making filtering
+the output much easier.</p>
+<p>userid - the cnx based id of a user, that is mapped to a &#8220;real&#8221; openid / address by rhaptos2.user</p>
+<dl class="docutils">
+<dt>component - there is no hard and fast definition of a component, but its best thought</dt>
+<dd>of as a discrete unit, doing some useful work for us.</dd>
+<dt>event tags - these are defined as strings - they are quite arbitrary but it is useful for us</dt>
+<dd>to keep a simple hierarchy - like rhaptos2.repo.module / collection</dd>
+</dl>
+<p>time &amp; server &amp; running instance</p>
+</div>
+<div class="section" id="output-filtering">
+<h2>Output filtering<a class="headerlink" href="#output-filtering" title="Permalink to this headline">¶</a></h2>
+<p>We will get a <em>lot</em> of logs.  At the moment we capture x MB / mth
+We could expect to conservatively increase that by 50% simply by gathering in
+more detail.</p>
+<p>Filtering the output is at the moment a simple affair (grep).
+We shall develop tools to filter the output in more consistent means</p>
+</div>
+<div class="section" id="metric-gathering">
+<h2>Metric gathering<a class="headerlink" href="#metric-gathering" title="Permalink to this headline">¶</a></h2>
+<p>The graphite approach is sufficient here
+We are able to flexibly gather any event we choose to put in code.</p>
+<p>We should be able to watch our metrics overtime as follows</p>
+<div class="figure">
+<a class="reference internal image-reference" href="spec/../graphite_load_bal.png"><img alt="spec/../graphite_load_bal.png" src="spec/../graphite_load_bal.png" /></a>
+</div>
+<p>At the moment graphite has been left alone - we really need to put some load tests up
+and see what we collect / performance issues.
+Other than that the systems work well and as expected.</p>
+</div>
+<div class="section" id="audit-logging">
+<h2>Audit logging<a class="headerlink" href="#audit-logging" title="Permalink to this headline">¶</a></h2>
+<p>This is the &#8220;traditional&#8221; logging.
+We shall have each application output via stdout / stderr and pipe into
+both local syslog and a centralised remote syslog running on the logging machine</p>
+<p>This is the simplest approach we can devise - rsyslog is old reliable technology
+I do not want to use print stmts, but create a log class that can take &#8220;extras&#8221; (yes its called that)
+and we just log with say the requestid in it.</p>
+</div>
+<div class="section" id="administrative-work">
+<h2>Administrative work<a class="headerlink" href="#administrative-work" title="Permalink to this headline">¶</a></h2>
+<p>I anticipate putting in a centralised dashboard (prob using the below template)
+that will allow watching logs, graphite updates and potentially nagios warnings.
+COllating it all on one place seems a sensible move.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/logadmin.png"><img alt="../_images/logadmin.png" src="../_images/logadmin.png" /></a>
+</div>
+<p>This is mostly a centralising approach - nice to have, and will help.  Just not
+viital</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Logging - proposals</a><ul>
+<li><a class="reference internal" href="#example-use">Example use</a></li>
+<li><a class="reference internal" href="#context">context</a></li>
+<li><a class="reference internal" href="#output-filtering">Output filtering</a></li>
+<li><a class="reference internal" href="#metric-gathering">Metric gathering</a></li>
+<li><a class="reference internal" href="#audit-logging">Audit logging</a></li>
+<li><a class="reference internal" href="#administrative-work">Administrative work</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/logging.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

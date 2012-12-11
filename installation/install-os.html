@@ -1,0 +1,538 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Install and Admin of development servers &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="install-and-admin-of-development-servers">
+<h1>Install and Admin of development servers<a class="headerlink" href="#install-and-admin-of-development-servers" title="Permalink to this headline">¶</a></h1>
+<p>This box is currently the main development server, and hosts
+around a dozen ubuntu instances.</p>
+<img alt="installation/hpcube.jpg" class="align-right" src="installation/hpcube.jpg" style="width: 20%;" />
+<div class="section" id="tl-dr">
+<h2>tl;dr<a class="headerlink" href="#tl-dr" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pre-requisites">
+<h3>Pre requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Install Ubunutu 11.10 (soon to be 12.04 LTS) on your box</li>
+<li>Create a bridge network so &gt;1 server can share the real NIC</li>
+<li>Add in LXC support to ubuntu</li>
+</ol>
+<ol class="arabic">
+<li><p class="first">create a new container:</p>
+<div class="highlight-python"><pre>make newcontainer host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1 vhostip=10.0.0.21</pre>
+</div>
+</li>
+<li><p class="first">this will fire the following commands:</p>
+<div class="highlight-python"><pre>fab -H $(host) -f $(fabfile) build_new_container:vhostname=$(vhostname),vhostip=$(vhostip)
+fab -H $(host) -f $(fabfile) preboot:vhostname=$(vhostname),vhostip=$(vhostip)
+fab -H $(host) -f $(fabfile) useradd:username=deployagent,passwd=deployagent
+fab -H $(vhostname) -f $(fabfile) postboot
+
+yes, I am hardcoding that - it needs to be fixed.</pre>
+</div>
+</li>
+</ol>
+<p>3.a. add the lxc ssh fingerprint to our fab box&#8217; (laptop) known_hosts.:</p>
+<div class="highlight-python"><pre>ssh deployagent@cnx4 ...</pre>
+</div>
+<p>destroy container:</p>
+<div class="highlight-python"><pre>make lxc_destroy  host=hpcube fabfile=deploy/fab_lxc.py vhostname=dev1</pre>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Our basic philosophy here:</p>
+<blockquote class="last">
+<div>It&#8217;s easier to re-provision than it is to repair</div></blockquote>
+</div>
+</div>
+<div class="section" id="terminology">
+<h3>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="docutils">
+<dt>Host and VMHost</dt>
+<dd>Host is the host OS that is closest to the bare metal. VMHost is a clearer alias.</dd>
+<dt>VHost</dt>
+<dd>Virtual Host is the virtual machine running on top of the VMHost</dd>
+</dl>
+</div></blockquote>
+<p>We have hierarchical three levels of deployment - OS, System and Application</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>OS</dt>
+<dd>The OS.</dd>
+<dt>System</dt>
+<dd>A third-party program, supported by someone not us.  Think Apache, Nginx.</dd>
+<dt>Application</dt>
+<dd>A program or set of programs that are written / supported by us.</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="os-install">
+<h2>OS Install<a class="headerlink" href="#os-install" title="Permalink to this headline">¶</a></h2>
+<p>Download the Ubunutu <em>server</em> version.  This has no X Windows, and
+more especially plays well with the expectations of a server
+environment (OpenSSH-server installed by default, things respect
+changes to resolv.conf etc.)</p>
+<p>You can get the 11.10 version <a class="reference external" href="http://www.ubuntu.com/start-download?distro=server&amp;bits=32&amp;release=latest">here</a>
+but be aware that a new version (12.04) is in final Beta,  and that new version will be a <a class="reference external" href="https://wiki.ubuntu.com/LTS">LTS</a> version.  It is good practise to run
+on the LTS version as Canonical expect to support that for 5 years
+with upgrades.</p>
+<p>However 11.10 is sufficient for now, plus the migration will be a good test.</p>
+<ul>
+<li><p class="first">Policy on backports, out of date applications etc.</p>
+<p>Ubuntu, like Debian, and quite reasonably, limit the support for
+third party applications (e.g. Nginx) to versions they have tested
+on that release.</p>
+<p>To find out which is supported see <a class="reference external" href="http://packages.ubuntu.com/">http://packages.ubuntu.com/</a>.  For
+example apt is 0.8.16 in Oneric and 0.8.13 in natty.  So if we
+wanted the oneric version of apt, but wanted not to upgrade the
+machine, we theoretically would be unsupported.</p>
+<p>As such we can take a simple policy - we &#8216;trust&#8217; Canonical, and
+just update all our security updates from them each time.
+We also <em>pin</em> the application dependancies (that we know of)
+so we can get the latest app version from a release that is up ahead.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">what is the current policy - get Ross&#8217; comments</p>
+</div>
+<div class="section" id="download-and-install-ubuntu">
+<h3>Download and install Ubuntu<a class="headerlink" href="#download-and-install-ubuntu" title="Permalink to this headline">¶</a></h3>
+<p>Download as specified above.  COnvert the ISO to .img file and put onto a USB disk and install
+Get a clean install</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">todo:</th><td class="field-body">Kickstart / preseed file</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>partition layout:</dt>
+<dd>/ 30GB
+/swap 10GB (2*RAM Max + a bit)
+/home 30GB
+/var  (remainder)</dd>
+</dl>
+<div class="section" id="setting-up-networking-statically">
+<h4>setting up networking statically<a class="headerlink" href="#setting-up-networking-statically" title="Permalink to this headline">¶</a></h4>
+<p>Usually we would set up ethernet by adjusting the <tt class="file docutils literal"><span class="pre">/etc/network/interfaces</span></tt></p>
+<div class="highlight-python"><pre># The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet static
+    address 10.0.0.10
+    gateway 10.0.0.1
+    network 10.0.0.0
+    netmask 255.255.255.0</pre>
+</div>
+</div>
+</div>
+<div class="section" id="keeping-up-to-date">
+<h3>Keeping up to date<a class="headerlink" href="#keeping-up-to-date" title="Permalink to this headline">¶</a></h3>
+<p>Patch day?
+:todo: Automated review of each machine to see where we are aligned and not.</p>
+<div class="section" id="install-base-pkgs">
+<h4>install base pkgs<a class="headerlink" href="#install-base-pkgs" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>sudo apt-get -y install lxc debootstrap bridge-utils emacs
+
+# because you know you have to have emacs because editing with pico is a joke...</pre>
+</div>
+</div>
+<div class="section" id="setting-up-networks-statically-pt-2">
+<h4>Setting up networks statically -pt 2<a class="headerlink" href="#setting-up-networks-statically-pt-2" title="Permalink to this headline">¶</a></h4>
+<p>However, we now want to introduce a bridged network - think of this is
+a wrapper around the eth0 network card.  The bridge will be able to
+add and remove ethernet packets off eth0 in software.  To any virtual
+machine on the VMHost it will seem as if the bridge is their own NIC,
+to eth0 it will seem as if they are on a unusually busy ring.</p>
+</div>
+<div class="section" id="bridge-networking">
+<h4>bridge networking<a class="headerlink" href="#bridge-networking" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre># The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet manual     &lt;---- we changed to manual, which means the bridge will cope with eth0.
+
+
+auto br0
+iface br0 inet static
+    address 10.0.0.10
+    network 10.0.0.0
+    netmask 255.255.255.0
+    gateway 10.0.0.1
+    bridge_ports eth0
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 0</pre>
+</div>
+<p>Now restart networking</p>
+<div class="highlight-python"><pre>sudo /etc/init.d/networking restart</pre>
+</div>
+<p>We should then have a successful bridged adaptor - br0 is wrapping eth0 as it were.</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ brctl show
+bridge name     bridge id           STP     enabledinterfaces
+br0             8000.3cd92b0c2332   no      eth0
+                                            vethMSgJ2C       &lt;--- not here at first, but after a lxc, its the virtual nic being 'bridged' to
+
+
+pbrian@hpcube:~$ ifconfig
+br0       Link encap:Ethernet  HWaddr 3c:d9:2b:0c:23:32
+          inet addr:10.0.0.103  Bcast:0.0.0.0  Mask:255.255.255.0
+          ...
+
+eth0      Link encap:Ethernet  HWaddr 3c:d9:2b:0c:23:32
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          ...
+
+vethMSgJ2C Link encap:Ethernet  HWaddr 6e:94:48:0b:46:e7
+          inet6 addr: fe80::6c94:48ff:fe0b:46e7/64 Scope:Link
+          UP BROADCAST RUNNING PROMISC MULTICAST  MTU:1500  Metric:1
+          ...</pre>
+</div>
+</div>
+</div>
+<div class="section" id="control-groups">
+<h3>control groups<a class="headerlink" href="#control-groups" title="Permalink to this headline">¶</a></h3>
+<p>it seems that this script, run on boot,will mount cgroups sensibly
+This is part of teh lxc install above.</p>
+<div class="highlight-python"><pre>init/cgroup-lite.conf
+
+pbrian@hpcube:/etc$ mount
+/dev/sda1 on / type ext4 (rw,errors=remount-ro)
+proc on /proc type proc (rw,noexec,nosuid,nodev)
+sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+fusectl on /sys/fs/fuse/connections type fusectl (rw)
+none on /sys/kernel/debug type debugfs (rw)
+none on /sys/kernel/security type securityfs (rw)
+udev on /dev type devtmpfs (rw,mode=0755)
+devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=0620)
+tmpfs on /run type tmpfs (rw,noexec,nosuid,size=10%,mode=0755)
+none on /run/lock type tmpfs (rw,noexec,nosuid,nodev,size=5242880)
+none on /run/shm type tmpfs (rw,nosuid,nodev)
+cgroup on /sys/fs/cgroup type tmpfs (rw,relatime,mode=755)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,relatime,cpuset)
+cgroup on /sys/fs/cgroup/cpu type cgroup (rw,relatime,cpu)
+cgroup on /sys/fs/cgroup/cpuacct type cgroup (rw,relatime,cpuacct)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,relatime,memory)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,relatime,devices)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,relatime,freezer)
+cgroup on /sys/fs/cgroup/net_cls type cgroup (rw,relatime,net_cls)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,relatime,blkio)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,relatime,perf_event)</pre>
+</div>
+<div class="section" id="finally-create-a-container">
+<h4>Finally, create a container<a class="headerlink" href="#finally-create-a-container" title="Permalink to this headline">¶</a></h4>
+<p>What is a container?  _L_inu_X_ _C_ontainers are the Linux version of
+the lightweight jails coming from the Solaris Zones and FreeBSD Jails
+heritage.</p>
+<p>Essentially, it is a form of virtualisation.  Execpt that instead of
+being able to run any kernel, you run on the kernel of the VMHost.</p>
+<p>BSD Jails and SOlaris Zones are well known and trusted services.  LXC
+is in the mainline kernel and is in production but is not as
+widespread.</p>
+<p>I recommend reading the man pages - they are much more up to date than
+most anything on the interwebs.</p>
+<div class="highlight-python"><pre>man lxc-create
+man lxc</pre>
+</div>
+</div>
+<div class="section" id="what-will-lxc-do">
+<h4>What will lxc do?<a class="headerlink" href="#what-will-lxc-do" title="Permalink to this headline">¶</a></h4>
+<p>lxc will create in <tt class="file docutils literal"><span class="pre">/var/lib/lxc/</span><em><span class="pre">name</span></em><span class="pre">/</span></tt> a <tt class="file docutils literal"><span class="pre">rootfs</span></tt> as well as <cite>config</cite>
+Into <tt class="file docutils literal"><span class="pre">rootfs</span></tt> it will copy the entire userland of the VMHost, and apply <em>chroot on steroids</em>.
+You can alter the sshd_config file in <tt class="file docutils literal"><span class="pre">/var/lib/lxc/cnx01/rootfs/etc/ssh/sshd_config</span></tt> and it will
+run those changes in the container only.</p>
+<p>Its really is a virtualised machine.</p>
+</div>
+<div class="section" id="disadvantages">
+<h4>Disadvantages<a class="headerlink" href="#disadvantages" title="Permalink to this headline">¶</a></h4>
+<p>LXC is a little immature compared to, say, FreeBSD Jails.  It may of
+course be my lack of knowledge but the default of copying the whole
+userland over means that upgrading is essentially not an upgrade but a
+reinstall (upgrade the underlyinh VMHost, and the other packages will
+fail.  nullfs is used effectively in BSD Jails to overcome this
+problem (essentially each Jail can be symlinked down to use the VMHost
+binaries - so one upgrade rules them all.</p>
+<p>Its also less mature, less well understood, less widely used so
+production use is not a no-brainer.  However for turning one box into
+20 dev servers it is a winner.</p>
+<p>we need</p>
+<ol class="arabic simple">
+<li>a lxc configuration file</li>
+</ol>
+<div class="highlight-python"><pre>pbrian@hpcube:/etc/lxc$ cat /etc/lxc/lxc.conf
+lxc.network.type=veth
+lxc.network.link=br0
+lxc.network.flags=up</pre>
+</div>
+<ol class="arabic simple" start="2">
+<li>Create the container</li>
+</ol>
+<p>I recommend reading the lxc-create script</p>
+<div class="highlight-python"><pre>sudo lxc-create -t ubuntu -f /etc/lxc/lxc.conf -n cnx01
+
+&lt;this will essentially copy the entire userland over.&gt;
+
+...
+
+Setting up lxcguest (0.7.5-0ubuntu8) ...
+'ubuntu' template installed
+'cnx01' created
+
+real5m30.625s</pre>
+</div>
+</div>
+<div class="section" id="create-deployagent-on-vmhost">
+<h4>2.5 Create deployagent on VMHost<a class="headerlink" href="#create-deployagent-on-vmhost" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><pre>sudo useradd  -d /home/deployagent -g sudo -m -s /bin/bash deployagent
+sudo sh -c "echo deployagent:deployagent | chpasswd"
+
+We use this user on all vhosts, as means of coralling the deploy rights.
+I should use ssh keys but passwords will do for today.</pre>
+</div>
+</div>
+<div class="section" id="setup-networking-on-container">
+<h4>3. setup networking on container<a class="headerlink" href="#setup-networking-on-container" title="Permalink to this headline">¶</a></h4>
+<p>(we now have fab files to do this.)</p>
+<div class="highlight-python"><pre>assuming the VMHOST has had deployagent set up (user plus sudoers)
+
+fab -f fab-configlxcinstance.py -H hpcube preboot:vhostname=cnx1,vhostip=10.0.0.11
+
+this will connect to vmhost, kerslunk the files under rootfs, start the instance, then login as root and fix a few things.</pre>
+</div>
+<p>It defaults to DHCP (see the lxc-create script)</p>
+<p><tt class="file docutils literal"><span class="pre">/var/lib/lxc/cnx01/rootfs</span></tt>  is where the rootfs lives.</p>
+<div class="highlight-python"><pre>pbrian@hpcube:/etc/lxc$ ls -l  /var/lib/lxc/cnx01/rootfs/etc/network/interfaces
+-rw-r--r-- 1 root root 63 2012-04-17 19:56 /var/lib/lxc/cnx01/rootfs/etc/network/interfaces</pre>
+</div>
+<p>We now need to alter <tt class="file docutils literal"><span class="pre">/var/lib/lxc/cnx01/rootfs/etc/network/interfaces</span></tt> to hold a static
+address for eth0:</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ cat /var/lib/lxc/cnx01/rootfs/etc/network/interfaces
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address 10.0.0.104
+    network 10.0.0.0
+    netmask 255.255.255.0
+    gateway 10.0.0.1</pre>
+</div>
+<p>and check resolv.conf</p>
+<p>4. start the container instance</p>
+<div class="highlight-python"><pre>sudo lxc-start -n cnx01 -d</pre>
+</div>
+<p>-d pushes it to daemonise.  So we can run many startups from say rc.local.</p>
+<p>We can connect to the console using virtual tty</p>
+<div class="highlight-python"><pre>sudo lxc-console --name cnx01
+
+...
+
+
+login: xxx</pre>
+</div>
+<p>and we can exit that the same way we do for screen (which is what is used in background I think)
+-&gt; ctl-a q for quitting</p>
+<ul class="simple">
+<li>But what is the password?
+in the lxc-create script look a chpasswd command - this is used to give the root user
+the password root (root:root) - so the box is not very secure on first boot.  Another
+thing to fix, but it does mean you can ssh in and passwd / adduser to your hearts content</li>
+</ul>
+</div>
+<div class="section" id="config-and-advanced-useage">
+<h4>5. config and advanced useage<a class="headerlink" href="#config-and-advanced-useage" title="Permalink to this headline">¶</a></h4>
+<p>There is a lot we could do on top of the basics.  But for now this is sufficient.</p>
+<p>config is stored here - and the docs reflect the commands seen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">less</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">lxc</span><span class="o">/</span><span class="n">cnx01</span><span class="o">/</span><span class="n">config</span>
+</pre></div>
+</div>
+<p>Refer to the examples in /usr/lib/lxc/templates</p>
+</div>
+</div>
+</div>
+<div class="section" id="using-fabric">
+<h2>Using Fabric<a class="headerlink" href="#using-fabric" title="Permalink to this headline">¶</a></h2>
+<p>The above is good, however we have migrated to using fabric (and then Jenkins) for the deployments.</p>
+</div>
+<div class="section" id="managing-ubuntu">
+<h2>Managing Ubuntu<a class="headerlink" href="#managing-ubuntu" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">ufw</p>
+<p>/etc/services will map www &gt; 80</p>
+</li>
+</ol>
+<div class="highlight-python"><pre>ufw allow ssh/tcp
+ufw allow www/tcp
+ufw enable
+ufw status</pre>
+</div>
+</div>
+<div class="section" id="biblio">
+<h2>biblio<a class="headerlink" href="#biblio" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://lxc.teegra.net/#_setup_of_the_controlling_host">http://lxc.teegra.net/#_setup_of_the_controlling_host</a></li>
+<li><a class="reference external" href="https://help.ubuntu.com/community/KVM/Networking">https://help.ubuntu.com/community/KVM/Networking</a></li>
+<li><a class="reference external" href="http://wiki.debian.org/NetworkConfiguration#The_resolv.conf_configuration_file">http://wiki.debian.org/NetworkConfiguration#The_resolv.conf_configuration_file</a></li>
+<li><a class="reference external" href="http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge#Bridging_and_Firewalling">http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge#Bridging_and_Firewalling</a></li>
+<li><a class="reference external" href="http://blog.controltier.com/2009/04/new-whitepaper-achieving-fully.html">http://blog.controltier.com/2009/04/new-whitepaper-achieving-fully.html</a></li>
+</ul>
+</div>
+<div class="section" id="known-issues">
+<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+LANGUAGE = "en_GB:en",
+LC_ALL = (unset),
+LANG = "en_GB.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Can not write log, openpty() failed (/dev/pts not mounted?)</pre>
+</div>
+<p>ALso</p>
+<ol class="arabic simple">
+<li>Seems weird - lxc seems only to respond to outside pings once an internal connection has been made out.  like ping google.</li>
+<li>ssh timeouts? Or is that the above?</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Install and Admin of development servers</a><ul>
+<li><a class="reference internal" href="#tl-dr">tl;dr</a><ul>
+<li><a class="reference internal" href="#pre-requisites">Pre requisites</a></li>
+<li><a class="reference internal" href="#terminology">Terminology</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#os-install">OS Install</a><ul>
+<li><a class="reference internal" href="#download-and-install-ubuntu">Download and install Ubuntu</a><ul>
+<li><a class="reference internal" href="#setting-up-networking-statically">setting up networking statically</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#keeping-up-to-date">Keeping up to date</a><ul>
+<li><a class="reference internal" href="#install-base-pkgs">install base pkgs</a></li>
+<li><a class="reference internal" href="#setting-up-networks-statically-pt-2">Setting up networks statically -pt 2</a></li>
+<li><a class="reference internal" href="#bridge-networking">bridge networking</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#control-groups">control groups</a><ul>
+<li><a class="reference internal" href="#finally-create-a-container">Finally, create a container</a></li>
+<li><a class="reference internal" href="#what-will-lxc-do">What will lxc do?</a></li>
+<li><a class="reference internal" href="#disadvantages">Disadvantages</a></li>
+<li><a class="reference internal" href="#create-deployagent-on-vmhost">2.5 Create deployagent on VMHost</a></li>
+<li><a class="reference internal" href="#setup-networking-on-container">3. setup networking on container</a></li>
+<li><a class="reference internal" href="#config-and-advanced-useage">5. config and advanced useage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-fabric">Using Fabric</a></li>
+<li><a class="reference internal" href="#managing-ubuntu">Managing Ubuntu</a></li>
+<li><a class="reference internal" href="#biblio">biblio</a></li>
+<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/install-os.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

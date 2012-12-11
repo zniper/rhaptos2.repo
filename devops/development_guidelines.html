@@ -1,0 +1,276 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dev guidelines &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dev-guidelines">
+<h1>Dev guidelines<a class="headerlink" href="#dev-guidelines" title="Permalink to this headline">¶</a></h1>
+<p>OK, this is a sort of a style guide, sort of a how to and mostly a
+justification and set of excuses.</p>
+</div>
+<div class="section" id="my-local-setup">
+<h1>My local setup<a class="headerlink" href="#my-local-setup" title="Permalink to this headline">¶</a></h1>
+<p>This is a discussion of the architecture and setup we / I am using</p>
+<p>We have two distinct locations to worry about.  The local (i.e. in my
+office) setup, and the shared, ie public, setup. THe first is mostly
+hosted on a single dedicated server in the corner of my office.  This
+is the developer-local server.  The other is at the moment hosted on
+rented rackspace virtual servers hosted physically &#8216;somewhere in North
+London&#8217;.</p>
+<p>How to create the repo locally :</p>
+<ol class="arabic">
+<li><p class="first">localhost only</p>
+<p>This is intended as a simple, try-me, setup.
+run</p>
+</li>
+</ol>
+<div class="section" id="config">
+<h2>config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>There is one server wide configuraiton file stored in /usr/local/etc/rhaptos2/frozone.ini.  The settings here can be overridden using Environment variables - except that only settings beginning &#8220;<a href="#id1"><span class="problematic" id="id2">rhaptos2_</span></a>&#8221; will be taken.</p>
+<p>so rhaptos2_current_version is set in frozone.ini and can be overrrideen</p>
+<p>It is unclear how this interacts with virtualenvs</p>
+</div>
+<div class="section" id="github">
+<h2>Github<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+<p>Several years ago, hosting your own source code, bug tracker, issue
+tracker and code review tool was the only game in town.</p>
+<p>Now, especially for Open Source projects, other people are quite
+capable of doing it for us.  They call it XXX As A Service.</p>
+<p>I expect we shall gain a lot from just outsourcing some of our basic
+sysadmin plumbing, and the risk?  Well, there is minimal risk - if
+github turns around tomorrow and starts charging 100 USD per commit,
+we can walk away, setup our own shared repo, and parseing commit
+messages for [BUGID=1234] is well with our own capabilities.</p>
+<p>So, I suggest we use github for frozone SCM, bug and issues, and code
+reviews.  If it does not work lets find another solution, but try it
+out in anger for at least two sprints.</p>
+</div>
+<div class="section" id="repositostories">
+<h2>Repositostories<a class="headerlink" href="#repositostories" title="Permalink to this headline">¶</a></h2>
+<p>1. Fork the main repo (for now this is <a class="reference external" href="https://github.com/lifeisstillgood/frozone">https://github.com/lifeisstillgood/frozone</a>, please can an admin fork
+that onto connexions.github and we can use that ?)</p>
+</div>
+<div class="section" id="basic-workflow-for-a-frozone-developer">
+<h2>Basic workflow for a Frozone developer.<a class="headerlink" href="#basic-workflow-for-a-frozone-developer" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic" start="0">
+<li><p class="first">We shall use the now &#8216;github-flow&#8217; approach.  This is from the git
+pro author and git hub founder Scott Chachon, and is fairly sane
+and easy to follow.  Basically, Master is always tested, reviewed
+and deployable.  Have a change to make?  branch off master,
+develop, test.  THen do a pull request from your banch to master.
+SOmeone reviews that pull request.  If its ok, merge into master.
+Repeat.</p>
+</li>
+<li><p class="first">Create an Issue in github based on the story card in Trello
+I have created #4-stagingstep_needs_optparse.</p>
+</li>
+<li><p class="first">Accept that issue, and create a feature branch based on the issue:</p>
+<div class="highlight-python"><pre>git pull origin master
+
+git branch \#4-stagingstep_needs_optparse
+
+git checkout \#4-stagingstep_needs_optparse</pre>
+</div>
+</li>
+<li><p class="first">do the development work we want...</p>
+</li>
+<li><p class="first">commit the changes, back to git hub:</p>
+<div class="highlight-python"><pre>git add ...
+git commit -m 'ready for review'
+
+Yes, it is a good idea to put some sort of catch in github, a post commit hook, at stage 4,
+A service called reviewth.is exists.  however yet another dependancy.</pre>
+</div>
+</li>
+<li><p class="first">initiate a pull request from branch #4-stagingstep_needs_optparse TO master</p>
+<div class="highlight-python"><pre>Look at https://github.com/lifeisstillgood/frozone/pull/5</pre>
+</div>
+</li>
+<li><p class="first">Someone reviews the pull request, and a discussion ensures on github</p>
+<div class="highlight-python"><pre>Look at https://github.com/lifeisstillgood/frozone/pull/5</pre>
+</div>
+</li>
+<li><p class="first">When the changes are approved, merge into master.  THat can now go live.</p>
+<div class="highlight-python"><pre>Look at https://github.com/lifeisstillgood/frozone/pull/5</pre>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="line-length">
+<h2>Line Length<a class="headerlink" href="#line-length" title="Permalink to this headline">¶</a></h2>
+<p>This hoary old chesnut.  There are many discussions about this,
+and I will just stick to the two that I think are the most relevant</p>
+<ol class="arabic simple">
+<li>For programmers working on one project, they should all stick to
+one set of style guidelines.  It does not matter if some folks
+think the guidelines are wrong, just that the style is <em>sane and
+the same</em>.  Using CamelCaseWhenReallyUnderlinesAreWhatGodIntended
+is fine as long as <em>everyone</em> in the project will use camelcase and
+not get involved in games of formatting tennis.</li>
+<li>Typographers, who have had about 500 years to get it right, stick
+to 10-15 words per page/column (today&#8217;s Times front page has 12
+words average on the first paragraph.)  The human eye tends to
+strain moving much further, so 12 words, 6 characters per word plus
+space gives 72 characters or so.  80 is entirely arbitrary but in
+the right area.  Me, I use 73 cos it&#8217;s the best balance on my
+laptop.  YMMV</li>
+</ol>
+<p>So, lets stick to</p>
+<div class="highlight-python"><pre>PEP-8
+74 characters</pre>
+</div>
+</div>
+</div>
+<div class="section" id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li>We shall use the Bezos SOA <a class="reference external" href="https://plus.google.com/110981030061712822816/posts/AaygmbzVeRq">approach</a> -
+nothing, absolutely nothing communicates with anything else except
+through defined agreed service APIs - basically, use http.</li>
+</ol>
+<dl class="docutils">
+<dt>1.a. This has an implication for testing.  The first division in tests</dt>
+<dd>is not unit vs functional, but internal to the &#8216;service&#8217; and
+external.  Internal tests are allowed to know something about the
+inner workings, allowed to go peak at the disk to see if the file
+actually got written.  External ones, no.  Just use the API and test
+what comes back.. Test it hard. Throw horrible edge cases, drop
+connections.  But no peaking.</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li>document what is there, what has been done.  Not document what you hope to do - unlesss you label it bluesky.</li>
+</ol>
+</div>
+<div class="section" id="misc">
+<h1>Misc.<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h1>
+<p>THis is stuff I don&#8217;t have a useful place for.</p>
+<div class="section" id="pip-and-interpreter-shutdown">
+<h2>pip and Interpreter shutdown.<a class="headerlink" href="#pip-and-interpreter-shutdown" title="Permalink to this headline">¶</a></h2>
+<p>Fabric uses paramiko to do its ssh connection setup.  If you use pip install you will occassionally see</p>
+<div class="highlight-python"><pre>Exception in thread Thread-1 (most likely raised during interpreter shutdown):
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 551, in __bootstrap_inner
+  File "/usr/local/lib/python2.7/dist-packages/ssh/transport.py", line 1602, in run
+&lt;type 'exceptions.AttributeError'&gt;: 'NoneType' object has no attribute 'error'</pre>
+</div>
+<p>This is because we have not close()d the ssh connection before the main() thread exits - which
+is the main thread on remote, presumably kept open by pip.</p>
+<p>My workaround - stick a useless last sudo(&#8220;ls&#8221;) in after pip command and things shutdfown gracefully.
+see: <a class="reference external" href="https://github.com/paramiko/paramiko/issues/17">https://github.com/paramiko/paramiko/issues/17</a> for someone trying to fix it properly.</p>
+</div>
+<div class="section" id="biblio">
+<h2>Biblio<a class="headerlink" href="#biblio" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><a class="reference external" href="http://headrush.typepad.com/creating_passionate_users/2006/03/code_like_a_gir.html">http://headrush.typepad.com/creating_passionate_users/2006/03/code_like_a_gir.html</a></dt>
+<dd>Purely for the &#8216;Wrap at 80 chars - thats Girrrrl code.  No that&#8217;s &#8220;Metrosexual Programming&#8221;&#8217;</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dev guidelines</a></li>
+<li><a class="reference internal" href="#my-local-setup">My local setup</a><ul>
+<li><a class="reference internal" href="#config">config</a></li>
+<li><a class="reference internal" href="#github">Github</a></li>
+<li><a class="reference internal" href="#repositostories">Repositostories</a></li>
+<li><a class="reference internal" href="#basic-workflow-for-a-frozone-developer">Basic workflow for a Frozone developer.</a></li>
+<li><a class="reference internal" href="#line-length">Line Length</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#architecture">Architecture</a></li>
+<li><a class="reference internal" href="#misc">Misc.</a><ul>
+<li><a class="reference internal" href="#pip-and-interpreter-shutdown">pip and Interpreter shutdown.</a></li>
+<li><a class="reference internal" href="#biblio">Biblio</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/devops/development_guidelines.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,156 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>User details &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="user-details">
+<h1>User details<a class="headerlink" href="#user-details" title="Permalink to this headline">¶</a></h1>
+<p>JSON formatted document, holds all relevant details on a
+user.  Must conform to minimum amount of data, is versioned.</p>
+<div class="section" id="user-id">
+<h2>User ID<a class="headerlink" href="#user-id" title="Permalink to this headline">¶</a></h2>
+<p>We shall create a new, distributable and federatable user id of the
+follwoing form:</p>
+<div class="highlight-python"><pre>repo domain name reversed, with uuid in urn string format
+
+org.cnx.users.f81d4fae-7dec-11d0-a765-00a0c91e6bf6
+
+giving us a userid that is unique, linked to originating repo, so
+it can be traced back to a given source and fairly easily details
+requested from it.</pre>
+</div>
+<div class="highlight-python"><pre>Python:
+
+    user = {"id": "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",
+
+    "details":{"FullName": "Paul Brian",
+               "email":   "paul@mikadosoftware.com",
+               "Address" : "1 Arcacia Avenue, London",
+              },
+
+    "openids": ["https://www.google.com/accounts/o8/id?id=AItOawlc7oYk8MNlwBgxCwMhLDqzXq1BXA4abbk",
+                "http://openid.cnx.org/pbrian"
+               ],
+    "version": "1.0.0"
+    }
+
+
+
+   print json.dumps(user, sort_keys=True, indent=4)</pre>
+</div>
+<p>AS JSON form:</p>
+<div class="highlight-python"><pre>JSON:
+
+ {
+     "details": {
+         "Address": "1 Arcacia Avenue, London",
+         "FullName": "Paul Brian",
+         "email": "paul@mikadosoftware.com"
+     },
+     "id": "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",
+     "openids": [
+         "https://www.google.com/accounts/o8/id?id=AItOawlc7oYk8MNlwBgxCwMhLDqzXq1BXA4abbk",
+         "http://openid.cnx.org/pbrian"
+     ],
+     "version": "1.0.0"
+ }</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">User details</a><ul>
+<li><a class="reference internal" href="#user-id">User ID</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/user-detail.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

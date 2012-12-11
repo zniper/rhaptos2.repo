@@ -1,0 +1,224 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Difficult issues discussions &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="difficult-issues-discussions">
+<h1>Difficult issues discussions<a class="headerlink" href="#difficult-issues-discussions" title="Permalink to this headline">¶</a></h1>
+<p>I want to touch on some areas that are a little opaque to me right now.</p>
+<div class="section" id="openid">
+<h2>OpenID<a class="headerlink" href="#openid" title="Permalink to this headline">¶</a></h2>
+<p>see <tt class="xref doc docutils literal"><span class="pre">/openid</span></tt></p>
+</div>
+<div class="section" id="user-data-store">
+<h2>User Data store<a class="headerlink" href="#user-data-store" title="Permalink to this headline">¶</a></h2>
+<p>see <a class="reference internal" href="user-detail-store.html"><em>User Details Store</em></a></p>
+</div>
+<div class="section" id="security-model">
+<h2>Security Model<a class="headerlink" href="#security-model" title="Permalink to this headline">¶</a></h2>
+<p>Worth reviewing - seems weak.</p>
+</div>
+<div class="section" id="sections-vs-modules">
+<h2>Sections vs Modules<a class="headerlink" href="#sections-vs-modules" title="Permalink to this headline">¶</a></h2>
+<p>How granualr do we want the individual sections to be?</p>
+</div>
+<div class="section" id="storage-format-for-a-section">
+<h2>Storage format for a section<a class="headerlink" href="#storage-format-for-a-section" title="Permalink to this headline">¶</a></h2>
+<p>I am currently looking at using JSON modules as they are easily transportable between Javascript and Python.  However we are likely to want to mix microformats, HTML5 and other
+things for various reasons.
+How best do we do that - or shall we just stick to JSON as its simpler.</p>
+</div>
+<div class="section" id="transition-from-unpub-to-pub">
+<h2>Transition from Unpub to Pub<a class="headerlink" href="#transition-from-unpub-to-pub" title="Permalink to this headline">¶</a></h2>
+<p>This is the recent discussion with Phil - I am unclear of the parameters here and think more discussion is needed.</p>
+</div>
+<div class="section" id="automating-testing-adn-deployment">
+<h2>Automating testing adn deployment<a class="headerlink" href="#automating-testing-adn-deployment" title="Permalink to this headline">¶</a></h2>
+<p>Jenkins, and rackspace</p>
+</div>
+<div class="section" id="aloha-collaborative-editing">
+<h2>Aloha collaborative editing<a class="headerlink" href="#aloha-collaborative-editing" title="Permalink to this headline">¶</a></h2>
+<p>Running the collab server might be an extra effort - should this be best efforts only.</p>
+</div>
+<div class="section" id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">¶</a></h2>
+<p>Same old discussion - do we create a section and give it a unique ID (UUID)
+for its whole &#8220;life&#8221;.  Just do some form of versioning.  Or do we go git style and have uuid for each change?</p>
+<p>With life-long numbering a couple of questions arise:</p>
+<ol class="arabic simple">
+<li>who is the life time decided?  Presumably when a user deletes the section.</li>
+<li>derivation of works - we allow someone to copy a section, put it in their end.  Then to   change it.  OK.  What about copyright here? What about attribution?</li>
+</ol>
+<p>I suggest we combine</p>
+<ul class="simple">
+<li>all versions have authors</li>
+<li>Each new version (PUT) is archived (best effort) and stored with sha1hash.
+THe sha1hash is then also stored with the authors of <em>just that change</em></li>
+</ul>
+<p>That the editor prominently suggests who the author is and who is
+actually typing things up.  And who is copyright holder. Across all
+changed / changing docs.</p>
+</div>
+<div class="section" id="federation">
+<h2>Federation<a class="headerlink" href="#federation" title="Permalink to this headline">¶</a></h2>
+<p>This ties in strongly with the unpub -&gt; pub transition.
+How do we properly maintain and manage documents when we could concievably
+have one HTML doc with one section written on www.cnx.org and the next section
+written on www.mit.edu and there are <em>no</em> changes so no need to copy / derive / etc.</p>
+<p>Should we have unique ids for each section and each version of that section.
+If we do, then ID:version is useless becasue it requiores co-0ordination between
+mit.edu and cnx.org to ensure id:1 and id:2 are in order.</p>
+<p>We tend back to sha1 hashes.</p>
+<p>So can a collection be built up of fragments from around the globe?
+And if they are, does it matter at all that we know where the originating fragemnt came from - I mean UUID 12345-12345-12345 is globally unique, adding mit.edu:12345 seems both redundant and having little benefit (how do we know if rhaptos.mit.edu will stay up?  What if its laptop.professorSmith.mit.edu)</p>
+</div>
+<div class="section" id="the-transofmration-services">
+<h2>The transofmration services<a class="headerlink" href="#the-transofmration-services" title="Permalink to this headline">¶</a></h2>
+<p>We shall ignore entirely cnxml - html issues - all data stored by the
+new system will consist of HTML5.  If necessary we shall convert en
+mass all current documents, and reconvert to CNXML for printing only
+at publish repo.  unpub is HTML5 only.</p>
+</div>
+<div class="section" id="uuids">
+<h2>UUIDs<a class="headerlink" href="#uuids" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>UUIDs are unique. Really.  /dev/random in Ubuntu and FreeBSD is
+sufficiently high in entropy these days that the asteroid will hit
+throwing up sufficient dust to offset global warming long before
+our app finds a UUID collision.</li>
+</ol>
+</div>
+<div class="section" id="document-stores-not-rdbmses">
+<h2>Document stores not RDBMSes<a class="headerlink" href="#document-stores-not-rdbmses" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>documents are really really easy to stub out.</li>
+<li>we are mostly passing around not atomic bits of data but</li>
+</ol>
+<blockquote>
+<div>documents (ie a tree of chapters, a list of user info)
+Storing those in SQL correctly is breaking a doc out into fields, and
+reassembling them.
+I have spent 15 years adovazting SQL backed systems.  It takes a lot to risk
+document stores.</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>Really it does not matter - the interfaces are using documents,</li>
+</ol>
+<blockquote>
+<div>so maybe we swap them out one day.</div></blockquote>
+</div>
+<div class="section" id="outline-of-spans-of-interaction">
+<h2>Outline of spans of interaction<a class="headerlink" href="#outline-of-spans-of-interaction" title="Permalink to this headline">¶</a></h2>
+<p>Bascially sensibly documenting interfaces and contracts.  Untill we start using Eiffel
+I guess its read the docs.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Difficult issues discussions</a><ul>
+<li><a class="reference internal" href="#openid">OpenID</a></li>
+<li><a class="reference internal" href="#user-data-store">User Data store</a></li>
+<li><a class="reference internal" href="#security-model">Security Model</a></li>
+<li><a class="reference internal" href="#sections-vs-modules">Sections vs Modules</a></li>
+<li><a class="reference internal" href="#storage-format-for-a-section">Storage format for a section</a></li>
+<li><a class="reference internal" href="#transition-from-unpub-to-pub">Transition from Unpub to Pub</a></li>
+<li><a class="reference internal" href="#automating-testing-adn-deployment">Automating testing adn deployment</a></li>
+<li><a class="reference internal" href="#aloha-collaborative-editing">Aloha collaborative editing</a></li>
+<li><a class="reference internal" href="#versioning">Versioning</a></li>
+<li><a class="reference internal" href="#federation">Federation</a></li>
+<li><a class="reference internal" href="#the-transofmration-services">The transofmration services</a></li>
+<li><a class="reference internal" href="#uuids">UUIDs</a></li>
+<li><a class="reference internal" href="#document-stores-not-rdbmses">Document stores not RDBMSes</a></li>
+<li><a class="reference internal" href="#outline-of-spans-of-interaction">Outline of spans of interaction</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/difficultIssues.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

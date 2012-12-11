@@ -1,0 +1,149 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Build and configure a host server &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="build-and-configure-a-host-server">
+<h1>Build and configure a host server<a class="headerlink" href="#build-and-configure-a-host-server" title="Permalink to this headline">¶</a></h1>
+<p>I am expecting to parameterise these configs, based on FreeBSD /
+Ubuntu, versions thereof, and whether things are virtualised.  I am
+leaving that extra complexity alone for now, and focusing on ubunut
+containers.</p>
+<p>The configuration and server setup (network on VHost, installing 3rd
+party packages) is to be controlled thorugh fabric for now.</p>
+<div class="section" id="basic-notes">
+<h2>basic notes<a class="headerlink" href="#basic-notes" title="Permalink to this headline">¶</a></h2>
+<p>The basic way to run a fabric deployment is on the command line call:</p>
+<div class="highlight-python"><pre>$ fab -H www.example.com www2.example.com put_website</pre>
+</div>
+<p>This will look for a file fabfile.py, and will execute the function
+:func:put_website() in that file twice, once connected to www and once
+at www2.  (We assume the users have correct ssh authorized_keys etc)</p>
+<p>However, the fabfile.py can get very large quickly.</p>
+<p>a :<a class="reference external" href="file:fabfile.py">file:fabfile.py</a> defines all the deployment capabilities of a given project.
+if in the file we import :<a class="reference external" href="file:cnxfab.py">file:cnxfab.py</a> as follows:</p>
+<div class="highlight-python"><pre>from fabfile-cnx import foo, bar</pre>
+</div>
+<p>then foo and bar will be available as <em>tasks</em> to fab as well. I tend to split the files into
+deployments of specific 3rd party servers, so</p>
+<div class="highlight-python"><pre>import fab-oracle
+import fab-nginx</pre>
+</div>
+<p>and the different fabfiles can do more specific customisation, so fabfile-cnx.py may do clefver things with nginx
+installs, and just call fab-nginx.install_nginx(), then do a unusual config.</p>
+<p>using fabric:</p>
+<div class="highlight-python"><pre>$ fab -f myfabfile.py -H deploy@cubea deploy@cubeb put_networkinterfaceconfig</pre>
+</div>
+<p>using parameters</p>
+<blockquote>
+<div>$ fab -h hpcube task:foo=bar</div></blockquote>
+<div class="section" id="moniotring-virtual-hosts">
+<h3>Moniotring Virtual Hosts<a class="headerlink" href="#moniotring-virtual-hosts" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>fab -H hpcube,cubea -- dpkg -l
+fab -H hpcube,cubea -- uname -a
+fab ... other things like get resolv.conf and network/interfaces
+firewall setups ...</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Build and configure a host server</a><ul>
+<li><a class="reference internal" href="#basic-notes">basic notes</a><ul>
+<li><a class="reference internal" href="#moniotring-virtual-hosts">Moniotring Virtual Hosts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/OS-Build.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

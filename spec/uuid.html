@@ -1,0 +1,224 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Discussion on data structure behind repositor(ies) &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="discussion-on-data-structure-behind-repositor-ies">
+<h1>Discussion on data structure behind repositor(ies)<a class="headerlink" href="#discussion-on-data-structure-behind-repositor-ies" title="Permalink to this headline">¶</a></h1>
+<p>I hope this is a short discussion on the issues raised recently.</p>
+<div class="section" id="the-basic-probelm">
+<h2>The basic probelm<a class="headerlink" href="#the-basic-probelm" title="Permalink to this headline">¶</a></h2>
+<p>We want to agree how to structure a repository, its storage strategy
+and the basic unit(s) of what will be stored.  This model repository
+will store &#8220;fragments&#8221; - chunks of HTML written by the user, a set of
+fragments in a specific order are called a <em>binder</em>.  When arranged in
+the order in the binder, the fragments will form a complete <em>end-document</em>
+which can be viewed as HTML, or converted to PDF etc etc.</p>
+<p>I have proposed we create a single flat namespace for all documents and resources
+stored in (any) Connexions- Other- Repo, and navigae through it using Collections
+that are versioned via md5 hashes.  It should be noted that I think the main issues
+that were of concern to people are solvable (I think they are the branch-merge issue
+and the definition of latest) - but I think that we should not try this now - scale back
+focus on the simpler solution - google docs for a single server.</p>
+<p>So stop talking and show an example:</p>
+<div class="highlight-python"><pre>org.cnx.frag:d3911c28-2a9e-4153-9546-f71d83e41126/e5df9b39e5b428a84341c100bfe260df
+^^^                        ^^^^                    ^^^^
+name of namespace          UUID in that namespace  md5 hash of current content
+
+here we use org.cnx.frag as the namespace for a fragment.</pre>
+</div>
+<p>Or:</p>
+<div class="highlight-python"><pre>org.cnx.frag:e5df9b39e5b428a84341c100bfe260df
+^^^                   ^^^^
+name of namespace     md5 hash of current content</pre>
+</div>
+<p>The short version of the long one I just threwaway:</p>
+<ol class="arabic simple" start="0">
+<li>I think the concerns are<ul>
+<li>what if two people in two repos work on the same document at the same time?
+Which is latest?</li>
+<li>What about &#8220;derive&#8221;.</li>
+<li>surely we can track all this?</li>
+</ul>
+</li>
+<li>&#8220;Latest&#8221; : I <em>think</em> this is an attempt to allow me to follow
+someone else&#8217;s chapter in my binder (Professor X is writing a
+history of europe, I am writing book on Roman Emperors, I use his
+chapter on Nero.)  I want to change his chapter, and I also want to
+get his updates.  How do we handle this - well, if i want to make
+changes I MUST derive.  That is there are now two documents.  So I
+can have his chapter on Nero, but i can never get his updates
+unless I never make changes.</li>
+<li>Having external editors (outside of Connexions) be able to send
+chapters in is the same as having two repos - that is we will
+encounter a valid branched document at some point.  Our solutions
+to Latest was to derive <em>before</em> changes were made.  So the derived
+approach wont work here.  With two editors, or two repos, or
+offline editing and uploading as a zip etc ...  we have two valid
+documents, both from the same original doc, both holding valid
+changes.  and both with the same &#8220;name&#8221;.  What do we do?</li>
+</ol>
+<p>Solutions : we need to solve branch-and-merge - that is offer a
+convincing solution, or prevent it happening.  I suggest the latter.</p>
+<ul class="simple">
+<li>Option 1 - wrap git-serve.</li>
+<li>Option 2 - a combination of UUIDs and binders / history</li>
+<li>Option 3 - extend the derive approach back to the new repo</li>
+</ul>
+<dl class="docutils">
+<dt>Option 1 - we follow the growing DVCS trend and basically turn our</dt>
+<dd>&#8220;namespace&#8221; into one big git namespace, and each repo, or
+each workspace becomes its own git repo.  Its not bad but
+the common case is likely to be I just write my book and
+dont pull in chapters from others.  This is not as simple
+as you want in git.</dd>
+<dt>Option 2 - Distributed GoogleDocs style approach.  Label each file</dt>
+<dd><p class="first">with a UUID.  This instantly enables external editors,
+avoids reliance on central server(s) and the benefits of
+decoupling.  But it does not solve branch-and-merge.  To do
+that we need to version files - without central servers,
+that means hashing the content.  So we <em>could</em> do that -
+binders to represent the order, uuid/hash for each
+fragment.  Its quite a nice solution.</p>
+<p class="last">But it does not really solve branch-and-merge - Latest has
+no sensible meaning</p>
+</dd>
+<dt>Option 3 - Single Server GoogleDocs - Label each file with UUID, version it</dt>
+<dd>how you like.  But if you want to make a change you are either
+in a race condition with anyone else with permissions or you are
+&#8220;deriving&#8221; - and we dont do any merging or branching.</dd>
+<dt>Option 4 - Distributed Single server - basically lock files before editing.</dt>
+<dd>urgh. Across servers. urgh,urgh.</dd>
+</dl>
+<div class="section" id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
+<p>Simplest solution - Option 3.</p>
+<dl class="docutils">
+<dt>Really simple Implementation - Still use UUIDs. Versioning is</dt>
+<dd>irrelevant and does not need to be supported except
+for freezing.  The namespace does not need to be
+flat - we just store files in folders, which means
+the module m3090 is actually stored under
+collection400 Therefore versioning is not needed to
+avoid naming collisions and Latest is always True.
+A collection is a file strucutre - I suspect this
+is what Phil meant with Zips.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>I think Google Docs is offering an enticing solution - and they are not trying to
+solve branch and merge either (afaik).  So we should not either, as it is a small
+use case for now.</p>
+<p>The filesystem based implementation does have the virtue of extreme simplicity.
+And I have already implemented it!</p>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>Dont ask - its pretty horrible.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Discussion on data structure behind repositor(ies)</a><ul>
+<li><a class="reference internal" href="#the-basic-probelm">The basic probelm</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/uuid.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

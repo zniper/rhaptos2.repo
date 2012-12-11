@@ -1,0 +1,345 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Routing, bridging and LXC &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="routing-bridging-and-lxc">
+<h1>Routing, bridging and LXC<a class="headerlink" href="#routing-bridging-and-lxc" title="Permalink to this headline">¶</a></h1>
+<p>We are using Linux COntainers as a means of creating distinct and seperate servers running cheaply on a server.</p>
+<p>The &#8216;plain vanilla&#8217; means is referenced here :<a class="reference external" href="http://frozone.readthedocs.org/en/latest/install-os.html">http://frozone.readthedocs.org/en/latest/install-os.html</a></p>
+<p>We have approximately 6 virtual servers in the &#8216;eco-system&#8217; of frozone.</p>
+<p>This gives us a host machine, with half a dozen containers but they all sit as transparently visible IPs on the same network as the host.  This is the default  solution for putting in LXC containers.</p>
+<p>This is fine for say having a server in the physical office, and usig that to develop on.  It all looks fine, when looking at the REST API on 10.0.0.10 from your laptop on 10.0.0.20.</p>
+<p>We intend production machines to be on publically routable IPs, so they will act as if they are in the same network.</p>
+<p>However, there is a clear example where we have one server, with one
+public IP address, and on that we want to host 6 servers, but they need to
+be on a virtual LAN <em>inside</em> the host server.</p>
+<p>This will be a virtual NAT&#8217;d LAN inside a sinlge IP&#8217;d server.</p>
+<ol class="arabic" start="2">
+<li><p class="first">on the host set up bridging so that I have the real eth0 replaced
+by br0, configured in /etc/network/interfaces:</p>
+<div class="highlight-python"><pre># The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet manual #let bridge cope with this
+
+
+auto br0
+iface br0 inet static
+    address 10.0.0.100
+    network 10.0.0.0
+    netmask 255.255.255.0
+    gateway 10.0.0.1
+    bridge_ports eth0
+    bridge_stp off      #no need for spanning any trees.
+    bridge_fd 0         #speed
+    bridge_maxwait 0    #speed</pre>
+</div>
+</li>
+<li><p class="first">set up a container, and in it set up its networking, tell it to use
+br0 as ethernet device via lxc.conf</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">lxc</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="n">veth</span>
+<span class="n">lxc</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">link</span><span class="o">=</span><span class="n">br0</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>3.a. Set up networking on the VM container to be using</p>
+<div class="highlight-python"><pre>auto eth0
+iface eth0 inet static
+    address 10.0.0.104
+    network 10.0.0.0
+    netmask 255.255.255.0
+    gateway 10.0.0.1</pre>
+</div>
+<ol class="arabic" start="4">
+<li><p class="first">This works:</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ brctl show
+bridge name     bridge id           STP     enabledinterfaces
+br0             8000.3cd92b0c2332   no      eth0
+                                            vethMSgJ2C
+                                            veth5zepFK
+                                            vethGf3cpg
+                                            vethLuS6QF
+                                            vethQCFKhR
+                                            vethYFiXKj
+                                            vethYe2Qah
+                                            vethYxbXON
+                                            vethmebbUH
+                                            vethrGpf3e
+                                            vethrtk6UN</pre>
+</div>
+</li>
+</ol>
+<p>The containers can see and be seen from anywhere on my internal office
+network 10.0.0.0/24 (and externally if I open up the linksys etc).</p>
+<p>But this is because the VM ison the same IP network as the host and
+the external gateway.  So although the bridge is doing all the Level 2
+packet shifting, nothing ever fails at level 3.</p>
+<div class="section" id="start-from-the-beginning">
+<h2>Start from the beginning<a class="headerlink" href="#start-from-the-beginning" title="Permalink to this headline">¶</a></h2>
+<p>We now will create a virtual switch (bridge) that connects all the containers- essentially plugging the containers ethernet wires into the hub.(?)</p>
+<p>This switch is then given a virtual NIC card (a tap), and an IP on the VLAN assigned to it.</p>
+<p>Then we create a NAT router on the host, so the NIC that is now attached to the switch <em>and</em> the real NIC on the host, are connected by a NAT router in the kernel.</p>
+<p>We can then see any host on any port from within the LAN, and can route externally over SNAT to say bbc.co.uk, and can either set up any host interanlly to have DMZ / port access, or more likely set nginx on the host to reverse proxy for external viewing.</p>
+<p>This <em>may</em> be a suitable set up for production, bouncing off one webserver / loadbalancer to various backend servers.</p>
+<ol class="arabic simple">
+<li>Linux and bridging.</li>
+</ol>
+<p>ref: <a class="reference external" href="http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge#Bridging_and_Firewalling">http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge#Bridging_and_Firewalling</a></p>
+<p>A bridge device is a virtual switch - a layer 2 device that moves
+Ethernet packets not IP Packets. It forward broadcasts packets to all
+ports on the Ethernet and only sends traffic to (virtual) ports that
+have specific MAC addresses on them.</p>
+<p>Program is brctl and is included in bridge-utils.</p>
+<p>So we have a switch that will move Ethernet frames around for us.
+Lets plug into that a ethernet adaptor from a PC.</p>
+<div class="section" id="tap-device">
+<h3>Tap device<a class="headerlink" href="#tap-device" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://en.wikibooks.org/wiki/QEMU/Networking#TAP_interfaces">http://en.wikibooks.org/wiki/QEMU/Networking#TAP_interfaces</a>
+<a class="reference external" href="http://people.gnome.org/~markmc/qemu-networking.html">http://people.gnome.org/~markmc/qemu-networking.html</a>
+<a class="reference external" href="http://blog.bofh.it/debian/id_379">http://blog.bofh.it/debian/id_379</a></p>
+</div>
+<div class="section" id="setting-up-the-switch">
+<h3>Setting up the Switch<a class="headerlink" href="#setting-up-the-switch" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Create the virtual switch device (Layer 2 bridge)</dt>
+<dd>sudo brctl addbr br1</dd>
+<dt>Create a tun device (virtual NIC)</dt>
+<dd>sudo ip tuntap add dev tap0 mode tap user root</dd>
+<dt>Attach the tap device (NIC) to the switch (ie &#8216;plug&#8217; the switch into the LAN)</dt>
+<dd>sudo brctl addif br1 tap0</dd>
+<dt>GIve that NIC an address on the LAN</dt>
+<dd>sudo ifconfig br1 10.1.1.1 netmask 255.255.255.0 broadcast 10.1.1.255</dd>
+</dl>
+<p>Now I should be able to see my bridge on the host:</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ brctl show
+bridge name    bridge id            STP enabled    interfaces
+br0        8000.3cd92b0c2332        no             eth0
+br1        8000.5e8ae4af4b7d        no             tap0</pre>
+</div>
+<p>Change the instructions for LXC to use the above bridge for new LXC:</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ cat /etc/lxc/taplxc.conf
+lxc.network.type=veth
+lxc.network.link=br1
+lxc.network.flags=up</pre>
+</div>
+<dl class="docutils">
+<dt>create container</dt>
+<dd>sudo lxc-create -t ubuntu -f /etc/lxc/vlanlxc.conf -n cnx6</dd>
+</dl>
+<p>update using fab file:</p>
+<div class="highlight-python"><pre>fab -H fillet.cnx.rice.edu -f fab_lxc.py preboot:vhostname=cnx1,vhostip=10.1.1.6
+# be careful here need to sort out ssh keys across fillet</pre>
+</div>
+<p>Change the interface defintions</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ cat /var/lib/lxc/cnx6/rootfs/etc/network/interfaces
+#from frozone tmpl
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address 10.1.1.6
+    network 10.1.1.0
+    netmask 255.255.255.0
+    gateway 10.1.1.1
+    broadcast 10.1.1.255
+    dns-nameservers 128.42.178.32 128.42.209.32
+    dns-search cnx.rice.edu</pre>
+</div>
+<p>So veth type created <em>should</em> link to br1</p>
+<div class="highlight-python"><pre>pbrian@hpcube:~$ brctl show
+bridge name    bridge id            STP enabled    interfaces
+br0        8000.3cd92b0c2332        no             eth0
+br1        8000.5e8ae4af4b7d        no             tap0
+                                                   vethh4V8pY</pre>
+</div>
+<p>Yayme!!</p>
+<p>login to container</p>
+<div class="highlight-python"><pre>root@cnx6:~# ping 10.1.1.1
+PING 10.1.1.1 (10.1.1.1) 56(84) bytes of data.
+64 bytes from 10.1.1.1: icmp_req=1 ttl=64 time=1.90 ms
+64 bytes from 10.1.1.1: icmp_req=2 ttl=64 time=0.056 ms
+64 bytes from 10.1.1.1: icmp_req=3 ttl=64 time=0.051 ms</pre>
+</div>
+<p>yayme * 2</p>
+<p>Now, we have a switch on the 10.1.1.1 ip (br1), and it needs to talk to
+the real host NIC card.  We need to set up a NAT</p>
+<div class="highlight-python"><pre>$ sudo iptables-restore &lt; /etc/iptables.rules
+
+pbrian@fillet:~$ cat /etc/iptables.rules
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+
+-A PREROUTING -d 128.42.169.25/32 -i eth0 -p tcp -m tcp --dport 22210 -j DNAT --to-destination 10.1.1.6:22
+
+#from world to .6
+#-A PREROUTING -d 128.42.169.25 -i eth0 -j DNAT --to-destination 10.1.1.6
+
+
+-A POSTROUTING -s 10.1.1.0/24 -o eth0 -j SNAT --to-source 128.42.169.25
+COMMIT
+
+#snat - all traffic from 10.1.1.0 will go out to internet looking like comes from 128.</pre>
+</div>
+</div>
+<div class="section" id="testing-it">
+<h3>Testing it<a class="headerlink" href="#testing-it" title="Permalink to this headline">¶</a></h3>
+<p>ping from container to anywhere:</p>
+<div class="highlight-python"><pre>ubuntu@cnx2:~$ ping www.google.com
+...
+64 bytes from dfw06s16-in-f19.1e100.net (74.125.227.115):...</pre>
+</div>
+<p>can I see the webserver running on a container, from the host:</p>
+<div class="highlight-python"><pre>pbrian@fillet:~$ wget 10.1.1.7</pre>
+</div>
+</div>
+</div>
+<div class="section" id="using-the-vlan-with-firefox">
+<h2>Using the VLAN with firefox<a class="headerlink" href="#using-the-vlan-with-firefox" title="Permalink to this headline">¶</a></h2>
+<p>Two approaches</p>
+<ol class="arabic simple">
+<li>tunnel X from a server inside the 10.1.1.0/24 network, so run xfce4 on a container and just display locally.  This is a good one, configuration a bit fiddly - so I shall leave it for later.</li>
+<li>create  SOCKS5 proxy, so that firefox tunnels all its requests through the ssh tunnel and out in 10.1.1.0/24 network. This is by far the simplest approach, and works fine for now, also allowing test systems to run locally.</li>
+</ol>
+<p>login to a server on the 10.1.1.0 network:</p>
+<div class="highlight-python"><pre>$ ssh ubuntu@fillet -p 22217
+
+  I have setup a port forwarding on fillet to go through to port 22 on 10.1.1.7 already.
+  So this should log us into that remote machine
+$ exit
+
+$ ssh -D 8081 -N ubuntu@fillet -p 22217
+
+Also set ::
+
+
+  network.proxy.socks_remote_dns = true
+
+so all DNS is run from remote end too.</pre>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="installation/socksProxy.jpg"><img alt="installation/socksProxy.jpg" src="installation/socksProxy.jpg" /></a>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="installation/dnsviafillet.png"><img alt="installation/dnsviafillet.png" src="installation/dnsviafillet.png" /></a>
+</div>
+<div class="section" id="acknowledgements">
+<h3>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h3>
+<p>A big tip o&#8217; the hat to macker.  Thanks.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Routing, bridging and LXC</a><ul>
+<li><a class="reference internal" href="#start-from-the-beginning">Start from the beginning</a><ul>
+<li><a class="reference internal" href="#tap-device">Tap device</a></li>
+<li><a class="reference internal" href="#setting-up-the-switch">Setting up the Switch</a></li>
+<li><a class="reference internal" href="#testing-it">Testing it</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-vlan-with-firefox">Using the VLAN with firefox</a><ul>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/lxc-routing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

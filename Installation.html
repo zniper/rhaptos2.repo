@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installing and updating &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Architecture" href="Architecture.html" />
+    <link rel="prev" title="Mapping requirements docs to Service features." href="requirements.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Architecture.html" title="Architecture"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="requirements.html" title="Mapping requirements docs to Service features."
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installing-and-updating">
+<h1>Installing and updating<a class="headerlink" href="#installing-and-updating" title="Permalink to this headline">¶</a></h1>
+<p>Heroku has proven an interesting case study in large scale deployment
+of many many apps.  The founders there have published an opinionated
+view of how to structure deployment and applications at
+<a href="#id1"><span class="problematic" id="id2">`http://www.12factor.net/`_</span></a></p>
+<p>One interesting takeaway is to</p>
+<div class="highlight-python"><pre>Keep development, staging, and production as similar as possible</pre>
+</div>
+<p>This (along with most of the other 11 ideas) I generally agree with
+(frankly its all a bit common sense).  Anyway.</p>
+<p>This means that in production if we think we are going to have a range
+of webservers running our app, that we should at the very least have
+two web apps running in development.  And they should be installed and
+monitored the same way as they will be live.</p>
+<p>What I am saying is that we are beyond just downloading one egg and
+running the code.  We need deployment scripts just to get started.</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>There are two main deployment targets during development</p>
+<ol class="arabic simple">
+<li>Developer&#8217;s local office</li>
+<li>Rackspace Cloud servers</li>
+</ol>
+<p>I  have assumed  that  each developer  will  have at  least a  virtual
+machine of Ubuntu running  locally at an acceptable speed.  Personally
+I  have  an  entry  level   server  running  Linux  Containers,  as  a
+lightweight solution. YMMV</p>
+<p>The idea is that at a very minimum, we shall install the repository
+and web server(s) onto a clean virtual machine, and run the
+&#8216;eco-system&#8217; from there.  There will be (minimal) system wide alterations to the developers real local system.</p>
+<p>We are using several servers, some as repositories, some as logging
+servers etc.  To do this without having m,ultiple physical hosts, we
+use a form of virtualisation called Linux Containers.</p>
+<p>We also place all the hosts onto a NAT&#8217;d LAN inside a developer&#8217;s
+office.</p>
+<p>This has lead to difficulty arranging servers visible for everyone,
+and updated regularly.  The most likely solution is to truly develop
+in the open - by hiring rackspace servers and putting the latest CI
+build onto there.</p>
+<p>Firstly we install an instance of Ubuntu on our dev server, and modify
+it so that we can use Linux containers.  At this point we can use
+different fab files to turn it into a variety of different servers.</p>
+<div class="section" id="my-walkthrough">
+<h3>My Walkthrough<a class="headerlink" href="#my-walkthrough" title="Permalink to this headline">¶</a></h3>
+<p>I am starting with a configured host server, able to run LXC.</p>
+<ol class="arabic simple">
+<li>Delete the existing devweb and devlog servers.</li>
+<li>Delete the existing Jenkins server</li>
+<li>rebuild the above three servers as base OS&#8217;s</li>
+<li>Apply different fabfiles to the three (devjenkins, devlog and finally
+devweb) to build the system environment.</li>
+<li>Run a Jenkins job, to rebuild devweb, seeing results of nosetests</li>
+</ol>
+<ol class="arabic">
+<li><p class="first">Check dns. I want to make sure my local DNS server is serving the right
+setup.  (THere is a DNS fabfile but I am manually handling it for now):</p>
+<div class="highlight-python"><pre>bash scripts/dns.sh
+ devweb
+     10.0.0.24
+ devjenkins
+     10.0.0.23
+ devlog
+     10.0.0.22
+ www
+     devweb.office.mikadosoftware.com. 10.0.0.24
+ cdn
+     devweb.office.mikadosoftware.com. 10.0.0.24
+ repo</pre>
+</div>
+</li>
+<li><p class="first">kill running containers:</p>
+<div class="highlight-python"><pre>make lxc_destroy host=hpcube vhostname=devlog vhostip=10.0.0.22
+make lxc_destroy host=hpcube vhostname=devweb vhostip=10.0.0.24
+(Not killing jenkins just yet.)</pre>
+</div>
+</li>
+<li><p class="first">recreate</p>
+<div class="highlight-python"><pre>see newlxc.sh
+export CONFIGFILE=/etc/rhaptos2.ini
+make newcontainer host=hpcube   fabfile=deploy/fab_lxc.py vhostname=devweb vhostip=10.0.0.24
+make newcontainer host=hpcube   fabfile=deploy/fab_lxc.py vhostname=devlog vhostip=10.0.0.22</pre>
+</div>
+</li>
+</ol>
+<p>Now the CONFIGFILE has become vital in almost all parts of Bamboo and Rhaptos2.  As we have a build / deploy
+process, I am not making any (?) default assumptions, but taking it all from a config file, which clearly needs
+to be supplied, else I dont know if I am building for produiction or developer.</p>
+<ol class="arabic" start="4">
+<li><p class="first">Now each server should have Ubunut base plus bunch of Python additions
+(NB rember debian puts python packages in dist-packages, just to confuse you)</p>
+<div class="highlight-python"><pre>make graphite host=devlog fabfile=deploy/fab_sys_graphite.py
+
+This will ask a couple of [continue] questions, say yes.
+It will then run a grap[hite supplied dependancy check.  I allow one error/warning - txamqp to pass.  Anything else investigate.
+
+It then drops you into a fab run shell on remote machine.  THis sets up a
+DJango user - I take the defaults, and when complete you *need to _exit_*
+from the remote shell so fabric can continue
+
+At this point Apache is restarted - any nginx conflicts will arise here.</pre>
+</div>
+</li>
+<li><p class="first">test stats:</p>
+<div class="highlight-python"><pre>http://devlog
+python verify_graphite.py in test dir
+
+ToDo: expand on this</pre>
+</div>
+</li>
+<li><p class="first">make repo:</p>
+<div class="highlight-python"><pre>make repo host=devweb fabfile=deploy/fab_sys.py
+
+Actually the whole build/deploy the repo is a little more involced, please see ...</pre>
+</div>
+</li>
+<li><p class="first">run Jenkins job to build repo and web servers</p>
+</li>
+</ol>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<p>Now we want to build a DNS server</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<p>At this point the Virtual Lan for our developer is ready to take on anything new</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<p>Now we install the application itself</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installing and updating</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#my-walkthrough">My Walkthrough</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="requirements.html" title="previous chapter">Mapping requirements docs to Service features.</a></li>
+      <li>Next: <a href="Architecture.html" title="next chapter">Architecture</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

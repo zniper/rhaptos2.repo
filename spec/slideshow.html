@@ -1,0 +1,243 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Rhaptos2 - Repo &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="rhaptos2-repo">
+<h1>Rhaptos2 - Repo<a class="headerlink" href="#rhaptos2-repo" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li>Metaphors for how the repo will work</li>
+<li>Infrastructure and Robustness</li>
+<li>Open technologies</li>
+</ol>
+<hr class="docutils" />
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Aim to supply an unpublish repository, (and more to come)</p>
+<ul class="simple">
+<li>based around REST principles,</li>
+<li>that is resilient,</li>
+<li>straight-forward to support</li>
+<li>open to developers outside of CNX,</li>
+<li>tested</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="metaphors">
+<h2>Metaphors<a class="headerlink" href="#metaphors" title="Permalink to this headline">¶</a></h2>
+<p>Three major metaphors possible:</p>
+<ol class="arabic">
+<li><p class="first">Files and Folders</p>
+<p>This has been prototyped and can be seen in next slide
+It was quickest and easiest to create and allow people to get a &#8220;feel&#8221;</p>
+</li>
+<li><p class="first">Google-docs-style</p>
+<p>Is currently being worked on, is likely to be the best choice.  It
+has an &#8220;infinite&#8221; space of documents, and will not restrict one
+user navigating through the sections in a different way to the
+original owner, as a folder metaphor would.</p>
+</li>
+<li><p class="first">Github style
+Unlikely to be implemented.</p>
+</li>
+</ol>
+</div>
+<hr class="docutils" />
+<div class="section" id="screenshot-of-folder-metaphor">
+<h2>ScreenShot of Folder Metaphor<a class="headerlink" href="#screenshot-of-folder-metaphor" title="Permalink to this headline">¶</a></h2>
+<p>We base our logins on the OpenID standard.</p>
+<div class="figure">
+<img alt="spec/reposcreen-small.png" src="spec/reposcreen-small.png" />
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="open-to-developers">
+<h2>Open to Developers<a class="headerlink" href="#open-to-developers" title="Permalink to this headline">¶</a></h2>
+<p>We want to encourage participation from outside of CNX</p>
+<ol class="arabic simple">
+<li>Lots of documentation (frozone.readthedocs.org) - very nearly up to date!</li>
+<li>Getting started and installation code heavily worked on.</li>
+<li>More community work needed...</li>
+</ol>
+</div>
+<hr class="docutils" />
+<div class="section" id="open-technologies">
+<h2>Open Technologies<a class="headerlink" href="#open-technologies" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>REST
+Simple</li>
+<li>OSS
+Free</li>
+<li>OpenID
+Ease of use for end users</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="robust">
+<h2>Robust<a class="headerlink" href="#robust" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="results-of-perfomance-testing">
+<h3>Results of perfomance testing<a class="headerlink" href="#results-of-perfomance-testing" title="Permalink to this headline">¶</a></h3>
+<p>I fired 100,000 requests at the load-balanced web service.  (two web
+apps behind one load balancer, the &#8220;out-of-the-box&#8221; config)</p>
+<p>It took five minutes, and during that time I <em>killed</em> one web app, and
+let the system notice and bring it back on line.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Proves the load balancer can dynamically adjust load</li>
+<li>Demonstrates that the upstart monitoring can identify a crash and restart a process automatically</li>
+<li>shows clearly that two apps serve more requests than one.</li>
+</ol>
+<div class="figure">
+<img alt="spec/graphite_load_bal.png" src="spec/graphite_load_bal.png" />
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="support-and-deployment">
+<h2>Support and deployment<a class="headerlink" href="#support-and-deployment" title="Permalink to this headline">¶</a></h2>
+<p>A lot of effort has gone into making the developers deployment <em>exactly</em> the same as production <em>as far as possible</em></p>
+<p>We run continuous integration servers in the cloud and can deploy autopmatically on each commit.</p>
+<p>We are on the Rackspace Early-access for the OpenStack (the OSS alternative to Amazon Web Services)</p>
+<p>We have moniotring and logging centralised and visible (see the above performance test)</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>We automate Firefox and Chrome for &#8220;balck box&#8221; testing</li>
+</ul>
+<p>(Show video? Image?)</p>
+<ul class="simple">
+<li>We have unit tests enbedded in documents</li>
+</ul>
+<p>(Show Doctest)</p>
+<ul class="simple">
+<li>We have mid-level tests</li>
+</ul>
+<p>(Show flask-app testing)</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>A very exciting project</li>
+<li>Licensing issues - have written all routines from scratch ensuring
+no complications</li>
+<li>UnPublish repo slower as majority of infrastructure work done here</li>
+<li>Expect QA ready end of August (!!!)</li>
+<li>Plenty more to do ...</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Rhaptos2 - Repo</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#metaphors">Metaphors</a></li>
+<li><a class="reference internal" href="#screenshot-of-folder-metaphor">ScreenShot of Folder Metaphor</a></li>
+<li><a class="reference internal" href="#open-to-developers">Open to Developers</a></li>
+<li><a class="reference internal" href="#open-technologies">Open Technologies</a></li>
+<li><a class="reference internal" href="#robust">Robust</a><ul>
+<li><a class="reference internal" href="#results-of-perfomance-testing">Results of perfomance testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#results">Results</a></li>
+<li><a class="reference internal" href="#support-and-deployment">Support and deployment</a></li>
+<li><a class="reference internal" href="#tests">Tests</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/slideshow.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

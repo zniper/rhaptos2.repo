@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Section &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="section">
+<h1>Section<a class="headerlink" href="#section" title="Permalink to this headline">¶</a></h1>
+<p>A section-doc is a JSON document that represents / contains
+a fragment of a book.</p>
+<dl class="docutils">
+<dt>fragment:</dt>
+<dd>valid HTML5 that may or may not be a complete HTML document.
+If it is not complete then it is expected that at least one collection
+will exist that links the fragment with other fragments to create
+a complete HTML5 document.
+(it is not clear if complete means body tag or html tag)</dd>
+<dt>content:</dt>
+<dd>holds the actual HTML5</dd>
+<dt>id:</dt>
+<dd>UUID based id of the document.
+it is a urn of form &lt;schema&gt;:UUID  where schema is org.cnx.sect (others include org.cnx.collection)
+We expect to store the documents with names equal to the id</dd>
+<dt>title:</dt>
+<dd>Optional</dd>
+<dt>Version:</dt>
+<dd>md5 hash of the content alone</dd>
+<dt>history:</dt>
+<dd>ordered list, reverse chromological order, of the roles by each version</dd>
+</dl>
+<p>roles:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="s">&quot;&lt;h1&gt;In CONGRESS, July 4, 1776.&lt;h1&gt;</span><span class="se">\n</span><span class="s">&lt;p&gt;The unanimous Declaration of the thirteen united States of America,&lt;/p&gt;</span><span class="se">\n\n</span><span class="s">&lt;p&gt;When in the Course of human events, it becomes necessary for one</span><span class="se">\n</span><span class="s">people to dissolve the political bands which have connected them with</span><span class="se">\n</span><span class="s">another, and to assume among the powers of the earth, the separate and</span><span class="se">\n</span><span class="s">equal station to which the Laws of Nature and of Nature&#39;s God entitle</span><span class="se">\n</span><span class="s">them, a decent respect to the opinions of mankind requires that they</span><span class="se">\n</span><span class="s">should declare the causes which impel them to the separation.&lt;/p&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+
+    <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126&quot;</span><span class="p">,</span>
+    <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Introduction&quot;</span><span class="p">,</span>
+    <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;ad0d6c247e0f1347364d890ec2e9fb53&quot;</span><span class="p">,</span>
+    <span class="s">&quot;history&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;ad0d6c247e0f1347364d890ec2e9fb53&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+                <span class="p">],</span>
+                <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+                <span class="p">],</span>
+                <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s">&quot;e5df9b39e5b428a84341c100bfe260df&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+                <span class="p">],</span>
+                <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+                <span class="p">],</span>
+                <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">{</span>
+    <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&lt;p&gt;We hold these truths to be self-evident, that all men are created</span><span class="se">\n</span><span class="s">equal, that they are endowed by their Creator with certain unalienable</span><span class="se">\n</span><span class="s">Rights, that among these are Life, Liberty and the pursuit of</span><span class="se">\n</span><span class="s">Happiness.&lt;/p&gt;</span><span class="se">\n\n</span><span class="s">&lt;p&gt;That to secure these rights, Governments are instituted among Men,</span><span class="se">\n</span><span class="s">deriving their just powers from the consent of the governed, That</span><span class="se">\n</span><span class="s">whenever any Form of Government becomes destructive of these ends, it</span><span class="se">\n</span><span class="s">is the Right of the People to alter or to abolish it, and to institute</span><span class="se">\n</span><span class="s">new Government, laying its foundation on such principles and</span><span class="se">\n</span><span class="s">organizing its powers in such form, as to them shall seem most likely</span><span class="se">\n</span><span class="s">to effect their Safety and Happiness. Prudence, indeed, will dictate</span><span class="se">\n</span><span class="s">that Governments long established should not be changed for light and</span><span class="se">\n</span><span class="s">transient causes; and accordingly all experience hath shewn, that</span><span class="se">\n</span><span class="s">mankind are more disposed to suffer, while evils are sufferable, than</span><span class="se">\n</span><span class="s">to right themselves by abolishing the forms to which they are</span><span class="se">\n</span><span class="s">accustomed. But when a long train of abuses and usurpations, pursuing</span><span class="se">\n</span><span class="s">invariably the same Object evinces a design to reduce them under</span><span class="se">\n</span><span class="s">absolute Despotism, it is their right, it is their duty, to throw off</span><span class="se">\n</span><span class="s">such Government, and to provide new Guards for their future</span><span class="se">\n</span><span class="s">security.&lt;/p&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;org.cnx.sect:350f7859-e6e7-11e1-928f-2c768ae4951b&quot;</span><span class="p">,</span>
+    <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Preamble&quot;</span><span class="p">,</span>
+    <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;bfb5d4845d23deb98027e3a21eac131e&quot;</span><span class="p">,</span>
+    <span class="s">&quot;versioning&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+<span class="p">{</span>
+    <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&lt;p&gt;Such has been the patient sufferance of these Colonies; and such is</span><span class="se">\n</span><span class="s">now the necessity which constrains them to alter their former Systems</span><span class="se">\n</span><span class="s">of Government. The history of the present King of Great Britain is a</span><span class="se">\n</span><span class="s">history of repeated injuries and usurpations, all having in direct</span><span class="se">\n</span><span class="s">object the establishment of an absolute Tyranny over these States. To</span><span class="se">\n</span><span class="s">prove this, let Facts be submitted to a candid world.&lt;/p&gt;</span><span class="se">\n\n</span><span class="s">He has refused his Assent to Laws, the most wholesome and necessary</span><span class="se">\n</span><span class="s">for the public good.</span><span class="se">\n\n</span><span class="s">He has forbidden his Governors to pass Laws of immediate and pressing</span><span class="se">\n</span><span class="s">importance, unless suspended in their operation till his Assent should</span><span class="se">\n</span><span class="s">be obtained; and when so suspended, he has utterly neglected to attend</span><span class="se">\n</span><span class="s">to them.</span><span class="se">\n\n</span><span class="s">He has refused to pass other Laws for the accommodation of large</span><span class="se">\n</span><span class="s">districts of people, unless those people would relinquish the right of</span><span class="se">\n</span><span class="s">Representation in the Legislature, a right inestimable to them and</span><span class="se">\n</span><span class="s">formidable to tyrants only.</span><span class="se">\n\n</span><span class="s">He has called together legislative bodies at places unusual,</span><span class="se">\n</span><span class="s">uncomfortable, and distant from the depository of their Public</span><span class="se">\n</span><span class="s">Records, for the sole purpose of fatiguing them into compliance with</span><span class="se">\n</span><span class="s">his measures.</span><span class="se">\n\n</span><span class="s">He has dissolved Representative Houses repeatedly, for opposing with</span><span class="se">\n</span><span class="s">manly firmness of his invasions on the rights of the people.</span><span class="se">\n\n</span><span class="s">He has refused for a long time, after such dissolutions, to cause</span><span class="se">\n</span><span class="s">others to be elected, whereby the Legislative Powers, incapable of</span><span class="se">\n</span><span class="s">Annihilation, have returned to the People at large for their exercise;</span><span class="se">\n</span><span class="s">the State remaining in the mean time exposed to all the dangers of</span><span class="se">\n</span><span class="s">invasion from without, and convulsions within.</span><span class="se">\n\n</span><span class="s">He has endeavoured to prevent the population of these States; for that</span><span class="se">\n</span><span class="s">purpose obstructing the Laws for Naturalization of Foreigners;</span><span class="se">\n</span><span class="s">refusing to pass others to encourage their migrations hither, and</span><span class="se">\n</span><span class="s">raising the conditions of new Appropriations of Lands.</span><span class="se">\n\n</span><span class="s">He has obstructed the Administration of Justice by refusing his Assent</span><span class="se">\n</span><span class="s">to Laws for establishing Judiciary Powers.</span><span class="se">\n\n</span><span class="s">He has made Judges dependent on his Will alone for the tenure of their</span><span class="se">\n</span><span class="s">offices, and the amount and payment of their salaries.</span><span class="se">\n\n</span><span class="s">He has erected a multitude of New Offices, and sent hither swarms of</span><span class="se">\n</span><span class="s">Officers to harass our people and eat out their substance.</span><span class="se">\n\n</span><span class="s">He has kept among us, in times of peace, Standing Armies without the</span><span class="se">\n</span><span class="s">Consent of our legislatures.</span><span class="se">\n\n</span><span class="s">He has affected to render the Military independent of and superior to</span><span class="se">\n</span><span class="s">the Civil Power.</span><span class="se">\n\n</span><span class="s">He has combined with others to subject us to a jurisdiction foreign to</span><span class="se">\n</span><span class="s">our constitution, and unacknowledged by our laws; giving his Assent to</span><span class="se">\n</span><span class="s">their Acts of pretended Legislation:</span><span class="se">\n\n</span><span class="s">For quartering large bodies of armed troops among us:</span><span class="se">\n\n</span><span class="s">For protecting them, by a mock Trial from punishment for any Murders</span><span class="se">\n</span><span class="s">which they should commit on the Inhabitants of these States:</span><span class="se">\n\n</span><span class="s">For cutting off our Trade with all parts of the world:</span><span class="se">\n\n</span><span class="s">For imposing Taxes on us without our Consent:</span><span class="se">\n\n</span><span class="s">For depriving us in many cases, of the benefit of Trial by Jury:</span><span class="se">\n\n</span><span class="s">For transporting us beyond Seas to be tried for pretended offences:</span><span class="se">\n\n</span><span class="s">For abolishing the free System of English Laws in a neighbouring</span><span class="se">\n</span><span class="s">Province, establishing therein an Arbitrary government, and enlarging</span><span class="se">\n</span><span class="s">its Boundaries so as to render it at once an example and fit</span><span class="se">\n</span><span class="s">instrument for introducing the same absolute rule into these Colonies</span><span class="se">\n\n</span><span class="s">For taking away our Charters, abolishing our most valuable Laws and</span><span class="se">\n</span><span class="s">altering fundamentally the Forms of our Governments:</span><span class="se">\n\n</span><span class="s">For suspending our own Legislatures, and declaring themselves invested</span><span class="se">\n</span><span class="s">with power to legislate for us in all cases whatsoever.</span><span class="se">\n\n</span><span class="s">He has abdicated Government here, by declaring us out of his</span><span class="se">\n</span><span class="s">Protection and waging War against us.</span><span class="se">\n\n</span><span class="s">He has plundered our seas, ravaged our coasts, burnt our towns, and</span><span class="se">\n</span><span class="s">destroyed the lives of our people.</span><span class="se">\n\n</span><span class="s">He is at this time transporting large Armies of foreign Mercenaries to</span><span class="se">\n</span><span class="s">compleat the works of death, desolation, and tyranny, already begun</span><span class="se">\n</span><span class="s">with circumstances of Cruelty &amp; Perfidy scarcely paralleled in the</span><span class="se">\n</span><span class="s">most barbarous ages, and totally unworthy the Head of a civilized</span><span class="se">\n</span><span class="s">nation.</span><span class="se">\n\n</span><span class="s">He has constrained our fellow Citizens taken Captive on the high Seas</span><span class="se">\n</span><span class="s">to bear Arms against their Country, to become the executioners of</span><span class="se">\n</span><span class="s">their friends and Brethren, or to fall themselves by their Hands.</span><span class="se">\n\n</span><span class="s">He has excited domestic insurrections amongst us, and has endeavoured</span><span class="se">\n</span><span class="s">to bring on the inhabitants of our frontiers, the merciless Indian</span><span class="se">\n</span><span class="s">Savages whose known rule of warfare, is an undistinguished destruction</span><span class="se">\n</span><span class="s">of all ages, sexes and conditions.</span><span class="se">\n\n</span><span class="s">In every stage of these Oppressions We have Petitioned for Redress in</span><span class="se">\n</span><span class="s">the most humble terms: Our repeated Petitions have been answered only</span><span class="se">\n</span><span class="s">by repeated injury. A Prince, whose character is thus marked by every</span><span class="se">\n</span><span class="s">act which may define a Tyrant, is unfit to be the ruler of a free</span><span class="se">\n</span><span class="s">people.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;org.cnx.sect:4ba18842-1bf8-485b-a6c3-f6e15dd762f6&quot;</span><span class="p">,</span>
+    <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Indictment&quot;</span><span class="p">,</span>
+    <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;7a37ce9da61f0806ee284a132bcda343&quot;</span><span class="p">,</span>
+    <span class="s">&quot;versioning&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+<span class="p">{</span>
+    <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&lt;p&gt;Nor have We been wanting in attentions to our British brethren. We</span><span class="se">\n</span><span class="s">have warned them from time to time of attempts by their legislature to</span><span class="se">\n</span><span class="s">extend an unwarrantable jurisdiction over us. We have reminded them of</span><span class="se">\n</span><span class="s">the circumstances of our emigration and settlement here. We have</span><span class="se">\n</span><span class="s">appealed to their native justice and magnanimity, and we have conjured</span><span class="se">\n</span><span class="s">them by the ties of our common kindred to disavow these usurpations,</span><span class="se">\n</span><span class="s">which, would inevitably interrupt our connections and</span><span class="se">\n</span><span class="s">correspondence. They too have been deaf to the voice of justice and of</span><span class="se">\n</span><span class="s">consanguinity. We must, therefore, acquiesce in the necessity, which</span><span class="se">\n</span><span class="s">denounces our Separation, and hold them, as we hold the rest of</span><span class="se">\n</span><span class="s">mankind, Enemies in War, in Peace Friends.&lt;/p&gt;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;org.cnx.sect:77a45e48-6e91-4814-9cca-0f28348a4aae&quot;</span><span class="p">,</span>
+    <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Denunciation&quot;</span><span class="p">,</span>
+    <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;f50b14ff67c6fe9b39ca8b94b12c01f8&quot;</span><span class="p">,</span>
+    <span class="s">&quot;versioning&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+<span class="p">{</span>
+    <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&lt;p&gt;We, therefore, the Representatives of the united States of America,</span><span class="se">\n</span><span class="s">in General Congress, Assembled, appealing to the Supreme Judge of the</span><span class="se">\n</span><span class="s">world for the rectitude of our intentions, do, in the Name, and by</span><span class="se">\n</span><span class="s">Authority of the good People of these Colonies, solemnly publish and</span><span class="se">\n</span><span class="s">declare, That these united Colonies are, and of Right ought to be Free</span><span class="se">\n</span><span class="s">and Independent States; that they are Absolved from all Allegiance to</span><span class="se">\n</span><span class="s">the British Crown, and that all political connection between them and</span><span class="se">\n</span><span class="s">the State of Great Britain, is and ought to be totally dissolved; and</span><span class="se">\n</span><span class="s">that as Free and Independent States, they have full Power to levy War,</span><span class="se">\n</span><span class="s">conclude Peace, contract Alliances, establish Commerce, and to do all</span><span class="se">\n</span><span class="s">other Acts and Things which Independent States may of right do. And</span><span class="se">\n</span><span class="s">for the support of this Declaration, with a firm reliance on the</span><span class="se">\n</span><span class="s">protection of divine Providence, we mutually pledge to each other our</span><span class="se">\n</span><span class="s">Lives, our Fortunes and our sacred Honor.&lt;/p&gt;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389&quot;</span><span class="p">,</span>
+    <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Conclusion&quot;</span><span class="p">,</span>
+    <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;48ccdd03edc18c120f33222dd1f8b7e8&quot;</span><span class="p">,</span>
+    <span class="s">&quot;versioning&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+<span class="p">{</span>
+    <span class="s">&quot;content&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">    New Hampshire: Josiah Bartlett, William Whipple, Matthew Thornton</span><span class="se">\n</span><span class="s">    Massachusetts: Samuel Adams, John Adams, John Hancock, Robert Treat Paine, Elbridge Gerry</span><span class="se">\n</span><span class="s">    Rhode Island: Stephen Hopkins, William Ellery</span><span class="se">\n</span><span class="s">    Connecticut: Roger Sherman, Samuel Huntington, William Williams, Oliver Wolcott</span><span class="se">\n</span><span class="s">    New York: William Floyd, Philip Livingston, Francis Lewis, Lewis Morris</span><span class="se">\n</span><span class="s">    New Jersey: Richard Stockton, John Witherspoon, Francis Hopkinson, John Hart, Abraham Clark</span><span class="se">\n</span><span class="s">    Pennsylvania: Robert Morris, Benjamin Rush, Benjamin Franklin, John Morton, George Clymer, James Smith, George Taylor, James Wilson, George Ross</span><span class="se">\n</span><span class="s">    Delaware: George Read, Caesar Rodney, Thomas McKean</span><span class="se">\n</span><span class="s">    Maryland: Samuel Chase, William Paca, Thomas Stone, Charles Carroll of Carrollton</span><span class="se">\n</span><span class="s">    Virginia: George Wythe, Richard Henry Lee, Thomas Jefferson, Benjamin Harrison, Thomas Nelson, Jr., Francis Lightfoot Lee, Carter Braxton</span><span class="se">\n</span><span class="s">    North Carolina: William Hooper, Joseph Hewes, John Penn</span><span class="se">\n</span><span class="s">    South Carolina: Edward Rutledge, Thomas Heyward, Jr., Thomas Lynch, Jr., Arthur Middleton</span><span class="se">\n</span><span class="s">    Georgia: Button Gwinnett, Lyman Hall, George Walton</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8&quot;</span><span class="p">,</span>
+    <span class="s">&quot;roles&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Authors&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Copyright Holders&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">],</span>
+        <span class="s">&quot;Maintainers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s">&quot;org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383&quot;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Signatures&quot;</span><span class="p">,</span>
+    <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;b3bf5ad94dc160da68274b3735ab8c46&quot;</span><span class="p">,</span>
+    <span class="s">&quot;versioning&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/section-doc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

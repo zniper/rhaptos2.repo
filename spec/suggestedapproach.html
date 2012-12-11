@@ -1,0 +1,216 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 4 - A new hope &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="chapter-4-a-new-hope">
+<h1>Chapter 4 - A new hope<a class="headerlink" href="#chapter-4-a-new-hope" title="Permalink to this headline">¶</a></h1>
+<p>Following our discussion just now, a few comments and thoughts have
+come into focus in my little grey cells.  Ross mentioned reasons why
+connexions has survived, , with Kathi and Michael talking about
+federation and other editors and Phil trying to explain to my brain
+why the zip file is a good.  Anyway this may be obvious to others but
+it&#8217;s taken me a while !</p>
+<p>For a decade CNX has been doing something right, and this is not the time
+to go off doing what everyone else has been trying and failing with.
+As Ross pointed out it seems to be permanance and reusability that
+keeps folks coming back.</p>
+<p>So, we want our solution to do the following (I think)</p>
+<ul class="simple">
+<li>Versioning of files (permanance)</li>
+<li>Modules are seperately linkable (anyone can reuse your chapter)</li>
+<li>Follow a certain file (get latest)</li>
+<li>Allow friendly names vs UUIDs</li>
+<li>Allow federation - we will not be the only Connexions repo.</li>
+<li>Allowing other editors to be used (online, offline, combination)</li>
+</ul>
+<div class="section" id="idea">
+<h2>Idea<a class="headerlink" href="#idea" title="Permalink to this headline">¶</a></h2>
+<p>We (I) are focused very much on the editor, and although Ed is trying hard to get
+us to look at the protocol we still come back.  But Ed is right.</p>
+<p>The thing that counts is the <em>collection</em>, not the modules.</p>
+<p>If people gave us a collection document that</p>
+<blockquote>
+<div><ul class="simple">
+<li>linked to files on our repo</li>
+<li>in order</li>
+<li>with notes on what was changed since the last collection was sent</li>
+</ul>
+</div></blockquote>
+<p>Then we could update / maintain our repo, even if they edited on a different server, or in Dreamweaver, or notepad.  All we would want is a set of files,
+and their assurance that the collection was right as far as they knew</p>
+<p>So, lets write a bunch of Javascript that does that</p>
+<div class="section" id="first-time-user">
+<h3>First time user:<a class="headerlink" href="#first-time-user" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fire up authtool.js, by clicking link on cnx.org</li>
+<li>Start a new book, there in the browser.</li>
+<li>You are given a blank collection doc - with a UUID</li>
+<li>Ask &#8220;where are the files you want to turn into a connexions book?&#8221;</li>
+<li>User loads the first chapter into your browser.</li>
+<li>Javascript grabs the contents of that tab and sends it to cnx.org</li>
+<li>we update the Table of contents (collection doc)</li>
+<li>repeat</li>
+</ul>
+</div>
+<div class="section" id="existing-user">
+<h3>Existing user<a class="headerlink" href="#existing-user" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>fire up authtool.js, by clicking link on cnx.org</li>
+<li>choose the book to work on</li>
+<li>load up the file you want to add into a tab</li>
+<li>tell us if it used to be one of the chapters in the current collection (even see a diff)</li>
+<li>We save it as above</li>
+</ul>
+</div>
+<div class="section" id="mapping-friendly-names-uuids">
+<h3>Mapping friendly names / UUIDs<a class="headerlink" href="#mapping-friendly-names-uuids" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>we <em>must</em> do this now - but it is pretty simple.</li>
+<li>The collection keeps a list of friendly names to UUIDs</li>
+<li>we map at the webserver level. That is we do not need to change the links in
+html - you click on &#8220;chapter1.html&#8221; and ... errr... maybe.</li>
+</ul>
+<p>We <em>must</em> because the editing of files is now <em>outside</em> our protocol.
+We are going to still provide best of breed editing on site - its just that
+anyone with any editor should be able to easily upload - Phil is right here.
+I just think we can make them do <em>less</em> work on the client end.</p>
+</div>
+<div class="section" id="change-propogation">
+<h3>CHange propogation<a class="headerlink" href="#change-propogation" title="Permalink to this headline">¶</a></h3>
+<p>Since we (optionally) know that file XXX used to be file YYY (you told us on upload)
+we can reasonably tell anyone who wants the latest of file YYY to now look at file XXX.</p>
+<p>Since latest of a file is a very mutable concept, this is probably the best we can do.
+(As an example, Ross writes a module about Emperor Nero and Rome burning.  I link to it and hit &#8220;follow latest&#8221; to get his updates.  Then Ross changes the chapter to be about
+Nero burning Christians, and moves his ROme burning notes to the &#8220;Marble&#8221; chapter.  It is still the chapter Ross, wrote, it is still the latest version.  But it is not what I want to follow.  C&#8217;est la vie.  Can&#8217;t have everything)</p>
+</div>
+<div class="section" id="publication-step">
+<h3>Publication step<a class="headerlink" href="#publication-step" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>because each file is a snapshot we can set permissions.  So the
+<em>same repo</em> can store unpublished files only one person can see /
+edit and store publicaly available files (Or at least they can be in
+same namespace if not in same filesystem for Ops reasons)</li>
+<li>Because you are publishing a snapshot of files, as linked to by a collection
+then</li>
+</ul>
+</div>
+<div class="section" id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h3>
+<p>You want to store something on Connexions - we give you a UUID for a <em>collection</em>.</p>
+<p>Please note that this approach, whilst based on us doing clever
+Javascript, is entiurely outsourceable - as long as you follow simple
+guidelines, any one can wirte code that immedaitely prepares stuff to
+be published.</p>
+<p>Possible issues:</p>
+<ul class="simple">
+<li>file access - we dont I think need it - we are reading form the tabs.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Chapter 4 - A new hope</a><ul>
+<li><a class="reference internal" href="#idea">Idea</a><ul>
+<li><a class="reference internal" href="#first-time-user">First time user:</a></li>
+<li><a class="reference internal" href="#existing-user">Existing user</a></li>
+<li><a class="reference internal" href="#mapping-friendly-names-uuids">Mapping friendly names / UUIDs</a></li>
+<li><a class="reference internal" href="#change-propogation">CHange propogation</a></li>
+<li><a class="reference internal" href="#publication-step">Publication step</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/suggestedapproach.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

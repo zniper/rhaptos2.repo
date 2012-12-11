@@ -1,0 +1,137 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Design discussions &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="design-discussions">
+<h1>Design discussions<a class="headerlink" href="#design-discussions" title="Permalink to this headline">¶</a></h1>
+<p>This is a page for noting design / architecture issues and noting the
+pros and cons of variopus solutions.  Overtime it should become a why
+we did what we did resource.</p>
+<div class="section" id="same-origin-policy">
+<h2>Same Origin Policy<a class="headerlink" href="#same-origin-policy" title="Permalink to this headline">¶</a></h2>
+<p>We intend to use AJAX for a large majority of the work we do. AJAX has
+a severe limitation, called the <a class="reference external" href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>.</p>
+<p>In short, a web page loaded from server x.y.z is prevented by the
+browser from <em>recieving a response</em>&gt; from server a.y.z (Yes AJAX can
+send a request, the other server will return it - all visible through
+something like Charles, what wont happen is the response be available
+in the browser.)</p>
+<p>I am temproarily getting around this using <a class="reference external" href="http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing">CORS</a> but
+this will not support the majority of browsers, so a different
+solution is needed.  JSONP only supports GET, so it is not a perfect
+fix.</p>
+<p>In general proxying requests is the only solution, usually via a
+proxy-rewrite, but that is complex to maintain during initial
+development so I am leaving it for later pain.</p>
+</div>
+<div class="section" id="logging-and-debugging">
+<h2>Logging and debugging<a class="headerlink" href="#logging-and-debugging" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.drdobbs.com/article/print?articleID=196802787&amp;dept_url=/dept/debug/">http://www.drdobbs.com/article/print?articleID=196802787&amp;dept_url=/dept/debug/</a></p>
+<p>Todo: Setup centralised logging server</p>
+</div>
+<div class="section" id="client-side-application">
+<h2>Client side application<a class="headerlink" href="#client-side-application" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://lucumr.pocoo.org/2011/11/15/modern-web-applications-are-here/">http://lucumr.pocoo.org/2011/11/15/modern-web-applications-are-here/</a>
+<a class="reference external" href="http://lucumr.pocoo.org/2011/7/27/the-pluggable-pipedream/">http://lucumr.pocoo.org/2011/7/27/the-pluggable-pipedream/</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Design discussions</a><ul>
+<li><a class="reference internal" href="#same-origin-policy">Same Origin Policy</a></li>
+<li><a class="reference internal" href="#logging-and-debugging">Logging and debugging</a></li>
+<li><a class="reference internal" href="#client-side-application">Client side application</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/architecture/design-discussion.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

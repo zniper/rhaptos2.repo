@@ -1,0 +1,449 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Mapping requirements docs to Service features. &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="mapping-requirements-docs-to-service-features">
+<h1>Mapping requirements docs to Service features.<a class="headerlink" href="#mapping-requirements-docs-to-service-features" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="draft-rest-defintions">
+<h1>Draft REST defintions<a class="headerlink" href="#draft-rest-defintions" title="Permalink to this headline">¶</a></h1>
+<p>I expect the URL structure to be set out as below.</p>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Modules</li>
+<li>Collections</li>
+<li>Users</li>
+<li>Workspaces</li>
+<li>(TBC)</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>http://cnx.org/&lt;workspace&gt;/
+
+http://cnx.org/&lt;workspace&gt;/module</pre>
+</div>
+<p>Note that it is assumed the user will only ever reach their modules
+(editing area) from a workspace path.  We do not have to store it
+like this (its probably good not to) but we will have to enforce this
+partly for security but also cos this is the paradigm we are telling
+people exists.  (Ie you a user have a set of workspaces and in those
+are modules.  The ability to copy across is kind of ignored)</p>
+</div>
+<div class="section" id="collections">
+<h2>collections<a class="headerlink" href="#collections" title="Permalink to this headline">¶</a></h2>
+<p>Collections are not supported (possibly not supportable) in the
+text-file only repository.  This probably will be a reason to move away
+from text-file only, taking its learnings.</p>
+</div>
+</div>
+<div class="section" id="currently-supported">
+<h1>Currently Supported<a class="headerlink" href="#currently-supported" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="e2repo-module">
+<h2>/e2repo/module/<a class="headerlink" href="#e2repo-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="get">
+<h3>GET<a class="headerlink" href="#get" title="Permalink to this headline">¶</a></h3>
+<p>return list of all modules in this workspace</p>
+<p>example:</p>
+<div class="highlight-python"><pre>http://www.office.mikadosoftware.com/e2repo/workspace/
+returns application/json MIME type, with
+
+GET /e2repo/workspace/ HTTP/1.1
+Host: www.office.mikadosoftware.com
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:12.0) Gecko/20100101 Firefox/12.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-gb,en;q=0.5
+Accept-Encoding: gzip, deflate
+
+
+
+HTTP/1.1 200 OK
+Server: nginx/1.0.5
+Date: Thu, 31 May 2012 13:25:45 GMT
+Content-Type: application/json
+Connection: keep-alive
+Content-Length: 123
+Access-Control-Allow-Origin: *
+
+["test.1", "x.0", "test.0", "test.3", "test.5", "newmodule.1", ... ]</pre>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Known bugs:</th><td class="field-body">this returns the (only) workspace in the repository.  The
+text file repo does not support multiple workspaces.  is
+a workspace a branch?</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="post">
+<h3>POST<a class="headerlink" href="#post" title="Permalink to this headline">¶</a></h3>
+<p>Create a new module-version (each new save overwrites the previous)
+accept a fromatted JSON doc, return JSON with just new name confirmed</p>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&quot;modulename&quot;</span><span class="p">:</span> <span class="s">&quot;physics101&quot;</span><span class="p">,</span>
+<span class="s">&quot;txtarea&quot;</span><span class="p">:</span><span class="s">&quot;&lt;p&gt;this is a document ... &quot;</span>
+<span class="p">}</span>
+
+<span class="o">...</span>
+
+<span class="p">{</span><span class="s">&quot;hashid&quot;</span><span class="p">:</span><span class="s">&quot;physics101.123&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="put">
+<h3>PUT<a class="headerlink" href="#put" title="Permalink to this headline">¶</a></h3>
+<p>NYI</p>
+</div>
+<div class="section" id="delete">
+<h3>DELETE<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
+<p>NYI</p>
+</div>
+</div>
+<div class="section" id="e2repo-module-test-0">
+<h2>/e2repo/module/test.0<a class="headerlink" href="#e2repo-module-test-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>GET<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>returns the complete JSON document stored, such as</p>
+<div class="highlight-python"><pre>GET /e2repo/module/test.0 HTTP/1.1
+Host: www.office.mikadosoftware.com
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:12.0) Gecko/20100101 Firefox/12.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8
+Accept-Language: en-gb,en;q=0.5
+Accept-Encoding: gzip, deflate
+
+HTTP/1.1 200 OK
+Server: nginx/1.0.5
+Date: Thu, 31 May 2012 15:19:56 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Access-Control-Allow-Origin: *
+Content-Encoding: gzip
+
+{
+"username": "xdddd",
+"modulename": "test",
+"txtarea": "
+
+Test first draft
+"
+}</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>POST<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Not supported - this would allow a version to be chosen to be overwritten by the user.</p>
+</div>
+<div class="section" id="id3">
+<h3>PUT<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>As above</p>
+</div>
+<div class="section" id="id4">
+<h3>DELETE<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>NYI</p>
+</div>
+</div>
+</div>
+<div class="section" id="proposed">
+<h1>Proposed<a class="headerlink" href="#proposed" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pbrian-workspace-physics101">
+<h2>pbrian/workspace/physics101<a class="headerlink" href="#pbrian-workspace-physics101" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>POST<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>N/A
+The closest will be a &#8216;clone&#8217; function -</p>
+<blockquote>
+<div>POST /workspace/MyWorkSpace
+...
+{&#8216;clonefrom&#8217;: &#8216;/workspace/MyOrigWorkspace&#8217; ...}</div></blockquote>
+</div>
+<div class="section" id="id6">
+<h3>PUT<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>N/A</p>
+</div>
+<div class="section" id="id7">
+<h3>DELETE<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>Remove this workspace</p>
+</div>
+</div>
+<div class="section" id="pbrian-workspace-physics101-modules">
+<h2>/pbrian/workspace/physics101/modules<a class="headerlink" href="#pbrian-workspace-physics101-modules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h3>GET<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>returns the <em>version history</em>, plus branching?? Or returns the HEAD/tip?</div></blockquote>
+</div>
+<div class="section" id="id9">
+<h3>POST<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Create a new module version and store it based on payload.</div></blockquote>
+</div>
+<div class="section" id="id10">
+<h3>PUT<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>N/A</div></blockquote>
+</div>
+<div class="section" id="id11">
+<h3>DELETE<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Deelte the whole history and storage</div></blockquote>
+</div>
+</div>
+<div class="section" id="pbrian-workspace-physics101-modules-newton">
+<h2>/pbrian/workspace/physics101/modules/Newton<a class="headerlink" href="#pbrian-workspace-physics101-modules-newton" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h3>GET<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>returns the HTML5 of latest version</div></blockquote>
+</div>
+<div class="section" id="id13">
+<h3>POST<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>N/A</div></blockquote>
+</div>
+<div class="section" id="id14">
+<h3>PUT<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>changes the stored version ???  Should we ever do this?</div></blockquote>
+</div>
+<div class="section" id="id15">
+<h3>DELETE<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Not sure we ever want to do this either.</div></blockquote>
+</div>
+</div>
+<div class="section" id="workspace-workspaceid-modules-name-version">
+<h2>/workspace/&lt;workspaceid&gt;/modules/&lt;name&gt;/&lt;version&gt;<a class="headerlink" href="#workspace-workspaceid-modules-name-version" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h3>GET<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>returns the HTML5 of specified version</div></blockquote>
+</div>
+<div class="section" id="id17">
+<h3>POST<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>N/A the repor will control version numbering.</div></blockquote>
+</div>
+<div class="section" id="id18">
+<h3>PUT<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>changes the stored version ???  Should we ever do this?</div></blockquote>
+</div>
+<div class="section" id="id19">
+<h3>DELETE<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Not sure we ever want to do this either.</div></blockquote>
+</div>
+</div>
+<div class="section" id="id20">
+<h2>collections<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<p>cnx.org/pbrian/col/</p>
+<div class="section" id="id21">
+<h3>GET<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>List of all collections for this user</div></blockquote>
+</div>
+<div class="section" id="id22">
+<h3>POST<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Create a New collection, empty, and return its URL, a randomly generated
+name.  Highly unlikely we need this.</div></blockquote>
+</div>
+<div class="section" id="id23">
+<h3>PUT<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>N/A
+(see cnx.org/col/mybook)</div></blockquote>
+</div>
+</div>
+<div class="section" id="pbrian-col-mybook">
+<h2>pbrian/col/mybook<a class="headerlink" href="#pbrian-col-mybook" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id24">
+<h3>GET<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>I think this should return the listing of URLS - so that the ediotor can use to &#8216;build&#8217; the book?</div></blockquote>
+</div>
+<div class="section" id="id25">
+<h3>POST<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Create a new collection of this name.
+Expect to have a JSON list of name collist holding zero or more URLS referencing valid modules i.e. [cnx.org/pbrian/module/newton, cnx.org/edw/module/electrons,...]</div></blockquote>
+</div>
+<div class="section" id="id26">
+<h3>PUT<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>must have a JSON document which contains a list of valid
+module URLS, any order, any owner.</div></blockquote>
+</div>
+<div class="section" id="id27">
+<h3>DELETE<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Delete that collection.</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Mapping requirements docs to Service features.</a></li>
+<li><a class="reference internal" href="#draft-rest-defintions">Draft REST defintions</a><ul>
+<li><a class="reference internal" href="#resources">Resources</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#collections">collections</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#currently-supported">Currently Supported</a><ul>
+<li><a class="reference internal" href="#e2repo-module">/e2repo/module/</a><ul>
+<li><a class="reference internal" href="#get">GET</a></li>
+<li><a class="reference internal" href="#post">POST</a></li>
+<li><a class="reference internal" href="#put">PUT</a></li>
+<li><a class="reference internal" href="#delete">DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#e2repo-module-test-0">/e2repo/module/test.0</a><ul>
+<li><a class="reference internal" href="#id1">GET</a></li>
+<li><a class="reference internal" href="#id2">POST</a></li>
+<li><a class="reference internal" href="#id3">PUT</a></li>
+<li><a class="reference internal" href="#id4">DELETE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#proposed">Proposed</a><ul>
+<li><a class="reference internal" href="#pbrian-workspace-physics101">pbrian/workspace/physics101</a><ul>
+<li><a class="reference internal" href="#id5">POST</a></li>
+<li><a class="reference internal" href="#id6">PUT</a></li>
+<li><a class="reference internal" href="#id7">DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pbrian-workspace-physics101-modules">/pbrian/workspace/physics101/modules</a><ul>
+<li><a class="reference internal" href="#id8">GET</a></li>
+<li><a class="reference internal" href="#id9">POST</a></li>
+<li><a class="reference internal" href="#id10">PUT</a></li>
+<li><a class="reference internal" href="#id11">DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pbrian-workspace-physics101-modules-newton">/pbrian/workspace/physics101/modules/Newton</a><ul>
+<li><a class="reference internal" href="#id12">GET</a></li>
+<li><a class="reference internal" href="#id13">POST</a></li>
+<li><a class="reference internal" href="#id14">PUT</a></li>
+<li><a class="reference internal" href="#id15">DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#workspace-workspaceid-modules-name-version">/workspace/&lt;workspaceid&gt;/modules/&lt;name&gt;/&lt;version&gt;</a><ul>
+<li><a class="reference internal" href="#id16">GET</a></li>
+<li><a class="reference internal" href="#id17">POST</a></li>
+<li><a class="reference internal" href="#id18">PUT</a></li>
+<li><a class="reference internal" href="#id19">DELETE</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id20">collections</a><ul>
+<li><a class="reference internal" href="#id21">GET</a></li>
+<li><a class="reference internal" href="#id22">POST</a></li>
+<li><a class="reference internal" href="#id23">PUT</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pbrian-col-mybook">pbrian/col/mybook</a><ul>
+<li><a class="reference internal" href="#id24">GET</a></li>
+<li><a class="reference internal" href="#id25">POST</a></li>
+<li><a class="reference internal" href="#id26">PUT</a></li>
+<li><a class="reference internal" href="#id27">DELETE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/overview/requirements.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

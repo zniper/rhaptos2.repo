@@ -1,0 +1,406 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Index for Specification &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Tue, 24 Jul" href="../blog/20120724.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../blog/20120724.html" title="Tue, 24 Jul"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="index-for-specification">
+<h1>Index for Specification<a class="headerlink" href="#index-for-specification" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="preamble">
+<h2>Preamble<a class="headerlink" href="#preamble" title="Permalink to this headline">¶</a></h2>
+<p>These documents are an attempt to pull together my understanding of
+the project, in the possibly vain hope that it will both improve my
+work, and help spread discussion and understanding with the rest of
+the team.</p>
+<p>While this is mostly written in a defintive style, that is just habit
+of many years, rather than the presumption of authority on the
+project.  Added to which not all (if any) of the statements are
+nessecarily correct, technically or policy wise.</p>
+<p>In short, this is my personal specification, presented to be useful.</p>
+<p>If it sounds like I am telling you what to do, or have made decisions
+without consulting anyone, I am not presuming to do so, but had to say
+something defintively somewhere, otherwise the whole thing would be
+useless as a spec anyhow.</p>
+<p>With that in mind, ...</p>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>We are trying to re-write a pretty major piece of software, that has
+over the years become slowly ossified and strongly coupled.  This is
+despite the efforts of talented programmers over the approximate
+decade of the software&#8217;s lifetime.</p>
+<p>As Phileas Fogg might have said, &#8220;Don&#8217;t complain Sir that your boat
+has no deck nor furnishings, for we have at least arrived, and arrived
+in time.&#8221;</p>
+<p>So, this spec is primarily a (unpublished) editor and repository,
+ideally aimed at being federated across multiple university sites,
+with an architecture favouring document based storage, REST based
+communication protocols and small, discreet apps performing stateless
+actions.</p>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>See the <a class="reference internal" href="simple-spec.html"><em>UnPub repository and editor - Simple functional specification</em></a> for a first cut at this, especially the
+notes on the below dioagram, and the list of components.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/overview.png"><img alt="../_images/overview.png" src="../_images/overview.png" style="width: 408.0px; height: 426.0px;" /></a>
+<p class="caption">Overview</p>
+</div>
+</div>
+<div class="section" id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="collections">
+<h3>collections<a class="headerlink" href="#collections" title="Permalink to this headline">¶</a></h3>
+<p>A <a class="reference internal" href="collection-doc.html"><em>Collection</em></a> is essentially a tree of links, refering to
+one or more :doc:<a href="#id1"><span class="problematic" id="id2">`</span></a>section-doc`s in a fixed (user specified) order.</p>
+<p>It will contain ACLs to ensure the collection is kept (realtively)
+private, and it will use internal <a class="reference internal" href="user-detail.html"><em>userIDs</em></a>
+to point the ACLs at the correct locations.</p>
+<div class="section" id="rest">
+<h4>REST<a class="headerlink" href="#rest" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic">
+<li><p class="first">POST
+accepts only a properly formatted <a class="reference internal" href="collection-doc.html"><em>Collection</em></a> as JSON
+where that d
+401 failure otherwise.</p>
+<p>Will later on support new resources like collection/contents
+so POST ing only that part.  Might not be desirable.</p>
+</li>
+<li><p class="first">PUT</p>
+<p>accepts only a properly formatted <a class="reference internal" href="collection-doc.html"><em>Collection</em></a> as JSON
+401 failure otherwise.</p>
+</li>
+<li><p class="first">DELETE</p>
+</li>
+<li><p class="first">GET</p>
+</li>
+</ol>
+</div>
+<div class="section" id="use-cases">
+<h4>Use cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h4>
+<p>TBC</p>
+</div>
+<div class="section" id="gui">
+<h4>GUI<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h4>
+<p>The expected form for collection manipulation will initally be a
+simple tree widget in JQuery.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="Look" src="../_images/collection-tree.png" style="width: 683.0px; height: 337.0px;" /></a>
+</div>
+<p>It will also be possible for the sections to be reordered through the
+editor (Phil to provde details IIRR the difficulties inherent mean we
+shall allow only section by section re-ordering.  Phil?)</p>
+<p>I expect that such reordering internal to the editor will need a means
+of passing the order of sections back in and out of the editor and the
+author-tools-client</p>
+<p>The ultimate goal of this is to send a ordered, nested, list of section IDs
+to the server.  Clearly this means that any new section must first be POST&#8217;d
+and then the UUID can be added to the collection.</p>
+<p>Notes</p>
+<p>We shall disallow nesting of collections at the moment.</p>
+</div>
+<div class="section" id="implementation">
+<h4>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="rhaptos2.repo.collection">
+<em class="property">class </em><tt class="descclassname">rhaptos2.repo.</tt><tt class="descname">collection</tt><a class="headerlink" href="#rhaptos2.repo.collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Collection class will load a JSON document and store it internally It
+will be able to create a collection from python inputs, seperately and
+then output JSON</p>
+<dl class="function">
+<dt id="collection.load_JSON">
+<tt class="descclassname">collection.</tt><tt class="descname">load_JSON</tt><big>(</big><big>)</big><a class="headerlink" href="#collection.load_JSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="collection.dump_JSON">
+<tt class="descclassname">collection.</tt><tt class="descname">dump_JSON</tt><big>(</big><big>)</big><a class="headerlink" href="#collection.dump_JSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="collection.set_id">
+<tt class="descclassname">collection.</tt><tt class="descname">set_id</tt><big>(</big><big>)</big><a class="headerlink" href="#collection.set_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Most other data manipulations should be done through direct twiddling.  I think.</p>
+</div>
+</div>
+<div class="section" id="sections">
+<h3>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h3>
+<p>A <a class="reference internal" href="section-doc.html"><em>Section</em></a> is a fragment of valid HTML5, that when
+concatenated with other sections in the correct order specified by one
+(or more) collections, will produce a valid HTML5 document, and that
+document will represent to document written.</p>
+<p>A section derives its security status from ACLS of a collection.  An
+approval process will either store acls with each section (easy to
+implement p[ossibly less secure and verbose) or will look up a
+collection, and from that collection approval a user to view or alter
+the section.</p>
+<p>TBC: what if two collections reference the same section, and they try to apply different,
+conflicting ACLs.?</p>
+<div class="section" id="id3">
+<h4>REST<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li>POST</li>
+<li>PUT</li>
+<li>DELETE</li>
+<li>GET</li>
+</ol>
+</div>
+<div class="section" id="id4">
+<h4>Implementation<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="rhaptos2.repo.section">
+<em class="property">class </em><tt class="descclassname">rhaptos2.repo.</tt><tt class="descname">section</tt><a class="headerlink" href="#rhaptos2.repo.section" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>section class will load a JSON document and store it internally It
+will be able to create a section from python inputs, seperately and
+then output JSON</p>
+<dl class="function">
+<dt id="section.load_JSON">
+<tt class="descclassname">section.</tt><tt class="descname">load_JSON</tt><big>(</big><big>)</big><a class="headerlink" href="#section.load_JSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="section.dump_JSON">
+<tt class="descclassname">section.</tt><tt class="descname">dump_JSON</tt><big>(</big><big>)</big><a class="headerlink" href="#section.dump_JSON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="section.set_id">
+<tt class="descclassname">section.</tt><tt class="descname">set_id</tt><big>(</big><big>)</big><a class="headerlink" href="#section.set_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Most other data manipulations should be done through direct twiddling.  I think.</p>
+</div>
+</div>
+<div class="section" id="users">
+<h3>Users<a class="headerlink" href="#users" title="Permalink to this headline">¶</a></h3>
+<p>We want to be able to have a single userID that is unique across both
+one repo &#8220;system&#8221; and across a federated system (ie several
+universities holding their own unpub repos).</p>
+<p>We shall use <a class="reference internal" href="coding-standards.html"><em>UUIDs</em></a> for uniqueness, and we shall prefix the UUID
+with the canonical name of the repo that first issued the UserID, to ensure both that uniqueness across a federated system is guaranteed, and that we know which repo to visit to retrieve details of the user.</p>
+<p>The <a class="reference internal" href="user-detail-store.html"><em>User Details Store</em></a></p>
+<p>We shall link a <a class="reference internal" href="user-detail.html"><em>User details</em></a> to that</p>
+<p>We need a reliable user identifier and means of holding data on a user, and linking that user to an OpenID</p>
+<p>We shall create a new, distributable and federatable user id of the follwoing form:</p>
+<blockquote>
+<div><p>repo domain name reversed, with uuid in urn string format</p>
+<p>org.cnx.users.f81d4fae-7dec-11d0-a765-00a0c91e6bf6</p>
+<p>giving us a userid that is unique, linked to originating repo, so it can be
+traced back to a given source and fairly easily details requested from it.</p>
+</div></blockquote>
+<p>The full process of authnetication and login is dealt with in <a class="reference internal" href="feature-auth-login.html"><em>Authentication and Login</em></a>.</p>
+<div class="section" id="id5">
+<h4>REST<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic">
+<li><p class="first">POST</p>
+<p>Accepts JSON doc only in proper form.</p>
+<p>Will accept NULL values for eveything apart from openids</p>
+<ul class="simple">
+<li>openids:  MUST be a list of one or more URLS</li>
+<li>id     :  MUST be null</li>
+<li>version:  MUST NOT be null, but currently only 1.0.0 is valid</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><pre>POST /user/ HTTP/1.1
+Host: www.cnx.org
+...
+
+ {
+  "details": {
+      "Address": null,
+      "FullName": null,
+      "email": null
+  },
+  "id": null,
+  "openids": [
+         "http://openid.cnx.org/pbrian"
+             ],
+  "version": "1.0.0"
+ }</pre>
+</div>
+</li>
+<li><p class="first">PUT</p>
+<p>Accepts JSON doc only in proper form.</p>
+<p>Will accept NULL values for eveything apart from openids</p>
+<ul class="simple">
+<li>openids:  MUST be a list of one or more URLS</li>
+<li>id     :  MUST NOT be null</li>
+<li>version:  MUST NOT be null, but currently only 1.0.0 is valid</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><pre>PUT /user/org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383 HTTP/1.1
+Host: www.cnx.org
+...
+
+ {
+  "details": {
+      "Address": null,
+      "FullName": null,
+      "email": "paul@mikadosoftware.com"
+  },
+  "id": "org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",
+  "openids": ["http://openid.cnx.org/pbrian"]
+  "version": "1.0.0"
+ }</pre>
+</div>
+</li>
+<li><p class="first">DELETE</p>
+<p>Will accept delete from only the user specified?
+WHat about admin functions?
+I suggest there are collections in each repo that are labelled admin and
+used as ACLS for this admin function.
+Not yet implemented !</p>
+<p>example:</p>
+<div class="highlight-python"><pre>DELETE /user/org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383 HTTP/1.1
+Host: www.cnx.org</pre>
+</div>
+</li>
+<li><p class="first">GET</p>
+<ul class="simple">
+<li>/user/</li>
+</ul>
+<p>list of all users????</p>
+<ul class="simple">
+<li>/user/org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383</li>
+</ul>
+<p>the JSON <a class="reference internal" href="user-detail.html"><em>User details</em></a> for that users</p>
+</li>
+</ol>
+</div>
+<div class="section" id="id6">
+<h4>Implementation<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>Interaction with memcache</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">rhaptos2.repo.model.User</span></tt></p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Index for Specification</a><ul>
+<li><a class="reference internal" href="#preamble">Preamble</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#resources">Resources</a><ul>
+<li><a class="reference internal" href="#collections">collections</a><ul>
+<li><a class="reference internal" href="#rest">REST</a></li>
+<li><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li><a class="reference internal" href="#gui">GUI</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sections">Sections</a><ul>
+<li><a class="reference internal" href="#id3">REST</a></li>
+<li><a class="reference internal" href="#id4">Implementation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#users">Users</a><ul>
+<li><a class="reference internal" href="#id5">REST</a></li>
+<li><a class="reference internal" href="#id6">Implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../blog/20120724.html" title="previous chapter">Tue, 24 Jul</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

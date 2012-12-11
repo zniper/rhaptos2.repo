@@ -1,0 +1,216 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Architecture &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Roadmap" href="roadmap.html" />
+    <link rel="prev" title="Installing and updating" href="Installation.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="roadmap.html" title="Roadmap"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Installation.html" title="Installing and updating"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#talking-about-the-roadmap">Talking about the Roadmap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#architecture">Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html#pyrestservers">PyRESTServers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html#python-rest-client">Python REST client</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#development">Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html#e2client-design">e2client design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#devops">Devops</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roadmap.html#build-deploy">Build/deploy</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Supporting HTTP Status Codes fully</p>
+<p>We want to support the flow as shown here
+<a class="reference external" href="http://i.stack.imgur.com/whhD1.png">http://i.stack.imgur.com/whhD1.png</a>
+and deploy a wrapper and test clietns to ensure it.</p>
+<div class="section" id="some-thoughts">
+<h2>Some thoughts<a class="headerlink" href="#some-thoughts" title="Permalink to this headline">¶</a></h2>
+<p>We are intending to create a architecture that will elegantly solve the use-cases presented (<tt class="xref doc docutils literal"><span class="pre">usecases</span></tt>)</p>
+<p>We want to use network provided services, which will ensure those services can be scalable and robust using sensible, well understood principles (i.e. cacheing, load-balancing, sharding - all those good bits of jargon)</p>
+<p>Where we should split the architecture into these service-components is a good question and this is draft 0.1</p>
+<ul class="simple">
+<li>Text will be stored on a file-system.  We should expose this file system as a service.  Yes, you heard, the file system is a service, over the network.</li>
+</ul>
+<p>The file system will then be scalable, probably on a simple shard basis.
+This smacks a little of premature optimisation.  But it will only be accessible via the front end servers.  It is also a good way to isolate issues like getting versions of files, and getting</p>
+<p>This also means we could use <cite>DRBD &lt;http://www.drbd.org/&gt;_</cite>-style file system clustering to ensure we get nice replication.</p>
+<p>Again phase II I think</p>
+<ul class="simple">
+<li>publication - fairly obviously</li>
+</ul>
+<div class="section" id="why-is-git-and-why-is-git-not-a-good-backend">
+<h3>Why is git and why is git not a good backend<a class="headerlink" href="#why-is-git-and-why-is-git-not-a-good-backend" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="why-not">
+<h4>Why not<a class="headerlink" href="#why-not" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>A collection is the tree.</li>
+</ul>
+</div>
+<div class="section" id="why">
+<h4>WHy<a class="headerlink" href="#why" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Branching and merging is a valid use case.</li>
+</ul>
+</div>
+<div class="section" id="bibilography">
+<h4>Bibilography<a class="headerlink" href="#bibilography" title="Permalink to this headline">¶</a></h4>
+<p>Please read github&#8217;s architecture discussions for some interesting
+background</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/blog/530-how-we-made-github-fast">https://github.com/blog/530-how-we-made-github-fast</a></li>
+<li><a class="reference external" href="http://www.anchor.com.au/blog/2009/09/github-designing-success/">http://www.anchor.com.au/blog/2009/09/github-designing-success/</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="repository-platform">
+<h3>Repository platform<a class="headerlink" href="#repository-platform" title="Permalink to this headline">¶</a></h3>
+<p>The repo sits on Ubuntu 11.10 and expects to migrate painlessly to 12.04(LTS)Ther repo is an nginx pair of load balanced</p>
+<p>upstream serving
+<a class="reference external" href="http://wiki.nginx.org/HttpProxyModule">http://wiki.nginx.org/HttpProxyModule</a></p>
+<div class="figure">
+<a class="reference internal image-reference" href="graphite_load_bal.png"><img alt="graphite_load_bal.png" src="graphite_load_bal.png" /></a>
+</div>
+<p>We can see the use of nginx as a simple load balancer for two backend instances of Flask.  I create two instances using</p>
+<div class="highlight-python"><pre>$ service rhaptos2 start PORT=7999
+$ service rhaptos2 start PORT=7998</pre>
+</div>
+<p>and configure nginx as</p>
+<div class="highlight-python"><pre>upstream repobk  {
+  server devweb:7999 weight=5;
+  server devweb:7998 weight=5;
+}</pre>
+</div>
+<p>load balancing
+<a class="reference external" href="http://library.linode.com/linux-ha/highly-available-load-balancer-ubuntu-10.04">http://library.linode.com/linux-ha/highly-available-load-balancer-ubuntu-10.04</a>
+LVS ?</p>
+</div>
+<div class="section" id="repository-architecture">
+<h3>Repository Architecture<a class="headerlink" href="#repository-architecture" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Architecture</a><ul>
+<li><a class="reference internal" href="#some-thoughts">Some thoughts</a><ul>
+<li><a class="reference internal" href="#why-is-git-and-why-is-git-not-a-good-backend">Why is git and why is git not a good backend</a><ul>
+<li><a class="reference internal" href="#why-not">Why not</a></li>
+<li><a class="reference internal" href="#why">WHy</a></li>
+<li><a class="reference internal" href="#bibilography">Bibilography</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#repository-platform">Repository platform</a></li>
+<li><a class="reference internal" href="#repository-architecture">Repository Architecture</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Installation.html" title="previous chapter">Installing and updating</a></li>
+      <li>Next: <a href="roadmap.html" title="next chapter">Roadmap</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Architecture.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

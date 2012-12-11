@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started - Developer &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started-developer">
+<h1>Getting Started - Developer<a class="headerlink" href="#getting-started-developer" title="Permalink to this headline">¶</a></h1>
+<p>Notes on serving everything via flask</p>
+<p>Flask is now configured through several variables in config to serve
+static directories on its local disk</p>
+<div class="highlight-python"><pre>export rhaptos2repo_aloha_staging_dir=$bamboo_stage_root/aloha/
+export rhaptos2repo_css_staging_dir=$bamboo_stage_root/css/
+export rhaptos2repo_js_staging_dir=$bamboo_stage_root/js/</pre>
+</div>
+<p>Aloha is the approriate one to follow here.
+github.com/whysiwhat:Aloha-Editor is cloned and cnx-master branch is followed
+This is then either symlinked to $bamboo_stage_root/aloha/ or
+will be cp&#8217;d there during staging phase of a build</p>
+<p>Then a view is adjusted in Flask, pointing /cdn/aloha at that directory.</p>
+<p>This is how I would like to do bootstrap and all other thirdparty libraries</p>
+<p>However, bootstrap is at tag 2.2.0 and we are using 2.1.0.  We can get the source
+but will need to compile <em>before</em> a diff and maybe not trust it then.</p>
+<p>Similarly we need to identify other thrid party librabries and pull them down
+suring build and adjust views.</p>
+<p>This is a slightly longer term project.</p>
+<p>For now I shall contine to serve them as was.  ALoha is fixed however.</p>
+<div class="section" id="just-run-the-repo-locally-first-of-all">
+<h2>Just run the repo locally first of all<a class="headerlink" href="#just-run-the-repo-locally-first-of-all" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>git clone git://github.com/lifeisstillgood/frozone.git ~/
+
+(should now have ~/frozone/Rhaptos2)
+
+cd ~/frozone
+
+bash Rhaptos2/scripts/update_venv.sh
+
+This should create a virtual env in ~/venvs/dev, and dirs in /tmp
+populate it with the pkg built from rhaptos2 and then run the repo
+locally ..
+
+start local repo
+ * Running on http://127.0.0.1:5000/
+
+Now connect to http://127.0.0.1:5000/workspace/
+
+you should get back an empty JSON list.</pre>
+</div>
+</div>
+<div class="section" id="build-a-developer-environment">
+<h2>Build a developer environment<a class="headerlink" href="#build-a-developer-environment" title="Permalink to this headline">¶</a></h2>
+<p>I am assuming we have a local, spare, server.  I call mine hpcube.
+Because its a cube shaped entry level server, from HP.</p>
+<p>see <tt class="xref doc docutils literal"><span class="pre">install-os</span></tt> and <a class="reference internal" href="Installation.html"><em>Installing and updating</em></a> .</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting Started - Developer</a><ul>
+<li><a class="reference internal" href="#just-run-the-repo-locally-first-of-all">Just run the repo locally first of all</a></li>
+<li><a class="reference internal" href="#build-a-developer-environment">Build a developer environment</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/getting-started.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

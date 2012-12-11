@@ -1,0 +1,188 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>New &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="new">
+<h1>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li>remove nginx as it was installed as part of postboot
+sudo apt-get remove nginx-full</li>
+</ol>
+<p>2. install apache, mysql,
+sudo apt-get install apache2 perl apache2-doc apache2-utils  libdbd-mysql-perl
+sudo apt-get install mysql-server mysql-client</p>
+<ol class="arabic" start="3">
+<li><p class="first">Install Java
+sudo apt-get install openjdk-6-jre
+Install Java Crtypto
+<a class="reference external" href="http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html">http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html</a></p>
+<p>Install NetMesh
+<a class="reference external" href="http://wso2.org/downloads/identity">http://wso2.org/downloads/identity</a></p>
+<p>It uses OpenID4Java !
+sign in as admin/admin</p>
+</li>
+</ol>
+<p>OpenIDServer from packetizer</p>
+<div class="section" id="install-mysql">
+<h2>install mysql<a class="headerlink" href="#install-mysql" title="Permalink to this headline">¶</a></h2>
+<p>sudo apt-get install mysql-server mysql-client
+libdbd-mysql-perl
+sudo apt-get install liburi-perl libcrypt-dh-perl libdigest-sha-perl libmath-bigint-perl libdata-random-perl</p>
+<p>Need CPAN to install Crypt::Random</p>
+<p>sudo  perl -MCPAN -e shell
+install Crypt::Random
+or</p>
+<p>sudo  perl -MCPAN -e &#8216;install Crypt::Random&#8217;</p>
+<p>mysql -u root
+mysql&gt; SET PASSWORD FOR <a class="reference external" href="mailto:'root'&#37;&#52;&#48;'localhost">'root'<span>&#64;</span>'localhost</a>&#8216; = PASSWORD(&#8216;yourpassword&#8217;);</p>
+<p>GRANT ALL PRIVILEGES ON <em>.</em> TO <a class="reference external" href="mailto:'yourusername'&#37;&#52;&#48;'localhost">'yourusername'<span>&#64;</span>'localhost</a>&#8216; IDENTIFIED BY &#8216;yourpassword&#8217; WITH GRANT OPTION;</p>
+<p>CREATE DATABASE oid;
+mysql&gt; show tables;
++&#8212;&#8212;&#8212;&#8212;&#8212;+
+| Tables_in_oid |
++&#8212;&#8212;&#8212;&#8212;&#8212;+
+| nonce         |
+| openid_assoc  |
+| openid_sigs   |
+| openid_users  |
++&#8212;&#8212;&#8212;&#8212;&#8212;+
+4 rows in set (0.00 sec)</p>
+<p>Test Code:</p>
+<div class="highlight-python"><pre>#!/usr/bin/perl
+use strict;
+use warnings;
+use DBI;
+
+my $username='pbrian';
+my $pass='qwerty1';
+my $db='mysql';
+my $dbh = DBI-&gt;connect( "dbi:mysql:$db", $username, $pass, { 'PrintError' =&gt; 1, 'Raise Error' =&gt; 1 } );
+print $dbh;
+my $sql='select user, host from user';
+my $sql_arg=1;
+my $sql_handle=$dbh-&gt;prepare($sql);
+$sql_handle-&gt;execute();
+my @data;
+while (@data=$sql_handle-&gt;fetchrow_array()) {
+    print join("\n",@data)
+      }</pre>
+</div>
+<p>sudo mkdir -p /usr/local/lib/site_perl
+put the library files in there
+add a row to database
+ensure the rewrite rules work ok, ensure templates in right position</p>
+<p>Build Server:</p>
+<p>1. plain ubunut install
+1.a. sudo apt-get remove nginx &amp;&amp; sudo service nginx stop</p>
+<ol class="arabic simple" start="2">
+<li>sudo apt-get install mysql-server mysql-client libdbd-mysql-perl liburi-perl libcrypt-dh-perl libdigest-sha-perl libmath-bigint-perl libdata-random-perl</li>
+<li>install apache
+sudo apt-get install apache2 apache2-mpm-prefork apache2-utils apache2.2-common</li>
+</ol>
+<p>configure apache/packetiser</p>
+<p>sudo mkdir /var/www/openid
+sudo chown -R www-data:www-data /var/www/openid</p>
+<p>sudo mkdir -p /usr/local/lib/site_perl/
+sudo cp -r bin/ lib/ /usr/local/lib/site_perl/</p>
+<p>sudo cp -r htdocs/* /var/www/openid/
+sudo cp -r templates/ /var/www/</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">New</a><ul>
+<li><a class="reference internal" href="#install-mysql">install mysql</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/packetizerinstall.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

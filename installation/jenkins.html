@@ -1,0 +1,279 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Jenkins &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="jenkins">
+<h1>Jenkins<a class="headerlink" href="#jenkins" title="Permalink to this headline">¶</a></h1>
+<p>sudo rm /usr/local/man</p>
+<div class="section" id="general-considerations">
+<h2>General considerations<a class="headerlink" href="#general-considerations" title="Permalink to this headline">¶</a></h2>
+<p>The first and for me primary consideration is I as a developer
+want to be able to run locally, the same build that jenkins will
+run remotely.</p>
+<p>Yes, annonying aren&#8217;t I.</p>
+<p>So the build scripts need to be flexible.</p>
+<p>Secondly, Jenkins is not perfect, and it rather assumes you are not,
+well, doing the first thing above.</p>
+<p>Installing jenkins is pretty simple:</p>
+<div class="highlight-python"><pre>make jenkins host=devjenkins fabfile=deploy/fab_sys_jenkins.py</pre>
+</div>
+<p>This will apt-get the latest package and install on devjenkins(.office.mikadosoftare.com)</p>
+<p>Then we have a series of <em>manual</em> installation steps, which may be automatable but I
+have not been successful doing so and see little need as this will be a long running server.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="security">
+<h3>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h3>
+<p>Crerate people in system, turn on security.  Note you create a person in matrix,m then they logon.</p>
+<p>ENable security, ensure ANonymous only has Read access (Overasll) and your username has the lot.</p>
+</div>
+<div class="section" id="supporting-stuff">
+<h3>Supporting stuff<a class="headerlink" href="#supporting-stuff" title="Permalink to this headline">¶</a></h3>
+<p>FIX: Need /etc/rhaptos2.ini installed.. migrate to all ENV setup.</p>
+</div>
+<div class="section" id="install-plugins">
+<h3>Install plugins<a class="headerlink" href="#install-plugins" title="Permalink to this headline">¶</a></h3>
+<p>We want to install git/github plugins.
+Goto the top left corner, [Manage Jenkins] and then [Manage Plugins], click the Available tab, and search for:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">git</span>
+<span class="n">github</span>
+
+<span class="n">Violations</span>
+<span class="n">Cobertura</span>
+</pre></div>
+</div>
+<p>plugins, tick their install boxes and apply.</p>
+<p>NB - 1.406 of Jenkins simply refuses to install Violations or Cobertura, so likely will upgrade.</p>
+</div>
+<div class="section" id="ssh-keys">
+<h3>ssh keys<a class="headerlink" href="#ssh-keys" title="Permalink to this headline">¶</a></h3>
+<p>We need github ssh access. (Its for tagging back to github, and is
+frankly easier cos the github plugin compains lot)</p>
+<p>The process of getting the provate key I created and gave access to on
+github is left as an exercise.  Its been pretty painful so far :-)</p>
+<p>As jenkins user:</p>
+<div class="highlight-python"><pre>git config --global user.email "jenkins@cnx.org"
+git config --global user.name "Jenkins-ci"</pre>
+</div>
+</div>
+</div>
+<div class="section" id="create-a-job">
+<h2>Create a job<a class="headerlink" href="#create-a-job" title="Permalink to this headline">¶</a></h2>
+<p>We shall create a job that stages the repo deploy as a test.</p>
+<div class="section" id="manual">
+<h3>Manual<a class="headerlink" href="#manual" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>git clone git@github.com:lifeisstillgood/frozone.git -b statsd-lib-work
+
+
+make stage_local host=devjenkins fabfile=deploy/fab_app_frozone.py</pre>
+</div>
+</div>
+<div class="section" id="config-of-the-job">
+<h3>Config of the job<a class="headerlink" href="#config-of-the-job" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Create a new job, choose [Build a free-style software project] and name it &#8216;test&#8217;</p>
+</li>
+<li><p class="first">configuration:</p>
+<div class="highlight-python"><pre>Branches to build */jenkins-example
+Repoistory URL: git@github.com:lifeisstillgood/frozone.git
+
+Local subdirectory for repo (optional): frozone
+
+Skip internal tag: tick
+
+Wipe out workspace before build: tick
+
+Ignore build triggers for now</pre>
+</div>
+</li>
+</ol>
+<p>We are not triggering a build on each check-in (CI) - I want to be clearer on the destination boxes.</p>
+<p>Frankly this is a insecure approach and there is a turn off tagging checkbox so I may rethink this one.</p>
+<div class="highlight-python"><pre>export PYTHONPATH=`pwd`
+mydir=`pwd`/frozone; export mydir
+cd $mydir/deploy/preprocess
+python mother_of_all_conf.py
+cd $mydir
+make stage-local host=cnx5 branch=master context=$CONTEXT</pre>
+</div>
+</div>
+</div>
+<div class="section" id="parameterised-builds">
+<h2>parameterised builds<a class="headerlink" href="#parameterised-builds" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Build">https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Build</a>
+<a class="reference external" href="http://server/job/myjob/buildWithParameters?PARAMETER=Value">http://server/job/myjob/buildWithParameters?PARAMETER=Value</a></p>
+</div>
+<div class="section" id="future">
+<h2>Future<a class="headerlink" href="#future" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">we can consider generating branches at push time</p>
+<blockquote>
+<div><p>git push origin HEAD:refs/heads/myNewFeature</p>
+</div></blockquote>
+</li>
+<li><p class="first">and we can merge on jenkins - that is git pulls down myNewFeature
+and master, merges the two, and tests it.  if it succeeds then
+(jenkins merges and pushes it back / we should push it back)</p>
+<p>number 2 is very useful, but needs integration into our personal workflow</p>
+</li>
+<li><p class="first">nodes, parallel builds etc</p>
+<p>One jenkins server can control an army of nodes to complete
+different parameterised builds and run different tests, on
+different OSes, with different configurations.</p>
+<p>When we have sufficient tests to make this worthwhile ...</p>
+</li>
+</ol>
+<div class="section" id="tips">
+<h3>Tips<a class="headerlink" href="#tips" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">Restarting is not obvious <a class="reference external" href="http:/">http:/</a>/&lt;jenkins&gt;/restart</p>
+</li>
+<li><p class="first">Use the CLI - <a class="reference external" href="http:/">http:/</a>/&lt;jenkins&gt;/cli
+java -jar jenkins-cli.jar -s <a class="reference external" href="http://cnx5:8080/">http://cnx5:8080/</a> help</p>
+<p>Basically visit cli page, download the above jar file and run it
+locally with the above command.  Mostly used for restarting and
+safe-restart</p>
+</li>
+<li><p class="first">ubuntu puts the jenkins homedir in /var/lib/jenkins.  I am sure its
+a good <tt class="file docutils literal"><span class="pre">man</span> <span class="pre">hier</span></tt> idea, but frankly it confuses the heck out
+of me each time.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="chain-of-jobs">
+<h2>Chain of jobs<a class="headerlink" href="#chain-of-jobs" title="Permalink to this headline">¶</a></h2>
+<p>Useful plugin - downstreambuild</p>
+<p>Because tests often dominates the execution time, a Jenkins best
+practice involves splitting test executions into different jobs,
+possibly in multiple different jobs.</p>
+<p>Branches to build
+THis is part of git plugin
+It is very important - if left as default (**) then
+all remote repositories and all branches in them will
+be examined for changes and built</p>
+<p>So bob commits to brnach fix-bug1234 and alice commits to addBlueButton
+then both brnaches will be built, and run and tested.</p>
+<p>THis is probably what we want to do.</p>
+<p>Another copy of this job could however just track master branch...</p>
+<p>What not to do - try and create an overarching job - a master job.
+DO this one step at a time.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Jenkins</a><ul>
+<li><a class="reference internal" href="#general-considerations">General considerations</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#supporting-stuff">Supporting stuff</a></li>
+<li><a class="reference internal" href="#install-plugins">Install plugins</a></li>
+<li><a class="reference internal" href="#ssh-keys">ssh keys</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-a-job">Create a job</a><ul>
+<li><a class="reference internal" href="#manual">Manual</a></li>
+<li><a class="reference internal" href="#config-of-the-job">Config of the job</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#parameterised-builds">parameterised builds</a></li>
+<li><a class="reference internal" href="#future">Future</a><ul>
+<li><a class="reference internal" href="#tips">Tips</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chain-of-jobs">Chain of jobs</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/jenkins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

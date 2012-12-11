@@ -1,0 +1,199 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Story So Far &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="story-so-far">
+<h1>Story So Far<a class="headerlink" href="#story-so-far" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="use-this-page-to-discover-recent-changes">
+<h2>Use this page to discover recent changes<a class="headerlink" href="#use-this-page-to-discover-recent-changes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="june">
+<h3>5 June<a class="headerlink" href="#june" title="Permalink to this headline">¶</a></h3>
+<p>OK, we have pushed a few of the tickets onwards and now have</p>
+<ul class="simple">
+<li><em>Test REST client</em> - very much alpha, but provides a working set of
+tests run by nose, that complete after each Jenkins build.  See
+rhaptos2/client</li>
+<li><em>Rename Frozone</em> Oh yes, I have renamed (almost) all of the code to
+be under rhaptos2.  This was driven by Ed&#8217;s sensible desire to get
+things under publically acceptable namespaces.  The rhaptos2 name is
+not finalised, but I chose it to see hwo much effort the renaming
+would be overall.  Whilst sed did help, it turns out the answer is
+&#8216;more than I expected&#8217; But the next rename (if rhaptos2 is not
+right) will be speedier.</li>
+<li><em>local Developer install</em> We can build and run from a virtualenv a
+repository on the local machine.  Along with my virtualenv howto (
+<a class="reference external" href="http://frozone.readthedocs.org/en/latest/">http://frozone.readthedocs.org/en/latest/</a>) it is possible just to
+run a local repo (that passes the rest-client tests !) and not have
+to install jenkins or loggers etc.  I will try not to break it :-)</li>
+<li><em>API</em> The REST client tests will encompass the API as shown in
+<a class="reference external" href="http://frozone.readthedocs.org/en/latest/requirements.html">http://frozone.readthedocs.org/en/latest/requirements.html</a>.  THis
+will test those supported and not yet supported. Please note the
+future API does depend a fair bit on getting the use cases right
+(see below)</li>
+<li><em>CI, debugging</em> For devs using the &#8216;wider&#8217; setup of multiple hosts,
+there are improved setup instructions and notes on using CHarles as
+a web debugging proxy - vital when looking at weird JSON bugs.</li>
+<li><em>Use Cases</em> - I am looking to understand the process users will og
+through in editing / merging / publishing in the new architecture,
+so we can more closely match technology to use cases.  Please do
+comment.  (<a class="reference external" href="http://frozone.readthedocs.org/en/latest/usecases.html">http://frozone.readthedocs.org/en/latest/usecases.html</a>)</li>
+</ul>
+</div>
+<div class="section" id="may">
+<h3>23 May<a class="headerlink" href="#may" title="Permalink to this headline">¶</a></h3>
+<p>We have a working, installed by Jenkins, reporting to Graphite,
+&#8216;editor&#8217; and file-only repository.</p>
+<p>It can be found at <a class="reference external" href="http://www.frozone.mikadosoftware.com/strawman.html">http://www.frozone.mikadosoftware.com/strawman.html</a></p>
+<p>How to use:</p>
+<ol class="arabic simple">
+<li>enter in a module name, using no spaces and alphabetic charaters only</li>
+<li>enter in some text</li>
+<li>save</li>
+<li>the unpublished version will now appear as part of the &#8216;workspace&#8217;
+in list format.  You can click on one of these to reload the editor with a   previous version.</li>
+<li>change the module name to edit a different module</li>
+</ol>
+<p>Every module has a name and a version number.  The name must be unique.</p>
+</div>
+<div class="section" id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
+<p>Quite a few.</p>
+<p>Firstly username - this is fixed.
+How do we want the hierarchy to descend from username.
+If we have any hiearchy that is not replicable in standard foilder/file
+approach, then the file only repo should be abandoned quickly.</p>
+<p>Added to this, indexing / collections will require a real data strcuture,
+which begs the question what will we use?  MongoDB seems best but I would like to carefully review the use cases.</p>
+<p>Also username is fixed because not solved OpenID / OAuth or implemeted one.
+Seems foolish to put in a placeholder username.</p>
+<p>So the whole demo uses one logged in user.</p>
+<p>Secondly, the editor is rudimentary - I have not incoirporated anything from
+Phil as yet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Graphite:</th><td class="field-body"><a class="reference external" href="http://log.frozone.mikadosoftware.com/">http://log.frozone.mikadosoftware.com/</a>
+uses stasd to port 2003 on log.
+see frozone.test.verify_graphite.py to test - otherwise every time you save it will log onto graphite.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Logging:</th><td class="field-body">via rsyslog to log.frozone.mikadosoftware.com:/var/log/syslog
+tail the logs as usual.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="known-bugs">
+<h3>Known bugs<a class="headerlink" href="#known-bugs" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>error checking modulename and module uniqueness broken.
+Unlikely to rush to fix - the file only approach has the above limitations
+so likely to abandon.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Story So Far</a><ul>
+<li><a class="reference internal" href="#use-this-page-to-discover-recent-changes">Use this page to discover recent changes</a><ul>
+<li><a class="reference internal" href="#june">5 June</a></li>
+<li><a class="reference internal" href="#may">23 May</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#known-bugs">Known bugs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/overview/storysofar.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

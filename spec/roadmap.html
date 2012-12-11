@@ -1,0 +1,213 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Repo Roadmap &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ul>
+<li><p class="first">create _authenticatedIdentiferRecvd_ method, both persona openid can call it</p>
+</li>
+<li><p class="first">create a test pkg for use by bamboo as testing</p>
+</li>
+<li><p class="first">get the docs working</p>
+</li>
+<li><p class="first">cleaner bamboo run</p>
+</li>
+<li><p class="first">get nosetests to have fixtures</p>
+</li>
+<li><p class="first">integrate JS</p>
+</li>
+<li><p class="first">rename frozone to author_tools.js and split up if needed</p>
+</li>
+<li><p class="first">discuss with phil / pumazi best JS script approach</p>
+</li>
+<li><p class="first">user: define single user detail</p>
+</li>
+<li><p class="first">user: Existing user return details matching one identifer</p>
+</li>
+<li><p class="first">user: No user details stored, return 404 on GET,</p>
+</li>
+<li><dl class="first docutils">
+<dt>User: no user detials - POST - MUST supply identifer</dt>
+<dd><p class="first last">supply uuid
+Some form of JS that reads a mediatype (json) and captures ...?</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">user: write the user spec</p>
+</li>
+<li><p class="first">user: stubout</p>
+</li>
+<li><p class="first">repo: get US consittuion working</p>
+</li>
+<li><p class="first">repo:</p>
+</li>
+</ul>
+<div class="section" id="repo-roadmap">
+<h1>Repo Roadmap<a class="headerlink" href="#repo-roadmap" title="Permalink to this headline">¶</a></h1>
+<p>This is a roadmap of desired milestones - they are exepcted to be the x in versioning 1.x.0</p>
+<ul class="simple">
+<li>Integrate oerpub/whysiwhat editor into the CI build</li>
+<li>ensure CI build builds completely, and runs maaster builds for every component</li>
+<li>get single US declaration of independance as a test / testable document</li>
+<li>Handle all JSON conversion and CORS by convention
+pass a dict througout and only convert to response object at view.
+Is this most sensiuble means?</li>
+<li>Place system wide integration tests into commonly available calls so
+can visit each repo and run all tests</li>
+<li>Protocol beteen editor and Authoring tools
+- images / resources
+- html5
+- save, load, delete, update,
+- workspace handling</li>
+<li>simple shared message bus - probably overkill</li>
+<li>Editor Client API
+- load_document
+- load_list_of_documents
+- save_new_document
+- save_list_of_resources
+- save_resource</li>
+</ul>
+<div class="section" id="blue-sky">
+<h2>Blue Sky<a class="headerlink" href="#blue-sky" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Split common REST based handling for flask into a lib</li>
+<li>Riak as backend jSON store</li>
+</ul>
+<div class="section" id="communication-between-editor-and-author-tools-client">
+<h3>Communication between editor and author tools client<a class="headerlink" href="#communication-between-editor-and-author-tools-client" title="Permalink to this headline">¶</a></h3>
+<p>This is all on browser javascript, and in the same process / namespace.
+So there <em>may</em> be some technical messaging issues, but mostly we shall try to support
+a simple API</p>
+<p>We will not try and use a message bus.</p>
+<p>All API calls will be lexically namespaced JS function calls.
+The AuthorTools will supply <a href="#id1"><span class="problematic" id="id2">author_</span></a> apis, the editor will supply <a href="#id3"><span class="problematic" id="id4">ed_</span></a>
+Each module will supply its won calls, we shall need to test for
+existennce of calls</p>
+<p>We shall version each API call.  All initial versions will be &#8220;0.5&#8221;
+This string will be passed as first argument to all api calls</p>
+<blockquote>
+<div>save_image(&#8220;0.5&#8221;, DOM-REF)</div></blockquote>
+</div>
+</div>
+<div class="section" id="the-suggested-calls">
+<h2>The suggested calls<a class="headerlink" href="#the-suggested-calls" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="editor">
+<h2>Editor<a class="headerlink" href="#editor" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>ed_load_html(ver, documentRef, str)
+Place in the DOM at DOM ref documentref, the string str
+which will be a valid HTML5 document</li>
+<li>ed_get_all_components(ver, documentRef)</li>
+</ul>
+</div>
+<div class="section" id="author-tools">
+<h2>Author tools<a class="headerlink" href="#author-tools" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>author_save_html</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Repo Roadmap</a><ul>
+<li><a class="reference internal" href="#blue-sky">Blue Sky</a><ul>
+<li><a class="reference internal" href="#communication-between-editor-and-author-tools-client">Communication between editor and author tools client</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-suggested-calls">The suggested calls</a></li>
+<li><a class="reference internal" href="#editor">Editor</a></li>
+<li><a class="reference internal" href="#author-tools">Author tools</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/roadmap.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

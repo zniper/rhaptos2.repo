@@ -1,0 +1,89 @@
+===========
+Tue, 24 Jul
+===========
+
+
+OpenStack and Rackspace
+=======================
+
+I suspect that if you find this as exciting as I do, one or both of us
+need to go out looking for a life.  However, OpenStack is nearly here,
+and Connexions is in the Early Access Program. WooHoo.
+
+`OpenStack <http://en.wikipedia.org/wiki/OpenStack>`_ is in the
+frankly hilariously named Essex release, and is a collaboration
+between NASA (yes!) and Rackspace (and now 150 other companies) all of
+whom bascially want some of Jeff Bezos' AWS lunch.
+
+Now, I am currently trying to get Jenkins to nicely play with my cloud
+servers (see `Pantry Bell
+<https://github.com/lifeisstillgood/pantrybell>`_ and will move this
+over to the pythonic `nova
+<https://github.com/openstack/python-novaclient>`_ Real Soon Now.
+
+But, OpenStack, cloud servers, built from scratch, controlled from Jenkins jobs - should be lovely for getting COntinuous Deployment running - nice.
+
+
+ 
+
+
+
+
+
+Starting Blogging !
+===================
+
+This is the first of hopefully a regular series of blogs from 
+the developers behind `Connexions <www.cnx.org>`_.
+
+
+Connexions
+----------
+
+Connexions provides free (beer *and* speech) educational resources to
+students and teachers around the world.  It has developed over ten
+years a eco-system of authoring tools, repository and means to serve
+the textbooks, exercises, snippets of knowledge to 2 million people a
+month.
+
+And they are building a major update of that code.
+
+And its all Open Source - and being developed right in front of your eyes.
+(Mail `us <mailto:ecw1@rice.edu>`_ if you want to join in.)
+
+And thats what we are doing here ...
+
+
+The people
+----------
+
+(If your gravatar is not here, please let me know the right email address to use)
+
+
+
+
+
+
+
+Google Summer of Code Students
+
+
+
+
+
+
+The code:
+
+
+https://github.com/Connexions
+
+
+
+The plan
+--------
+
+I am hoping we can link to the specs, and have the developers involved
+in each component post about their updates or changes on a regular
+basis.
+
+We shall see, as the old man said.

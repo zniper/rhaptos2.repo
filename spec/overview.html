@@ -1,0 +1,237 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Overview and Tutorial of Frozone Editor &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="overview-and-tutorial-of-frozone-editor">
+<h1>Overview and Tutorial of Frozone Editor<a class="headerlink" href="#overview-and-tutorial-of-frozone-editor" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">pbrian &lt;<a class="reference external" href="mailto:paul&#37;&#52;&#48;mikadosoftware&#46;com">paul<span>&#64;</span>mikadosoftware<span>&#46;</span>com</a>&gt;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Week:</th><td class="field-body">Apr 9-13</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="draft-discussion">
+<h2>DRAFT DISCUSSION<a class="headerlink" href="#draft-discussion" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h3>
+<p>I have been asked to provide a working, documented and tested
+implementation of what I am calling Frozone. <a class="footnote-reference" href="#id2" id="id1">[1]</a> It is intended to
+encompass all the requirements set out in <a class="reference external" href="https://docs.google.com/spreadsheet/ccc?key=0ArvuSYeGW6GpdHJmNVJVWjBWOGVGM0RmMWJqdDRpeWc#gid=0">CNX Rewrite Requirements</a></p>
+<p>I beleive that the essence of this project is to take weekly sprints,
+and deliver a well documented and tested chunk of work each week,
+whilst constantly looking for feedback and trying to fit it back into
+the legacy system(s).</p>
+</div>
+<div class="section" id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h3>
+<div class="figure">
+<img alt="spec/rhaptos.jpg" src="spec/rhaptos.jpg" />
+</div>
+<p>The server is for now a bit experimental - again we have some
+fundamental but difficult design decisions.  Perhaps it is ripe time
+to experiment - write something, put under heavy load.</p>
+<p>Anyway.</p>
+<p>We want to run Flask.  Behind a solid webserver like nginx. So I have
+chosen to use the <a class="reference external" href="projects.unbit.it/uwsgi/">uWSGI</a> application
+server.  The set up for this is to be put into the install files.</p>
+<p>Testing this server - as noted in the webserver notes above,</p>
+<p>Current setup - I am running on the so-called development laptop (!)
+hadrian.  I have the server there, and the other development laptop is
+running firefox with the <a class="reference external" href="http://www.charlesproxy.com">Charles</a>
+proxy.  I recommend this - its worth the 30 bucks or so.  Especially
+watching the raw forms.</p>
+<p>Here I am attaching my own middleware to the wsgi flow - it will look
+for a trigger element in the form, and then replace the POST method in
+the CGI environ variables with the methid in the trigger - ie. we POST
+a form that says trigger=DELETE and then this before any new
+processing is done, flips the environ to be DELETE.</p>
+<p>THis is only useful for non-AJAX mediated calls - its a hedge against having problems with tinyMCE</p>
+<p>I will write it up a bit and then leave it</p>
+<p>e2repo - the repository</p>
+<p>The repository is pretty simple for now - but it needs to be clear about whether
+we are aiming for git style unique references for every change to every module,
+or if a module is to be a fixed named resource, and we track the versions of the module.
+(Begging question when does it stop being a named module...  my gut feeling is take the DVCS / git approach.  But it has issues.</p>
+<ul>
+<li><p class="first">editor.client</p>
+<p>Runs TinyMCE, transmits HTML5 back to editor.server.</p>
+<p>This is purely sending dummy data for now.  I do not think tinymce
+is yet setup for HTML5 and there are many ongoing disucssions with
+other providers.  The EIP editor is likely ot be a third party
+affair even if we require collection and workspace editing
+(presumably that will be in our own JQuery)</p>
+<p>Question: I would like to POST module changes to the server.  That is
+any change to a module is an entirley new copy, stored ala git/hg
+This has many issues but I think is best approach. (Discuss issues)</p>
+</li>
+<li><p class="first">editor.server</p>
+<p>Flask behind uwsgi behind nginx.  Seems robust but not overly heavy.
+REST API - POST -&gt; create a hash, store it in repo.  The new URL is
+the hash....</p>
+<p>Question: I would like to discuss treating each module change as a
+seperate hashable object.  Its a fairly good idea, but has some
+implications that need to be thought through.  However its almost
+perfect to decouple services with.</p>
+</li>
+<li><p class="first">editor.repository</p>
+<p>For now nothing clever - get a POST, create a store.  provide GET
+access to that URL.  Have same delayed / polling requirements for storage
+as transformation.</p>
+<p>As an close but seperate service from the editor.server.</p>
+</li>
+<li><p class="first">rhaptos.transmogrifier</p>
+<p>Really good example of queueing and asynch using REST.  Provide URL
+of pdf - but GET will fail till it is actually there - polling
+responsiblity is on the client.</p>
+<p>Using dummy data - quite likely I will not get this far this week.</p>
+</li>
+<li><p class="first">testing.user</p>
+<p>Selenium RC tests.  I am behind on the curve here - I am clearly
+unable to get selenium to work with TinyMCE - any pointers please?</p>
+</li>
+</ul>
+</div>
+<div class="section" id="cnxml">
+<h3>CNXML<a class="headerlink" href="#cnxml" title="Permalink to this headline">¶</a></h3>
+<p>My biggest concern (and there are a few) is hidden gotchas in the
+semantics or the processing instructions.  Or anywhere for that
+matter.</p>
+</div>
+<div class="section" id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<p>For a distributed, service orientated system that we intend to create,
+a Kerberos-like authentication mechanism is correct.  However kerberos
+has a high administrative overhead and requires a lot of per user
+initial setup (confirming they are who they say they re through some
+intermediate mechanism)</p>
+<p>So we slip back towards the less secure but more common OpenID / OAuth</p>
+<p>This section was longer, but it seemed less useful than a series of questions</p>
+<p>1. What level of security are we worried about here.  Can we quantify
+loss?  is OpenID/OAuth OK?</p>
+<ol class="arabic simple" start="2">
+<li>if we use OpenID and get everyone to sign in through google, we
+will still need a centralised service to map openid -&gt; Access
+control and workspace in Rhaptos.</li>
+<li>That implies (for no shared backend) a ticket granting service.
+OAuth? Kerberos? To my mind there is not a simple easy packaged
+solution here.  OpenID assumes a consistent shared auth backend,
+kerberos assumes we know the person before they sign on.  Am I
+massively out of date here?</li>
+</ol>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>If Debian can name releases after Toy Story characters, then I can name projects for other Pixar films.  It can be changed for clarity :-)</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Overview and Tutorial of Frozone Editor</a><ul>
+<li><a class="reference internal" href="#draft-discussion">DRAFT DISCUSSION</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#cnxml">CNXML</a></li>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/overview.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

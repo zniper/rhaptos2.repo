@@ -1,0 +1,1001 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>UnPub repository and editor - Simple functional specification &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="unpub-repository-and-editor-simple-functional-specification">
+<h1>UnPub repository and editor - Simple functional specification<a class="headerlink" href="#unpub-repository-and-editor-simple-functional-specification" title="Permalink to this headline">¶</a></h1>
+<p>This is a draft spec, and intended to change over time.  It is however
+expected to allow us to agree on the fundamental principles and
+approaches to producing the repository.</p>
+<p>I apologise beforehand for at least three problems - I will mix
+features with solutions, I will be overly verbose, and I have
+forgotten the third.  As the drafts are rewritten all of these will
+improve.</p>
+<p>Please see <a class="reference internal" href="usecases.html"><em>Use cases</em></a> for the expected use cases for the
+repository</p>
+<p>There are three main concepts to bear in mind</p>
+<ol class="arabic simple">
+<li>Google-docs like system</li>
+<li>storing smallest unit of knowledge individually,</li>
+<li>compiling them back together is defined by a graph, the default being
+a tree (TOC) but any graph is possible.</li>
+<li>Small components, loosely coupled, minimal overhead.</li>
+</ol>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<div class="figure">
+<img alt="../_images/overview.png" src="../_images/overview.png" />
+<p class="caption">Overview</p>
+</div>
+<p>The whole system (from creation of documents to production and serving
+of formatted pdfs/ePubs etc) is show above.  We shall briefly discuss
+each area and how it fits together before going into more detail on
+the editor/repository.</p>
+<p>There are a number of components in the system as a whole, which we
+intend to make much more loosely coupled (ie to create them as
+seperate API wrapped services.)</p>
+<p>As such this spec will try to follow a simple pattern - the overview
+will discuss briefly the components, and then focus more heavily on
+the <em>interactions and APIs</em> between the components.  This will I hope
+allow people to understand the flows between components before getting
+into detail in the components.</p>
+<div class="section" id="components">
+<h3>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>WYSIWIG/M Editor</li>
+<li>Authoring Client</li>
+<li>unpub-repo</li>
+<li>Transform services (CNXML&lt;-&gt;HTML)</li>
+<li>Print Queue (Printing CnxML -&gt; PDF etc)</li>
+<li>pub-repo</li>
+<li>logging &amp; metrics</li>
+<li>authentication / authorisation</li>
+<li>Web-view</li>
+</ol>
+</div>
+</div>
+<div class="section" id="one-paragraph-descriptions">
+<h2>One paragraph descriptions<a class="headerlink" href="#one-paragraph-descriptions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="editor">
+<h3>1. Editor<a class="headerlink" href="#editor" title="Permalink to this headline">¶</a></h3>
+<p>A javascript based WYSIWIG (or possibly WHYSIWIM) editor of HTML5.
+Currently the target version is Aloha, but may move to other editors.
+I am viewing this as a &#8216;black box&#8217; - the authoring tools will retrieve
+from the server the html to be edited and insert it into the black
+box, then when needing to save will extract the html and send that
+back to the server.</p>
+<p>Importantly Aloha allows real-time collaboration via websockets
+(Other people&#8217;s edits turn up on your view)</p>
+<p>issues:</p>
+<div class="highlight-python"><pre>conversion
+force section editing
+in / out process
+use of collection / tree
+server side support</pre>
+</div>
+</div>
+<div class="section" id="authoring-client">
+<h3>2. Authoring Client<a class="headerlink" href="#authoring-client" title="Permalink to this headline">¶</a></h3>
+<p>A specially built Javascript-based set of authoring tools, run on the
+client browser.  They allow</p>
+<ul class="simple">
+<li>import/export of content of modules to and from the editor</li>
+<li>editing of meta data around modules (see metadata)</li>
+<li>interaction with REST-services, knowledge of the server protocols</li>
+<li>cleaner interaction with browser and updates, potentially using client side templating</li>
+</ul>
+<p>Issues:</p>
+<div class="highlight-python"><pre>clean interaction with Editor
+Reliability across REST interface
+Buffering</pre>
+</div>
+</div>
+<div class="section" id="unpub-repo">
+<h3>3. unpub-repo<a class="headerlink" href="#unpub-repo" title="Permalink to this headline">¶</a></h3>
+<p>A Python based web service, adhering closely to REST principles, that
+stores the currently edited module, on the server, and provides
+resilience and robustness.</p>
+<ul class="simple">
+<li>Single sign on using OpenID technologies.</li>
+<li>robust, scalable backend storage and front end load balancing / applications</li>
+</ul>
+<p>issues:</p>
+<div class="highlight-python"><pre>metaphors
+backend storage decision
+storing collections - tree / grpah traversal tools</pre>
+</div>
+</div>
+<div class="section" id="files-and-images">
+<h3>3.5 Files and images<a class="headerlink" href="#files-and-images" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Capture URL of imported images, and as needed cpature, store as
+related file, ensure it has appropriate licnsing</li>
+<li>Stored just like a module ...</li>
+<li>needs more fleshing out.</li>
+</ul>
+</div>
+<div class="section" id="transform-service">
+<h3>4. transform service<a class="headerlink" href="#transform-service" title="Permalink to this headline">¶</a></h3>
+<p>There are several different transforms that need to be applied</p>
+<ol class="arabic simple">
+<li>HTML5 -&gt; CNXML</li>
+<li>CNXML -&gt; HTML5</li>
+</ol>
+<p>These are currently dealt with as a XSLT transform.</p>
+<p>And the &#8220;printing&#8221; services</p>
+<ol class="arabic simple" start="3">
+<li>CNXML -&gt; PDF</li>
+<li>CNXML -&gt; ePub</li>
+<li>CNXML -&gt; mobi</li>
+<li>CNXML -&gt; docbook</li>
+<li>HTML5 -&gt; PDF</li>
+</ol>
+<p>These are currently part of the over print service</p>
+</div>
+<div class="section" id="pub-repo">
+<h3>6. pub-repo<a class="headerlink" href="#pub-repo" title="Permalink to this headline">¶</a></h3>
+<p>Published repo is effectively an archive of the unpublished repo.
+We would expect only to have GET requests served as follows:</p>
+<div class="highlight-python"><pre>GET collection/12345 HTTP/1.1
+Accept: application/pdf</pre>
+</div>
+<p>This way we can keep the same collection ID as in the unpub repo, but
+provide full, preprocessed and archived access to PDFs ePub etc.</p>
+<p>(I am assuming that the collection ID is the root UUID for a given book)</p>
+<p>issues:</p>
+<div class="highlight-python"><pre>what else does the publish repo do now
+What is it required to do?</pre>
+</div>
+</div>
+<div class="section" id="print-queue">
+<h3>5. print-queue<a class="headerlink" href="#print-queue" title="Permalink to this headline">¶</a></h3>
+<p>Manages the transform processes, and storage</p>
+</div>
+<div class="section" id="logging-metrics">
+<h3>7. logging &amp; metrics<a class="headerlink" href="#logging-metrics" title="Permalink to this headline">¶</a></h3>
+<p>Centralised location for syslog-style logging and statsd-style metric gathering
+We also want to integrate Google ANalytics, customer jhourneys, heat maps etc.</p>
+</div>
+<div class="section" id="authentication-authorisation">
+<h3>8. authentication / authorisation<a class="headerlink" href="#authentication-authorisation" title="Permalink to this headline">¶</a></h3>
+<p>This is an area where we do a lot of work but wish to remove ourselves as far as possible from the &#8220;Password and Username business&#8221;</p>
+<p>We currently use OpenID (1.1) authentication against outside providers (such as google)
+We intend to use this as the primary authentication <em>and</em> authorisation me chanism.</p>
+<p>We shall store openid-identifers with the document as a form of ACL control</p>
+</div>
+<div class="section" id="web-view">
+<h3>9. Web View<a class="headerlink" href="#web-view" title="Permalink to this headline">¶</a></h3>
+<p>This shall provide the &#8220;web site&#8221; service, as well as provicding access to the
+publications through all manner of User-Agents.  I expect that the canonical URLs will
+be the same as the unpub-repo, only the Accept headers will be different (see above)</p>
+<p>We shall now briefly discuss the interactions in certain areas, and then
+move onto more detail.</p>
+</div>
+</div>
+<div class="section" id="discussions">
+<h2>Discussions<a class="headerlink" href="#discussions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="graphs-sections-and-storing-documents">
+<h3>Graphs, sections and storing documents<a class="headerlink" href="#graphs-sections-and-storing-documents" title="Permalink to this headline">¶</a></h3>
+<p>It seems one of the simplest concepts that has crystallised recently
+is to have an infiinte array of sections and piece them together
+through a tree defined in a collection</p>
+<p>One collection walks through the space of sections and can be called a
+chapter, another collection holds that collection in its own tree and
+is called a book - they are essentially the same data structure, just
+different data.</p>
+<p>I would <em>not</em> envisage these trees being defined in SQL/relational form.</p>
+<p>I would expect them to be (for example) stored on the unpub repo
+as JSON documents per section, with a UUID for each section,
+and at least one collection per user, with that collection being a graph
+stored in a file, linking uuids to each other.</p>
+<p>I am guessing we would use D3.js on browser and networkx in python but that is
+an implementation detail, although nice to know something exists (Need benchmark?)</p>
+<div class="section" id="sections">
+<h4>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h4>
+<p>We anticipate storing documents as individual chunks of the same document (currently called modules, perhaps we shall call them sections to indicate smaller level pogranularity)</p>
+<p>Each section will be stored on the unpub repo with security permissions and
+a collection - a graph that tells us how to re-create the intended document.</p>
+<p>We expect to have two views of the document at once - the editor view and the collection view.  The collection view will be a (tree/graph) view , open and synchronised with the
+editor.  THe collection view will display the nodes, whereas the editor view will display the currently open node from the collection, plus a suitable selection of sections above and below.</p>
+<p>(Obviously some buffering will be needed)</p>
+<p>Cutting and pasting in the editor will be limited to sections (ie smallest granularity level) or less.  That is you cannot partially move sections, only remove text from them or drag entire sections.  We shall refuse to allow highlighting over section breaks.</p>
+<p>Note that it <em>does not matter</em> at what level of granularity we work at.
+The intention is to provide the ability to retireve sort and work at that level of granularity.  There is a UX cost however.</p>
+<p>(Expand)</p>
+</div>
+</div>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>We <em>could</em> outsource <em>all</em> our password management
+We <em>could</em> simply assume that a OpenID from either Google, Yahoo, or Paypal
+was <em>good enough</em> and use the ACL-based security system we have.</p>
+<p>discuss...</p>
+<p>Also</p>
+<p>ACL style approach, where the permissions for a document are stored on
+the documnet.  It is simple to implement but requires us to create a
+seperate index (to enable knowing which docs to show).  AS we do that
+is it not simpler to store the acls on the index server, which also
+remvoes a large attack vector
+<a class="reference external" href="http://peekay.org/2009/03/26/security-issues-with-google-docs/">http://peekay.org/2009/03/26/security-issues-with-google-docs/</a>
+<a class="reference external" href="http://jonmcleanpcv.wordpress.com/2010/11/19/google-docs-has-a-big-gaping-security-hole/">http://jonmcleanpcv.wordpress.com/2010/11/19/google-docs-has-a-big-gaping-security-hole/</a></p>
+<p>I am unclear how security on node.js / Aloha works.</p>
+<p>Security - It is highly unlikely that storing userids in the documents
+that are then sent out to the wild will be a suitable and secure
+solution.  Crypto can be too easily broken if not done well.  As such
+its probably a good idea to push the security lookup over to backend
+and probbably do security per collections</p>
+<p>However as a first cut we may well find security embedded with KeyCzar
+will be sufficient</p>
+</div>
+<div class="section" id="more-detailed-look">
+<h2>More Detailed Look<a class="headerlink" href="#more-detailed-look" title="Permalink to this headline">¶</a></h2>
+<p>We shall look at three main areas</p>
+<ol class="arabic simple">
+<li>Editor &lt;-&gt; Authoring Tools</li>
+<li>Authoring Tools &lt;-&gt; Unpub repo</li>
+<li>Transform HTML -&gt; CNXML</li>
+</ol>
+<div class="section" id="editor-authoring-tools">
+<h3>1. Editor &lt;-&gt; Authoring Tools<a class="headerlink" href="#editor-authoring-tools" title="Permalink to this headline">¶</a></h3>
+<p>We shall have 2 distinct clients - a modified Aloha Editor, and a &#8220;CNX-Author-client&#8221;
+which will act as the go-between the Aloha editor and the unpub repo.</p>
+<p>There are no real technical issues (we will live in the same sandbox etc)
+but there are issues of control, and process.</p>
+<p>The author-client will deal with login and security, and the Aloha editor should delegate dealing with the repo to the author-client.  As such I suggest we use a author-tools pull model - that is the author-tools only pulls sections from the editor, the editor never initiates actions (Except updating the collection)</p>
+<p>Likely API calls</p>
+<ul class="simple">
+<li>get_all_sections
+return list of all sections currently in the editor, thier uuid if any, and their edited status</li>
+<li>get_section (uuid)
+return the HTML text of a specific section</li>
+<li>get_section(indexnumber)
+return the nth member of the list as shown in get_all_sections
+(race conditions might mean it is just simpler to get everything from get_all and iterate over.)</li>
+<li>update_section(uuid, txt)
+update_section(idxnumber, txt)
+updatet the section in the editor with the txt shown.
+Again race conditions may be a problem.  Locking is the most obvious solution.</li>
+<li>update_section_order(uuid_tree)
+reorder all sections as shown</li>
+</ul>
+<p>We shall have to look t the best means of passing around trees, I suspect D3.js will be useful.</p>
+<p>A set of sections will be linked together via a <em>collection</em>, a graph (probably a tree in most cases) of uuid nodes.  Parsing both these on both sides of the client/server will be important to get right.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="../_images/collection-tree.png" src="../_images/collection-tree.png" /></a>
+</div>
+<p>Other tools</p>
+<p>We would expect / need a means of Authoring tool to be told &#8220;share this collection with <a class="reference external" href="mailto:fred&#37;&#52;&#48;gmail&#46;com">fred<span>&#64;</span>gmail<span>&#46;</span>com</a>&#8221; and then iterate over the collection, adjusting ACLs as needed.</p>
+</div>
+<div class="section" id="authoring-tools-unpub-repo">
+<h3>2. Authoring Tools &lt;-&gt; Unpub repo<a class="headerlink" href="#authoring-tools-unpub-repo" title="Permalink to this headline">¶</a></h3>
+<p>REST API discussion</p>
+</div>
+<div class="section" id="transform-html-cnxml">
+<h3>3. Transform HTML -&gt; CNXML<a class="headerlink" href="#transform-html-cnxml" title="Permalink to this headline">¶</a></h3>
+<p>TBD</p>
+</div>
+</div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>Smallest possible solution</p>
+<ul class="simple">
+<li>ACL control stored with documents</li>
+<li>seperate per user index to determine what can and cannot view</li>
+<li>index updated by the web app</li>
+<li>uuid based, rest based solution.  COmpletely aysnchronous (202)</li>
+<li>collection emelment - simple linear linkages of uuids</li>
+<li>versioning - limited support - not first class object in this metahpr</li>
+</ul>
+</div>
+<div class="section" id="feature-list">
+<h2>Feature List<a class="headerlink" href="#feature-list" title="Permalink to this headline">¶</a></h2>
+<p>List of features, will try to expand</p>
+<div class="section" id="collection-defintion-as-a-single-file">
+<h3>Collection defintion as a single file<a class="headerlink" href="#collection-defintion-as-a-single-file" title="Permalink to this headline">¶</a></h3>
+<p>How to define a collection
+WHat file format will we use (JSON?)
+WHat parsers
+What security</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="../_images/collection-tree.png" src="../_images/collection-tree.png" style="width: 683.0px; height: 337.0px;" /></a>
+</div>
+</div>
+<div class="section" id="indexing-user-workspace">
+<h3>Indexing (user workspace)<a class="headerlink" href="#indexing-user-workspace" title="Permalink to this headline">¶</a></h3>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="../_images/collection-tree.png" src="../_images/collection-tree.png" style="width: 683.0px; height: 337.0px;" /></a>
+</div>
+<p>We will need to have a shareable backend database that stores
+which uuids one has access
+THis will be a phase two - as the security on each doc is probably acceptable
+(well ok - its not, but we may need to get in some pentesting to decide if that is vulnerable or if other things I have not thought of are)</p>
+</div>
+<div class="section" id="sections-as-smallest-unit-of-storage">
+<h3>Sections as smallest unit of storage<a class="headerlink" href="#sections-as-smallest-unit-of-storage" title="Permalink to this headline">¶</a></h3>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="../_images/collection-tree.png" src="../_images/collection-tree.png" style="width: 683.0px; height: 337.0px;" /></a>
+</div>
+<p>Lets breakdown the documents into sections.
+We dont have to do it immediately, but we do have to do it.</p>
+</div>
+<div class="section" id="bi-directional-api-for-editor-auhtor-tools">
+<h3>bi-directional API for Editor / Auhtor tools<a class="headerlink" href="#bi-directional-api-for-editor-auhtor-tools" title="Permalink to this headline">¶</a></h3>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="../_images/collection-tree.png" src="../_images/collection-tree.png" style="width: 683.0px; height: 337.0px;" /></a>
+</div>
+<p>See above</p>
+</div>
+<div class="section" id="metadata-storage-and-changes">
+<h3>Metadata storage and changes<a class="headerlink" href="#metadata-storage-and-changes" title="Permalink to this headline">¶</a></h3>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/collection-tree.png"><img alt="../_images/collection-tree.png" src="../_images/collection-tree.png" style="width: 683.0px; height: 337.0px;" /></a>
+</div>
+<p>Pretty simple I think, just list of metadata we want to keep with every
+collection and node.</p>
+</div>
+</div>
+<div class="section" id="requirements-list">
+<h2>Requirements list<a class="headerlink" href="#requirements-list" title="Permalink to this headline">¶</a></h2>
+<p>Re-working of &#8220;CNX Rewrite Requirements&#8221;</p>
+<div class="section" id="from-ed-s-spreadsheet">
+<h3>From Ed&#8217;s Spreadsheet<a class="headerlink" href="#from-ed-s-spreadsheet" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h4>Web View<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Simplify design</td>
+<td>Current portlets available via some linkage</td>
+</tr>
+<tr class="row-odd"><td>Decorate based on microdata</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Include CC microdata</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>author email address should not be visible on any web page, except editing email address.</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Has own repository</td>
+<td>Stores lenses, author profiles</td>
+</tr>
+<tr class="row-odd"><td>Needs to accept preview requests</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>LWB</td>
+<td>Display color and logo</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id2">
+<h4>Unpub Repo<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="84%" />
+<col width="16%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Store unpublished modules and related files</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td>Store unpublished collections and related files</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td>Public API for pull and push</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="workspace">
+<h4>Workspace<a class="headerlink" href="#workspace" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Workspace</td>
+<td>List of items owned or shared by user</td>
+</tr>
+<tr class="row-odd"><td>Workspace</td>
+<td>Tagging in Workspace with filtering</td>
+</tr>
+<tr class="row-even"><td>Workspace</td>
+<td>Share module with others for editing; Add user IDs and assign roles</td>
+</tr>
+<tr class="row-odd"><td>Workspace</td>
+<td>Share tags with other users; similar to adding users to a workgroup</td>
+</tr>
+<tr class="row-even"><td>Workspace</td>
+<td>Separate publish roles (author, editor, etc. ) from editing roles</td>
+</tr>
+<tr class="row-odd"><td>Workspace</td>
+<td>Each document needs to have a owner that sets the publish roles</td>
+</tr>
+<tr class="row-even"><td>Workspace</td>
+<td>The copyright holder must be the one to publish (accept CC License)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-editor">
+<h4>Module Editor<a class="headerlink" href="#module-editor" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>WYSIWYG HTML 5 Editor</td>
+<td>Edit without viewing Source</td>
+</tr>
+<tr class="row-odd"><td>WYSIWYG HTML 5 Editor</td>
+<td>Ability to insert processing instructions</td>
+</tr>
+<tr class="row-even"><td>WYSIWYG HTML 5 Editor</td>
+<td>Drag and Drop elements on a module</td>
+</tr>
+<tr class="row-odd"><td>WYSIWYG HTML 5 Editor</td>
+<td>HTML pasted in should be restricted to the subset allowed</td>
+</tr>
+<tr class="row-even"><td>WYSIWYG HTML 5 Editor</td>
+<td>Drag and drop images into the editor</td>
+</tr>
+<tr class="row-odd"><td>WYSIWYG HTML 5 Editor</td>
+<td>Split module into multiple modules</td>
+</tr>
+<tr class="row-even"><td>PDF Preview</td>
+<td>Calls out to PDF service</td>
+</tr>
+<tr class="row-odd"><td>Web View Preview</td>
+<td>Calls out to Web View</td>
+</tr>
+<tr class="row-even"><td>Web View Preview</td>
+<td>Allow mobile and full web preview</td>
+</tr>
+<tr class="row-odd"><td>Edit roles</td>
+<td>Links at top of module editor</td>
+</tr>
+<tr class="row-even"><td>Edit Links</td>
+<td>Links at top of module editor</td>
+</tr>
+<tr class="row-odd"><td>Edit Metadata</td>
+<td>Links at top of module editor</td>
+</tr>
+<tr class="row-even"><td>Edit Metadata</td>
+<td>Subject is required</td>
+</tr>
+<tr class="row-odd"><td>Imports (Word, LaTeX, CNXML, HTML, Zip)</td>
+<td>Imports performed by Transformation services</td>
+</tr>
+<tr class="row-even"><td>Exports (HTML, ZIP, CNXML)</td>
+<td>Uses Transformation services?</td>
+</tr>
+<tr class="row-odd"><td>Edit Files</td>
+<td>Add, replace and delete images and other media files</td>
+</tr>
+<tr class="row-even"><td>Publish</td>
+<td>Pushes content to published repository</td>
+</tr>
+<tr class="row-odd"><td>Publish</td>
+<td>Accept License and enter description</td>
+</tr>
+<tr class="row-even"><td>Save</td>
+<td>Saves to local repository</td>
+</tr>
+<tr class="row-odd"><td>Storage</td>
+<td>Store unpublished modules and related files</td>
+</tr>
+<tr class="row-even"><td>Storage</td>
+<td>Should have API so any database can be used for storage</td>
+</tr>
+<tr class="row-odd"><td>Sword</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Derive a copy</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Math</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Small changes on published content</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Editor sandbox to allow users to try the editor without having an account</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Test publish option</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Restrictions</td>
+<td>Prevent empty modules from being published</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id3">
+<h4>Pub Repo<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Stores Content</td>
+<td>module like (pages)</td>
+</tr>
+<tr class="row-odd"><td>Stores Content</td>
+<td>collection like (lists)</td>
+</tr>
+<tr class="row-even"><td>Stores Users</td>
+<td>metadata for roles in content</td>
+</tr>
+<tr class="row-odd"><td>Stores Generated files</td>
+<td>PDF, EPUB, ZIP</td>
+</tr>
+<tr class="row-even"><td>Stores some record of license acceptance</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Accepts publish requests from Editors</td>
+<td>How will editors be trusted?</td>
+</tr>
+<tr class="row-even"><td>Accepts publish requests from Editors</td>
+<td>How will users be authenticated?</td>
+</tr>
+<tr class="row-odd"><td>Can proxies be setup?</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Store who agreed to CC License</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="admin">
+<h4>Admin<a class="headerlink" href="#admin" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="53%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Read log files</td>
+<td>Web View</td>
+</tr>
+<tr class="row-odd"><td>Read log files</td>
+<td>Web View Repository</td>
+</tr>
+<tr class="row-even"><td>Read transaction logs</td>
+<td>Repository</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="lenses">
+<h4>Lenses<a class="headerlink" href="#lenses" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Tags</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Comments</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>URLs</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Types</td>
+<td>Member, Affiliated, Endorsed</td>
+</tr>
+<tr class="row-even"><td>Siyavula Lenses</td>
+<td>Open tags</td>
+</tr>
+<tr class="row-odd"><td>Siyavula Lenses</td>
+<td>Lenses Organizers</td>
+</tr>
+<tr class="row-even"><td>Lens Permissions</td>
+<td>Public, Private</td>
+</tr>
+<tr class="row-odd"><td>Logo</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>LWB</td>
+<td>property available</td>
+</tr>
+<tr class="row-odd"><td>LWB</td>
+<td>Color picker</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="transformation-services">
+<h4>Transformation Services<a class="headerlink" href="#transformation-services" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="91%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Word Importer</td>
+<td>Upgrade to LibreOffice</td>
+</tr>
+<tr class="row-odd"><td>Word Importer</td>
+<td>All functionality in current version</td>
+</tr>
+<tr class="row-even"><td>Open Office Importer</td>
+<td>All functionality in current version</td>
+</tr>
+<tr class="row-odd"><td>LaTeX Importer</td>
+<td>All functionality in current version</td>
+</tr>
+<tr class="row-even"><td>Google Doc Importer</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>HTML Importer</td>
+<td>Import HTML 5 documents</td>
+</tr>
+<tr class="row-even"><td>Module Zip importer</td>
+<td>Support CNXML amd HTML5</td>
+</tr>
+<tr class="row-odd"><td>CNXML to HTML5</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>HTML5 to CNXML</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>PDF Generation</td>
+<td>All functionality in current version</td>
+</tr>
+<tr class="row-even"><td>PDF Generation</td>
+<td>Should accept a hash which is used to compare requests for the same content to be generated.  If the hashes match, the new request is ignored.  If the hashes do not match, the current process is killed and a new process started.</td>
+</tr>
+<tr class="row-odd"><td>EPUB Generation</td>
+<td>All functionality in current version</td>
+</tr>
+<tr class="row-even"><td>Complete Zip Generation</td>
+<td>Need to define what is in a complete zip</td>
+</tr>
+<tr class="row-odd"><td>Offline HTML Zip</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>API</td>
+<td>Needs design work</td>
+</tr>
+<tr class="row-odd"><td>SWORD</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Admin</td>
+<td>Ability to turn services on and off</td>
+</tr>
+<tr class="row-odd"><td>Admin</td>
+<td>Ability to check status of services</td>
+</tr>
+<tr class="row-even"><td>Admin</td>
+<td>Ability to read log files of services</td>
+</tr>
+<tr class="row-odd"><td>Admin</td>
+<td>Ability to kill running processes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="collection-editor">
+<h4>Collection Editor<a class="headerlink" href="#collection-editor" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Drag and Drop editor</td>
+<td>Reuse current editor</td>
+</tr>
+<tr class="row-odd"><td>Add multiple modules at a time</td>
+<td>Search by user, title or module id</td>
+</tr>
+<tr class="row-even"><td>Add multiple subcollections at a time</td>
+<td>Reuse current editor</td>
+</tr>
+<tr class="row-odd"><td>PDF Preview</td>
+<td>Calls out to PDF service; Async response</td>
+</tr>
+<tr class="row-even"><td>PDF Preview</td>
+<td>Editor will send a hash of hashes so repeated requests can be filtered</td>
+</tr>
+<tr class="row-odd"><td>Web View Preview</td>
+<td>Calls out to Web View</td>
+</tr>
+<tr class="row-even"><td>Edit Metadata</td>
+<td>Links at top of collection editor</td>
+</tr>
+<tr class="row-odd"><td>Edit Metadata</td>
+<td>Subject is required</td>
+</tr>
+<tr class="row-even"><td>Edit roles</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Publish</td>
+<td>Pushes content to published repository</td>
+</tr>
+<tr class="row-even"><td>Publish</td>
+<td>Accept License and enter description</td>
+</tr>
+<tr class="row-odd"><td>Save</td>
+<td>Saves to local repository in an HTML5 format</td>
+</tr>
+<tr class="row-even"><td>Storage</td>
+<td>Store unpublished collections and related files</td>
+</tr>
+<tr class="row-odd"><td>Sword</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Derive a copy</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Test publish option</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Restrictions</td>
+<td>Prevent empty collections from being published</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="users">
+<h4>Users<a class="headerlink" href="#users" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">primary</th>
+<th class="head">Secondary</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Login using outside authetication</td>
+<td>OAuth, Open ID, Twitter, Google</td>
+</tr>
+<tr class="row-odd"><td>Only store id and token, no passwords</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Storage</td>
+<td>Where will users be stored?
+Can they be in more than 1 location? editor and repository?</td>
+</tr>
+<tr class="row-odd"><td>Store user metadata</td>
+<td>modules, collections, email address, lenses</td>
+</tr>
+<tr class="row-even"><td>Mapping of existing user ids to new user ids</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Org Accounts</td>
+<td>Where will their additional privileges be stored?</td>
+</tr>
+<tr class="row-even"><td>Users should be able to select if they can be emailed if they are an author</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">UnPub repository and editor - Simple functional specification</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#components">Components</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#one-paragraph-descriptions">One paragraph descriptions</a><ul>
+<li><a class="reference internal" href="#editor">1. Editor</a></li>
+<li><a class="reference internal" href="#authoring-client">2. Authoring Client</a></li>
+<li><a class="reference internal" href="#unpub-repo">3. unpub-repo</a></li>
+<li><a class="reference internal" href="#files-and-images">3.5 Files and images</a></li>
+<li><a class="reference internal" href="#transform-service">4. transform service</a></li>
+<li><a class="reference internal" href="#pub-repo">6. pub-repo</a></li>
+<li><a class="reference internal" href="#print-queue">5. print-queue</a></li>
+<li><a class="reference internal" href="#logging-metrics">7. logging &amp; metrics</a></li>
+<li><a class="reference internal" href="#authentication-authorisation">8. authentication / authorisation</a></li>
+<li><a class="reference internal" href="#web-view">9. Web View</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#discussions">Discussions</a><ul>
+<li><a class="reference internal" href="#graphs-sections-and-storing-documents">Graphs, sections and storing documents</a><ul>
+<li><a class="reference internal" href="#sections">Sections</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#more-detailed-look">More Detailed Look</a><ul>
+<li><a class="reference internal" href="#editor-authoring-tools">1. Editor &lt;-&gt; Authoring Tools</a></li>
+<li><a class="reference internal" href="#authoring-tools-unpub-repo">2. Authoring Tools &lt;-&gt; Unpub repo</a></li>
+<li><a class="reference internal" href="#transform-html-cnxml">3. Transform HTML -&gt; CNXML</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#feature-list">Feature List</a><ul>
+<li><a class="reference internal" href="#collection-defintion-as-a-single-file">Collection defintion as a single file</a></li>
+<li><a class="reference internal" href="#indexing-user-workspace">Indexing (user workspace)</a></li>
+<li><a class="reference internal" href="#sections-as-smallest-unit-of-storage">Sections as smallest unit of storage</a></li>
+<li><a class="reference internal" href="#bi-directional-api-for-editor-auhtor-tools">bi-directional API for Editor / Auhtor tools</a></li>
+<li><a class="reference internal" href="#metadata-storage-and-changes">Metadata storage and changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#requirements-list">Requirements list</a><ul>
+<li><a class="reference internal" href="#from-ed-s-spreadsheet">From Ed&#8217;s Spreadsheet</a><ul>
+<li><a class="reference internal" href="#id1">Web View</a></li>
+<li><a class="reference internal" href="#id2">Unpub Repo</a></li>
+<li><a class="reference internal" href="#workspace">Workspace</a></li>
+<li><a class="reference internal" href="#module-editor">Module Editor</a></li>
+<li><a class="reference internal" href="#id3">Pub Repo</a></li>
+<li><a class="reference internal" href="#admin">Admin</a></li>
+<li><a class="reference internal" href="#lenses">Lenses</a></li>
+<li><a class="reference internal" href="#transformation-services">Transformation Services</a></li>
+<li><a class="reference internal" href="#collection-editor">Collection Editor</a></li>
+<li><a class="reference internal" href="#users">Users</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/spec/simple-spec.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

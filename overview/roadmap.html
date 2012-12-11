@@ -1,0 +1,235 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Roadmap &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="roadmap">
+<h1>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h1>
+<p>This is a draft roadmap for project Frozone - the new editor component
+for cnx.org.  It will be continuously changing, as will much of the
+documentation here, and I apologise in advance for half-formed
+thoughts slipping in.</p>
+<div class="section" id="talking-about-the-roadmap">
+<h2>Talking about the Roadmap<a class="headerlink" href="#talking-about-the-roadmap" title="Permalink to this headline">¶</a></h2>
+<p>cnx.org is big.  Not massive, but big in that it covers a lot of
+ground, and complexity, and has already existing standards for SLAs,
+community use and plenty of expectations.  This is not necessarily a
+problem, but it is an important constraint.</p>
+<p>It is probably fair to call cnx an ecosystem - that is the type and
+range of interactions are not trivial or easily predictable.  for
+example, anything to do with pdf generation.  Sometimes we look at
+these hard to predict interactions and blame ourselves - we should
+have been clever enough to spot it, prescient enough to write a test.
+Sometimes that is true, sometimes it is not, and telling the
+difference can save us from both emotional hand wringing and
+unnecessary or futile work trying to tame the beast. (Fred Brooks&#8217;
+essential and accidental complexity apply here).</p>
+<p>But why refer to ecosystems - because that is what modern day software
+systems have become.  Platforms, perhaps, but interacting, and doing
+so in complex and shifting patterns.</p>
+<p>And eco-systems have some interesting qualities</p>
+<ol class="arabic simple">
+<li>They evolve, rather than grow from master plans, and roadmaps</li>
+<li>They use selection (artificial or natural).  So things need to be
+able to die.  And to be measured in some fashion, if we are the
+ones to cause thier death.</li>
+<li>organisms, like cells, have well, an inside and an outside and a
+well defined difference.  And so we should think of creating
+services, like organims, with defined inside and outsides.</li>
+<li>Yes I am talking service orientated architecture, but think more
+like organisms.</li>
+<li>in between organsims is - well the transmission environment -
+sounds, smells, sight.</li>
+</ol>
+<ul class="simple">
+<li>SOA and devops - comments by Steve Yegge on Amazon&#8217;s experiences
+<a class="reference external" href="https://plus.google.com/112678702228711889851/posts/eVeouesvaVX">https://plus.google.com/112678702228711889851/posts/eVeouesvaVX</a></li>
+</ul>
+<div class="section" id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
+<p>I am expecting us to produce a Service Orientated Architecture - components talking to compoentns
+through defined interfaces, and acting in robust and defensive manners.</p>
+</div>
+</div>
+<div class="section" id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h2>
+<p>A big focus on decoupling services and providing resilience,
+&#8216;do-one-thing-well&#8217; approach.</p>
+<ol class="arabic simple">
+<li>REST</li>
+<li>Message Queues.</li>
+</ol>
+<div class="section" id="pyrestservers">
+<h3>PyRESTServers<a class="headerlink" href="#pyrestservers" title="Permalink to this headline">¶</a></h3>
+<p>I need a better name, but the concept is simple - a defined, stand alone, cluster-able set of
+services that work together to provide some REST based server, that will do (one) thing well.</p>
+<ul class="simple">
+<li>http transparent cache (Varnish)</li>
+<li>webserver (Flask in uWSGI wrapper)</li>
+<li>message queue to handle asynchonicity (RabbitMQ)</li>
+</ul>
+<p>If I can put the architecture I would like to see in one sentence it would be:</p>
+<div class="highlight-python"><pre>Dont expect a *data* response in the same cycle as your request - instead expect a link to a new URL.</pre>
+</div>
+<p>If we can build our <em>clients</em> this way (building servers this way is fairly simple) we can
+expect to solve a lot of our decoupling issues.  I think we shall need two AJAX client libraries
+one in Python, one in JQuery that have this as their heart.</p>
+</div>
+<div class="section" id="python-rest-client">
+<h3>Python REST client<a class="headerlink" href="#python-rest-client" title="Permalink to this headline">¶</a></h3>
+<p>This is still a massive requirement.  As you can see in frozone, a python POST client is trivial.
+But we need a relaible client, that can handle network outages, retry, avoid breaking non-idempotency,
+can deal with a wide range of errors and tests.  Can be part of a test / monitoring suite.</p>
+<p>Repo/server split.  I have intuitively split the backend into two - e2server and e2repo.  e2server is
+where the AJAX client talks, and e2repo is what the e2server calls down to for POST, GET of the actual modules.
+Nah I am being a bit dense.  There is nothing that the e2server -&gt; e2repo cannot do that is not better done by exposing
+e2repo directly, and having a shared message queue.  My usecases were something like</p>
+<div class="highlight-python"><pre>* translate urls ala bit.ly from meaningful to canonical
+* server front ends the repo, so we can shift storage as and when.  Well REST webserver on e2repo does that quite well enough
+* server might want to perform other functions - like translate html5 &gt; cnxml and then push cnxml to legacy repo.
+  It can by listening on e2repo message queue.</pre>
+</div>
+</div>
+</div>
+<div class="section" id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>git, git flow, gerrit.
+I need to stop pushing direct to Master, and expect that someone will be joining me.  Stop being lazy Paul.</li>
+<li>documentation - need to iron out a sphinx bugs.  Plus got a hack hack for javascript docs.</li>
+<li>Coding standards. PEP8</li>
+</ul>
+<div class="section" id="e2client-design">
+<h3>e2client design<a class="headerlink" href="#e2client-design" title="Permalink to this headline">¶</a></h3>
+<p>Want to see good examples of lazy loading the client, and how we can most effectively work with a real desinger (you know , they own the CSS, and can change certain parts of HTML, etc)  Dont be too prescriptive here but be aware.</p>
+</div>
+</div>
+<div class="section" id="devops">
+<h2>Devops<a class="headerlink" href="#devops" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>CI server - Jenkins</li>
+<li>LXC / Jails for in house server farm.</li>
+<li>DO we bother with GAE? AWS will just use Jenkons,  but GAE???</li>
+<li>Fabfile rollouts, kill that shell script.</li>
+<li>Testing - have selenium, Python asserts, doctests.  How to collate those results - I expect a web logging process.</li>
+<li>logging - see above.  This is important in debugging too - already we have three remote environments not logging to one central place.</li>
+<li>error handling - this is where testing, logging etc early on really embed the basics.</li>
+</ul>
+<p>How do we build, deploy, monitor early on.  Makes production support much much easier.</p>
+</div>
+<div class="section" id="build-deploy">
+<h2>Build/deploy<a class="headerlink" href="#build-deploy" title="Permalink to this headline">¶</a></h2>
+<p>See Devops and Jenkins</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Roadmap</a><ul>
+<li><a class="reference internal" href="#talking-about-the-roadmap">Talking about the Roadmap</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#architecture">Architecture</a><ul>
+<li><a class="reference internal" href="#pyrestservers">PyRESTServers</a></li>
+<li><a class="reference internal" href="#python-rest-client">Python REST client</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#development">Development</a><ul>
+<li><a class="reference internal" href="#e2client-design">e2client design</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#devops">Devops</a></li>
+<li><a class="reference internal" href="#build-deploy">Build/deploy</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/overview/roadmap.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,308 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Searching for an OpenID Provider (Server) &mdash; rhaptos2 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="rhaptos2 0.0.1 documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">rhaptos2 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="searching-for-an-openid-provider-server">
+<h1>Searching for an OpenID Provider (Server)<a class="headerlink" href="#searching-for-an-openid-provider-server" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>I looked at a lot of Python and non-python servers.  There is no
+drop-in, well supported server out there, giving us two less desirable
+choices - either take on the support burden ourselves, or change our
+business rules to do away with the problem.</p>
+<p>We also need to discuss a means of maintaining an internal user id.</p>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>OpenID &#8216;clients&#8217; (that run on your website and talk to Google) are
+widespread and well supported.  However, the &#8216;server&#8217; (that runs on
+Google) are less common, less well supported and seem to be a
+vanishing breed.</p>
+<p>CNX.org has approx 10,000 existing client accounts, and intends to
+release the new system using OpenID as the sole logon method.  For new
+users, this should be simple, they will use their Gmail OpenID (or
+create one).  For existing users, they either need a means to match
+their old account to their new Gmail ID, or they will just want to
+keep using their old username and password.</p>
+<p>We assumed</p>
+<ol class="arabic simple">
+<li>That existing users would not have existing OpenIDs</li>
+<li>That existing users would be unwilling to create a new third party OID</li>
+<li>So, we would run a provider just for them, that uses the existing username/password
+and they would essentially see no difference in login.</li>
+</ol>
+<p>We also assumed</p>
+<ol class="arabic simple">
+<li>OpenID / OAuth would give us ability to store User details meaningfully.</li>
+<li>We would not need a seperate user datastore</li>
+</ol>
+<p>To this end we looked at finding a OpenID Provider that we could run
+and maintain independantly.  THis gave us several criteria</p>
+<ol class="arabic simple">
+<li>Code base must be well supported or well within our expertise range
+to self-support</li>
+<li>No / minimal development before use (ie we are looking for config
+and go)</li>
+<li>No/ minimal ongoing costs to support</li>
+</ol>
+<p>Initially I limited to looking at Python based servers</p>
+<div class="section" id="janrain">
+<h3>JanRain<a class="headerlink" href="#janrain" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://janrain.com/openid-enabled/">http://janrain.com/openid-enabled/</a></p>
+<p>JanRain is the grand-daddy of Python OpenID support, contributed to
+the 2.0 spec etc.  They are a commercial company offering hosted
+OpenID / OAuth &#8220;solutions&#8221;, but advertising by providing F/OSS libraries
+to Ruby, Python and PHP worlds.</p>
+<p>Their libraries are wrapped by all the other Python Providers that I
+can find.</p>
+<p>Their server.py example, I was unable to get working, despite
+extensive monkey-patching, however I did write a simple Flask wrapper
+around their library for a minimal implementation.  I would estimate
+at least a weeks development to get to something test ready, and that
+would be aiming at a cut down feature set.</p>
+</div>
+<div class="section" id="django-openid">
+<h3>Django-OpenID<a class="headerlink" href="#django-openid" title="Permalink to this headline">¶</a></h3>
+<p>(<a class="reference external" href="http://trac.nicolast.be/djangoid">http://trac.nicolast.be/djangoid</a>)</p>
+<p>This is now several years without commits, and needed patches to be
+written to get it to run, and still I was unable to make a simple
+login work.  I decided this is best classed as abandon-ware.</p>
+</div>
+<div class="section" id="ownopenidserver">
+<h3>ownOpenidserver<a class="headerlink" href="#ownopenidserver" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://ownopenidserver.com/">http://ownopenidserver.com/</a></p>
+<p>This is one I only recently found, it works but is aimed at just
+verifying one person and would need development to back onto say a
+MySQL db.  It wraps JanRain in web.py, very similarly to the toy
+example I wrote.</p>
+<p>I also looked at a few mini projects in Python dotted around, but
+nothing useful turned up.</p>
+<p>I then looked around at non-python implementations,</p>
+</div>
+<div class="section" id="overview-of-the-market">
+<h3>Overview of the market<a class="headerlink" href="#overview-of-the-market" title="Permalink to this headline">¶</a></h3>
+<p>From <a class="reference external" href="http://openid.net/developers/libraries/">http://openid.net/developers/libraries/</a> I obtained a list of
+libraries / implementations that claim to offer Provder capabilites.
+Please note that since our provider is intended <em>only</em> to authenticate
+users for our own Replying Party (Consumer) (ie we own both ends of
+client server) it really does not matter if the Provider only does
+OpenID1, 1.1, 2.0 etc.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Notes</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DotNetOpenAuth</td>
+<td>Windows Only, but now shipping as F/OSS
+as part of Visual Studio, so likely longevity.
+This is one I have not tested (it will add dramatically to TCO)
+but if we really cannot take option 1, we should review this
+before plumping for less well supported options on Unix.</td>
+</tr>
+<tr class="row-odd"><td>JOID</td>
+<td>JOID server example and tomcat
+did not play nicley, stopped debugging after an hour</td>
+</tr>
+<tr class="row-even"><td>OpenID4Java</td>
+<td>Plays a similar role to JanRain in the Java world - almost all
+Providers wrap this library.  Did not attempt to wrap it
+myself as JanRain seemed sufficient in Python</td>
+</tr>
+<tr class="row-odd"><td>WS02 Identity Svr.</td>
+<td>A wrapper around OpenID4Java, and supposedly a
+one-stop binary install. Most attractive well
+supported option, (commercial company, eBay use
+their ESB server), but it took majority of a
+working day to get up, https still an issue and
+simply too heavyweight for our needs.</td>
+</tr>
+<tr class="row-even"><td>NetMesh InfoGrid</td>
+<td>(Cursory) - Is a Graphing database framework that also for
+some reason supports OpenID.
+Not clear how central OID is to the main development goals</td>
+</tr>
+<tr class="row-odd"><td>Atlassian Crowd</td>
+<td>Not Tested.  Not OSS, in a similar position to DotNetAuth.</td>
+</tr>
+<tr class="row-even"><td>Packetizer</td>
+<td>A Perl based openID implementation that actually installed
+and worked. Also it is MySQL backed so can easily handle
+volume we have.  It does not wrap a library but just printf
+formats messages, including yadis.  I quite like it :-)
+Fails on the strong support community criteria however.</td>
+</tr>
+<tr class="row-odd"><td>OpenID4Perl</td>
+<td>Library in similar vein to Java.  Not Tested as have working
+Perl solution.</td>
+</tr>
+<tr class="row-even"><td>Net::OpenID::Server</td>
+<td>Not Tested</td>
+</tr>
+<tr class="row-odd"><td>PHP OpenID Library</td>
+<td>JanRain again</td>
+</tr>
+<tr class="row-even"><td>Zend</td>
+<td>Written by Zend (?) - is a library and examples, but as we
+have this style of solution in Python is not tested.</td>
+</tr>
+<tr class="row-odd"><td>GAE Django</td>
+<td>Seems primarily abandonware - wraps JanRain again, but not
+working on GAE when tested.</td>
+</tr>
+<tr class="row-even"><td>Ruby OpenID</td>
+<td>JanRain again</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>Testing was fairly limited - there is no common automated test suite for openID
+and this was really a quick review (I had hoped!)</p>
+<p>Does it actually return a OpenID to formatted requests</p>
+<p>Then used relevant portions of OSIS (test-id.org) if successful and on rackspace.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>The preponderance of Google, Twitter et al supplying almost all the
+OpenID Providers in the world has changed the OSS landscape from
+2007/8 when most of the above projects began.</p>
+<p>Most sites want &#8216;client&#8217; access to authenticate users, but few want to
+run their own server so there are fewer scratches to itch.  A minimal
+implementation is feasible to develop or just plug-in, but production
+level support will be up to us and with no real community.</p>
+<p>We have three basic options, in ascending order of effort</p>
+<ol class="arabic simple">
+<li>Force all users to login in with 3rd party OpenIDs exclusively.
+(Will need to link old accounts with new IDs)</li>
+<li>Implement Packetizer Provider, and accept the cost of support (Perl, unknown bugs)</li>
+<li>Develop our own Python based Provider, and accept the cost of support</li>
+</ol>
+<p>We are very unlikely to be able to have a OpenID implementation that
+can manipulate the Ax fields to supply non standard info back - in
+other words it is likely to be simpler to write our own REST client
+that queries for the details of a given OID than develop, run and
+support a Provider that does so.</p>
+<p>As such we are looking at having a (simple) user-info database fronted
+by REST and presumably a memcache instance on each repo server for
+speed.</p>
+<p>We are likely to want to support one UserID mapping to &gt;1 OpenID so
+people can link accounts and login as they want (StackOverflow model).
+This may not be immediately necessary but is likely to be a trivial
+first requirement for User Datastore</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/rhaptos2userlogo.jpg" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Searching for an OpenID Provider (Server)</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#background">Background</a><ul>
+<li><a class="reference internal" href="#janrain">JanRain</a></li>
+<li><a class="reference internal" href="#django-openid">Django-OpenID</a></li>
+<li><a class="reference internal" href="#ownopenidserver">ownOpenidserver</a></li>
+<li><a class="reference internal" href="#overview-of-the-market">Overview of the market</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/openid.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2012, Paul Brian.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>
