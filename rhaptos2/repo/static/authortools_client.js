@@ -39,8 +39,8 @@
         else                         {
             smsg = msg;
                                      }
-        var txt = $('#logarea').html();
-        $('#logarea').html(txt + '<li> ' + smsg);
+        var txt = jQuery('#logarea').html();
+        jQuery('#logarea').html(txt + '<li> ' + smsg);
         console.log(smsg);
     }
 
@@ -49,11 +49,11 @@
 // as I would like where eventually ediotor supplies an API
 
     function get_username() {
-        return $('#username').val();
+        return jQuery('#username').val();
     }
 
     function get_title() {
-        var mname = $('#title').val();
+        var mname = jQuery('#title').val();
         return mname;
     }
 
@@ -67,7 +67,7 @@ function save_validate() {
 
 function get_textarea_html5() {
         //retrieve, as JSON, the contents of the edit-area
-        var txtarea = $('#editarea').html();
+        var txtarea = jQuery('#editarea').html();
         return txtarea;
     }
 
@@ -90,11 +90,11 @@ function load_textarea(mhashid) {
             alert("sending jdata" + jdata);
             logger(jdata);
             //weird aloha feature - suffixed textareas.. ask phil..
-            $('#editarea').val(jdata['content']);
-            $('#aclrw').val(jdata['aclrw']);
-            $('#contentrw').val(jdata['contentrw']);
-            $('#title').val(jdata['title']);
-            $('#uuid').val(jdata['uuid']);
+            jQuery('#editarea').val(jdata['content']);
+            jQuery('#aclrw').val(jdata['aclrw']);
+            jQuery('#contentrw').val(jdata['contentrw']);
+            jQuery('#title').val(jdata['title']);
+            jQuery('#uuid').val(jdata['uuid']);
 
         });
 
@@ -112,12 +112,12 @@ function serialise_form() {
     // return form1 as object/hasharrary
     var payload = new Object;
     payload['content'] = get_textarea_html5();
-    payload['uuid'] = $('#uuid').val();
+    payload['uuid'] = jQuery('#uuid').val();
 
-    payload['aclrw'] = $('#aclrw').val().split(',');
+    payload['aclrw'] = jQuery('#aclrw').val().split(',');
 
-    payload['contentrw'] = $('#contentrw').val().split(',');
-    payload['title'] = $('#title').val();
+    payload['contentrw'] = jQuery('#contentrw').val().split(',');
+    payload['title'] = jQuery('#title').val();
 
 //        var json_text = JSON.stringify(payload, null, 2);
 //        return json_text;
@@ -127,11 +127,11 @@ function serialise_form() {
 }
 
 function newText() {
-    $('#aclrw').val(whoami['userID']);
-    $('#contentrw').val(whoami['userID']);
-    $('#title').val('Enter title here ...');
-    $('#uuid').val('');
-    $('#editarea').html('Enter your text here...');
+    jQuery('#aclrw').val(whoami['userID']);
+    jQuery('#contentrw').val(whoami['userID']);
+    jQuery('#title').val('Enter title here ...');
+    jQuery('#uuid').val('');
+    jQuery('#editarea').html('Enter your text here...');
 
 
 }
@@ -172,10 +172,10 @@ function saveText() {
          });
 
          request.done(function(data) {
-             //$("#responsearea").html(data);
+             //jQuery("#responsearea").html(data);
              $.each(data, showres);
              // Put the UUID in the form field.
-             $('#uuid').val(data.hashid);
+             jQuery('#uuid').val(data.hashid);
              build_workspace();
          });
 
@@ -210,12 +210,12 @@ function getLoadHistoryVer(uuid) {
             var aclrw = nodedoc['aclrw'];
             var contentrw = nodedoc['contentrw'];
 
-            $('#title').val(title);
-            $('#aclrw').val(aclrw);
-            $('#contentrw').val(contentrw);
-            $('#uuid').val(uuid);
+            jQuery('#title').val(title);
+            jQuery('#aclrw').val(aclrw);
+            jQuery('#contentrw').val(contentrw);
+            jQuery('#uuid').val(uuid);
 
-            $('#editarea').html(txtarea);
+            jQuery('#editarea').html(txtarea);
         },
 
         error: function(jqXHR, textStatus, err) {
@@ -244,7 +244,7 @@ function build_workspace() {
         url: WORKSPACEURL,
         xhrFields: {
             withCredentials: true
-        },  
+        },
         success: function(historyarr) {
             historyarr.sort();
             if (historyarr.length == 0){
@@ -254,7 +254,7 @@ function build_workspace() {
 
                 $.each(historyarr, function(i, elem) {
                     var strelem = "'" + elem[0] + "'";
-                      
+
                     htmlfrag += '<tr><td><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a></td>' + '<td><a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a></td></tr>';
                     jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
                 });
@@ -266,7 +266,7 @@ function build_workspace() {
                 //jsond += ']"';
                 logger("Building workspace :" + htmlfrag);
                 logger(jsond);
-                $('#workspaces').html(htmlfrag);
+                jQuery('#workspaces').html(htmlfrag);
             }
         }
     });
@@ -292,7 +292,7 @@ function getwhoami() {
 //            };
             var user_email = jsondoc['email'];
             var user_name = jsondoc['name'];
-            $('#usernamedisplay').html(user_name + '-' + user_email);
+            jQuery('#usernamedisplay').html(user_name + '-' + user_email);
         },
 
         error: function(jqXHR, textStatus, err) {
@@ -335,7 +335,7 @@ function showres(i, elem) {
 
 function start_aloha() {
 
-    $('#editarea').aloha();
+    jQuery('#editarea').aloha();
     logger('started aloha');
 }
 
@@ -378,39 +378,39 @@ function test(){
 
 
 
-$(document).ready(function() {
-//$(window).load(function() {
+jQuery(document).ready(function() {
+//jQuery(window).load(function() {
 
     //bind various clicks - clearly refactorable
-    $('#testbtn').click(function(e) {test();
+    jQuery('#testbtn').click(function(e) {test();
                                       e.preventDefault()});
 
-    $('#persona_signin').click(function(e) {persona_in();
+    jQuery('#persona_signin').click(function(e) {persona_in();
                                             e.preventDefault()
                                            });
 
-    $('#persona_signout').click(function(e) {persona_out();
+    jQuery('#persona_signout').click(function(e) {persona_out();
                                       e.preventDefault()});
 
 
-    $('#clickLoadTextArea').click(function(e) {load_textarea();
+    jQuery('#clickLoadTextArea').click(function(e) {load_textarea();
                                               e.preventDefault()});
 
 
-    $('#savemodule').click(function(event) {
+    jQuery('#savemodule').click(function(event) {
                          saveText();
                          event.preventDefault();
                        }
                       );
 
-    $('#newmodule').click(function(event) {
+    jQuery('#newmodule').click(function(event) {
                          newText();
                          event.preventDefault();
                        }
                       );
 
     //nolink are links that do some jquery function, but should not be links
-    $('a.nolink').click(function(event) {
+    jQuery('a.nolink').click(function(event) {
         event.preventDefault();
      });
 
@@ -470,7 +470,7 @@ Aloha.ready( function() {
 
       // Also, wrap all math in a span/div. MathJax replaces the MathJax element
       // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-//      $('math').wrap('<span class="math-element"></span>')
+//      jQuery('math').wrap('<span class="math-element"></span>')
 //      MathJax.Hub.Configured();
-      //$('*[rel=tooltip]').tooltip();
+      //jQuery('*[rel=tooltip]').tooltip();
 });
