@@ -2,7 +2,7 @@
 (function() {
 
   require(["jquery", "underscore", "mustache", "atc/tools", "atc/templates", "jquery-mockjax", "bootstrap", "tagit", "jquery-ui"], function($, _, Mustache, Tools, Templates) {
-    var STATE_ROLES;
+    var STATE_METADATA, STATE_ROLES;
     window.$ = window.jQuery = $;
     window._ = _;
     window.Mustache = Mustache;
@@ -27,7 +27,7 @@
         return JSON.stringify(STATE_ROLES);
       }
     });
-    return $.mockjax({
+    $.mockjax({
       type: "POST",
       url: "../..//module//roles/",
       responseTime: 250,
@@ -39,6 +39,21 @@
         return _.each(roles, function(userRoles) {
           return STATE_ROLES.push(userRoles);
         });
+      }
+    });
+    STATE_METADATA = {
+      title: 'Test Module Title',
+      language: 'en',
+      subjects: ['Business', 'Social Sciences']
+    };
+    return $.mockjax({
+      type: "GET",
+      url: "../..//module//metadata/",
+      responseTime: 250,
+      contentType: "application/json",
+      responseText: STATE_METADATA,
+      response: function(settings) {
+        return console.log(STATE_METADATA);
       }
     });
   });

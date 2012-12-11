@@ -14,6 +14,7 @@ require ["jquery", "underscore", "mustache", "atc/tools", "atc/templates", "jque
     name: "Another Name"
     roles: ["Author", "Maintainer"]
   ]
+  # # Roles Routes
   $.mockjax
     type: "GET"
     url: "../..//module//roles/"
@@ -38,3 +39,17 @@ require ["jquery", "underscore", "mustache", "atc/tools", "atc/templates", "jque
       STATE_ROLES.splice 0, STATE_ROLES.length
       _.each roles, (userRoles) -> STATE_ROLES.push userRoles
 
+
+  # # Metadata Routes
+  STATE_METADATA =
+    title: 'Test Module Title'
+    language: 'en' # FIXME: Should be 'en-us'
+    subjects: ['Business', 'Social Sciences']
+  $.mockjax
+    type: "GET"
+    url: "../..//module//metadata/"
+    responseTime: 250 #ms
+    contentType: "application/json"
+    responseText: STATE_METADATA
+    response: (settings) ->
+      console.log STATE_METADATA
