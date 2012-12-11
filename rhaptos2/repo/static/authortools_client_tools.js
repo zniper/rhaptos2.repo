@@ -284,6 +284,7 @@
           type: 'GET',
           url: '/keywords',
           contentType: 'application/json',
+          dataType: 'json',
           success: function(data) {
             return response(data);
           }
@@ -303,7 +304,8 @@
       return $.ajax({
         type: 'GET',
         url: _generateUrl('metadata/', module_id),
-        contentType: 'application/json'
+        contentType: 'application/json',
+        dataType: 'json'
       });
     };
 
@@ -401,7 +403,8 @@
       return $.ajax({
         type: 'GET',
         url: _generateUrl('roles/', module_id),
-        contentType: 'application/json'
+        contentType: 'application/json',
+        dataType: 'json'
       });
     };
 
@@ -534,6 +537,10 @@
     return RolesModal;
 
   })(BaseModal);
+
+  exports.MetadataModal = MetadataModal;
+
+  exports.RolesModal = RolesModal;
 
   exports.construct = function() {
     var metadata_modal, modal_link_id, roles_modal, _i, _len, _ref;
