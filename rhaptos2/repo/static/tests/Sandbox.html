@@ -6,8 +6,13 @@
   <link rel="stylesheet" type="text/css" href="../css/tagit-simple-blue.css">
   <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
 
+  <!-- Use the requirejs config to find the packages -->
+  <!-- But change the base URL to not be in the "tests" subdir -->
+  <!-- Since now requirejs doesn't know how to find tests/Sandbox.js load it on our own -->
   <script src="../js/lib/require-2.1.2.js" data-main="Sandbox"></script>
-  <script src="require-config.js"></script>
+  <script src="../require-config.js"></script>
+  <script>require.config({baseUrl:'../'});</script>
+  <script src="Sandbox.js"></script>
 
 </head>
 

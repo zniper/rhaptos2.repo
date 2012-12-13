@@ -2,28 +2,27 @@
 (function() {
 
   require.config({
-    baseUrl: './',
     enforceDefine: true,
     paths: {
-      jquery: '../js/lib/jquery-1.8.3',
-      'jquery-ui': '../js/lib/jqueryui-1.9.2',
-      'jquery-mockjax': '../js/lib/jquery.mockjax',
-      bootstrap: '../js/lib/bootstrap',
-      underscore: '../js/lib/underscore-1.4.3',
-      backbone: '../js/lib/backbone-0.9.2',
-      jasmine: '../js/lib/jasmine',
-      'jasmine-html': '../js/lib/jasmine-html',
-      'jasmine-ajax': '../js/lib/jasmine-ajax',
-      mustache: '../js/lib/mustache',
-      tagit: '../js/lib/tagit',
-      spin: '../js/lib/spin',
+      jquery: 'js/lib/jquery-1.8.3',
+      'jquery-ui': 'js/lib/jqueryui-1.9.2',
+      'jquery-mockjax': 'js/lib/jquery.mockjax',
+      bootstrap: 'js/lib/bootstrap',
+      underscore: 'js/lib/underscore-1.4.3',
+      backbone: 'js/lib/backbone-0.9.2',
+      jasmine: 'js/lib/jasmine',
+      'jasmine-html': 'js/lib/jasmine-html',
+      'jasmine-ajax': 'js/lib/jasmine-ajax',
+      mustache: 'js/lib/mustache',
+      tagit: 'js/lib/tagit',
+      spin: 'js/lib/spin',
       spec: 'spec',
-      'model/tools': '../model/tools',
-      'atc/lang': '../js/languagelib',
-      'atc/client': '../authortools_client',
-      'atc/templates': '../authortools_client_templates',
-      'atc/tools': '../authortools_client_tools',
-      'mockjax-routes': 'mockjax-routes'
+      'model/tools': 'model/tools',
+      'atc/lang': 'js/languagelib',
+      'atc/client': 'authortools_client',
+      'atc/templates': 'authortools_client_templates',
+      'atc/tools': 'authortools_client_tools',
+      'mockjax-routes': 'tests/mockjax-routes'
     },
     shim: {
       jquery: {

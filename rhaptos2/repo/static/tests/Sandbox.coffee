@@ -1,4 +1,5 @@
-define ['jquery', 'model/tools', 'mockjax-routes'], ($, Tools, MOCK_CONTENT) =>
+# Need to define a name for this module that matches the requirejs data-main attribute.
+define 'Sandbox', ['jquery', 'model/tools', 'mockjax-routes'], ($, Tools, MOCK_CONTENT) =>
   model = new Tools.Metadata()
   model.set MOCK_CONTENT
   metadataView = new Tools.MetadataEditView {model: model}

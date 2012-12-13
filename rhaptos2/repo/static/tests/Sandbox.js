@@ -2,7 +2,7 @@
 (function() {
   var _this = this;
 
-  define(['jquery', 'model/tools', 'mockjax-routes'], function($, Tools, MOCK_CONTENT) {
+  define('Sandbox', ['jquery', 'model/tools', 'mockjax-routes'], function($, Tools, MOCK_CONTENT) {
     var metadataModal, metadataView, model, rolesModal, rolesView;
     model = new Tools.Metadata();
     model.set(MOCK_CONTENT);
