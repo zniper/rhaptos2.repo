@@ -16,8 +16,11 @@ define ['jquery', 'model/tools'], (jQuery, Tools) ->
   content = null
   loadModel = ->
     uuid = jQuery('#uuid').val()
-    content = new Tools.Metadata(uuid)
-    content.fetch() if uuid
+    if uuid
+      content = new Tools.Module(id: uuid, url: "/module/#{uuid}")
+      content.fetch()
+    else
+      content = new Tools.Module()
   loadModel()
   jQuery('#uuid').on 'change', ->
     loadModel()

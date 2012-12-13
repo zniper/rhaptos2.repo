@@ -12,9 +12,14 @@
     loadModel = function() {
       var uuid;
       uuid = jQuery('#uuid').val();
-      content = new Tools.Metadata(uuid);
       if (uuid) {
+        content = new Tools.Module({
+          id: uuid,
+          url: "/module/" + uuid
+        });
         return content.fetch();
+      } else {
+        return content = new Tools.Module();
       }
     };
     loadModel();

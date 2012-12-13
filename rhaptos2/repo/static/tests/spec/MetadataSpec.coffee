@@ -4,7 +4,7 @@ define ['jasmine', 'model/tools', 'mockjax-routes'], (jasmine, Tools, MOCK_CONTE
   j.beforeEach ->
 
     # Configure the mock ajax routes for testing
-    @model = new Tools.Metadata()
+    @model = new Tools.Module()
     @model.set MOCK_CONTENT
 
     @metadataView = new Tools.MetadataEditView(model: @model)

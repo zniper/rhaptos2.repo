@@ -2,7 +2,7 @@
 (function() {
 
   define(['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit'], function(Backbone, jQuery, Templates, Languages) {
-    var KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, Metadata, MetadataEditView, ModalWrapper, RolesEditView, USERS_URL, initTagit, languageCode, value, _ref;
+    var KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, ModalWrapper, Module, RolesEditView, USERS_URL, browserLanguage, initTagit, languageCode, value, _ref;
     KEYWORDS_URL = '/keywords';
     USERS_URL = '/users';
     METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business', 'Science and Technology', 'Humanities', 'Social Sciences'];
@@ -53,7 +53,11 @@
       });
       return PLACEHOLDER.replaceWith($el);
     };
-    Metadata = Backbone.Model.extend({
+    browserLanguage = (navigator.userLanguage || navigator.language || '').toLowerCase();
+    Module = Backbone.Model.extend({
+      defaults: {
+        language: browserLanguage
+      },
       url: function() {
         return this.get('url');
       }
@@ -266,7 +270,7 @@
 
     })();
     return {
-      Metadata: Metadata,
+      Module: Module,
       ModalWrapper: ModalWrapper,
       MetadataEditView: MetadataEditView,
       RolesEditView: RolesEditView
