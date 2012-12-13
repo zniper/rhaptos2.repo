@@ -19,7 +19,7 @@ define ['mustache'], (Mustache) ->
     </div>'
 
   # FIXME: Convert these into compiled templates
-  templates.METADATA = '
+  templates.METADATA = Mustache.compile '
     <label>Title</label>
     <input required type="text" name="title" value="{{title}}">
 
@@ -49,7 +49,9 @@ define ['mustache'], (Mustache) ->
       {{/keywords}}
     </ul>'
 
-  templates.ROLES = '
+  templates.LANGUAGE_VARIANTS = Mustache.compile '<option value="">None</option>{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
+
+  templates.ROLES = Mustache.compile '
     <h3>Role Assignments</h3>
     <h4>Authors</h4>
     <ul class="authors">
@@ -64,13 +66,13 @@ define ['mustache'], (Mustache) ->
       {{/copyrightHolders}}
     </ul>'
 
-  templates.MODAL_WRAPPER = '
+  templates.MODAL_WRAPPER = Mustache.compile '
     <div class="modal hide fade in">
       <form name="modal-form">
         <div class="modal-header">
           <button type="button" class="close"
                   data-dismiss="modal" aria-hidden="true">×</button>
-          <h3 id="modal-header-label"></h3>
+          <h3 id="modal-header-label">{{title}}</h3>
         </div>
         <div class="modal-body"></div>
         <div class="modal-footer">

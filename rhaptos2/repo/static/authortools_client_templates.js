@@ -21,7 +21,7 @@
       <input type="hidden" name="id" value="{{id}}">\
       <input type="file" name="file">\
     </div>';
-    templates.METADATA = '\
+    templates.METADATA = Mustache.compile('\
     <label>Title</label>\
     <input required type="text" name="title" value="{{title}}">\
 \
@@ -49,8 +49,9 @@
       {{#keywords}}\
         <li>{{.}}</li>\
       {{/keywords}}\
-    </ul>';
-    templates.ROLES = '\
+    </ul>');
+    templates.LANGUAGE_VARIANTS = Mustache.compile('<option value="">None</option>{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}');
+    templates.ROLES = Mustache.compile('\
     <h3>Role Assignments</h3>\
     <h4>Authors</h4>\
     <ul class="authors">\
@@ -63,14 +64,14 @@
       {{#copyrightHolders}}\
       <li>{{.}}</li>\
       {{/copyrightHolders}}\
-    </ul>';
-    templates.MODAL_WRAPPER = '\
+    </ul>');
+    templates.MODAL_WRAPPER = Mustache.compile('\
     <div class="modal hide fade in">\
       <form name="modal-form">\
         <div class="modal-header">\
           <button type="button" class="close"\
                   data-dismiss="modal" aria-hidden="true">×</button>\
-          <h3 id="modal-header-label"></h3>\
+          <h3 id="modal-header-label">{{title}}</h3>\
         </div>\
         <div class="modal-body"></div>\
         <div class="modal-footer">\
@@ -78,7 +79,7 @@
           <button type="button" class="cancel btn" data-dismiss="modal">Cancel</button>\
         </div>\
       </form>\
-    </div>';
+    </div>');
     templates.SHARING = '\
     <div role="popup-content">\
       <form name="sharing-form" action="sharing" method="POST">\

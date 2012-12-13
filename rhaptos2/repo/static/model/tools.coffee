@@ -9,7 +9,7 @@
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 # __Note:__ `bootstrap` and `tagit` add to jQuery and don't export anything of their own
-define ['backbone', 'jquery', 'mustache', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit'], (Backbone, jQuery, Mustache, Templates, Languages) ->
+define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit'], (Backbone, jQuery, Templates, Languages) ->
 
   # HACK to discourage people from using the global jQuery
   # and instead using the requirejs.
@@ -24,8 +24,8 @@ define ['backbone', 'jquery', 'mustache', 'atc/templates', 'atc/lang', 'bootstra
   USERS_URL = '/users'
 
   # FIXME: Move these subjects to a common module so the mock code can use them and can be used elsewhere
-  METADATA_SUBJECTS = ["Arts", "Mathematics and Statistics", "Business",
-    "Science and Technology", "Humanities", "Social Sciences"]
+  METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business',
+    'Science and Technology', 'Humanities', 'Social Sciences']
 
   MODAL_SPINNER_OPTIONS = {
     lines: 13  # The number of lines to draw
@@ -120,23 +120,23 @@ define ['backbone', 'jquery', 'mustache', 'atc/templates', 'atc/lang', 'bootstra
           variants.push(value)
       if variants.length > 0
         # Generate the language variants dropdown.
-        template = '<option value="">None</option>{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
-        $variant.removeAttr('disabled').html(Mustache.to_html(template, {'variants': variants}))
+        $variant.removeAttr('disabled')
+        $variant.html(Templates.LANGUAGE_VARIANTS('variants': variants))
         $variant.find("option[value=#{language}]").attr('selected', true)
       else
         $variant.html('').attr('disabled', true)
 
     # Update the View with new subjects selected
     _updateSubjects: ->
-      @$el.find("input[name=subjects]").attr('checked', false)
+      @$el.find('input[name=subjects]').attr('checked', false)
       for subject in @model.get('subjects') or []
         @$el.find("input[name=subjects][value='#{subject}']").attr('checked', true)
 
     render: () ->
-      mustacheObj = jQuery.extend({}, @model.toJSON())
-      mustacheObj._languages = LANGUAGES
-      mustacheObj._subjects = METADATA_SUBJECTS
-      @$el.append jQuery(Mustache.to_html(Templates.METADATA, mustacheObj))
+      templateObj = jQuery.extend({}, @model.toJSON())
+      templateObj._languages = LANGUAGES
+      templateObj._subjects = METADATA_SUBJECTS
+      @$el.append Templates.METADATA(templateObj)
 
       # Select the correct language (mustache can't do that)
       @_updateLanguage()
@@ -190,8 +190,7 @@ define ['backbone', 'jquery', 'mustache', 'atc/templates', 'atc/lang', 'bootstra
     # `_update*` Modifies the view based on changes to the model
 
     render: () ->
-      mustacheObj = jQuery.extend({}, @model.toJSON())
-      @$el.append jQuery(Mustache.to_html(Templates.ROLES, mustacheObj))
+      @$el.append jQuery(Templates.ROLES(@model.toJSON()))
 
       $authors = @$el.find('.authors')
       $copyrightHolders = @$el.find('.copyright-holders')
@@ -229,9 +228,8 @@ define ['backbone', 'jquery', 'mustache', 'atc/templates', 'atc/lang', 'bootstra
   # the 'Save' button is clicked.
   class ModalWrapper
     constructor: (@view, title) ->
-      @$el = jQuery(Templates.MODAL_WRAPPER)
-      @$el.find('#modal-header-label').append(title) if title
       @view.render()
+      @$el = jQuery(Templates.MODAL_WRAPPER(title: title))
       @$el.find('.modal-body').html('').append @view.$el
 
       # Trigger the save when the save button is clicked
