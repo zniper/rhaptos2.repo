@@ -1,55 +1,16 @@
-require ["jquery", "underscore", "mustache", "atc/tools", "atc/templates", "jquery-mockjax", "bootstrap", "tagit", "jquery-ui"], ($, _, Mustache, Tools, Templates) ->
+define ['jquery', 'model/tools', 'mockjax-routes'], ($, Tools, MOCK_CONTENT) =>
+  model = new Tools.Metadata()
+  model.set MOCK_CONTENT
+  metadataView = new Tools.MetadataEditView {model: model}
+  rolesView    = new Tools.RolesEditView {model: model}
 
-  # ATC Doesn't use requirejs yet and so needs global variables to many of the packages.
-  window.$ = window.jQuery = $
-  window._ = _
-  window.Mustache = Mustache
-  window.Templates = Templates
-  Tools.construct()
+  metadataModal = new Tools.ModalWrapper(metadataView, 'Edit Metadata (test)')
+  rolesModal    = new Tools.ModalWrapper(rolesView, 'Edit Roles (test)')
 
-  STATE_ROLES = [
-    name: "Test Name"
-    roles: ["Author"]
-  ,
-    name: "Another Name"
-    roles: ["Author", "Maintainer"]
-  ]
-  # # Roles Routes
-  $.mockjax
-    type: "GET"
-    url: "../..//module//roles/"
-    responseTime: 250 #ms
-    contentType: "application/json"
-    responseText: STATE_ROLES
-    response: (settings) ->
-      JSON.stringify STATE_ROLES
+  # Log when model changes are saved (not changed)
+  model.on 'sync', ->
+    console.log 'Model Saved!', @
+    alert "Model Saved!\n#{JSON.stringify(@)}"
 
-  $.mockjax
-    type: "POST" #FIXME: This should be a PUT (or at least PUT should work)
-    url: "../..//module//roles/"
-    responseTime: 250 #ms
-    contentType: "application/json"
-
-    #responseText: JSON.stringify([{name:'User Name', roles:['Author']}]),
-    response: (settings) ->
-      roles = JSON.parse(settings.data)
-
-      # Can't just set the variable. it's already bound to mockjax.responseText above.
-      # Clear it and re-add all the roles
-      STATE_ROLES.splice 0, STATE_ROLES.length
-      _.each roles, (userRoles) -> STATE_ROLES.push userRoles
-
-
-  # # Metadata Routes
-  STATE_METADATA =
-    title: 'Test Module Title'
-    language: 'en' # FIXME: Should be 'en-us'
-    subjects: ['Business', 'Social Sciences']
-  $.mockjax
-    type: "GET"
-    url: "../..//module//metadata/"
-    responseTime: 250 #ms
-    contentType: "application/json"
-    responseText: STATE_METADATA
-    response: (settings) ->
-      console.log STATE_METADATA
+  $('.show-metadata').on 'click', => metadataModal.show()
+  $('.show-roles'   ).on 'click', => rolesModal.show()

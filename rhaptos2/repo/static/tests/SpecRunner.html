@@ -1,35 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Spec Runner</title>
+  <title>jasmine Spec Runner</title>
 
   <link rel="stylesheet" type="text/css" href="../css/jasmine.css">
   <script src="../js/lib/require-2.1.2.js" data-main="SpecRunner"></script>
   <script type="text/javascript" src="require-config.js"></script>
-  <!-- The different specs to run are defined (requirejs style) in SpecRunner.js -->
 
-  <!-- These are hacks to get other files working... -->
-  <script>
-
-    // FIXME: Remove this. This is stored in ../../templates/conf.js
-    var FROZONE = {
-      e2repoFQDN   : '../../', // "{{ confd['www_server_name'] }}",
-      wwwFQDN      : '../../', // "{{ confd['www_server_name'] }}"
-    };
-    var whoami = {
-        userID      : 'whoamiUserid',
-        authenticated_identifier: 'whoamiAuthenticated_identifier',
-        email       : 'whoamiEmail',
-        name        : 'whoamiName'
-    };
-    Aloha = { jQuery: function(f) { jQuery.fn.aloha = function() {}; return jQuery(f); },
-              ready:  function(f) { jQuery('body').ready(f); }
-    };
-  </script>
 </head>
 
 <body>
-
-  <div id="sandbox"></div>
+  <!-- The different specs to run are defined (requirejs style) in SpecRunner.coffee -->
 </body>
 </html>
