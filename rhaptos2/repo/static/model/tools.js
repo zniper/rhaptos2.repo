@@ -3,10 +3,6 @@
 
   define(['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit'], function(Backbone, jQuery, Templates, Languages) {
     var KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, Metadata, MetadataEditView, ModalWrapper, RolesEditView, USERS_URL, initTagit, languageCode, value, _ref;
-    this.jQuery = this.$ = function() {
-      console.warn('You should add "jquery" to your dependencies in define instead of using the global jQuery!');
-      return jQuery.apply(this, arguments);
-    };
     KEYWORDS_URL = '/keywords';
     USERS_URL = '/users';
     METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business', 'Science and Technology', 'Humanities', 'Social Sciences'];
@@ -235,10 +231,10 @@
       function ModalWrapper(view, title) {
         var _this = this;
         this.view = view;
+        this.view.render();
         this.$el = jQuery(Templates.MODAL_WRAPPER({
           title: title
         }));
-        this.view.render();
         this.$el.find('.modal-body').html('').append(this.view.$el);
         this.$el.on('click', '.save', function(evt) {
           var attrs;

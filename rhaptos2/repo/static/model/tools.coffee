@@ -11,14 +11,6 @@
 # __Note:__ `bootstrap` and `tagit` add to jQuery and don't export anything of their own
 define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit'], (Backbone, jQuery, Templates, Languages) ->
 
-  # HACK to discourage people from using the global jQuery
-  # and instead using the requirejs.
-  # This helps ensure plugins that extend jQuery (like bootstrap, jquery-ui, tagit)
-  # are properly listed as dependencies in requirejs' `define`
-  @jQuery = @$ = ->
-    console.warn 'You should add "jquery" to your dependencies in define instead of using the global jQuery!'
-    jQuery.apply @, arguments
-
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords'
   USERS_URL = '/users'
