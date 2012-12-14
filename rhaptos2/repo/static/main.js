@@ -15,7 +15,7 @@
       if (uuid) {
         content = new Tools.Module({
           id: uuid,
-          url: "/module/" + uuid
+          url: "/module/" + uuid + "/metadata/"
         });
         return content.fetch();
       } else {

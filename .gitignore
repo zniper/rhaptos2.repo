@@ -13,3 +13,4 @@ _mailinglist
 #*.*#
 */_build/*
 *thirdparty*
+devel.ini
