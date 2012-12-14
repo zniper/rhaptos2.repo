@@ -8,12 +8,26 @@
 #  This software is subject to the provisions of the GNU Lesser General
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
-# __Note:__ `bootstrap` and `tagit` add to jQuery and don't export anything of their own
-define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit'], (Backbone, jQuery, Templates, Languages) ->
+# __Note:__ `bootstrap` and `select2` add to jQuery and don't export anything of their own
+define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'select2'], (Backbone, jQuery, Templates, Languages) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
-  KEYWORDS_URL = '/keywords'
-  USERS_URL = '/users'
+  KEYWORDS_URL = '/keywords/'
+  USERS_URL = '/users/'
+
+  SELECT2_AJAX_HANDLER = (url) ->
+    quietMillis: 500
+    url: url
+    dataType: 'json'
+    data: (term, page) ->
+      q: term # search term
+    # parse the results into the format expected by Select2
+    results: (data, page) ->
+      #data.unshift query.term
+      return {
+        results: ({id:id, text:id} for id in data)
+      }
+
 
   # FIXME: Move these subjects to a common module so the mock code can use them and can be used elsewhere
   METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business',
@@ -42,30 +56,6 @@ define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit']
     value = jQuery.extend({}, value)  # Clone the value.
     jQuery.extend(value, {code: languageCode})
     LANGUAGES.push(value)
-
-  # tagit (specifically its config of autocomplete) requires this element be part of the DOM
-  # so add the tag list to the body, configure tagit, and then put it back
-  initTagit = ($el, tagsLookup) ->
-    PLACEHOLDER = jQuery('<span></span>')
-    $el.replaceWith(PLACEHOLDER)
-    $el.appendTo('body')
-    $el.tagit
-      # Remote callback for finding more tags
-      tagSource: tagsLookup
-      # Allow the user to reorder the tags
-      sortable: true
-      # TODO Allow hidden select element
-      # select: true
-      # Minimum number of characters to enter before performing an AJAX call to search for tags
-      minLength: 1
-      # The 'space' character has been removed to allow for multi-word
-      #   keywords. (e.g. Quantum Physics)
-      triggerKeys: ['enter', 'comma', 'tab']
-      # For some reason tagit keeps around the initialTags from a previous
-      # instantiation so we clear it here.
-      initialTags: []
-    # Put the tagit element back where it came from
-    PLACEHOLDER.replaceWith($el)
 
   # Default language for new content is the browser's language
   browserLanguage = (navigator.userLanguage or navigator.language or '').toLowerCase()
@@ -141,17 +131,11 @@ define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit']
 
       # tagit (specifically its config of autocomplete) requires this element be part of the DOM
       # so we add the keywords to the body and then put it back
-      $keywords = @$el.find('#metadata-keywords')
-      tagLookup = (request, response) ->
-        jQuery.ajax({
-          type: 'GET'
-          url: "#{KEYWORDS_URL}/#{request.term}*"
-          contentType: 'application/json'
-          dataType: 'json'
-          success: (data) ->
-            response(data)
-          })
-      initTagit($keywords, tagLookup)
+      $keywords = @$el.find('*[name=keywords]')
+      $keywords.select2
+        tags: @model.get('keywords') or []
+        tokenSeparators: [',']
+        ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
 
       @delegateEvents()
 
@@ -189,22 +173,17 @@ define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'tagit']
     render: () ->
       @$el.append jQuery(Templates.ROLES(@model.toJSON()))
 
-      $authors = @$el.find('.authors')
-      $copyrightHolders = @$el.find('.copyright-holders')
+      $authors = @$el.find('*[name=authors]')
+      $copyrightHolders = @$el.find('*[name=copyrightHolders]')
 
-      # tagit (specifically its config of autocomplete) requires this element be part of the DOM
-      # so we add the keywords to the body and then put it back
-      tagLookup = (request, response) ->
-        jQuery.ajax({
-          type: 'GET'
-          url: "#{USERS_URL}/#{request.term}*"
-          contentType: 'application/json'
-          dataType: 'json'
-          success: (data) ->
-            response(data)
-          })
-      initTagit($authors, tagLookup)
-      initTagit($copyrightHolders, tagLookup)
+      $authors.select2
+        tags: @model.get('authors') or []
+        tokenSeparators: [',']
+        #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
+      $copyrightHolders.select2
+        tags: @model.get('copyrightHolders') or []
+        tokenSeparators: [',']
+        #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
 
       @delegateEvents()
       @

@@ -45,26 +45,14 @@
     {{/_subjects}}\
 \
     <label>Keywords</label>\
-    <ul id="metadata-keywords" class="tagit">\
-      {{#keywords}}\
-        <li>{{.}}</li>\
-      {{/keywords}}\
-    </ul>');
+    <input name="keywords" type="text" placeholder="keywords help people find this content"/>');
     templates.LANGUAGE_VARIANTS = Mustache.compile('<option value="">None</option>{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}');
     templates.ROLES = Mustache.compile('\
     <h3>Role Assignments</h3>\
     <h4>Authors</h4>\
-    <ul class="authors">\
-      {{#authors}}\
-      <li>{{.}}</li>\
-      {{/authors}}\
-    </ul>\
+    <input name="authors" type="text"/>\
     <h4>Copyright Holders</h4>\
-    <ul class="copyright-holders">\
-      {{#copyrightHolders}}\
-      <li>{{.}}</li>\
-      {{/copyrightHolders}}\
-    </ul>');
+    <input name="copyrightHolders"/>');
     templates.MODAL_WRAPPER = Mustache.compile('\
     <div class="modal hide fade in">\
       <form name="modal-form">\

@@ -5,7 +5,6 @@
     enforceDefine: true,
     paths: {
       jquery: 'lib/jquery-1.8.3',
-      'jquery-ui': 'lib/jquery-ui/js/jquery-ui-1.9.2.custom',
       'jquery-mockjax': 'lib/jquery.mockjax',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       underscore: 'lib/underscore-1.4.3',
@@ -13,7 +12,7 @@
       jasmine: 'lib/jasmine/jasmine',
       'jasmine-html': 'lib/jasmine/jasmine-html',
       mustache: 'lib/mustache',
-      tagit: 'lib/tag-it/js/tag-it',
+      select2: 'lib/select2/select2',
       spin: 'lib/spin',
       spec: 'spec',
       'model/tools': 'model/tools',
@@ -62,13 +61,9 @@
       mustache: {
         exports: 'Mustache'
       },
-      'jquery-ui': {
+      select2: {
         deps: ['jquery'],
-        exports: 'jQuery'
-      },
-      tagit: {
-        deps: ['jquery-ui'],
-        exports: 'jQuery'
+        exports: 'Select2'
       },
       'atc/client': {
         deps: ['jquery'],
@@ -81,7 +76,7 @@
         exports: 'Templates'
       },
       'atc/tools': {
-        deps: ['jquery', 'atc/lang', 'spin', 'atc/client', 'atc/templates', 'bootstrap', 'tagit'],
+        deps: ['jquery', 'atc/lang', 'spin', 'atc/client', 'atc/templates', 'bootstrap', 'select2'],
         exports: 'Tools'
       },
       'mockjax-routes': {

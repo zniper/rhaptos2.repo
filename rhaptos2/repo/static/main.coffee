@@ -2,7 +2,7 @@ define ['jquery', 'model/tools'], (jQuery, Tools) ->
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.
-  # This helps ensure plugins that extend jQuery (like bootstrap, jquery-ui, tagit)
+  # This helps ensure plugins that extend jQuery (like bootstrap)
   # are properly listed as dependencies in requirejs' `define`
   @jQuery = @$ = ->
     console.warn 'You should add "jquery" to your dependencies in define() instead of using the global jQuery!'

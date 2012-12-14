@@ -1,3 +1,7 @@
+.select2-container {
+  min-width: 10em;
+}
+
 /* Apparently MathJax still renders the annotation element as plain text */
 .math-element .MathJax .math .annotation, annotation {
   display: none;
@@ -81,7 +85,7 @@ table td:first-child { min-width: 1em; }
 /*------------------------------------------*/
 
 .aloha-table-wrapper div.aloha-wai-red { background-image: none !important; }
-.aloha-toolbar { display: none !important; }    
+.aloha-toolbar { display: none !important; }
 
 .toolbar-container {
   width: 100%;
@@ -98,18 +102,18 @@ body {
   padding-bottom: 40px;
 }
 
-#editorspan { 
-  background-color: #FAFAFA; 
+#editorspan {
+  background-color: #FAFAFA;
   border: 1px solid #ddd;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
-  border-radius: 6px;  
+  border-radius: 6px;
 }
-   
+
 #collectionspan {
   background-color: #99CCFF;
   border: 1px solid #ddd;
-}  
+}
 
 .toolbar-container {
   width: 100%;
@@ -131,7 +135,7 @@ figure figcaption::before { content: "Figure 1." counter(figure) " "; font-weigh
 
 /* Metadata fields that occur around the image */
 .aloha-image-attrib {
-  
+
 }
 .aloha-image-attrib .aloha-image-attr-alt::before {
   content: "Please provide a description of this image for the visually impaired";
