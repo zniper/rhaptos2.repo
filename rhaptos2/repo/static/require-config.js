@@ -4,22 +4,19 @@
   require.config({
     enforceDefine: true,
     paths: {
-      'aloha': '../cdn/aloha/src/lib/aloha',
       jquery: 'lib/jquery-1.8.3',
-      'jquery-mockjax': 'lib/jquery.mockjax',
-      bootstrap: 'lib/bootstrap/js/bootstrap',
       underscore: 'lib/underscore-1.4.3',
       backbone: 'lib/backbone-0.9.2',
       jasmine: 'lib/jasmine/jasmine',
       'jasmine-html': 'lib/jasmine/jasmine-html',
+      'jquery-mockjax': 'lib/jquery.mockjax',
+      spec: 'tests/spec',
+      'spec/routes': 'tests/spec/routes',
+      'aloha': '../cdn/aloha/src/lib/aloha',
+      bootstrap: 'lib/bootstrap/js/bootstrap',
       mustache: 'lib/mustache',
       select2: 'lib/select2/select2',
-      spin: 'lib/spin',
-      spec: 'spec',
-      'model/tools': 'model/tools',
-      'atc/lang': 'js/languagelib',
-      'atc/templates': 'authortools_client_templates',
-      'mockjax-routes': 'tests/mockjax-routes'
+      spin: 'lib/spin'
     },
     shim: {
       jquery: {
@@ -42,21 +39,6 @@
           return ret;
         }
       },
-      jasmine: {
-        exports: 'jasmine'
-      },
-      'jasmine-html': {
-        deps: ['jasmine'],
-        exports: 'jasmine'
-      },
-      'jasmine-ajax': {
-        deps: ['jasmine'],
-        exports: 'jasmine'
-      },
-      'jquery-mockjax': {
-        deps: ['jquery'],
-        exports: 'jQuery'
-      },
       mustache: {
         exports: 'Mustache',
         init: function() {
@@ -76,14 +58,7 @@
           return ret;
         }
       },
-      'atc/client': {
-        deps: ['jquery'],
-        exports: 'jQuery'
-      },
-      'atc/lang': {
-        exports: 'Language'
-      },
-      'mockjax-routes': {
+      'spec/routes': {
         deps: ['jquery'],
         init: function() {
           return true;
@@ -92,6 +67,17 @@
       'aloha': {
         deps: ['jquery'],
         exports: 'Aloha'
+      },
+      jasmine: {
+        exports: 'jasmine'
+      },
+      'jasmine-html': {
+        deps: ['jasmine'],
+        exports: 'jasmine'
+      },
+      'jquery-mockjax': {
+        deps: ['jquery'],
+        exports: 'jQuery'
       }
     }
   });

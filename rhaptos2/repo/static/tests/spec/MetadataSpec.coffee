@@ -1,4 +1,4 @@
-define ['jasmine', 'model/tools', 'mockjax-routes'], (jasmine, Tools, MOCK_CONTENT) ->
+define ['jasmine', 'app/tools', 'spec/routes'], (jasmine, Tools, MOCK_CONTENT) ->
  j = jasmine.getEnv()
  j.describe 'View :: Metadata', ->
   j.beforeEach ->

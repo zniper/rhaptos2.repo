@@ -9,7 +9,7 @@
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 # __Note:__ `bootstrap` and `select2` add to jQuery and don't export anything of their own
-define ['backbone', 'jquery', 'atc/templates', 'atc/lang', 'bootstrap', 'select2'], (Backbone, jQuery, Templates, Languages) ->
+define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select2'], (Backbone, jQuery, Templates, Languages) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'

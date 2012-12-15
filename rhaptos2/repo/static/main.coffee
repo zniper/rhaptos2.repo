@@ -1,4 +1,4 @@
-define ['jquery', 'aloha', 'model/tools'], (jQuery, Aloha, Tools) ->
+define ['jquery', 'aloha', 'app/tools'], (jQuery, Aloha, Tools) ->
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.

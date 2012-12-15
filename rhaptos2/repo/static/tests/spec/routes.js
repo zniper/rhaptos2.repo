@@ -35,14 +35,14 @@
     });
     $.mockjax({
       type: 'GET',
-      url: '/keywords/*',
+      url: '/keywords/',
       responseTime: SHORT,
       contentType: 'application/json',
       responseText: ['alpha', 'beta', 'water', 'physics', 'organic chemistry']
     });
     $.mockjax({
       type: 'GET',
-      url: '/users/*',
+      url: '/users/',
       responseTime: SHORT,
       contentType: 'application/json',
       responseText: ['Bruce Wayne', 'Peter Parker', 'Clark Kent']

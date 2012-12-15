@@ -3,13 +3,14 @@
 <head>
   <title>Modal Sandbox</title>
 
-  <link rel="stylesheet" type="text/css" href="../css/tagit-simple-blue.css">
-  <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="../lib/select2/select2.css">
+  <link rel="stylesheet" type="text/css" href="../lib/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="../css/custom.css">
 
   <!-- Use the requirejs config to find the packages -->
   <!-- But change the base URL to not be in the "tests" subdir -->
   <!-- Since now requirejs doesn't know how to find tests/Sandbox.js load it on our own -->
-  <script src="../js/lib/require-2.1.2.js" data-main="Sandbox"></script>
+  <script src="../lib/require-2.1.2.js" data-main="Sandbox"></script>
   <script src="../require-config.js"></script>
   <script>require.config({baseUrl:'../'});</script>
   <script src="Sandbox.js"></script>
