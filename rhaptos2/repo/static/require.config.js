@@ -11,7 +11,6 @@
       'jasmine-html': 'lib/jasmine/jasmine-html',
       'jquery-mockjax': 'lib/jquery.mockjax',
       spec: 'tests/spec',
-      'spec/routes': 'tests/spec/routes',
       'aloha': '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       mustache: 'lib/mustache',

@@ -57,7 +57,7 @@ require.config
       deps: ['jquery']
       exports: 'Aloha'
 
-    # # Modules used for testing (maybe they should be in a separate require-config)
+    # # Modules used for testing (maybe they should be in a separate require.config)
     jasmine:
       exports: 'jasmine'
 
