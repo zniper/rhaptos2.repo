@@ -15,16 +15,13 @@
     <meta name="viewport" content="width=device-width">
 
     {% block css %}
-    <link rel="stylesheet" type="text/css" href="static/lib/bootstrap/css/bootstrap.css"/>
-    <link rel="stylesheet" type="text/css" href="static/lib/select2/select2.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ cdnaloha }}/src/css/aloha.css"/>
-    <link rel="stylesheet" type="text/css" href="static/css/custom.css"/>
+    <link rel="stylesheet" type="text/css" href="static/app.css"/>
     {% endblock %}{# css block #}
 
     {% block _js %}
     {# Global Javascript that shouldn't be overridden. #}
     <script type="text/javascript" src="https://login.persona.org/include.js"></script>
-    <script type="text/javascript" src="static/lib/require-2.1.2.js" data-main="main"></script>
+    <script type="text/javascript" src="static/lib/require-2.1.2.js" data-main="app.js"></script>
     {# TODO: Finish removing the global window.jQuery #}
     {# Currently Aloha loads its own for some reason so plugins that depend on bootstrap don't work #}
     <script type="text/javascript" src="static/lib/jquery-1.8.3.js"></script>

@@ -1,3 +1,9 @@
+/* Import 3rd party libraries first */
+@import url('lib/bootstrap/css/bootstrap.css');
+@import url('lib/select2/select2.css');
+@import url('../cdn/aloha/src/css/aloha.css');
+
+
 .select2-container {
   min-width: 10em;
 }
