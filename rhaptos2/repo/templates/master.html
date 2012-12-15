@@ -1,6 +1,4 @@
 {% set cdnaloha = "/cdn/aloha" %}
-{% set cdnjs = "/cdn/js" %}
-{% set cdncss = "/cdn/css" %}
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -17,20 +15,18 @@
     <meta name="viewport" content="width=device-width">
 
     {% block css %}
-    <link rel="stylesheet" href="static/lib/bootstrap/css/bootstrap.css">
-    <link rel="stylesheet" href="static/lib/select2/select2.css">
-    <link rel="stylesheet" href="{{ cdnaloha }}/src/css/aloha.css"
-          type="text/css">
-    <link rel="stylesheet" href="static/css/custom.css"
-          type="text/css">
+    <link rel="stylesheet" type="text/css" href="static/lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="static/lib/select2/select2.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ cdnaloha }}/src/css/aloha.css"/>
+    <link rel="stylesheet" type="text/css" href="static/css/custom.css"/>
     {% endblock %}{# css block #}
 
     {% block _js %}
     {# Global Javascript that shouldn't be overridden. #}
-    <script src="https://login.persona.org/include.js"></script>
+    <script type="text/javascript" src="https://login.persona.org/include.js"></script>
     <script type="text/javascript" src="static/lib/require-2.1.2.js" data-main="main"></script>
-    <!-- TODO: Finish removing the global window.jQuery -->
-    <!-- Currently Aloha loads its own for some reason so plugins that depend on bootstrap don't work -->
+    {# TODO: Finish removing the global window.jQuery #}
+    {# Currently Aloha loads its own for some reason so plugins that depend on bootstrap don't work #}
     <script type="text/javascript" src="static/lib/jquery-1.8.3.js"></script>
     <script type="text/javascript" src="static/require-config.js"></script>
     <script type="text/javascript">require.config({baseUrl: 'static/'});</script>
@@ -39,38 +35,26 @@
     {% block js %}
   <script src="{{ cdnaloha }}/src/plugins/extra/math/lib/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
 
-    <script src="http://{{confd['www_server_name']}}/static/authortools_mathjax_settings.js"
-            type="text/javascript"></script>
+    <script type="text/javascript" src="static/authortools_mathjax_settings.js"></script>
+    <script type="text/javascript" src="static/authortools_aloha_settings.js"></script>
+
+    <script type="text/javascript" src="{{ cdnaloha }}/src/lib/aloha.js"
+        data-aloha-plugins="
+            extra/toolbar,
+            common/ui,
+            common/format,
+            common/paste,
+            common/block,
+            common/list,
+            common/table,
+            extra/draganddropfiles,
+            common/image,
+            oerpub/popover,
+            oerpub/math,
+            oerpub/assorted"></script>
 
 
-
-
-    <script src="http://{{confd['www_server_name']}}/static/authortools_aloha_settings.js"
-            type="text/javascript"></script>
-
-    <script src="{{ cdnaloha }}/src/lib/aloha.js" data-aloha-plugins="
-                          extra/toolbar,
-                          common/ui,
-                          common/format,
-                          common/paste,
-                          common/block,
-                          common/list,
-                          common/table,
-                          extra/draganddropfiles,
-                          common/image,
-                          oerpub/popover,
-                          oerpub/math,
-                          oerpub/assorted"></script>
-
-
-    <script src="http://{{confd['www_server_name']}}/static/lib/spin.js"
-            type="text/javascript"></script>
-
-    <script src="/static/js/languagelib.js"
-            type="text/javascript"></script>
-
-    <script src="http://{{ confd['www_server_name'] }}/conf.js"
-            type="text/javascript"></script>
+    <script type="text/javascript" src="conf.js"></script>
 
     <script type="text/javascript">
       /* To be simple means to get current logged in USer back to JQuery*/
@@ -84,21 +68,6 @@
     {% endblock %}{# js block #}
   {% endblock %}
 
-<!-- =============== -->
-<!-- Aloha Startup -->
-<!-- =============== -->
-  <script type="text/javascript">
-    Aloha.ready( function() {
-      Aloha.jQuery('.document').aloha().focus();
-      // Wait until Aloha is started before loading MathJax
-      // Also, wrap all math in a span/div. MathJax replaces the MathJax element
-      // losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-      // add aloha-cleanme so this span is unwrapped
-      jQuery('math').wrap('<span class="math-element aloha-cleanme"></span>')
-      MathJax.Hub.Configured();
-      //$('*[rel=tooltip]').tooltip();
-    });
-  </script>
 </head>
 <body>
     <!--[if lt IE 7]>

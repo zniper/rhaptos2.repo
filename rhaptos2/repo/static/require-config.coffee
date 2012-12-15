@@ -6,6 +6,7 @@ require.config
 
   #urlArgs: "cb=#{Math.random()}" # Cache Buster
   paths:
+    'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
     jquery: 'lib/jquery-1.8.3'
     'jquery-mockjax': 'lib/jquery.mockjax'
     bootstrap: 'lib/bootstrap/js/bootstrap'
@@ -19,9 +20,7 @@ require.config
     spec: 'spec'
     'model/tools': 'model/tools'
     'atc/lang': 'js/languagelib'
-    'atc/client': 'authortools_client'
     'atc/templates': 'authortools_client_templates'
-    'atc/tools': 'authortools_client_tools'
     'mockjax-routes': 'tests/mockjax-routes'
 
   shim:
@@ -38,10 +37,7 @@ require.config
     backbone:
       deps: ['underscore', 'jquery']
       exports: 'Backbone'
-      init: ->
-        ret = @Backbone
-        delete @Backbone
-        ret
+      init: -> ret = @Backbone; delete @Backbone; ret
 
     jasmine:
       exports: 'jasmine'
@@ -60,10 +56,12 @@ require.config
 
     mustache:
       exports: 'Mustache'
+      init: -> ret = @Mustache; delete @Mustache; ret
 
     select2:
       deps: ['jquery']
       exports: 'Select2'
+      init: -> ret = @Select2; delete @Select2; ret
 
     'atc/client':
       deps: ['jquery']
@@ -72,16 +70,13 @@ require.config
     'atc/lang':
       exports: 'Language'
 
-    'atc/templates':
-      exports: 'Templates'
-
-    'atc/tools':
-      deps: ['jquery', 'atc/lang', 'spin', 'atc/client', 'atc/templates', 'bootstrap', 'select2']
-      exports: 'Tools'
-
     'mockjax-routes':
       deps: ['jquery']
       init: -> true
+
+    'aloha':
+      deps: ['jquery']
+      exports: 'Aloha'
 
 # requirejs special-cases jQuery and allows it to be a global (doesn't call the init code below to clean up the global vars)
 # To stop it from doing that, we need to delete this property

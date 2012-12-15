@@ -1,4 +1,4 @@
-define ['jquery', 'model/tools'], (jQuery, Tools) ->
+define ['jquery', 'aloha', 'model/tools'], (jQuery, Aloha, Tools) ->
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.
@@ -8,6 +8,17 @@ define ['jquery', 'model/tools'], (jQuery, Tools) ->
     console.warn 'You should add "jquery" to your dependencies in define() instead of using the global jQuery!'
     jQuery.apply @, arguments
   jQuery.extend(@jQuery, jQuery)
+
+  # Bind the editor to the document and let mathjax know it can start rendering
+  Aloha.ready ->
+    Aloha.jQuery('.document').aloha().focus()
+
+    # Wait until Aloha is started before loading MathJax
+    # Also, wrap all math in a span/div. MathJax replaces the MathJax element
+    # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
+    # add aloha-cleanme so this span is unwrapped
+    jQuery('math').wrap '<span class="math-element aloha-cleanme"></span>'
+    MathJax.Hub.Configured()
 
 
   # Build a Model for the current content:

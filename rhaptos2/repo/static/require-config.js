@@ -4,6 +4,7 @@
   require.config({
     enforceDefine: true,
     paths: {
+      'aloha': '../cdn/aloha/src/lib/aloha',
       jquery: 'lib/jquery-1.8.3',
       'jquery-mockjax': 'lib/jquery.mockjax',
       bootstrap: 'lib/bootstrap/js/bootstrap',
@@ -17,9 +18,7 @@
       spec: 'spec',
       'model/tools': 'model/tools',
       'atc/lang': 'js/languagelib',
-      'atc/client': 'authortools_client',
       'atc/templates': 'authortools_client_templates',
-      'atc/tools': 'authortools_client_tools',
       'mockjax-routes': 'tests/mockjax-routes'
     },
     shim: {
@@ -59,11 +58,23 @@
         exports: 'jQuery'
       },
       mustache: {
-        exports: 'Mustache'
+        exports: 'Mustache',
+        init: function() {
+          var ret;
+          ret = this.Mustache;
+          delete this.Mustache;
+          return ret;
+        }
       },
       select2: {
         deps: ['jquery'],
-        exports: 'Select2'
+        exports: 'Select2',
+        init: function() {
+          var ret;
+          ret = this.Select2;
+          delete this.Select2;
+          return ret;
+        }
       },
       'atc/client': {
         deps: ['jquery'],
@@ -72,18 +83,15 @@
       'atc/lang': {
         exports: 'Language'
       },
-      'atc/templates': {
-        exports: 'Templates'
-      },
-      'atc/tools': {
-        deps: ['jquery', 'atc/lang', 'spin', 'atc/client', 'atc/templates', 'bootstrap', 'select2'],
-        exports: 'Tools'
-      },
       'mockjax-routes': {
         deps: ['jquery'],
         init: function() {
           return true;
         }
+      },
+      'aloha': {
+        deps: ['jquery'],
+        exports: 'Aloha'
       }
     }
   });
