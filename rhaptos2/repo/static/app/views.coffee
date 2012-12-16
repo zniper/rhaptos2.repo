@@ -8,19 +8,20 @@
 #  This software is subject to the provisions of the GNU Lesser General
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
-define ['backbone'
-      , 'jquery'
-      , './languages'
-      # Load the Handlebars templates
-      , 'hbs!app/views/modal-wrapper'
-      , 'hbs!app/views/edit-metadata'
-      , 'hbs!app/views/edit-roles'
-      , 'hbs!app/views/language-variants'
-      # `bootstrap` and `select2` add to jQuery and don't export anything of their own
-      # so they are 'defined' _after_ everything else
-      , 'bootstrap'
-      , 'select2']
-      , (Backbone, jQuery, Languages, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
+define [
+  'backbone'
+  'jquery'
+  './languages'
+  # Load the Handlebars templates
+  'hbs!app/views/modal-wrapper'
+  'hbs!app/views/edit-metadata'
+  'hbs!app/views/edit-roles'
+  'hbs!app/views/language-variants'
+  # `bootstrap` and `select2` add to jQuery and don't export anything of their own
+  # so they are 'defined' _after_ everything else
+  'bootstrap'
+  'select2'
+], (Backbone, jQuery, Languages, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'

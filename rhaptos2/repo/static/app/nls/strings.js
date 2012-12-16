@@ -3,7 +3,11 @@
 
   define({
     'root': {
-      'gray': 'grey'
+      'gray': 'grey',
+      'blue': 'azul',
+      'green': 'verde',
+      'fr': false,
+      'en-ca': false
     }
   });
 

@@ -1,5 +1,13 @@
-# Need to define a name for this module that matches the requirejs data-main attribute.
-define 'Sandbox', ['jquery', 'app/views', 'tests/routes', 'css!app'], ($, Views, MOCK_CONTENT) =>
+# Provides a simple HTML page with buttons to open the edit modals.
+#
+# We need to define a name `Sandbox` for this module
+# (which matches the requirejs data-main attribute)
+define 'Sandbox', [
+  'jquery'
+  'app/views'
+  'tests/routes'
+  'css!app'
+], ($, Views, MOCK_CONTENT) =>
   model = new Views.Module()
   model.set MOCK_CONTENT
   metadataView = new Views.MetadataEditView {model: model}
