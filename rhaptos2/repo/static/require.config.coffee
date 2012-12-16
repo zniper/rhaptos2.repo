@@ -23,17 +23,22 @@ require.config
     select2: 'lib/select2/select2'
     spin: 'lib/spin'
 
+    # Handlebars modules
     hbs: 'lib/require-handlebars-plugin/hbs'
     handlebars: 'lib/require-handlebars-plugin/Handlebars'
     i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile'
     json2: 'lib/require-handlebars-plugin/hbs/json2'
 
+    # LESS and CSS modules
+    #less: 'lib/require-less'
+
   shim:
     jquery:
       exports: 'jQuery'
       # init: -> this.jQuery.noConflict(true)
+
     bootstrap:
-      deps: ['jquery']
+      deps: ['jquery'] # For some reason we can't add use 'css!lib/bootstrap/css/bootstrap'
       exports: 'jQuery'
 
     underscore:
@@ -44,8 +49,11 @@ require.config
       exports: 'Backbone'
       init: -> ret = @Backbone; delete @Backbone; ret
 
+    aloha:
+      deps: ['css!../cdn/aloha/src/css/aloha']
+
     select2:
-      deps: ['jquery']
+      deps: ['jquery', 'css!./select2']
       exports: 'Select2'
       init: -> ret = @Select2; delete @Select2; ret
 
@@ -68,6 +76,12 @@ require.config
     'jquery-mockjax':
       deps: ['jquery']
       exports: 'jQuery'
+
+  # Maps prefixes (like 'less!less-file') to use the LESS CSS plugin
+  map:
+    '*':
+      css: 'lib/require-css/css'
+      less: 'lib/require-less/less'
 
   # Configuration for individual plugins
   hbs:

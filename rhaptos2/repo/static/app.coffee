@@ -1,4 +1,4 @@
-define ['jquery', 'aloha', 'app/views'], (jQuery, Aloha, Views) ->
+define ['jquery', 'aloha', 'app/views', 'css!app'], (jQuery, Aloha, Views) ->
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.

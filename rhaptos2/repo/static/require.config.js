@@ -41,8 +41,11 @@
           return ret;
         }
       },
+      aloha: {
+        deps: ['css!../cdn/aloha/src/css/aloha']
+      },
       select2: {
-        deps: ['jquery'],
+        deps: ['jquery', 'css!./select2'],
         exports: 'Select2',
         init: function() {
           var ret;
@@ -71,6 +74,12 @@
       'jquery-mockjax': {
         deps: ['jquery'],
         exports: 'jQuery'
+      }
+    },
+    map: {
+      '*': {
+        css: 'lib/require-css/css',
+        less: 'lib/require-less/less'
       }
     },
     hbs: {
