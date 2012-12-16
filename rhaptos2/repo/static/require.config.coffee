@@ -9,6 +9,8 @@ require.config
   urlArgs: '' # If you want to force a reload every time use this: `cb=#{Math.random()}` (you lose JS breakpoints though)
   paths:
     i18n: 'i18n-custom'
+    text: 'lib/require-text/text'
+    json: 'lib/requirejs-plugins/json'
 
     # ## Core Libraries
     jquery: 'lib/jquery-1.8.3'
@@ -83,8 +85,10 @@ require.config
   # Maps prefixes (like `less!path/to/less-file`) to use the LESS CSS plugin
   map:
     '*':
+      text: 'lib/require-text'
       css: 'lib/require-css/css'
       less: 'lib/require-less/less'
+      json: 'lib/requirejs-plugins/src/json'
 
   # ## module Configuration
   # This configures `requirejs` plugins and modules.

@@ -6,6 +6,8 @@
     urlArgs: '',
     paths: {
       i18n: 'i18n-custom',
+      text: 'lib/require-text/text',
+      json: 'lib/requirejs-plugins/json',
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
       backbone: 'lib/backbone-0.9.2',
@@ -72,8 +74,10 @@
     },
     map: {
       '*': {
+        text: 'lib/require-text',
         css: 'lib/require-css/css',
-        less: 'lib/require-less/less'
+        less: 'lib/require-less/less',
+        json: 'lib/requirejs-plugins/src/json'
       }
     },
     hbs: {
