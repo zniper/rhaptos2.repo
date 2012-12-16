@@ -1,4 +1,4 @@
-define ['jquery', 'aloha', 'app/tools'], (jQuery, Aloha, Tools) ->
+define ['jquery', 'aloha', 'app/views'], (jQuery, Aloha, Views) ->
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.
@@ -28,10 +28,10 @@ define ['jquery', 'aloha', 'app/tools'], (jQuery, Aloha, Tools) ->
   loadModel = ->
     uuid = jQuery('#uuid').val()
     if uuid
-      content = new Tools.Module(id: uuid, url: "/module/#{uuid}/metadata/")
+      content = new Views.Module(id: uuid, url: "/module/#{uuid}/metadata/")
       content.fetch()
     else
-      content = new Tools.Module()
+      content = new Views.Module()
   loadModel()
   jQuery('#uuid').on 'change', ->
     loadModel()
@@ -39,10 +39,10 @@ define ['jquery', 'aloha', 'app/tools'], (jQuery, Aloha, Tools) ->
 
   jQuery('#metadata-link').on 'click', (evt) ->
     evt.preventDefault()
-    modal = new Tools.ModalWrapper(new Tools.MetadataEditView(model: content), 'Edit Metadata')
+    modal = new Views.ModalWrapper(new Views.MetadataEditView(model: content), 'Edit Metadata')
     modal.show()
 
   jQuery('#roles-link').on 'click', (evt) ->
     evt.preventDefault()
-    modal = new Tools.ModalWrapper(new Tools.RolesEditView(model: content), 'Edit Roles')
+    modal = new Views.ModalWrapper(new Views.RolesEditView(model: content), 'Edit Roles')
     modal.show()

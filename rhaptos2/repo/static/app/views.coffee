@@ -135,6 +135,7 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
       $keywords.select2
         tags: @model.get('keywords') or []
         tokenSeparators: [',']
+        separator: '|' # String used to delimit ids in $('input').val()
         ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
 
       @delegateEvents()
@@ -152,7 +153,7 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
       subjects = (jQuery(checkbox).val() for checkbox in @$el.find('input[name=subjects]:checked'))
       # Grab the keywords differently, because they are not part
       #   of the form. They are entered as 'li' entries.
-      keywords = (kw.value for kw in @$el.find('#metadata-keywords').tagit('tags'))
+      keywords = (kw for kw in @$el.find('*[name=keywords]').val().split('|'))
 
       return {
         title: title
@@ -179,19 +180,21 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
       $authors.select2
         tags: @model.get('authors') or []
         tokenSeparators: [',']
+        separator: '|'
         #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
       $copyrightHolders.select2
         tags: @model.get('copyrightHolders') or []
         tokenSeparators: [',']
+        separator: '|'
         #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
 
       @delegateEvents()
       @
 
     attrsToSave: () ->
-      # Grab the authors from tagit
-      authors = (kw.value for kw in @$el.find('.authors').tagit('tags'))
-      copyrightHolders = (kw.value for kw in @$el.find('.copyright-holders').tagit('tags'))
+      # Grab the authors
+      authors = (kw for kw in @$el.find('*[name=authors]').val().split('|'))
+      copyrightHolders = (kw for kw in @$el.find('*[name=copyrightHolders]').val().split('|'))
 
       return {
         authors: authors

@@ -1,17 +1,17 @@
-define ['jasmine', 'app/tools', 'spec/routes'], (jasmine, Tools, MOCK_CONTENT) ->
+define ['jasmine', 'app/views', 'spec/routes'], (jasmine, Views, MOCK_CONTENT) ->
  j = jasmine.getEnv()
  j.describe 'View :: Metadata', ->
   j.beforeEach ->
 
     # Configure the mock ajax routes for testing
-    @model = new Tools.Module()
+    @model = new Views.Module()
     @model.set MOCK_CONTENT
 
-    @metadataView = new Tools.MetadataEditView(model: @model)
-    @rolesView    = new Tools.RolesEditView(model: @model)
+    @metadataView = new Views.MetadataEditView(model: @model)
+    @rolesView    = new Views.RolesEditView(model: @model)
 
-    @metadataModal = new Tools.ModalWrapper(@metadataView, 'Edit Metadata (test)')
-    @rolesModal    = new Tools.ModalWrapper(@rolesView, 'Edit Roles (test)')
+    @metadataModal = new Views.ModalWrapper(@metadataView, 'Edit Metadata (test)')
+    @rolesModal    = new Views.ModalWrapper(@rolesView, 'Edit Roles (test)')
 
   j.describe '(Sanity Check) All Views', ->
     j.it 'should have a .$el', ->

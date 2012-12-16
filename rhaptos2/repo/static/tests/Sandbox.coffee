@@ -1,12 +1,12 @@
 # Need to define a name for this module that matches the requirejs data-main attribute.
-define 'Sandbox', ['jquery', 'app/tools', 'spec/routes'], ($, Tools, MOCK_CONTENT) =>
-  model = new Tools.Module()
+define 'Sandbox', ['jquery', 'app/views', 'spec/routes'], ($, Views, MOCK_CONTENT) =>
+  model = new Views.Module()
   model.set MOCK_CONTENT
-  metadataView = new Tools.MetadataEditView {model: model}
-  rolesView    = new Tools.RolesEditView {model: model}
+  metadataView = new Views.MetadataEditView {model: model}
+  rolesView    = new Views.RolesEditView {model: model}
 
-  metadataModal = new Tools.ModalWrapper(metadataView, 'Edit Metadata (test)')
-  rolesModal    = new Tools.ModalWrapper(rolesView, 'Edit Roles (test)')
+  metadataModal = new Views.ModalWrapper(metadataView, 'Edit Metadata (test)')
+  rolesModal    = new Views.ModalWrapper(rolesView, 'Edit Roles (test)')
 
   # Log when model changes are saved (not changed)
   model.on 'sync', ->

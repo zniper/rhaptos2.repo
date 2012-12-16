@@ -2,18 +2,18 @@
 (function() {
   var _this = this;
 
-  define('Sandbox', ['jquery', 'app/tools', 'spec/routes'], function($, Tools, MOCK_CONTENT) {
+  define('Sandbox', ['jquery', 'app/views', 'spec/routes'], function($, Views, MOCK_CONTENT) {
     var metadataModal, metadataView, model, rolesModal, rolesView;
-    model = new Tools.Module();
+    model = new Views.Module();
     model.set(MOCK_CONTENT);
-    metadataView = new Tools.MetadataEditView({
+    metadataView = new Views.MetadataEditView({
       model: model
     });
-    rolesView = new Tools.RolesEditView({
+    rolesView = new Views.RolesEditView({
       model: model
     });
-    metadataModal = new Tools.ModalWrapper(metadataView, 'Edit Metadata (test)');
-    rolesModal = new Tools.ModalWrapper(rolesView, 'Edit Roles (test)');
+    metadataModal = new Views.ModalWrapper(metadataView, 'Edit Metadata (test)');
+    rolesModal = new Views.ModalWrapper(rolesView, 'Edit Roles (test)');
     model.on('sync', function() {
       console.log('Model Saved!', this);
       return alert("Model Saved!\n" + (JSON.stringify(this)));

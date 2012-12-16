@@ -144,6 +144,7 @@
         $keywords.select2({
           tags: this.model.get('keywords') || [],
           tokenSeparators: [','],
+          separator: '|',
           ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
         });
         this.delegateEvents();
@@ -170,11 +171,11 @@
         }).call(this);
         keywords = (function() {
           var _i, _len, _ref1, _results;
-          _ref1 = this.$el.find('#metadata-keywords').tagit('tags');
+          _ref1 = this.$el.find('*[name=keywords]').val().split('|');
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             kw = _ref1[_i];
-            _results.push(kw.value);
+            _results.push(kw);
           }
           return _results;
         }).call(this);
@@ -196,11 +197,13 @@
         $copyrightHolders = this.$el.find('*[name=copyrightHolders]');
         $authors.select2({
           tags: this.model.get('authors') || [],
-          tokenSeparators: [',']
+          tokenSeparators: [','],
+          separator: '|'
         });
         $copyrightHolders.select2({
           tags: this.model.get('copyrightHolders') || [],
-          tokenSeparators: [',']
+          tokenSeparators: [','],
+          separator: '|'
         });
         this.delegateEvents();
         return this;
@@ -209,21 +212,21 @@
         var authors, copyrightHolders, kw;
         authors = (function() {
           var _i, _len, _ref1, _results;
-          _ref1 = this.$el.find('.authors').tagit('tags');
+          _ref1 = this.$el.find('*[name=authors]').val().split('|');
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             kw = _ref1[_i];
-            _results.push(kw.value);
+            _results.push(kw);
           }
           return _results;
         }).call(this);
         copyrightHolders = (function() {
           var _i, _len, _ref1, _results;
-          _ref1 = this.$el.find('.copyright-holders').tagit('tags');
+          _ref1 = this.$el.find('*[name=copyrightHolders]').val().split('|');
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             kw = _ref1[_i];
-            _results.push(kw.value);
+            _results.push(kw);
           }
           return _results;
         }).call(this);
