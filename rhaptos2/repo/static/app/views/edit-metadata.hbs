@@ -1,0 +1,24 @@
+<label>Title</label>
+<input required type="text" name="title" value="{{title}}">
+
+<label>Language</label>
+<select required name="language">
+{{#_languages}}
+  <option value="{{code}}">
+    {{native}}
+  </option>
+{{/_languages}}
+</select>
+
+<label for="variantLanguage">Language variant</label>
+<select name="variantLanguage"></select>
+
+<label>Subjects</label>
+{{#_subjects}}
+<label class="checkbox">
+  <input type="checkbox" name="subjects" value="{{.}}"/> {{.}}
+</label>
+{{/_subjects}}
+
+<label>Keywords</label>
+<input name="keywords" type="text" placeholder="keywords help people find this content"/>

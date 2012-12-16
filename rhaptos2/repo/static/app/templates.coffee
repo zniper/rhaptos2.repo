@@ -1,14 +1,5 @@
-###
-  authoringtools_client_templates.{coffee,js} - Mustache templates for various
-    authoring tools interfaces.
-
-  Copyright (c) 2012 Rice University
-
-  This software is subject to the provisions of the GNU Lesser General
-  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
-###
-
-define ['mustache'], (Mustache) ->
+# This file should no longer be used...
+define [], ->
   # Export the templates so they can be used by other modules
   templates = {}
 
@@ -16,58 +7,6 @@ define ['mustache'], (Mustache) ->
     <div role="popup-content">
       <input type="hidden" name="id" value="{{id}}">
       <input type="file" name="file">
-    </div>'
-
-  # FIXME: Convert these into compiled templates
-  templates.METADATA = Mustache.compile '
-    <label>Title</label>
-    <input required type="text" name="title" value="{{title}}">
-
-    <label>Language</label>
-    <select required name="language">
-    {{#_languages}}
-      <option value="{{code}}">
-        {{native}}
-      </option>
-    {{/_languages}}
-    </select>
-
-    <label for="variantLanguage">Language variant</label>
-    <select name="variantLanguage"></select>
-
-    <label>Subjects</label>
-    {{#_subjects}}
-    <label class="checkbox">
-      <input type="checkbox" name="subjects" value="{{.}}"/> {{.}}
-    </label>
-    {{/_subjects}}
-
-    <label>Keywords</label>
-    <input name="keywords" type="text" placeholder="keywords help people find this content"/>'
-
-  templates.LANGUAGE_VARIANTS = Mustache.compile '<option value="">None</option>{{#variants}}<option value="{{code}}">{{english}}</option>{{/variants}}'
-
-  templates.ROLES = Mustache.compile '
-    <h3>Role Assignments</h3>
-    <h4>Authors</h4>
-    <input name="authors" type="text"/>
-    <h4>Copyright Holders</h4>
-    <input name="copyrightHolders"/>'
-
-  templates.MODAL_WRAPPER = Mustache.compile '
-    <div class="modal hide fade in">
-      <form name="modal-form">
-        <div class="modal-header">
-          <button type="button" class="close"
-                  data-dismiss="modal" aria-hidden="true">×</button>
-          <h3 id="modal-header-label">{{title}}</h3>
-        </div>
-        <div class="modal-body"></div>
-        <div class="modal-footer">
-          <button type="submit" class="save btn btn-primary">Save</button>
-          <button type="button" class="cancel btn" data-dismiss="modal">Cancel</button>
-        </div>
-      </form>
     </div>'
 
   templates.SHARING = '
@@ -152,4 +91,5 @@ define ['mustache'], (Mustache) ->
     </div>'
 
   # Export the templates so they can be used by other modules
+  @Templates = templates
   return templates

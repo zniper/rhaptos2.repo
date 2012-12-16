@@ -8,8 +8,17 @@
 #  This software is subject to the provisions of the GNU Lesser General
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
-# __Note:__ `bootstrap` and `select2` add to jQuery and don't export anything of their own
-define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select2'], (Backbone, jQuery, Templates, Languages) ->
+define ['backbone'
+      , 'jquery'
+      , './languages'
+      , 'hbs!app/views/modal-wrapper'
+      , 'hbs!app/views/edit-metadata'
+      , 'hbs!app/views/edit-roles'
+      , 'hbs!app/views/language-variants'
+      # `bootstrap` and `select2` add to jQuery and don't export anything of their own
+      , 'bootstrap'
+      , 'select2']
+      , (Backbone, jQuery, Languages, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -108,7 +117,7 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
       if variants.length > 0
         # Generate the language variants dropdown.
         $variant.removeAttr('disabled')
-        $variant.html(Templates.LANGUAGE_VARIANTS('variants': variants))
+        $variant.html(LANGUAGE_VARIANTS('variants': variants))
         $variant.find("option[value=#{language}]").attr('selected', true)
       else
         $variant.html('').attr('disabled', true)
@@ -123,7 +132,7 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
       templateObj = jQuery.extend({}, @model.toJSON())
       templateObj._languages = LANGUAGES
       templateObj._subjects = METADATA_SUBJECTS
-      @$el.append Templates.METADATA(templateObj)
+      @$el.append EDIT_METADATA(templateObj)
 
       # Select the correct language (mustache can't do that)
       @_updateLanguage()
@@ -172,7 +181,7 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
     # `_update*` Modifies the view based on changes to the model
 
     render: () ->
-      @$el.append jQuery(Templates.ROLES(@model.toJSON()))
+      @$el.append jQuery(EDIT_ROLES(@model.toJSON()))
 
       $authors = @$el.find('*[name=authors]')
       $copyrightHolders = @$el.find('*[name=copyrightHolders]')
@@ -208,7 +217,7 @@ define ['backbone', 'jquery', './templates', './languages', 'bootstrap', 'select
   class ModalWrapper
     constructor: (@view, title) ->
       @view.render()
-      @$el = jQuery(Templates.MODAL_WRAPPER(title: title))
+      @$el = jQuery(MODAL_WRAPPER(title: title))
       @$el.find('.modal-body').html('').append @view.$el
 
       # Trigger the save when the save button is clicked

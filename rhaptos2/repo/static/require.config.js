@@ -13,9 +13,12 @@
       spec: 'tests/spec',
       'aloha': '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
-      mustache: 'lib/mustache',
       select2: 'lib/select2/select2',
-      spin: 'lib/spin'
+      spin: 'lib/spin',
+      hbs: 'lib/require-handlebars-plugin/hbs',
+      handlebars: 'lib/require-handlebars-plugin/Handlebars',
+      i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile',
+      json2: 'lib/require-handlebars-plugin/hbs/json2'
     },
     shim: {
       jquery: {
@@ -35,15 +38,6 @@
           var ret;
           ret = this.Backbone;
           delete this.Backbone;
-          return ret;
-        }
-      },
-      mustache: {
-        exports: 'Mustache',
-        init: function() {
-          var ret;
-          ret = this.Mustache;
-          delete this.Mustache;
           return ret;
         }
       },
@@ -78,6 +72,9 @@
         deps: ['jquery'],
         exports: 'jQuery'
       }
+    },
+    hbs: {
+      disableI18n: true
     }
   });
 

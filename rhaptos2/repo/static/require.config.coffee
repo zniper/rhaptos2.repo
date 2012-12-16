@@ -20,9 +20,13 @@ require.config
     # # UI libraries
     'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
     bootstrap: 'lib/bootstrap/js/bootstrap'
-    mustache: 'lib/mustache'
     select2: 'lib/select2/select2'
     spin: 'lib/spin'
+
+    hbs: 'lib/require-handlebars-plugin/hbs'
+    handlebars: 'lib/require-handlebars-plugin/Handlebars'
+    i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile'
+    json2: 'lib/require-handlebars-plugin/hbs/json2'
 
   shim:
     jquery:
@@ -39,10 +43,6 @@ require.config
       deps: ['underscore', 'jquery']
       exports: 'Backbone'
       init: -> ret = @Backbone; delete @Backbone; ret
-
-    mustache:
-      exports: 'Mustache'
-      init: -> ret = @Mustache; delete @Mustache; ret
 
     select2:
       deps: ['jquery']
@@ -68,6 +68,10 @@ require.config
     'jquery-mockjax':
       deps: ['jquery']
       exports: 'jQuery'
+
+  # Configuration for individual plugins
+  hbs:
+    disableI18n: true
 
 # requirejs special-cases jQuery and allows it to be a global (doesn't call the init code below to clean up the global vars)
 # To stop it from doing that, we need to delete this property
