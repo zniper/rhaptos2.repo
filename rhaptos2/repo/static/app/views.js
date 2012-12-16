@@ -263,6 +263,9 @@
       }
 
       ModalWrapper.prototype.show = function() {
+        if (!this.$el.parent()[0]) {
+          this.$el.appendTo('body');
+        }
         return this.$el.modal({
           keyboard: true
         });

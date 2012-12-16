@@ -3,6 +3,7 @@
 
   require.config({
     enforceDefine: true,
+    urlArgs: '',
     paths: {
       i18n: 'i18n-custom',
       jquery: 'lib/jquery-1.8.3',
@@ -11,7 +12,6 @@
       jasmine: 'lib/jasmine/jasmine',
       'jasmine-html': 'lib/jasmine/jasmine-html',
       'jquery-mockjax': 'lib/jquery.mockjax',
-      spec: 'tests/spec',
       'aloha': '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       select2: 'lib/select2/select2',
@@ -23,11 +23,8 @@
     },
     shim: {
       jquery: {
-        exports: 'jQuery'
-      },
-      bootstrap: {
-        deps: ['jquery'],
-        exports: 'jQuery'
+        exports: 'jQuery',
+        init: function() {}
       },
       underscore: {
         exports: '_'
@@ -39,31 +36,9 @@
           var ret;
           ret = this.Backbone;
           delete this.Backbone;
+          delete this._;
           return ret;
         }
-      },
-      aloha: {
-        deps: ['css!../cdn/aloha/src/css/aloha']
-      },
-      select2: {
-        deps: ['jquery', 'css!./select2'],
-        exports: 'Select2',
-        init: function() {
-          var ret;
-          ret = this.Select2;
-          delete this.Select2;
-          return ret;
-        }
-      },
-      'spec/routes': {
-        deps: ['jquery'],
-        init: function() {
-          return true;
-        }
-      },
-      'aloha': {
-        deps: ['jquery'],
-        exports: 'Aloha'
       },
       jasmine: {
         exports: 'jasmine'
@@ -75,6 +50,24 @@
       'jquery-mockjax': {
         deps: ['jquery'],
         exports: 'jQuery'
+      },
+      bootstrap: {
+        deps: ['jquery'],
+        exports: 'jQuery'
+      },
+      select2: {
+        deps: ['jquery', 'css!./select2'],
+        exports: 'Select2',
+        init: function() {
+          var ret;
+          ret = this.Select2;
+          delete this.Select2;
+          return ret;
+        }
+      },
+      aloha: {
+        deps: ['jquery', 'css!../cdn/aloha/src/css/aloha'],
+        exports: 'Aloha'
       }
     },
     map: {

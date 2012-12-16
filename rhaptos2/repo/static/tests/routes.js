@@ -10,7 +10,7 @@
       language: 'sv-se',
       subjects: ['Arts', 'Business'],
       keywords: ['Quantum Mechanics', 'physics'],
-      authors: ['John Snow']
+      authors: ['John Smith']
     };
     RESPONSE_METADATA = $.extend({}, MOCK_CONTENT);
     $.mockjax({

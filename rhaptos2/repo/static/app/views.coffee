@@ -11,11 +11,13 @@
 define ['backbone'
       , 'jquery'
       , './languages'
+      # Load the Handlebars templates
       , 'hbs!app/views/modal-wrapper'
       , 'hbs!app/views/edit-metadata'
       , 'hbs!app/views/edit-roles'
       , 'hbs!app/views/language-variants'
       # `bootstrap` and `select2` add to jQuery and don't export anything of their own
+      # so they are 'defined' _after_ everything else
       , 'bootstrap'
       , 'select2']
       , (Backbone, jQuery, Languages, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
@@ -70,6 +72,7 @@ define ['backbone'
   browserLanguage = (navigator.userLanguage or navigator.language or '').toLowerCase()
 
   # This model contains the following members:
+  #
   # * `title` - a text title of the module
   # * `language` - the main language (eg `en-us`)
   # * `subjects` - an array of strings (eg `['Mathematics', 'Business']`)
@@ -87,8 +90,9 @@ define ['backbone'
     className: 'metadata'
 
     # Description of method naming:
-    # `_change*` Modifies the model based on a change in the view
-    # `_update*` Modifies the view based on changes to the model
+    #
+    # 1. `_change*` Modifies the model based on a change in the view
+    # 2. `_update*` Modifies the view based on changes to the model
     events:
       'change select[name=language]': '_updateLanguageVariant'
 
@@ -176,10 +180,6 @@ define ['backbone'
     tagName: 'div'
     className: 'roles'
 
-    # Description of method naming:
-    # `_change*` Modifies the model based on a change in the view
-    # `_update*` Modifies the view based on changes to the model
-
     render: () ->
       @$el.append jQuery(EDIT_ROLES(@model.toJSON()))
 
@@ -238,6 +238,7 @@ define ['backbone'
 
 
     show: ->
+      @$el.appendTo('body') if not @$el.parent()[0]
       @$el.modal(keyboard: true)
     hide: ->
       @$el.modal('hide')

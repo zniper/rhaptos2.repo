@@ -1,47 +1,50 @@
 # Configure paths to all the JS libs
 require.config
 
-  # If set to true, an error will be thrown if a script loads that does not call define() or have a shim exports string value that can be checked. See Catching load failures in IE for more information.
+  # If set to true, an error will be thrown if a script loads that does not call
+  # `define()` or have a shim exports string value that can be checked.
+  # See [Catching load failures in IE](http://requirejs.org/api.html) for more information.
   enforceDefine: true
 
-  #urlArgs: "cb=#{Math.random()}" # Cache Buster
+  urlArgs: '' # If you want to force a reload every time use this: `cb=#{Math.random()}` (you lose JS breakpoints though)
   paths:
     i18n: 'i18n-custom'
 
+    # ## Core Libraries
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
     backbone: 'lib/backbone-0.9.2'
 
-    # # Libraries used for testing
+    # ## Test Libraries
     jasmine: 'lib/jasmine/jasmine'
     'jasmine-html': 'lib/jasmine/jasmine-html'
     'jquery-mockjax': 'lib/jquery.mockjax'
-    # Our unit tests
-    spec: 'tests/spec'
 
-    # # UI libraries
+    # ## UI libraries
     'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
     bootstrap: 'lib/bootstrap/js/bootstrap'
     select2: 'lib/select2/select2'
     spin: 'lib/spin'
 
-    # Handlebars modules
+    # ## Handlebars modules
+    # The requirejs plugin to support handlebars has several dependencies
+    # that need to be loaded
     hbs: 'lib/require-handlebars-plugin/hbs'
     handlebars: 'lib/require-handlebars-plugin/Handlebars'
     i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile'
     json2: 'lib/require-handlebars-plugin/hbs/json2'
 
-    # LESS and CSS modules
-    #less: 'lib/require-less'
-
+  # # Shims
+  # To support libraries that were not written for requirejs
+  # configure a shim around them that mimics a `define` call.
+  # List the dependencies and what global object is available
+  # when the library is done loading (for jQuery plugins this can be `jQuery`)
   shim:
+
+    # ## Core Libraries
     jquery:
       exports: 'jQuery'
-      # init: -> this.jQuery.noConflict(true)
-
-    bootstrap:
-      deps: ['jquery'] # For some reason we can't add use 'css!lib/bootstrap/css/bootstrap'
-      exports: 'jQuery'
+      init: -> # this.jQuery.noConflict(true)
 
     underscore:
       exports: '_'
@@ -49,25 +52,9 @@ require.config
     backbone:
       deps: ['underscore', 'jquery']
       exports: 'Backbone'
-      init: -> ret = @Backbone; delete @Backbone; ret
+      init: -> ret = @Backbone; delete @Backbone; delete @_; ret
 
-    aloha:
-      deps: ['css!../cdn/aloha/src/css/aloha']
-
-    select2:
-      deps: ['jquery', 'css!./select2']
-      exports: 'Select2'
-      init: -> ret = @Select2; delete @Select2; ret
-
-    'spec/routes':
-      deps: ['jquery']
-      init: -> true
-
-    'aloha':
-      deps: ['jquery']
-      exports: 'Aloha'
-
-    # # Modules used for testing (maybe they should be in a separate require.config)
+    # ## Test Libraries
     jasmine:
       exports: 'jasmine'
 
@@ -79,13 +66,30 @@ require.config
       deps: ['jquery']
       exports: 'jQuery'
 
-  # Maps prefixes (like 'less!less-file') to use the LESS CSS plugin
+    # ## UI Libraries
+    bootstrap:
+      deps: ['jquery'] # For some reason we can't add use 'css!lib/bootstrap/css/bootstrap'
+      exports: 'jQuery'
+
+    select2:
+      deps: ['jquery', 'css!./select2']
+      exports: 'Select2'
+      init: -> ret = @Select2; delete @Select2; ret
+
+    aloha:
+      deps: ['jquery', 'css!../cdn/aloha/src/css/aloha']
+      exports: 'Aloha'
+
+  # Maps prefixes (like `less!path/to/less-file`) to use the LESS CSS plugin
   map:
     '*':
       css: 'lib/require-css/css'
       less: 'lib/require-less/less'
 
-  # Configuration for individual plugins
+  # ## module Configuration
+  # This configures `requirejs` plugins and modules.
+  # Modules can get to the configuration by including the `module` dependency
+  # and then calling `module.config()`
   hbs:
     disableI18n: true
 
@@ -97,4 +101,5 @@ require.config
 # To stop it from doing that, we need to delete this property
 #
 # unlike the other jQuery plugins bootstrap depends on a global '$' instead of 'jQuery'
-#delete define.amd.jQuery
+#
+#`delete define.amd.jQuery`

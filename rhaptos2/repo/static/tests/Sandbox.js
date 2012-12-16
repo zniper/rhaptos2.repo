@@ -2,7 +2,7 @@
 (function() {
   var _this = this;
 
-  define('Sandbox', ['jquery', 'app/views', 'spec/routes'], function($, Views, MOCK_CONTENT) {
+  define('Sandbox', ['jquery', 'app/views', 'tests/routes', 'css!app'], function($, Views, MOCK_CONTENT) {
     var metadataModal, metadataView, model, rolesModal, rolesView;
     model = new Views.Module();
     model.set(MOCK_CONTENT);

@@ -1,5 +1,5 @@
 # Need to define a name for this module that matches the requirejs data-main attribute.
-define 'Sandbox', ['jquery', 'app/views', 'spec/routes'], ($, Views, MOCK_CONTENT) =>
+define 'Sandbox', ['jquery', 'app/views', 'tests/routes', 'css!app'], ($, Views, MOCK_CONTENT) =>
   model = new Views.Module()
   model.set MOCK_CONTENT
   metadataView = new Views.MetadataEditView {model: model}

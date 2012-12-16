@@ -1,20 +1,20 @@
-# # This file sets up all the routes for the mock AJAX object for all tests
+# This file sets up all the routes for the mock AJAX object for all tests
 # It can be used as documentation for how the webserver should behave
 define ['jquery', 'jquery-mockjax'], ($) ->
 
-  # a 'short' but nonzero response time
+  # a *short* but nonzero response time
   SHORT = 500 #ms
 
   # ## Example Content
-  # This is returned by the `GET` by default
-  # It is also exported so it can be used for unit tests
+  # This is returned by the `GET` by default.
+  # It is also exported so it can be used for unit tests.
   MOCK_CONTENT =
     url: '/content/123.metadata'
     title: 'Test Module Title'
     language: 'sv-se'
     subjects: ['Arts', 'Business']
     keywords: ['Quantum Mechanics', 'physics']
-    authors: ['John Snow']
+    authors: ['John Smith']
 
 
   # ## Content and Metadata
