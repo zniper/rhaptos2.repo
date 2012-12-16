@@ -6,6 +6,8 @@ require.config
 
   #urlArgs: "cb=#{Math.random()}" # Cache Buster
   paths:
+    i18n: 'lib/i18n'
+
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
     backbone: 'lib/backbone-0.9.2'

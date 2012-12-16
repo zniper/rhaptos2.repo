@@ -1,4 +1,10 @@
-define ['jquery', 'aloha', 'app/views', 'css!app'], (jQuery, Aloha, Views) ->
+define ['jquery', 'aloha', 'app/views', 'i18n!app/nls/strings', 'css!app'], (jQuery, Aloha, Views, STRINGS) ->
+
+  # Simple helper for working with i18n strings
+  # TODO: Build this into the i18n plugin so i18n returns a function
+  __ = (str) ->
+    return STRINGS[str] if str of STRINGS
+    return str
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.
@@ -39,10 +45,10 @@ define ['jquery', 'aloha', 'app/views', 'css!app'], (jQuery, Aloha, Views) ->
 
   jQuery('#metadata-link').on 'click', (evt) ->
     evt.preventDefault()
-    modal = new Views.ModalWrapper(new Views.MetadataEditView(model: content), 'Edit Metadata')
+    modal = new Views.ModalWrapper(new Views.MetadataEditView(model: content), __('Edit Metadata'))
     modal.show()
 
   jQuery('#roles-link').on 'click', (evt) ->
     evt.preventDefault()
-    modal = new Views.ModalWrapper(new Views.RolesEditView(model: content), 'Edit Roles')
+    modal = new Views.ModalWrapper(new Views.RolesEditView(model: content), __('Edit Roles'))
     modal.show()
