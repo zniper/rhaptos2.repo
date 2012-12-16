@@ -1,3 +1,8 @@
+/* Customized i18n plugin:
+ * Added support for looking up a string and defaulting to the original string if it can't be found
+ * Starting at "Create function to look up i18n strings"
+ */
+
 /**
  * @license RequireJS i18n 2.0.1 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -159,7 +164,7 @@
 
                         //Load all the parts missing.
                         req(toLoad, function () {
-                            var i, partBundle, part;
+                            var i, partBundle, part, valueFunc;
                             for (i = needed.length - 1; i > -1 && needed[i]; i--) {
                                 part = needed[i];
                                 partBundle = master[part];
@@ -169,8 +174,23 @@
                                 mixin(value, partBundle);
                             }
 
+                            //Create function to look up i18n strings
+                            valueFunc = function(string) {
+                                if (string in value) {
+                                    return value[string];
+                                }
+                                if (masterConfig.warn && console) {
+                                    console.warn('require-i18n: Could not find locale-specific string for "' + string + '"');
+                                }
+                                return string;
+                            }
+                            //Attach all the keys to the function so it can be treated as an object
+                            for (var key in value) {
+                                valueFunc[key] = value[key];
+                            }
                             //All done, notify the loader.
-                            onLoad(value);
+                            onLoad(valueFunc);
+                            //onLoad(value);
                         });
                     });
                 }

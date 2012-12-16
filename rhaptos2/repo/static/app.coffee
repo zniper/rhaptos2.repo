@@ -1,10 +1,5 @@
-define ['jquery', 'aloha', 'app/views', 'i18n!app/nls/strings', 'css!app'], (jQuery, Aloha, Views, STRINGS) ->
+define ['jquery', 'aloha', 'app/views', 'i18n!app/nls/strings', 'css!app'], (jQuery, Aloha, Views, __) ->
 
-  # Simple helper for working with i18n strings
-  # TODO: Build this into the i18n plugin so i18n returns a function
-  __ = (str) ->
-    return STRINGS[str] if str of STRINGS
-    return str
 
   # HACK to discourage people from using the global jQuery
   # and instead use the requirejs version.

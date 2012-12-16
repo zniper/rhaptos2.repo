@@ -6,7 +6,7 @@ require.config
 
   #urlArgs: "cb=#{Math.random()}" # Cache Buster
   paths:
-    i18n: 'lib/i18n'
+    i18n: 'i18n-custom'
 
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
@@ -88,6 +88,10 @@ require.config
   # Configuration for individual plugins
   hbs:
     disableI18n: true
+
+  config:
+    i18n:
+      warn: true
 
 # requirejs special-cases jQuery and allows it to be a global (doesn't call the init code below to clean up the global vars)
 # To stop it from doing that, we need to delete this property

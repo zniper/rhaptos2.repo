@@ -4,7 +4,7 @@
   require.config({
     enforceDefine: true,
     paths: {
-      i18n: 'lib/i18n',
+      i18n: 'i18n-custom',
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
       backbone: 'lib/backbone-0.9.2',
@@ -85,6 +85,11 @@
     },
     hbs: {
       disableI18n: true
+    },
+    config: {
+      i18n: {
+        warn: true
+      }
     }
   });
 
