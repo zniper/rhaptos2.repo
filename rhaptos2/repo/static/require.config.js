@@ -2,7 +2,6 @@
 (function() {
 
   require.config({
-    enforceDefine: true,
     urlArgs: '',
     paths: {
       i18n: 'i18n-custom',
@@ -11,9 +10,6 @@
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
       backbone: 'lib/backbone-0.9.2',
-      jasmine: 'lib/jasmine/jasmine',
-      'jasmine-html': 'lib/jasmine/jasmine-html',
-      'jquery-mockjax': 'lib/jquery.mockjax',
       'aloha': '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       select2: 'lib/select2/select2',
@@ -41,17 +37,6 @@
           delete this._;
           return ret;
         }
-      },
-      jasmine: {
-        exports: 'jasmine'
-      },
-      'jasmine-html': {
-        deps: ['jasmine'],
-        exports: 'jasmine'
-      },
-      'jquery-mockjax': {
-        deps: ['jquery'],
-        exports: 'jQuery'
       },
       bootstrap: {
         deps: ['jquery'],
@@ -82,11 +67,6 @@
     },
     hbs: {
       disableI18n: true
-    },
-    config: {
-      i18n: {
-        warn: true
-      }
     }
   });
 

@@ -5,7 +5,7 @@
 define 'Sandbox', [
   'jquery'
   'app/views'
-  'tests/routes'
+  'test/routes'
   'css!app'
 ], ($, Views, MOCK_CONTENT) =>
   model = new Views.Module()

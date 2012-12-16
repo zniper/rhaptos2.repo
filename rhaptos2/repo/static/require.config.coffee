@@ -1,11 +1,6 @@
 # Configure paths to all the JS libs
 require.config
 
-  # If set to true, an error will be thrown if a script loads that does not call
-  # `define()` or have a shim exports string value that can be checked.
-  # See [Catching load failures in IE](http://requirejs.org/api.html) for more information.
-  enforceDefine: true
-
   urlArgs: '' # If you want to force a reload every time use this: `cb=#{Math.random()}` (you lose JS breakpoints though)
   paths:
     i18n: 'i18n-custom'
@@ -16,11 +11,6 @@ require.config
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
     backbone: 'lib/backbone-0.9.2'
-
-    # ## Test Libraries
-    jasmine: 'lib/jasmine/jasmine'
-    'jasmine-html': 'lib/jasmine/jasmine-html'
-    'jquery-mockjax': 'lib/jquery.mockjax'
 
     # ## UI libraries
     'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
@@ -56,18 +46,6 @@ require.config
       exports: 'Backbone'
       init: -> ret = @Backbone; delete @Backbone; delete @_; ret
 
-    # ## Test Libraries
-    jasmine:
-      exports: 'jasmine'
-
-    'jasmine-html':
-      deps: ['jasmine']
-      exports: 'jasmine'
-
-    'jquery-mockjax':
-      deps: ['jquery']
-      exports: 'jQuery'
-
     # ## UI Libraries
     bootstrap:
       deps: ['jquery'] # For some reason we can't add use 'css!lib/bootstrap/css/bootstrap'
@@ -96,10 +74,6 @@ require.config
   # and then calling `module.config()`
   hbs:
     disableI18n: true
-
-  config:
-    i18n:
-      warn: true
 
 # requirejs special-cases jQuery and allows it to be a global (doesn't call the init code below to clean up the global vars)
 # To stop it from doing that, we need to delete this property
