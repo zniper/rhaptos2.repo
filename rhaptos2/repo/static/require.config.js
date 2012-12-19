@@ -2,6 +2,7 @@
 (function() {
 
   require.config({
+    baseUrl: 'static/',
     urlArgs: '',
     paths: {
       i18n: 'i18n-custom',

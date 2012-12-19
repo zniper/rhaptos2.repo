@@ -23,10 +23,11 @@
     <script type="text/javascript" src="https://login.persona.org/include.js"></script>
     <script type="text/javascript" src="static/lib/require-2.1.2.js" data-main="app.js"></script>
     {# TODO: Finish removing the global window.jQuery #}
+    {# Load jQuery _after_ require so it registers 'jquery' but before Aloha so Aloha uses the same jQuery #}
     {# Currently Aloha loads its own for some reason so plugins that depend on bootstrap don't work #}
     <script type="text/javascript" src="static/lib/jquery-1.8.3.js"></script>
+    {# Configure all the require/app plugins #}
     <script type="text/javascript" src="static/require.config.js"></script>
-    <script type="text/javascript">require.config({baseUrl: 'static/'});</script>
     {% endblock %}
 
     {% block js %}
