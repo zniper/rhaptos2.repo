@@ -11,6 +11,5 @@ _mailinglist
 *.log
 *.*~
 #*.*#
-*.html
 */_build/*
 *thirdparty*

@@ -206,6 +206,7 @@ class MetadataModal extends BaseModal
         type: 'GET'
         url: '/keywords'
         contentType: 'application/json'
+        dataType: 'json'
         success: (data) ->
           response(data)
         })
@@ -227,6 +228,7 @@ class MetadataModal extends BaseModal
       type: 'GET'
       url: _generateUrl('metadata/', module_id)
       contentType: 'application/json'
+      dataType: 'json'
       })
 
 
@@ -291,6 +293,7 @@ class RolesModal extends BaseModal
       type: 'GET'
       url: _generateUrl('roles/', module_id)
       contentType: 'application/json'
+      dataType: 'json' # The type of the response
       })
 
   renderEntry: (entry) ->
@@ -388,6 +391,9 @@ class RolesModal extends BaseModal
       console.log("Removed '#{entry.name}' from the roles collection.")
     return eventHandler
 
+# Export the 2 classes so we can manipulate them in the tests
+exports.MetadataModal = MetadataModal
+exports.RolesModal = RolesModal
 
 exports.construct = ->
   $('.dropdown-toggle').dropdown()
