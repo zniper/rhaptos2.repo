@@ -333,10 +333,15 @@ def userspace():
 
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
-                       int(app.config['globals']['bamboo_global']['statsd_port']))
-    c.incr(dottedcounter)
-    #todo: really return c and keep elsewhere for efficieny I suspect
+    # Try to call logging. If not connected to a network this throws
+    # "socket.gaierror: [Errno 8] nodename nor servname provided, or not known"
+    try:
+        c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
+                           int(app.config['globals']['bamboo_global']['statsd_port']))
+        c.incr(dottedcounter)
+        #todo: really return c and keep elsewhere for efficieny I suspect
+    except:
+        pass
 
 
 def asjson(pyobj):
