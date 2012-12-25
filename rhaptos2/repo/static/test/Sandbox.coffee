@@ -4,11 +4,12 @@
 # (which matches the requirejs data-main attribute)
 define 'Sandbox', [
   'jquery'
+  'app/models'
   'app/views'
   'test/routes'
   'css!app'
-], ($, Views, MOCK_CONTENT) =>
-  model = new Views.Module()
+], ($, Models, Views, MOCK_CONTENT) =>
+  model = new Models.Module()
   model.set MOCK_CONTENT
   metadataView = new Views.MetadataEditView {model: model}
   rolesView    = new Views.RolesEditView {model: model}

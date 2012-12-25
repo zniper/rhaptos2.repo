@@ -13,6 +13,7 @@ define [
   'jquery'
   './languages'
   # Load the Handlebars templates
+  'hbs!app/views/content-list'
   'hbs!app/views/modal-wrapper'
   'hbs!app/views/edit-metadata'
   'hbs!app/views/edit-roles'
@@ -21,7 +22,7 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (Backbone, jQuery, Languages, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
+], (Backbone, jQuery, Languages, WORKSPACE, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -69,22 +70,12 @@ define [
     jQuery.extend(value, {code: languageCode})
     LANGUAGES.push(value)
 
-  # Default language for new content is the browser's language
-  browserLanguage = (navigator.userLanguage or navigator.language or '').toLowerCase()
 
-  # This model contains the following members:
-  #
-  # * `title` - a text title of the module
-  # * `language` - the main language (eg `en-us`)
-  # * `subjects` - an array of strings (eg `['Mathematics', 'Business']`)
-  # * `keywords` - an array of keywords (eg `['constant', 'boltzmann constant']`)
-  # * `authors` - an `Collection` of `User`s that are attributed as authors
-  Module = Backbone.Model.extend
-    defaults:
-      language: browserLanguage
-    url: ->
-      @get 'url'
-
+  WorkspaceView = Backbone.View.extend
+    tagName: 'div'
+    className: 'workspace'
+    render: ->
+      @$el.append WORKSPACE(@model.toJSON())
 
   MetadataEditView = Backbone.View.extend
     tagName: 'div'
@@ -133,7 +124,7 @@ define [
       for subject in @model.get('subjects') or []
         @$el.find("input[name=subjects][value='#{subject}']").attr('checked', true)
 
-    render: () ->
+    render: ->
       templateObj = jQuery.extend({}, @model.toJSON())
       templateObj._languages = LANGUAGES
       templateObj._subjects = METADATA_SUBJECTS
@@ -246,7 +237,7 @@ define [
 
 
   return {
-    Module: Module
+    WorkspaceView: WorkspaceView
     ModalWrapper: ModalWrapper
     MetadataEditView: MetadataEditView
     RolesEditView: RolesEditView
