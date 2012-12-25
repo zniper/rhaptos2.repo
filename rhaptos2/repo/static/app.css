@@ -1,6 +1,11 @@
 /* Import 3rd party libraries first */
 @import url('lib/bootstrap/css/bootstrap.css');
 
+/* Add some space because the toolbar floats */
+#main {
+  margin-top: 40px;
+}
+
 .select2-container {
   min-width: 10em;
 }
