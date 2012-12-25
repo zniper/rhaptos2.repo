@@ -82,9 +82,9 @@ class WorkSpace(object):
                 ndoc.load_from_file(fpath)
                 if user_id in ndoc.contentrw:
                     plain.append(os.path.basename(fpath))
-                    annotated.append([os.path.basename(fpath),
-                                     ndoc.title
-                                     ])
+                    annotated.append({'id': os.path.basename(fpath),
+                                     'title': ndoc.title
+                                     })
         self.files_plain = plain
         self.files_annotated = annotated
 
@@ -165,7 +165,7 @@ class NodeDoc(object):
 
 
         """
-        #retrieve any metadata assoc with this, 
+        #retrieve any metadata assoc with this,
         metad = json.loads(get_metadata(uid))
 
         repodir = app.config['repodir']
