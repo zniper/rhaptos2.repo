@@ -126,7 +126,7 @@ class NodeDoc(object):
 
     def __init__(self):
         self.nodedocversion = "0.1"
-        self.versionkeys = ['aclrw', 'content', 'contentrw', 'title', 'uuid']
+        self.versionkeys = ['aclrw', 'body', 'contentrw', 'uuid', 'title']
 
     def load_from_file(self, uid):
         """find a file and load up the json doc and store internally
@@ -177,8 +177,8 @@ class NodeDoc(object):
         except:
             nodedict = dict(zip(v01keys, [None, None, None, None, None]))
 
-        if sorted(nodedict.keys()) != v01keys:
-            raise  Rhaptos2Error("NodeDoc has incorrect keys - version 0.1" + str(nodedict.keys()) + str(v01keys))
+        #if sorted(nodedict.keys()) != v01keys:
+        #    raise  Rhaptos2Error("NodeDoc has incorrect keys - version 0.1" + str(nodedict.keys()) + str(v01keys))
 
         self.__dict__.update(nodedict)
         self.__dict__.update(metad)
@@ -192,10 +192,10 @@ class NodeDoc(object):
 
 
         v01keys = self.versionkeys
-        if sorted(djson.keys()) != v01keys:
-            raise  Rhaptos2Error("Incoming JSON has incorrect keys" + \
-                      str(djson.keys()) + str(v01keys))
-        if not djson['uuid'] : djson['uuid'] = str(uuid.uuid4())
+        #if sorted(djson.keys()) != v01keys:
+        #    raise  Rhaptos2Error("Incoming JSON has incorrect keys" + \
+        #              str(djson.keys()) + str(v01keys))
+        if not djson['id'] : djson['id'] = str(uuid.uuid4())
         self.__dict__.update(djson)
 
 
@@ -209,7 +209,7 @@ class NodeDoc(object):
             raise Rhaptos2Error("unauthorised")
 
         for key in kwds:
-            if key in self.versionkeys:
+            #if key in self.versionkeys:
                 if key == 'aclrw' and change_acl == False:
                     raise Rhaptos2Error("Unauthorised")
                 else:
@@ -217,11 +217,11 @@ class NodeDoc(object):
 
     def save(self):
         """ """
-        if self.uuid == None:
-            raise Rhaptos2Error("Need a UUID to save")
+        if self.id == None:
+            raise Rhaptos2Error("Need a ID to save")
         print "Saving"
         repodir = app.config['repodir']
-        filepath = os.path.join(repodir, self.uuid)
+        filepath = os.path.join(repodir, self.id)
         ###aaarrgh check keys
         d = {}
         for k in self.versionkeys:
