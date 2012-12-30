@@ -10,7 +10,7 @@
       json: 'lib/requirejs-plugins/json',
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
-      backbone: 'lib/backbone-0.9.2',
+      backbone: 'lib/backbone-0.9.9',
       'aloha': '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       select2: 'lib/select2/select2',
@@ -30,6 +30,14 @@
       },
       backbone: {
         deps: ['underscore', 'jquery'],
+        exports: 'Backbone'
+      },
+      'backbone.layoutmanager': {
+        deps: ['underscore', 'backbone'],
+        exports: 'Backbone'
+      },
+      'backbone.marionette': {
+        deps: ['underscore', 'backbone'],
         exports: 'Backbone',
         init: function() {
           var ret;

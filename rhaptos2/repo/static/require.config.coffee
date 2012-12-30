@@ -15,7 +15,7 @@ require.config
     # ## Core Libraries
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
-    backbone: 'lib/backbone-0.9.2'
+    backbone: 'lib/backbone-0.9.9'
 
     # ## UI libraries
     'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
@@ -48,6 +48,14 @@ require.config
 
     backbone:
       deps: ['underscore', 'jquery']
+      exports: 'Backbone'
+
+    'backbone.layoutmanager':
+      deps: ['underscore', 'backbone']
+      exports: 'Backbone'
+
+    'backbone.marionette':
+      deps: ['underscore', 'backbone']
       exports: 'Backbone'
       init: -> ret = @Backbone; delete @Backbone; delete @_; ret
 
