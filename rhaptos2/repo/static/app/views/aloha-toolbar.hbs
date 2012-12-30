@@ -22,11 +22,12 @@
       <!-- "changeHeading" is important so a click can be attached and
            data-tagname is used both to identify if the cursor is in one of these and
      is used to change one heading to another
+        Don't use href="#" because that affects Backbone routing
      -->
-      <li><a href="#" class="action changeHeading" data-tagname="p">Normal Text</a></li>
-      <li><a href="#" class="action changeHeading" data-tagname="h1">Heading</a></li>
-      <li><a href="#" class="action changeHeading" data-tagname="h2">Subheading</a></li>
-      <li><a href="#" class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
+      <li><a class="action changeHeading" data-tagname="p">Normal Text</a></li>
+      <li><a class="action changeHeading" data-tagname="h1">Heading</a></li>
+      <li><a class="action changeHeading" data-tagname="h2">Subheading</a></li>
+      <li><a class="action changeHeading" data-tagname="h3">SubSubHeading</a></li>
     </ul>
   </div>
 
@@ -55,8 +56,8 @@
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
-      <li><a href="#" class="action addrowbefore">Add Row Before</a></li>
-      <li><a href="#" class="action addrowafter">Add Row After</a></li>
+      <li><a class="action addrowbefore">Add Row Before</a></li>
+      <li><a class="action addrowafter">Add Row After</a></li>
     </ul>
   </div>
 

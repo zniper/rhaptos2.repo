@@ -11,43 +11,79 @@
   });
 
   define(['jquery', 'underscore', 'backbone', 'aloha', 'app/models', 'app/views', HACK_LOAD_TOOLBAR_BEFORE_ALOHA, 'i18n!app/nls/strings', 'css!app'], function(jQuery, _, Backbone, Aloha, Models, Views, ALOHA_TOOLBAR, __) {
-    var $main, AppRouter, appRouter, x;
+    var $main, AppRouter, Backbone_sync_orig, MODULE_SUBMIT_HREF_HACK, appRouter, setMainView, thisView, x,
+      _this = this;
+    MODULE_SUBMIT_HREF_HACK = '/module/';
     this.jQuery = this.$ = function() {
       console.warn('You should add "jquery" to your dependencies in define() instead of using the global jQuery!');
       return jQuery.apply(this, arguments);
     };
     jQuery.extend(this.jQuery, jQuery);
+    Backbone_sync_orig = Backbone.sync;
+    Backbone.sync = function(method, model, options) {
+      var data, href, params;
+      if ('update' === method) {
+        data = _.extend({}, model.toJSON());
+        data.json = JSON.stringify(model);
+        href = MODULE_SUBMIT_HREF_HACK || options['url'] || model.get('url' || (function() {
+          throw 'URL to sync to not defined';
+        })());
+        href = "" + href + "?" + (jQuery.param(model.toJSON()));
+        params = {
+          type: 'PUT',
+          url: href,
+          data: JSON.stringify(model),
+          processData: false,
+          dataType: 'json',
+          contentType: 'application/json'
+        };
+        return jQuery.ajax(_.extend(params, options));
+      } else {
+        return Backbone_sync_orig(method, model, options);
+      }
+    };
     $main = jQuery('#main').empty();
+    $main = $("#main");
+    thisView = null;
+    setMainView = function(view) {
+      if (thisView && thisView === view) {
+        return thisView;
+      }
+      if (thisView) {
+        thisView.remove();
+      }
+      $main.empty().append(view.el);
+      view.render();
+      thisView = view;
+      return view;
+    };
     AppRouter = Backbone.Router.extend({
       routes: {
         '': 'index',
-        'module/:uuid': 'module'
+        'module/:id': 'module'
       },
       index: function() {
         var view, workspace;
         workspace = new Models.Workspace();
         workspace.fetch();
         view = new Views.WorkspaceView({
-          model: {
-            items: workspace
-          }
+          model: workspace
         });
-        $main.html('');
-        $main.html(view.$el);
-        view.render();
+        $toolbar.hide();
+        setMainView(view);
         return workspace.on('change', function() {
           return view.render();
         });
       },
       module: function(id) {
-        var module;
+        var contentEditView, module;
         if (id == null) {
           id = null;
         }
         if (id) {
           module = new Models.Module({
             id: id,
-            url: "/module/" + id + "/metadata/"
+            url: "/module/" + id
           });
           module.fetch();
         } else {
@@ -71,17 +107,11 @@
           }), __('Edit Roles'));
           return modal.show();
         });
-        return module.on('change', function() {
-          var body;
-          body = "<h1>Module body</h1>\n<p>This is sample body text for module " + id + ".</p>\n<p>It'll eventually get loaded dynamically</p>";
-          $main.html(body);
-          $toolbar.show();
-          return Aloha.ready(function() {
-            $main.aloha().focus();
-            $main.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
-            return MathJax.Hub.Configured();
-          });
+        contentEditView = new Views.ContentEditView({
+          model: module
         });
+        setMainView(contentEditView);
+        return $toolbar.prependTo($main).show();
       }
     });
     appRouter = new AppRouter();

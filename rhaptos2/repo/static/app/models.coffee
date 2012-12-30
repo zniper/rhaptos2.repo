@@ -14,10 +14,12 @@ define ['backbone'], (Backbone) ->
   exports.Module = Backbone.Model.extend
     defaults:
       language: browserLanguage
-    url: ->
-      @get 'url'
+    url: -> "/module/#{@get 'id'}"
+    validate: (attrs) ->
+      return 'ERROR_EMPTY_BODY' if attrs.body and 0 == attrs.body.trim().length
 
-  exports.Workspace = Backbone.Model.extend
+  exports.Workspace = Backbone.Collection.extend
+    model: exports.Module
     url: '/workspace/'
 
   return exports

@@ -36,6 +36,8 @@ define [
   'css!app'
 ], (jQuery, _, Backbone, Aloha, Models, Views, ALOHA_TOOLBAR, __) ->
 
+  # **FIXME:** The URL prefix for saving modules. This should be removed
+  MODULE_SUBMIT_HREF_HACK = '/module/'
 
   # **HACK:** to discourage people from using the global jQuery
   # and instead use the `requirejs` version.
@@ -46,37 +48,77 @@ define [
     jQuery.apply @, arguments
   jQuery.extend(@jQuery, jQuery)
 
+
+  # By default Backbone sends the JSON object as the body when a PUT is called.
+  # Instead, send each key/value as a PUT parameter
+  Backbone_sync_orig = Backbone.sync
+  Backbone.sync = (method, model, options) =>
+    if 'update' == method
+      data = _.extend {}, model.toJSON()
+      # **FIXME:** This URL (and the funky data.json param) is a HACK and should be fixed
+      data.json = JSON.stringify(model)
+      href = MODULE_SUBMIT_HREF_HACK or options['url'] or model.get 'url' or throw 'URL to sync to not defined'
+      href = "#{href}?#{jQuery.param(model.toJSON())}"
+
+      params =
+        type: 'PUT'
+        url: href
+        data: JSON.stringify(model)
+        processData: false
+        dataType: 'json'
+        contentType: 'application/json'
+
+      jQuery.ajax(_.extend(params, options))
+    else
+      Backbone_sync_orig method, model, options
+
   # Clear the main gunk and add in the toolbar so Aloha can bind actions to it
   $main = jQuery('#main').empty() # FIXME: make it so the webserver doesn't send this
-  # FIXME This is where the toolbar would have been defined if we didn't need the toolbar load hack.
-  # Commented because of HACK_LOAD_TOOLBAR_BEFORE_ALOHA
-  #$toolbar = jQuery(ALOHA_TOOLBAR {}).appendTo('body').find('div').hide()
 
+  # This is where the toolbar would have been defined if we didn't need the toolbar load hack.
+
+  # The main div used for layouts
+  $main = $("#main")
+  thisView = null # Global current layout
+
+  # Helper for using layouts. Should use marionette or another layout manager
+  setMainView = (view) ->
+    # If already using this Layout, then don't re-inject into the DOM.
+    return thisView  if thisView and thisView is view
+    # If a layout already exists, remove it from the DOM.
+    thisView.remove()  if thisView
+    # Insert into the DOM.
+    $main.empty().append view.el
+    # Render the layout.
+    view.render()
+    # Cache the reference.
+    thisView = view
+    # Return the reference, for chainability.
+    view
 
   # # Bind Routes
   AppRouter = Backbone.Router.extend
     routes:
-      '':       'index'
-      'module/:uuid': 'module'
-    # Display the workspace
+      '':           'index'
+      'module/:id': 'module'
+    # ### Display the workspace (default route)
     index: ->
       # List the workspace
       # TODO: This should be a Backbone.Collection fetch
       workspace = new Models.Workspace()
       workspace.fetch()
-      view = new Views.WorkspaceView {model: {items: workspace}}
-      $main.html('')
-      $main.html(view.$el)
-      view.render()
+      view = new Views.WorkspaceView {model: workspace}
+      $toolbar.hide()
+      setMainView view
 
       workspace.on 'change', ->
         view.render()
 
 
-    # Create a new module or edit an existing one
+    # ### Create a new module or edit an existing one
     module: (id=null) ->
       if id
-        module = new Models.Module(id: id, url: "/module/#{id}/metadata/")
+        module = new Models.Module(id: id, url: "/module/#{id}")
         module.fetch()
       else
         module = new Models.Module()
@@ -99,28 +141,11 @@ define [
         modal.show()
 
 
-      # show the toolbar and start up an editor
-      module.on 'change', ->
-        body = """
-          <h1>Module body</h1>
-          <p>This is sample body text for module #{id}.</p>
-          <p>It'll eventually get loaded dynamically</p>
-        """
-        $main.html(body) # main.html(module.get('body'))
-        $toolbar.show()
+      contentEditView = new Views.ContentEditView(model: module)
 
-        # ## Start Aloha
-        # Once Aloha has finished loading, enable it on the document and let MathJax know it can start rendering
-        Aloha.ready ->
-          $main.aloha().focus()
-
-          # Wait until Aloha is started before loading MathJax
-          # Also, wrap all math in a span/div. MathJax replaces the MathJax element
-          # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-          # Add `aloha-cleanme` so this span is unwrapped when serialized to XHTML
-          $main.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
-          MathJax.Hub.Configured()
-
+      setMainView contentEditView
+      # Make sure the toolbar always shows up above the editable div
+      $toolbar.prependTo($main).show()
 
   appRouter = new AppRouter()
   x = Backbone.history.start()

@@ -27,6 +27,7 @@ define [
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
   USERS_URL = '/users/'
+  DELAY_BEFORE_SAVING = 3000
 
   SELECT2_AJAX_HANDLER = (url) ->
     quietMillis: 500
@@ -74,8 +75,55 @@ define [
   WorkspaceView = Backbone.View.extend
     tagName: 'div'
     className: 'workspace'
+
+    initialize: ->
+      @listenTo @model, 'reset', => @render()
+      @listenTo @model, 'update', => @render()
     render: ->
-      @$el.append WORKSPACE(@model.toJSON())
+      @$el.empty().append WORKSPACE { items: @model.toJSON() }
+
+  ContentEditView = Backbone.View.extend
+    className: 'body'
+
+    initialize: ->
+      @listenTo @model, 'change:body', (model, value) =>
+        alohaId = @$el.attr('id')
+        # Sometimes Aloha hasn't loaded up yet
+        if alohaId and @$el.parents()[0]
+          alohaEditable = Aloha.getEditableById(alohaId)
+          editableBody = alohaEditable.getContents()
+          alohaEditable.setContents(value) if value != editableBody
+        else
+          @$el.empty().append(value)
+
+
+    render: ->
+      @$el.append @model.get('body')
+
+      # Wait until Aloha is started before loading MathJax
+      # Also, wrap all math in a span/div. MathJax replaces the MathJax element
+      # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
+      # Add `aloha-cleanme` so this span is unwrapped when serialized to XHTML
+      @$el.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
+      MathJax.Hub.Configured()
+
+      @$el.aloha()
+      setTimeout (=> @$el.focus()), 100
+
+      # Auto save after the user has stopped making changes for DELAY_BEFORE_SAVING millisecs
+      #autosaveTimeout = null
+      updateModelAndSave = =>
+        alohaId = @$el.attr('id')
+        # Sometimes Aloha hasn't loaded up yet
+        if alohaId
+          alohaEditable = Aloha.getEditableById(alohaId)
+          editableBody = alohaEditable.getContents()
+          @model.save 'body', editableBody
+        #clearTimeout autosaveTimeout
+        #autosaveTimeout = setTimeout autoSave DELAY_BEFORE_SAVING
+
+      # Grr, 'aloha-smart-content-changed' doesn't work unless you globally bind (Aloha.bind)
+      @$el.on 'blur', updateModelAndSave
 
   MetadataEditView = Backbone.View.extend
     tagName: 'div'
@@ -118,21 +166,26 @@ define [
       else
         $variant.html('').attr('disabled', true)
 
+    # Helper method to populate a multiselect input
+    _updateSelect2: (inputName, modelKey) ->
+      @$el.find("input[name=#{inputName}]").attr('checked', false)
+      for subject in @model.get(modelKey) or []
+        @$el.find("input[name=#{inputName}][value='#{subject}']").attr('checked', true)
+
     # Update the View with new subjects selected
     _updateSubjects: ->
       @$el.find('input[name=subjects]').attr('checked', false)
       for subject in @model.get('subjects') or []
         @$el.find("input[name=subjects][value='#{subject}']").attr('checked', true)
 
+    # Update the View with new keywords selected
+    _updateKeywords: -> @$el.find('input[name=keywords]').select2('val', @model.get 'keywords')
+
     render: ->
       templateObj = jQuery.extend({}, @model.toJSON())
       templateObj._languages = LANGUAGES
       templateObj._subjects = METADATA_SUBJECTS
       @$el.append EDIT_METADATA(templateObj)
-
-      # Select the correct language (mustache can't do that)
-      @_updateLanguage()
-      @_updateSubjects()
 
       # tagit (specifically its config of autocomplete) requires this element be part of the DOM
       # so we add the keywords to the body and then put it back
@@ -142,6 +195,15 @@ define [
         tokenSeparators: [',']
         separator: '|' # String used to delimit ids in $('input').val()
         ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
+        initSelection: (element, callback) ->
+          data = []
+          _.each element.val().split('|'), (str) -> data.push {id: str, text: str}
+          callback(data)
+
+      # Select the correct language (mustache can't do that)
+      @_updateLanguage()
+      @_updateSubjects()
+      @_updateKeywords()
 
       @delegateEvents()
 
@@ -179,6 +241,7 @@ define [
       $copyrightHolders = @$el.find('*[name=copyrightHolders]')
 
       $authors.select2
+        # FIXME: The tags should be looked up instead of being hardcoded
         tags: @model.get('authors') or []
         tokenSeparators: [',']
         separator: '|'
@@ -189,8 +252,14 @@ define [
         separator: '|'
         #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
 
+      @_updateAuthors()
+      @_updateCopyrightHolders()
+
       @delegateEvents()
       @
+
+    _updateAuthors: -> @$el.find('*[name=authors]').select2 'val', (@model.get('authors') or [])
+    _updateCopyrightHolders: -> @$el.find('*[name=copyrightHolders]').select2 'val', (@model.get('copyrightHolders') or [])
 
     attrsToSave: () ->
       # Grab the authors
@@ -241,4 +310,5 @@ define [
     ModalWrapper: ModalWrapper
     MetadataEditView: MetadataEditView
     RolesEditView: RolesEditView
+    ContentEditView: ContentEditView
   }

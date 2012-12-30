@@ -126,7 +126,7 @@ class NodeDoc(object):
 
     def __init__(self):
         self.nodedocversion = "0.1"
-        self.versionkeys = ['aclrw', 'body', 'contentrw', 'uuid', 'title']
+        self.versionkeys = ['aclrw', 'body', 'contentrw', 'uuid', 'title', 'language', 'subjects', 'keywords', 'authors', 'copyrightHolders']
 
     def load_from_file(self, uid):
         """find a file and load up the json doc and store internally

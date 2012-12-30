@@ -2,9 +2,10 @@
 (function() {
 
   define(['backbone', 'jquery', './languages', 'hbs!app/views/content-list', 'hbs!app/views/modal-wrapper', 'hbs!app/views/edit-metadata', 'hbs!app/views/edit-roles', 'hbs!app/views/language-variants', 'bootstrap', 'select2'], function(Backbone, jQuery, Languages, WORKSPACE, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) {
-    var KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, ModalWrapper, RolesEditView, SELECT2_AJAX_HANDLER, USERS_URL, WorkspaceView, languageCode, value, _ref;
+    var ContentEditView, DELAY_BEFORE_SAVING, KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, ModalWrapper, RolesEditView, SELECT2_AJAX_HANDLER, USERS_URL, WorkspaceView, languageCode, value, _ref;
     KEYWORDS_URL = '/keywords/';
     USERS_URL = '/users/';
+    DELAY_BEFORE_SAVING = 3000;
     SELECT2_AJAX_HANDLER = function(url) {
       return {
         quietMillis: 500,
@@ -71,8 +72,59 @@
     WorkspaceView = Backbone.View.extend({
       tagName: 'div',
       className: 'workspace',
+      initialize: function() {
+        var _this = this;
+        this.listenTo(this.model, 'reset', function() {
+          return _this.render();
+        });
+        return this.listenTo(this.model, 'update', function() {
+          return _this.render();
+        });
+      },
       render: function() {
-        return this.$el.append(WORKSPACE(this.model.toJSON()));
+        return this.$el.empty().append(WORKSPACE({
+          items: this.model.toJSON()
+        }));
+      }
+    });
+    ContentEditView = Backbone.View.extend({
+      className: 'body',
+      initialize: function() {
+        var _this = this;
+        return this.listenTo(this.model, 'change:body', function(model, value) {
+          var alohaEditable, alohaId, editableBody;
+          alohaId = _this.$el.attr('id');
+          if (alohaId && _this.$el.parents()[0]) {
+            alohaEditable = Aloha.getEditableById(alohaId);
+            editableBody = alohaEditable.getContents();
+            if (value !== editableBody) {
+              return alohaEditable.setContents(value);
+            }
+          } else {
+            return _this.$el.empty().append(value);
+          }
+        });
+      },
+      render: function() {
+        var updateModelAndSave,
+          _this = this;
+        this.$el.append(this.model.get('body'));
+        this.$el.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
+        MathJax.Hub.Configured();
+        this.$el.aloha();
+        setTimeout((function() {
+          return _this.$el.focus();
+        }), 100);
+        updateModelAndSave = function() {
+          var alohaEditable, alohaId, editableBody;
+          alohaId = _this.$el.attr('id');
+          if (alohaId) {
+            alohaEditable = Aloha.getEditableById(alohaId);
+            editableBody = alohaEditable.getContents();
+            return _this.model.save('body', editableBody);
+          }
+        };
+        return this.$el.on('blur', updateModelAndSave);
       }
     });
     MetadataEditView = Backbone.View.extend({
@@ -119,6 +171,17 @@
           return $variant.html('').attr('disabled', true);
         }
       },
+      _updateSelect2: function(inputName, modelKey) {
+        var subject, _i, _len, _ref1, _results;
+        this.$el.find("input[name=" + inputName + "]").attr('checked', false);
+        _ref1 = this.model.get(modelKey) || [];
+        _results = [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          subject = _ref1[_i];
+          _results.push(this.$el.find("input[name=" + inputName + "][value='" + subject + "']").attr('checked', true));
+        }
+        return _results;
+      },
       _updateSubjects: function() {
         var subject, _i, _len, _ref1, _results;
         this.$el.find('input[name=subjects]').attr('checked', false);
@@ -130,21 +193,36 @@
         }
         return _results;
       },
+      _updateKeywords: function() {
+        return this.$el.find('input[name=keywords]').select2('val', this.model.get('keywords'));
+      },
       render: function() {
         var $keywords, templateObj;
         templateObj = jQuery.extend({}, this.model.toJSON());
         templateObj._languages = LANGUAGES;
         templateObj._subjects = METADATA_SUBJECTS;
         this.$el.append(EDIT_METADATA(templateObj));
-        this._updateLanguage();
-        this._updateSubjects();
         $keywords = this.$el.find('*[name=keywords]');
         $keywords.select2({
           tags: this.model.get('keywords') || [],
           tokenSeparators: [','],
           separator: '|',
-          ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
+          ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL),
+          initSelection: function(element, callback) {
+            var data;
+            data = [];
+            _.each(element.val().split('|'), function(str) {
+              return data.push({
+                id: str,
+                text: str
+              });
+            });
+            return callback(data);
+          }
         });
+        this._updateLanguage();
+        this._updateSubjects();
+        this._updateKeywords();
         this.delegateEvents();
         this.$el.find('input[name=title]').focus();
         return this;
@@ -203,8 +281,16 @@
           tokenSeparators: [','],
           separator: '|'
         });
+        this._updateAuthors();
+        this._updateCopyrightHolders();
         this.delegateEvents();
         return this;
+      },
+      _updateAuthors: function() {
+        return this.$el.find('*[name=authors]').select2('val', this.model.get('authors') || []);
+      },
+      _updateCopyrightHolders: function() {
+        return this.$el.find('*[name=copyrightHolders]').select2('val', this.model.get('copyrightHolders') || []);
       },
       attrsToSave: function() {
         var authors, copyrightHolders, kw;
@@ -280,7 +366,8 @@
       WorkspaceView: WorkspaceView,
       ModalWrapper: ModalWrapper,
       MetadataEditView: MetadataEditView,
-      RolesEditView: RolesEditView
+      RolesEditView: RolesEditView,
+      ContentEditView: ContentEditView
     };
   });
 

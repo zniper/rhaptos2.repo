@@ -12,10 +12,16 @@
         language: browserLanguage
       },
       url: function() {
-        return this.get('url');
+        return "/module/" + (this.get('id'));
+      },
+      validate: function(attrs) {
+        if (attrs.body && 0 === attrs.body.trim().length) {
+          return 'ERROR_EMPTY_BODY';
+        }
       }
     });
-    exports.Workspace = Backbone.Model.extend({
+    exports.Workspace = Backbone.Collection.extend({
+      model: exports.Module,
       url: '/workspace/'
     });
     return exports;
