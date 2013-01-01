@@ -107,7 +107,7 @@ define [
       # TODO: This should be a Backbone.Collection fetch
       workspace = new Models.Workspace()
       workspace.fetch()
-      view = new Views.WorkspaceView {model: workspace}
+      view = new Views.WorkspaceView {collection: workspace}
       $toolbar.hide()
       setMainView view
 

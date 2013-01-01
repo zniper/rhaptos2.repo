@@ -14,6 +14,7 @@ define [
   './languages'
   # Load the Handlebars templates
   'hbs!app/views/content-list'
+  'hbs!app/views/content-list-item'
   'hbs!app/views/modal-wrapper'
   'hbs!app/views/edit-metadata'
   'hbs!app/views/edit-roles'
@@ -22,7 +23,8 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (Backbone, jQuery, Languages, WORKSPACE, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
+  'backbone.marionette'
+], (Backbone, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -72,15 +74,24 @@ define [
     LANGUAGES.push(value)
 
 
-  WorkspaceView = Backbone.View.extend
-    tagName: 'div'
-    className: 'workspace'
+  # ## "Generic" Views
+  #
+  # A list of search results (stubs of models only containing an icon, url, title)
+  # need a generic view for an item.
+  #
+  # Since we don't really distinguish between a search result view and a workspace/collection/etc
+  # just consider them the same.
+  SearchResultItemView = Backbone.Marionette.ItemView.extend
+    template: SEARCH_RESULT_ITEM
+
+  # This can also be thought of as the Workspace view
+  SearchResultView = Backbone.Marionette.CompositeView.extend
+    template: SEARCH_RESULT
+    itemView: SearchResultItemView
 
     initialize: ->
-      @listenTo @model, 'reset', => @render()
-      @listenTo @model, 'update', => @render()
-    render: ->
-      @$el.empty().append WORKSPACE { items: @model.toJSON() }
+      @listenTo @collection, 'reset', => @render()
+      @listenTo @collection, 'update', => @render()
 
   ContentEditView = Backbone.View.extend
     className: 'body'
@@ -187,8 +198,7 @@ define [
       templateObj._subjects = METADATA_SUBJECTS
       @$el.append EDIT_METADATA(templateObj)
 
-      # tagit (specifically its config of autocomplete) requires this element be part of the DOM
-      # so we add the keywords to the body and then put it back
+      # Enable multiselect on certain elements
       $keywords = @$el.find('*[name=keywords]')
       $keywords.select2
         tags: @model.get('keywords') or []
@@ -306,7 +316,7 @@ define [
 
 
   return {
-    WorkspaceView: WorkspaceView
+    WorkspaceView: SearchResultView
     ModalWrapper: ModalWrapper
     MetadataEditView: MetadataEditView
     RolesEditView: RolesEditView

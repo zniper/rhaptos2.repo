@@ -67,7 +67,7 @@
         workspace = new Models.Workspace();
         workspace.fetch();
         view = new Views.WorkspaceView({
-          model: workspace
+          collection: workspace
         });
         $toolbar.hide();
         setMainView(view);
