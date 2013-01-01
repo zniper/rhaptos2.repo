@@ -16,6 +16,8 @@ require.config
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
     backbone: 'lib/backbone-0.9.9'
+    # Layout manager for backbone
+    'backbone.marionette': 'lib/backbone.marionette'
 
     # ## UI libraries
     'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
