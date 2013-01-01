@@ -9,6 +9,7 @@
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 define [
+  'underscore'
   'backbone'
   'jquery'
   './languages'
@@ -24,7 +25,7 @@ define [
   'bootstrap'
   'select2'
   'backbone.marionette'
-], (Backbone, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
+], (_, Backbone, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -93,8 +94,11 @@ define [
       @listenTo @collection, 'reset', => @render()
       @listenTo @collection, 'update', => @render()
 
-  ContentEditView = Backbone.View.extend
-    className: 'body'
+  # ## Edit Content
+  # Edit the module body and (eventually) metadata from the same view
+  ContentEditView = Backbone.Marionette.ItemView.extend
+    # TODO: Turn this into a handlebars module so we can add editing metadata in the same div
+    template: (serialized_model) -> "<div class='edit'>#{serialized_model.body or 'This module is empty. Please change it'}</div>"
 
     initialize: ->
       @listenTo @model, 'change:body', (model, value) =>
@@ -107,10 +111,7 @@ define [
         else
           @$el.empty().append(value)
 
-
-    render: ->
-      @$el.append @model.get('body')
-
+    onRender: ->
       # Wait until Aloha is started before loading MathJax
       # Also, wrap all math in a span/div. MathJax replaces the MathJax element
       # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
@@ -136,9 +137,8 @@ define [
       # Grr, 'aloha-smart-content-changed' doesn't work unless you globally bind (Aloha.bind)
       @$el.on 'blur', updateModelAndSave
 
-  MetadataEditView = Backbone.View.extend
-    tagName: 'div'
-    className: 'metadata'
+  MetadataEditView = Backbone.Marionette.ItemView.extend
+    template: -> '<div class="metadata"></div>'
 
     # Description of method naming:
     #
@@ -240,13 +240,10 @@ define [
       }
 
 
-  RolesEditView = Backbone.View.extend
-    tagName: 'div'
-    className: 'roles'
+  RolesEditView = Backbone.Marionette.ItemView.extend
+    template: EDIT_ROLES
 
-    render: () ->
-      @$el.append jQuery(EDIT_ROLES(@model.toJSON()))
-
+    onRender: ->
       $authors = @$el.find('*[name=authors]')
       $copyrightHolders = @$el.find('*[name=copyrightHolders]')
 
