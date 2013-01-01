@@ -176,7 +176,6 @@ function saveText() {
              $.each(data, showres);
              // Put the UUID in the form field.
              jQuery('#uuid').val(data.hashid);
-             build_workspace();
          });
 
          request.fail(function(jqXHR, textStatus, err) {
@@ -233,46 +232,6 @@ function getLoadHistoryVer(uuid) {
 
 
 
-function build_workspace() {
-
-    logger("In build workspace");
-    var jsond = '[';
-    var htmlfrag = '<table class="table table-condensed table-hover table-striped" >';
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: WORKSPACEURL,
-        xhrFields: {
-            withCredentials: true
-        },
-        success: function(historyarr) {
-            historyarr.sort();
-            if (historyarr.length == 0){
-                logger("Not logged in - no workspace to deal with");
-                                      }
-            else {
-
-                $.each(historyarr, function(i, elem) {
-                    var strelem = "'" + elem[0] + "'";
-
-                    htmlfrag += '<tr><td><a class="nolink" href="#" onclick="getLoadHistoryVer(' + strelem + ');" >' + elem[1] + '</a></td>' + '<td><a class="nolink" href="#" onclick="delete_module(' + strelem + ');" >(Delete)</a></td></tr>';
-                    jsond += '{"data": "' + elem[1] + '", "attr": {"id": "' + elem[0] + '"}, "state": "closed"},';
-                });
-
-
-                x = jsond.length - 1;
-                y = jsond.substring(0, x);
-                jsond = y + ']';
-                //jsond += ']"';
-                logger("Building workspace :" + htmlfrag);
-                logger(jsond);
-                jQuery('#workspaces').html(htmlfrag);
-            }
-        }
-    });
-}
-
-
 // We are changing how identiy is managed - and need beter secure coiokies
 
 function getwhoami() {
@@ -315,7 +274,6 @@ function delete_module(filename) {
 
         success: function() {
             logger('deleted ' + filename);
-            build_workspace();
         },
 
         error: function(jqXHR, textStatus, err) {
@@ -369,7 +327,6 @@ function persona_out(){
 
 ////////////// adminy
 function test(){
-    build_workspace();
     logger("start aloha now ..");
     start_aloha();
 
@@ -419,7 +376,6 @@ jQuery(document).ready(function() {
 
 
     newText();
-    build_workspace();
 
     /* Authoring Tools Dropdowns & Modals */
     // FIXME: These should all be registered and managed via backbone.js
