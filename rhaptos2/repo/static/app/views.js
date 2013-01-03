@@ -109,7 +109,9 @@
         var updateModelAndSave,
           _this = this;
         this.$el.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
-        MathJax.Hub.Configured();
+        if (typeof MathJax !== "undefined" && MathJax !== null) {
+          MathJax.Hub.Configured();
+        }
         this.$el.aloha();
         setTimeout((function() {
           return _this.$el.focus();

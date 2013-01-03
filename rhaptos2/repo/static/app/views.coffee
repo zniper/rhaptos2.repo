@@ -117,7 +117,7 @@ define [
       # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
       # Add `aloha-cleanme` so this span is unwrapped when serialized to XHTML
       @$el.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
-      MathJax.Hub.Configured()
+      MathJax.Hub.Configured() if MathJax?
 
       @$el.aloha()
       setTimeout (=> @$el.focus()), 100
