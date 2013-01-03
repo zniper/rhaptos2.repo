@@ -147,7 +147,12 @@
 
         <!-- Main content -->
         <div class="span9" id="main">
-          {% block editor %}{% endblock %}
+          <p>Please wait while this page loads</p>
+          <p>This DIV should be populated by the server and should contain either:</p>
+          <ul>
+            <li>The HTML body of a module (to prepopulate the Backbone model) and some JSON for the metadata or</li>
+            <li>The HTML list of the workspace/search results and some JSON representation of those results so they can be loaded up by app.js</li>
+          </ul>
         </div>
 
         <div class="span3">
