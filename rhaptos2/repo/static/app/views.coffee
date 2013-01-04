@@ -20,12 +20,13 @@ define [
   'hbs!app/views/edit-metadata'
   'hbs!app/views/edit-roles'
   'hbs!app/views/language-variants'
+  'hbs!app/views/aloha-toolbar'
   # `bootstrap` and `select2` add to jQuery and don't export anything of their own
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
   'backbone.marionette'
-], (_, Backbone, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
+], (_, Backbone, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -98,18 +99,23 @@ define [
   # Edit the module body and (eventually) metadata from the same view
   ContentEditView = Backbone.Marionette.ItemView.extend
     # TODO: Turn this into a handlebars module so we can add editing metadata in the same div
-    template: (serialized_model) -> "<div class='edit'>#{serialized_model.body or 'This module is empty. Please change it'}</div>"
+    # The toolbar div has a `.aloha-dialog` so clicking on it doesn't cause the editable area to lose focus
+    # See `Aloha-Editor/src/lib/aloha.js`
+    #    if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
+    #      Aloha.activeEditable.blur();
+    #      ...
+    template: (serialized_model) -> "<div class='content-edit-view'><div class='toolbar aloha-dialog'></div><div class='body'>#{serialized_model.body or 'This module is empty. Please change it'}</div></div>"
 
     initialize: ->
       @listenTo @model, 'change:body', (model, value) =>
-        alohaId = @$el.attr('id')
+        alohaId = @$el.find('.body').attr('id')
         # Sometimes Aloha hasn't loaded up yet
         if alohaId and @$el.parents()[0]
           alohaEditable = Aloha.getEditableById(alohaId)
           editableBody = alohaEditable.getContents()
           alohaEditable.setContents(value) if value != editableBody
         else
-          @$el.empty().append(value)
+          @$el.find('.body').empty().append(value)
 
     onRender: ->
       # Wait until Aloha is started before loading MathJax
@@ -119,13 +125,21 @@ define [
       @$el.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
       MathJax.Hub.Configured() if MathJax?
 
-      @$el.aloha()
-      setTimeout (=> @$el.focus()), 100
+      # Inside the view is a toolbar and a .body which will have an aloha editable area
+      $body = @$el.find('.body')
+      $toolbar = @$el.find('.toolbar')
+
+      $body.aloha()
+      # Move the focus onto the body (needs to be delayed though)
+      setTimeout (=> $body.focus()), 100
+
+      # Populate the toolbar from the handlebars template
+      $toolbar.html(ALOHA_TOOLBAR {})
 
       # Auto save after the user has stopped making changes for DELAY_BEFORE_SAVING millisecs
       #autosaveTimeout = null
       updateModelAndSave = =>
-        alohaId = @$el.attr('id')
+        alohaId = $body.attr('id')
         # Sometimes Aloha hasn't loaded up yet
         if alohaId
           alohaEditable = Aloha.getEditableById(alohaId)
@@ -135,7 +149,7 @@ define [
         #autosaveTimeout = setTimeout autoSave DELAY_BEFORE_SAVING
 
       # Grr, 'aloha-smart-content-changed' doesn't work unless you globally bind (Aloha.bind)
-      @$el.on 'blur', updateModelAndSave
+      $body.on 'blur', updateModelAndSave
 
   MetadataEditView = Backbone.Marionette.ItemView.extend
     template: -> '<div class="metadata"></div>'

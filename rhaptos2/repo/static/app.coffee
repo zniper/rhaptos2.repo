@@ -8,22 +8,6 @@
 # For example, if the user goes to a piece of content we already send
 # the content inside a `div` tag.
 # The same can be done with metadata/roles (as a JSON object sent in the HTML)
-
-
-# ## FIXME Section
-# This next define (with a random name) is a HACK so
-# the toolbar is inserted into the DOM before Aloha's toolbar plugin loads
-# It's a nasty, nasty hack and the Aloha Toolbar code should be fixed
-# so one can programmatically retreive the actions for buttons and bind them
-# to toolbar buttons.
-$toolbar = null
-HACK_LOAD_TOOLBAR_BEFORE_ALOHA = "__app_intenral_#{Math.random()}"
-define HACK_LOAD_TOOLBAR_BEFORE_ALOHA, [
-  'hbs!app/views/aloha-toolbar'
-], (ALOHA_TOOLBAR) ->
-  $toolbar = jQuery(ALOHA_TOOLBAR {}).appendTo('body').find('div').hide()
-
-
 define [
   'jquery'
   'underscore'
@@ -31,10 +15,9 @@ define [
   'aloha'
   'app/models'
   'app/views'
-  HACK_LOAD_TOOLBAR_BEFORE_ALOHA # 'hbs!app/views/aloha-toolbar'
   'i18n!app/nls/strings'
   'css!app'
-], (jQuery, _, Backbone, Aloha, Models, Views, ALOHA_TOOLBAR, __) ->
+], (jQuery, _, Backbone, Aloha, Models, Views, __) ->
 
   # **FIXME:** The URL prefix for saving modules. This should be removed
   MODULE_SUBMIT_HREF_HACK = '/module/'
@@ -72,12 +55,6 @@ define [
     else
       Backbone_sync_orig method, model, options
 
-  # Clear the main gunk and add in the toolbar so Aloha can bind actions to it
-  $main = jQuery('#main').empty() # FIXME: make it so the webserver doesn't send this
-
-  # This is where the toolbar would have been defined if we didn't need the toolbar load hack.
-
-  # The main div used for layouts
   $main = $("#main")
   thisView = null # Global current layout
 
@@ -108,7 +85,6 @@ define [
       workspace = new Models.Workspace()
       workspace.fetch()
       view = new Views.WorkspaceView {collection: workspace}
-      $toolbar.hide()
       setMainView view
 
       workspace.on 'change', ->
@@ -140,12 +116,8 @@ define [
         modal = new Views.ModalWrapper(new Views.RolesEditView(model: module), __('Edit Roles'))
         modal.show()
 
-
       contentEditView = new Views.ContentEditView(model: module)
-
       setMainView contentEditView
-      # Make sure the toolbar always shows up above the editable div
-      $toolbar.prependTo($main).show()
 
   appRouter = new AppRouter()
   x = Backbone.history.start()
