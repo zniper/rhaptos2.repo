@@ -23,9 +23,6 @@ define [
   # # Various HACKS
   # These should be removed when the webserver URLs/routes are cleaned up
 
-  # **FIXME:** The URL prefix for saving content. This should be removed
-  CONTENT_SUBMIT_HREF_HACK = '/module/'
-
   # **HACK:** to discourage people from using the global jQuery
   # and instead use the `requirejs` version.
   # This helps ensure plugins that extend jQuery (like bootstrap)
@@ -44,7 +41,7 @@ define [
       data = _.extend {}, model.toJSON()
       # **FIXME:** This URL (and the funky data.json param) is a HACK and should be fixed
       data.json = JSON.stringify(model)
-      href = CONTENT_SUBMIT_HREF_HACK or options['url'] or model.get 'url' or throw 'URL to sync to not defined'
+      href = options['url'] or model.url() or throw 'URL to sync to not defined'
       href = "#{href}?#{jQuery.param(model.toJSON())}"
 
       params =
@@ -87,8 +84,9 @@ define [
 
     # ### Create new content or edit an existing content
     content: (id=null) ->
+      content = new Models.Content()
       if id
-        content = new Models.Content {id: id}
+        content.set 'id', id
         content.fetch()
       else
         content = new Models.Content()

@@ -2,9 +2,8 @@
 (function() {
 
   define(['jquery', 'underscore', 'backbone', 'marionette', 'aloha', 'app/models', 'app/views', 'i18n!app/nls/strings', 'css!app'], function(jQuery, _, Backbone, Marionette, Aloha, Models, Views, __) {
-    var AppRouter, Backbone_sync_orig, CONTENT_SUBMIT_HREF_HACK, appRouter, mainRegion,
+    var AppRouter, Backbone_sync_orig, appRouter, mainRegion,
       _this = this;
-    CONTENT_SUBMIT_HREF_HACK = '/module/';
     this.jQuery = this.$ = function() {
       console.warn('You should add "jquery" to your dependencies in define() instead of using the global jQuery!');
       return jQuery.apply(this, arguments);
@@ -16,9 +15,9 @@
       if ('update' === method) {
         data = _.extend({}, model.toJSON());
         data.json = JSON.stringify(model);
-        href = CONTENT_SUBMIT_HREF_HACK || options['url'] || model.get('url' || (function() {
+        href = options['url'] || model.url() || (function() {
           throw 'URL to sync to not defined';
-        })());
+        })();
         href = "" + href + "?" + (jQuery.param(model.toJSON()));
         params = {
           type: 'PUT',
@@ -59,10 +58,9 @@
         if (id == null) {
           id = null;
         }
+        content = new Models.Content();
         if (id) {
-          content = new Models.Content({
-            id: id
-          });
+          content.set('id', id);
           content.fetch();
         } else {
           content = new Models.Content();

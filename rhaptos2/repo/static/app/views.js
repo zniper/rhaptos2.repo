@@ -125,7 +125,10 @@
           if (alohaId) {
             alohaEditable = Aloha.getEditableById(alohaId);
             editableBody = alohaEditable.getContents();
-            return _this.model.save('body', editableBody);
+            _this.model.set('body', editableBody);
+            if (_this.model.changedAttributes()) {
+              return _this.model.save();
+            }
           }
         };
         return $body.on('blur', updateModelAndSave);

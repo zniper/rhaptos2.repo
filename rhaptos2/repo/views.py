@@ -113,20 +113,18 @@ def index():
 
 
 
-@app.route("/module/", methods=['PUT'])
-def modulePUT():
+@app.route("/module/<uuid>", methods=['PUT'])
+def modulePUT(uuid):
     dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
 
     d = request.json
-    if d['id'] == u'':
-        return ("PUT WITHOUT A ID" , 400)
 
-    current_nd = model.mod_from_file(d['id'])
+    current_nd = model.mod_from_file(uuid)
     current_nd.load_from_djson(d) #this checks permis
-    uid = current_nd.id
     current_nd.save()
 
-    s = model.asjson({'hashid':uid})
+    # FIXME: A response is not needed if the save is successful
+    s = model.asjson({'hashid':uuid})
     resp = flask.make_response(s)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
@@ -143,21 +141,19 @@ def modulePOST():
     """
     dolog("INFO", 'A Module POSTed', caller=modulePOST, statsd=['rhaptos2.repo.module.POST',])
 
+    # Autogenerate a new ID for the new content
+    uid = str(uuid.uuid4())
+
     d = request.json
-    if d['id'] != u'':
-        return ("POSTED WITH A ID" , 400)
-    else:
-        d['id'] = None
+    d['id'] = uid
 
     #app.logger.info(repr(d))
     ### maybe we know too much about nodedocs
     nd = model.mod_from_json(d)
-    uid = nd.id
     nd.save()
     del(nd)
 
-    s = model.asjson({'hashid':uid})
-    return s
+    return uid
 
 
 @app.route("/workspace/", methods=['GET'])
@@ -182,7 +178,7 @@ def workspaceGET():
     return resp
 
 
-@app.route("/module/<uuid>", methods=['GET'])
+@app.route("/module/<uid>", methods=['GET'])
 def moduleGET(uuid):
     dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
     try:

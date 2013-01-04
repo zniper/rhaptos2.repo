@@ -141,10 +141,12 @@ define [
       updateModelAndSave = =>
         alohaId = $body.attr('id')
         # Sometimes Aloha hasn't loaded up yet
+        # Only save when the body has changed
         if alohaId
           alohaEditable = Aloha.getEditableById(alohaId)
           editableBody = alohaEditable.getContents()
-          @model.save 'body', editableBody
+          @model.set 'body', editableBody
+          @model.save() if @model.changedAttributes()
         #clearTimeout autosaveTimeout
         #autosaveTimeout = setTimeout autoSave DELAY_BEFORE_SAVING
 
