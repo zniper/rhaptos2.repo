@@ -178,7 +178,7 @@ def workspaceGET():
     return resp
 
 
-@app.route("/module/<uid>", methods=['GET'])
+@app.route("/module/<uuid>", methods=['GET'])
 def moduleGET(uuid):
     dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
     try:
