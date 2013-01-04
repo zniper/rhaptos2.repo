@@ -55,6 +55,11 @@ require.config
     marionette:
       deps: ['underscore', 'backbone']
       exports: 'Backbone'
+      # Since `marionette` is the last library that depends on a
+      # global `Backbone` object we can delete it from the globals.
+      #
+      # We can also delete `_` at this point and can delete `Backbone.Marionette`
+      # so we never assume Marionette is already loaded as a dependency.
       init: -> ret = @Backbone.Marionette; delete @Backbone.Marionette; delete @Backbone; delete @_; ret
 
     # ## UI Libraries
