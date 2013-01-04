@@ -17,10 +17,10 @@ require.config
     underscore: 'lib/underscore-1.4.3'
     backbone: 'lib/backbone-0.9.9'
     # Layout manager for backbone
-    'backbone.marionette': 'lib/backbone.marionette'
+    marionette: 'lib/backbone.marionette'
 
     # ## UI libraries
-    'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
+    aloha: '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
     bootstrap: 'lib/bootstrap/js/bootstrap'
     select2: 'lib/select2/select2'
     spin: 'lib/spin'
@@ -52,14 +52,10 @@ require.config
       deps: ['underscore', 'jquery']
       exports: 'Backbone'
 
-    'backbone.layoutmanager':
+    marionette:
       deps: ['underscore', 'backbone']
       exports: 'Backbone'
-
-    'backbone.marionette':
-      deps: ['underscore', 'backbone']
-      exports: 'Backbone'
-      init: -> ret = @Backbone; delete @Backbone; delete @_; ret
+      init: -> ret = @Backbone.Marionette; delete @Backbone.Marionette; delete @Backbone; delete @_; ret
 
     # ## UI Libraries
     bootstrap:

@@ -12,12 +12,13 @@ define [
   'jquery'
   'underscore'
   'backbone'
+  'marionette'
   'aloha'
   'app/models'
   'app/views'
   'i18n!app/nls/strings'
   'css!app'
-], (jQuery, _, Backbone, Aloha, Models, Views, __) ->
+], (jQuery, _, Backbone, Marionette, Aloha, Models, Views, __) ->
 
   # **FIXME:** The URL prefix for saving modules. This should be removed
   MODULE_SUBMIT_HREF_HACK = '/module/'
@@ -56,7 +57,7 @@ define [
       Backbone_sync_orig method, model, options
 
   # The main Region used for layouts
-  mainRegion = new Backbone.Marionette.Region
+  mainRegion = new Marionette.Region
     el: '#main'
 
   # # Bind Routes

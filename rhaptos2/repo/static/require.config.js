@@ -11,8 +11,8 @@
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
       backbone: 'lib/backbone-0.9.9',
-      'backbone.marionette': 'lib/backbone.marionette',
-      'aloha': '../cdn/aloha/src/lib/aloha',
+      marionette: 'lib/backbone.marionette',
+      aloha: '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       select2: 'lib/select2/select2',
       spin: 'lib/spin',
@@ -33,16 +33,13 @@
         deps: ['underscore', 'jquery'],
         exports: 'Backbone'
       },
-      'backbone.layoutmanager': {
-        deps: ['underscore', 'backbone'],
-        exports: 'Backbone'
-      },
-      'backbone.marionette': {
+      marionette: {
         deps: ['underscore', 'backbone'],
         exports: 'Backbone',
         init: function() {
           var ret;
-          ret = this.Backbone;
+          ret = this.Backbone.Marionette;
+          delete this.Backbone.Marionette;
           delete this.Backbone;
           delete this._;
           return ret;

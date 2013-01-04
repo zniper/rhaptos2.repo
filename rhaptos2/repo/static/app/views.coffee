@@ -11,6 +11,7 @@
 define [
   'underscore'
   'backbone'
+  'marionette'
   'jquery'
   './languages'
   # Load the Handlebars templates
@@ -25,8 +26,7 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-  'backbone.marionette'
-], (_, Backbone, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
+], (_, Backbone, Marionette, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -83,11 +83,11 @@ define [
   #
   # Since we don't really distinguish between a search result view and a workspace/collection/etc
   # just consider them the same.
-  SearchResultItemView = Backbone.Marionette.ItemView.extend
+  SearchResultItemView = Marionette.ItemView.extend
     template: SEARCH_RESULT_ITEM
 
   # This can also be thought of as the Workspace view
-  SearchResultView = Backbone.Marionette.CompositeView.extend
+  SearchResultView = Marionette.CompositeView.extend
     template: SEARCH_RESULT
     itemView: SearchResultItemView
 
@@ -97,7 +97,7 @@ define [
 
   # ## Edit Content
   # Edit the module body and (eventually) metadata from the same view
-  ContentEditView = Backbone.Marionette.ItemView.extend
+  ContentEditView = Marionette.ItemView.extend
     # TODO: Turn this into a handlebars module so we can add editing metadata in the same div
     # The toolbar div has a `.aloha-dialog` so clicking on it doesn't cause the editable area to lose focus
     # See `Aloha-Editor/src/lib/aloha.js`
@@ -151,7 +151,7 @@ define [
       # Grr, 'aloha-smart-content-changed' doesn't work unless you globally bind (Aloha.bind)
       $body.on 'blur', updateModelAndSave
 
-  MetadataEditView = Backbone.Marionette.ItemView.extend
+  MetadataEditView = Marionette.ItemView.extend
     template: -> '<div class="metadata"></div>'
 
     # Description of method naming:
@@ -254,7 +254,7 @@ define [
       }
 
 
-  RolesEditView = Backbone.Marionette.ItemView.extend
+  RolesEditView = Marionette.ItemView.extend
     template: EDIT_ROLES
 
     onRender: ->
@@ -296,6 +296,10 @@ define [
   # ## ModalWrapper
   # This class wraps a view in a modal dialog and only causes changes when
   # the 'Save' button is clicked.
+  #
+  # Looks like phil came to the same conclusion as the author of Marionette
+  # (Don't make a `Modal` a `Backbone.View`):
+  # [http://lostechies.com/derickbailey/2012/04/17/managing-a-modal-dialog-with-backbone-and-marionette/]
   class ModalWrapper
     constructor: (@view, title) ->
       @view.render()
