@@ -2,17 +2,19 @@
 (function() {
 
   define(['backbone'], function(Backbone) {
-    var browserLanguage, exports;
-    exports = exports || {};
+    var CONTENT_PREFIX, WORKSPACE_PREFIX, browserLanguage, models;
+    models = {};
+    CONTENT_PREFIX = '/module';
+    WORKSPACE_PREFIX = '/workspace/';
     if (navigator) {
       browserLanguage = (navigator.userLanguage || navigator.language || '').toLowerCase();
     }
-    exports.Module = Backbone.Model.extend({
+    models.Content = Backbone.Model.extend({
       defaults: {
         language: browserLanguage
       },
       url: function() {
-        return "/module/" + (this.get('id'));
+        return "" + CONTENT_PREFIX + "/" + (this.get('id'));
       },
       validate: function(attrs) {
         if (attrs.body && 0 === attrs.body.trim().length) {
@@ -20,11 +22,17 @@
         }
       }
     });
-    exports.Workspace = Backbone.Collection.extend({
-      model: exports.Module,
-      url: '/workspace/'
+    models.SearchResultItem = Backbone.Model.extend({
+      defaults: {
+        type: 'BUG_UNSPECIFIED_TYPE',
+        title: 'BUG_UNSPECIFIED_TITLE'
+      }
     });
-    return exports;
+    models.Workspace = Backbone.Collection.extend({
+      model: models.SearchResultItem,
+      url: WORKSPACE_PREFIX
+    });
+    return models;
   });
 
 }).call(this);

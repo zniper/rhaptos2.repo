@@ -4,7 +4,7 @@
   define(['app/models', 'app/views', 'test/routes'], function(Models, Views, MOCK_CONTENT) {
     return describe('Edit Metadata/Roles', function() {
       beforeEach(function() {
-        this.model = new Models.Module();
+        this.model = new Models.Content();
         this.model.set(MOCK_CONTENT);
         this.metadataView = new Views.MetadataEditView({
           model: this.model
@@ -19,8 +19,8 @@
         it('should have a .$el', function() {
           expect(this.metadataView.$el).not.toBeFalsy();
           expect(this.rolesView.$el).not.toBeFalsy();
-          expect(this.metadataModal.$el).not.toBeFalsy();
-          return expect(this.rolesModal.$el).not.toBeFalsy();
+          expect(this.metadataModal.view).not.toBeFalsy();
+          return expect(this.rolesModal.view).not.toBeFalsy();
         });
         it('should initially be hidden', function() {
           return expect(this.metadataView.$el.is(':visible')).toEqual(false);

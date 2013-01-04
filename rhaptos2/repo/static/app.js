@@ -2,9 +2,9 @@
 (function() {
 
   define(['jquery', 'underscore', 'backbone', 'marionette', 'aloha', 'app/models', 'app/views', 'i18n!app/nls/strings', 'css!app'], function(jQuery, _, Backbone, Marionette, Aloha, Models, Views, __) {
-    var AppRouter, Backbone_sync_orig, MODULE_SUBMIT_HREF_HACK, appRouter, mainRegion, x,
+    var AppRouter, Backbone_sync_orig, CONTENT_SUBMIT_HREF_HACK, appRouter, mainRegion,
       _this = this;
-    MODULE_SUBMIT_HREF_HACK = '/module/';
+    CONTENT_SUBMIT_HREF_HACK = '/module/';
     this.jQuery = this.$ = function() {
       console.warn('You should add "jquery" to your dependencies in define() instead of using the global jQuery!');
       return jQuery.apply(this, arguments);
@@ -16,7 +16,7 @@
       if ('update' === method) {
         data = _.extend({}, model.toJSON());
         data.json = JSON.stringify(model);
-        href = MODULE_SUBMIT_HREF_HACK || options['url'] || model.get('url' || (function() {
+        href = CONTENT_SUBMIT_HREF_HACK || options['url'] || model.get('url' || (function() {
           throw 'URL to sync to not defined';
         })());
         href = "" + href + "?" + (jQuery.param(model.toJSON()));
@@ -38,10 +38,11 @@
     });
     AppRouter = Backbone.Router.extend({
       routes: {
-        '': 'index',
-        'module/:id': 'module'
+        '': 'workspace',
+        'content': 'content',
+        'content/:id': 'content'
       },
-      index: function() {
+      workspace: function() {
         var view, workspace;
         workspace = new Models.Workspace();
         workspace.fetch();
@@ -53,46 +54,45 @@
           return view.render();
         });
       },
-      module: function(id) {
-        var module, view;
+      content: function(id) {
+        var content, view;
         if (id == null) {
           id = null;
         }
         if (id) {
-          module = new Models.Module({
-            id: id,
-            url: "/module/" + id
+          content = new Models.Content({
+            id: id
           });
-          module.fetch();
+          content.fetch();
         } else {
-          module = new Models.Module();
+          content = new Models.Content();
         }
         jQuery('#metadata-link').off('click');
         jQuery('#roles-link').off('click');
         jQuery('#metadata-link').on('click', function(evt) {
-          var modal;
-          evt.preventDefault();
-          modal = new Views.ModalWrapper(new Views.MetadataEditView({
-            model: module
-          }), __('Edit Metadata'));
+          var modal, view;
+          view = new Views.MetadataEditView({
+            model: content
+          });
+          modal = new Views.ModalWrapper(view, __('Edit Metadata'));
           return modal.show();
         });
         jQuery('#roles-link').on('click', function(evt) {
-          var modal;
-          evt.preventDefault();
-          modal = new Views.ModalWrapper(new Views.RolesEditView({
-            model: module
-          }), __('Edit Roles'));
+          var modal, view;
+          view = new Views.RolesEditView({
+            model: content
+          });
+          modal = new Views.ModalWrapper(view, __('Edit Roles'));
           return modal.show();
         });
         view = new Views.ContentEditView({
-          model: module
+          model: content
         });
         return mainRegion.show(view);
       }
     });
     appRouter = new AppRouter();
-    x = Backbone.history.start();
+    Backbone.history.start();
     return jQuery(document).on('click', 'a:not([data-bypass])', function(evt) {
       var href;
       href = $(this).attr('href');

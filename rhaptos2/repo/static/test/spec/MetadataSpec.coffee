@@ -4,7 +4,7 @@ define ['app/models', 'app/views', 'test/routes'], (Models, Views, MOCK_CONTENT)
 
   describe 'Edit Metadata/Roles', ->
     beforeEach ->
-      @model = new Models.Module()
+      @model = new Models.Content()
       @model.set MOCK_CONTENT
 
       @metadataView = new Views.MetadataEditView(model: @model)
@@ -15,10 +15,10 @@ define ['app/models', 'app/views', 'test/routes'], (Models, Views, MOCK_CONTENT)
 
     describe '(Sanity Check) All Views', ->
       it 'should have a .$el', ->
-        expect(@metadataView.$el ).not.toBeFalsy()
-        expect(@rolesView.$el    ).not.toBeFalsy()
-        expect(@metadataModal.$el).not.toBeFalsy()
-        expect(@rolesModal.$el   ).not.toBeFalsy()
+        expect(@metadataView.$el  ).not.toBeFalsy()
+        expect(@rolesView.$el     ).not.toBeFalsy()
+        expect(@metadataModal.view).not.toBeFalsy()
+        expect(@rolesModal.view  ).not.toBeFalsy()
       it 'should initially be hidden', ->
         expect(@metadataView.$el.is(':visible')).toEqual false
       it 'should show without errors', ->

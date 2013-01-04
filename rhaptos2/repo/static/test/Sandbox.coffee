@@ -9,7 +9,7 @@ define 'Sandbox', [
   'test/routes'
   'css!app'
 ], ($, Models, Views, MOCK_CONTENT) =>
-  model = new Models.Module()
+  model = new Models.Content()
   model.set MOCK_CONTENT
   metadataView = new Views.MetadataEditView {model: model}
   rolesView    = new Views.RolesEditView {model: model}

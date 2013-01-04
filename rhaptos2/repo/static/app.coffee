@@ -20,8 +20,11 @@ define [
   'css!app'
 ], (jQuery, _, Backbone, Marionette, Aloha, Models, Views, __) ->
 
-  # **FIXME:** The URL prefix for saving modules. This should be removed
-  MODULE_SUBMIT_HREF_HACK = '/module/'
+  # # Various HACKS
+  # These should be removed when the webserver URLs/routes are cleaned up
+
+  # **FIXME:** The URL prefix for saving content. This should be removed
+  CONTENT_SUBMIT_HREF_HACK = '/module/'
 
   # **HACK:** to discourage people from using the global jQuery
   # and instead use the `requirejs` version.
@@ -33,7 +36,7 @@ define [
   jQuery.extend(@jQuery, jQuery)
 
 
-  # By default Backbone sends the JSON object as the body when a PUT is called.
+  # **FIXME:** By default Backbone sends the JSON object as the body when a PUT is called.
   # Instead, send each key/value as a PUT parameter
   Backbone_sync_orig = Backbone.sync
   Backbone.sync = (method, model, options) =>
@@ -41,7 +44,7 @@ define [
       data = _.extend {}, model.toJSON()
       # **FIXME:** This URL (and the funky data.json param) is a HACK and should be fixed
       data.json = JSON.stringify(model)
-      href = MODULE_SUBMIT_HREF_HACK or options['url'] or model.get 'url' or throw 'URL to sync to not defined'
+      href = CONTENT_SUBMIT_HREF_HACK or options['url'] or model.get 'url' or throw 'URL to sync to not defined'
       href = "#{href}?#{jQuery.param(model.toJSON())}"
 
       params =
@@ -56,19 +59,24 @@ define [
     else
       Backbone_sync_orig method, model, options
 
+
+  # # Application Code
+  # The Single Page Application starts here
+
   # The main Region used for layouts
   mainRegion = new Marionette.Region
     el: '#main'
 
-  # # Bind Routes
+  # ## Bind Routes
   AppRouter = Backbone.Router.extend
     routes:
-      '':           'index'
-      'module/:id': 'module'
+      '':            'workspace'
+      'content':     'content' # Create a new piece of content
+      'content/:id': 'content' # Edit an existing piece of content
+
     # ### Display the workspace (default route)
-    index: ->
+    workspace: ->
       # List the workspace
-      # TODO: This should be a Backbone.Collection fetch
       workspace = new Models.Workspace()
       workspace.fetch()
       view = new Views.WorkspaceView {collection: workspace}
@@ -77,14 +85,13 @@ define [
       workspace.on 'change', ->
         view.render()
 
-
-    # ### Create a new module or edit an existing one
-    module: (id=null) ->
+    # ### Create new content or edit an existing content
+    content: (id=null) ->
       if id
-        module = new Models.Module(id: id, url: "/module/#{id}")
-        module.fetch()
+        content = new Models.Content {id: id}
+        content.fetch()
       else
-        module = new Models.Module()
+        content = new Models.Content()
 
       # ## Bind UI Popups
       # This section generates the UI menus and buttons
@@ -94,20 +101,20 @@ define [
       jQuery('#roles-link').off 'click'
 
       jQuery('#metadata-link').on 'click', (evt) ->
-        evt.preventDefault()
-        modal = new Views.ModalWrapper(new Views.MetadataEditView(model: module), __('Edit Metadata'))
+        view = new Views.MetadataEditView {model: content}
+        modal = new Views.ModalWrapper(view, __('Edit Metadata'))
         modal.show()
 
       jQuery('#roles-link').on 'click', (evt) ->
-        evt.preventDefault()
-        modal = new Views.ModalWrapper(new Views.RolesEditView(model: module), __('Edit Roles'))
+        view = new Views.RolesEditView {model: content}
+        modal = new Views.ModalWrapper(view, __('Edit Roles'))
         modal.show()
 
-      view = new Views.ContentEditView(model: module)
+      view = new Views.ContentEditView(model: content)
       mainRegion.show view
 
   appRouter = new AppRouter()
-  x = Backbone.history.start()
+  Backbone.history.start()
 
   # All navigation that is relative should be passed through the navigate
   # method, to be processed by the router. If the link has a `data-bypass`
