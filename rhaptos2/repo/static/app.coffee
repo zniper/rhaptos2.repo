@@ -55,23 +55,9 @@ define [
     else
       Backbone_sync_orig method, model, options
 
-  $main = $("#main")
-  thisView = null # Global current layout
-
-  # Helper for using layouts. Should use marionette or another layout manager
-  setMainView = (view) ->
-    # If already using this Layout, then don't re-inject into the DOM.
-    return thisView  if thisView and thisView is view
-    # If a layout already exists, remove it from the DOM.
-    thisView.remove()  if thisView
-    # Insert into the DOM.
-    $main.empty().append view.el
-    # Render the layout.
-    view.render()
-    # Cache the reference.
-    thisView = view
-    # Return the reference, for chainability.
-    view
+  # The main Region used for layouts
+  mainRegion = new Backbone.Marionette.Region
+    el: '#main'
 
   # # Bind Routes
   AppRouter = Backbone.Router.extend
@@ -85,7 +71,7 @@ define [
       workspace = new Models.Workspace()
       workspace.fetch()
       view = new Views.WorkspaceView {collection: workspace}
-      setMainView view
+      mainRegion.show view
 
       workspace.on 'change', ->
         view.render()
@@ -116,8 +102,8 @@ define [
         modal = new Views.ModalWrapper(new Views.RolesEditView(model: module), __('Edit Roles'))
         modal.show()
 
-      contentEditView = new Views.ContentEditView(model: module)
-      setMainView contentEditView
+      view = new Views.ContentEditView(model: module)
+      mainRegion.show view
 
   appRouter = new AppRouter()
   x = Backbone.history.start()

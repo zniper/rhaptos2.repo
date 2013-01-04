@@ -2,7 +2,7 @@
 (function() {
 
   define(['jquery', 'underscore', 'backbone', 'aloha', 'app/models', 'app/views', 'i18n!app/nls/strings', 'css!app'], function(jQuery, _, Backbone, Aloha, Models, Views, __) {
-    var $main, AppRouter, Backbone_sync_orig, MODULE_SUBMIT_HREF_HACK, appRouter, setMainView, thisView, x,
+    var AppRouter, Backbone_sync_orig, MODULE_SUBMIT_HREF_HACK, appRouter, mainRegion, x,
       _this = this;
     MODULE_SUBMIT_HREF_HACK = '/module/';
     this.jQuery = this.$ = function() {
@@ -33,20 +33,9 @@
         return Backbone_sync_orig(method, model, options);
       }
     };
-    $main = $("#main");
-    thisView = null;
-    setMainView = function(view) {
-      if (thisView && thisView === view) {
-        return thisView;
-      }
-      if (thisView) {
-        thisView.remove();
-      }
-      $main.empty().append(view.el);
-      view.render();
-      thisView = view;
-      return view;
-    };
+    mainRegion = new Backbone.Marionette.Region({
+      el: '#main'
+    });
     AppRouter = Backbone.Router.extend({
       routes: {
         '': 'index',
@@ -59,13 +48,13 @@
         view = new Views.WorkspaceView({
           collection: workspace
         });
-        setMainView(view);
+        mainRegion.show(view);
         return workspace.on('change', function() {
           return view.render();
         });
       },
       module: function(id) {
-        var contentEditView, module;
+        var module, view;
         if (id == null) {
           id = null;
         }
@@ -96,10 +85,10 @@
           }), __('Edit Roles'));
           return modal.show();
         });
-        contentEditView = new Views.ContentEditView({
+        view = new Views.ContentEditView({
           model: module
         });
-        return setMainView(contentEditView);
+        return mainRegion.show(view);
       }
     });
     appRouter = new AppRouter();
