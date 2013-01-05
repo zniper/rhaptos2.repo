@@ -2,7 +2,7 @@
 (function() {
 
   define(['jquery', 'underscore', 'backbone', 'marionette', 'aloha', 'app/models', 'app/views', 'i18n!app/nls/strings', 'css!app'], function(jQuery, _, Backbone, Marionette, Aloha, Models, Views, __) {
-    var AppRouter, Backbone_sync_orig, appRouter, mainRegion,
+    var Backbone_sync_orig, ContentRouter, contentController, mainRegion,
       _this = this;
     this.jQuery = this.$ = function() {
       console.warn('You should add "jquery" to your dependencies in define() instead of using the global jQuery!');
@@ -35,12 +35,7 @@
     mainRegion = new Marionette.Region({
       el: '#main'
     });
-    AppRouter = Backbone.Router.extend({
-      routes: {
-        '': 'workspace',
-        'content': 'content',
-        'content/:id': 'content'
-      },
+    contentController = {
       workspace: function() {
         var view, workspace;
         workspace = new Models.Workspace();
@@ -49,22 +44,27 @@
           collection: workspace
         });
         mainRegion.show(view);
+        Backbone.history.navigate('');
         return workspace.on('change', function() {
           return view.render();
         });
       },
-      content: function(id) {
-        var content, view;
-        if (id == null) {
-          id = null;
-        }
+      createContent: function() {
+        var content;
         content = new Models.Content();
-        if (id) {
-          content.set('id', id);
-          content.fetch();
-        } else {
-          content = new Models.Content();
-        }
+        this._editContent(content);
+        return Backbone.history.navigate('content');
+      },
+      editContent: function(id) {
+        var content;
+        content = new Models.Content();
+        content.set('id', id);
+        content.fetch();
+        this._editContent(content);
+        return Backbone.history.navigate("content/" + id);
+      },
+      _editContent: function(content) {
+        var view;
         jQuery('#metadata-link').off('click');
         jQuery('#roles-link').off('click');
         jQuery('#metadata-link').on('click', function(evt) {
@@ -88,8 +88,16 @@
         });
         return mainRegion.show(view);
       }
+    };
+    ContentRouter = Marionette.AppRouter.extend({
+      controller: contentController,
+      appRoutes: {
+        '': 'workspace',
+        'content': 'createContent',
+        'content/:id': 'editContent'
+      }
     });
-    appRouter = new AppRouter();
+    new ContentRouter();
     Backbone.history.start();
     return jQuery(document).on('click', 'a:not([data-bypass])', function(evt) {
       var href;
