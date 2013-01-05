@@ -14,15 +14,22 @@ define [
   'backbone'
   'marionette'
   'aloha'
-  'app/models'
-  'app/views'
-  'i18n!app/nls/strings'
+  'app/controller'
   'css!app'
-], (jQuery, _, Backbone, Marionette, Aloha, Models, Views, __) ->
+], (jQuery, _, Backbone, Marionette, Aloha, Controller) ->
+
+  # # Application Code
+  # The Single Page Application starts here
+  #
+  # The controller begins listening to route changes
+  # and loads the initial views based on the URL.
+  Controller.start()
+
 
   # # Various HACKS
-  # These should be removed when the webserver URLs/routes are cleaned up
+  # These cross over many modules and do not have a better home than here.
 
+  # ## Global Variables like jQuery
   # **HACK:** to discourage people from using the global jQuery
   # and instead use the `requirejs` version.
   # This helps ensure plugins that extend jQuery (like bootstrap)
@@ -33,6 +40,7 @@ define [
   jQuery.extend(@jQuery, jQuery)
 
 
+  # ## Custom POST/PUT syntax
   # **FIXME:** By default Backbone sends the JSON object as the body when a PUT is called.
   # Instead, send each key/value as a PUT parameter
   Backbone_sync_orig = Backbone.sync
@@ -57,112 +65,27 @@ define [
       Backbone_sync_orig method, model, options
 
 
-  # # Application Code
-  # The Single Page Application starts here
-
-
-  # The main Region used for layouts
-  mainRegion = new Marionette.Region
-    el: '#main'
-
-  # ## Main Controller
-  # Changes all the regions on the page to begin editing a new/existing
-  # piece of content.
+  # # Hash tags in links
+  # Code should use the `Controller` module to change the page
+  # instead of relying on the URL
   #
-  # If another part of the code wants to create/edit content
-  # it should call these methods instead of changing the URL directly.
-  # (depending on the browser the URLs could start with a hash so anchor links won't work)
-  #
-  # Methods on this object can be called directly and will update the URL.
-  contentController =
-    # ### Show Workspace
-    # Shows the workspace listing and updates the URL
-    workspace: ->
-      # List the workspace
-      workspace = new Models.Workspace()
-      workspace.fetch()
-      view = new Views.WorkspaceView {collection: workspace}
-      mainRegion.show view
-      # Update the URL
-      Backbone.history.navigate ''
-
-      workspace.on 'change', ->
-        view.render()
-
-    # ### Create new content
-    # Calling this method directly will start editing a new piece of content
-    # and will update the URL
-    createContent: ->
-      content = new Models.Content()
-      @_editContent content
-      # Update the URL
-      Backbone.history.navigate 'content'
-
-    # ### Edit existing content
-    # Calling this method directly will start editing an existing piece of content
-    # and will update the URL.
-    editContent: (id) ->
-      content = new Models.Content()
-      content.set 'id', id
-      content.fetch()
-      # FIXME: display a spinner while we fetch the content and then call @_editContent
-      @_editContent content
-      # Update the URL
-      Backbone.history.navigate "content/#{id}"
-
-    # Internal method that updates the metadata/roles links so they
-    # refer to the correct Content Model
-    _editContent: (content) ->
-      # ## Bind UI Popups
-      # This section generates the UI menus and buttons
-      #
-      # **FIXME:** Remove the buttons from the global toolbar
-      # so we don't have to perform this hackish code.
-      #
-      # `__()` is a i18n function that looks up a localized string
-      jQuery('#metadata-link').off 'click'
-      jQuery('#roles-link').off 'click'
-
-      jQuery('#metadata-link').on 'click', (evt) ->
-        view = new Views.MetadataEditView {model: content}
-        modal = new Views.ModalWrapper(view, __('Edit Metadata'))
-        modal.show()
-
-      jQuery('#roles-link').on 'click', (evt) ->
-        view = new Views.RolesEditView {model: content}
-        modal = new Views.ModalWrapper(view, __('Edit Roles'))
-        modal.show()
-
-      view = new Views.ContentEditView(model: content)
-      mainRegion.show view
-
-
-  # ## Bind Routes
-  ContentRouter = Marionette.AppRouter.extend
-    controller: contentController
-    appRoutes:
-      '':             'workspace' # Show the workspace list of content
-      'content':      'createContent' # Create a new piece of content
-      'content/:id':  'editContent' # Edit an existing piece of content
-
-  new ContentRouter()
-  Backbone.history.start()
-
-  # All navigation that is relative should be passed through the navigate
-  # FIXME: display a spinner while we fetch the content and then call @_editContent
-  # method, to be processed by the router. If the link has a `data-bypass`
-  # attribute, bypass the delegation completely.
+  # For now, I trust that the programmer knows what they are doing and:
+  # 1. warn them
+  # 2. trigger the route change
+  # 3. hope a router matches that URL
   jQuery(document).on 'click', 'a:not([data-bypass])', (evt) ->
-    # Get the absolute anchor href.
+    # Stop the default event to ensure the link will not cause a page
+    # refresh.
+    evt.preventDefault()
+
+    # Get the anchor href.
     href = $(@).attr('href')
 
-    # If the href exists and is a hash route, run it through Backbone.
-    if href
-      # Stop the default event to ensure the link will not cause a page
-      # refresh.
-      evt.preventDefault()
+    # Warn the developer that they should probably call the controller method
+    # instead of using an anchor link
+    console.warn "User clicked on an internal link. Use the app/controller module instead of the URL #{href}"
 
-      # `Backbone.history.navigate` is sufficient for all Routers and will
-      # trigger the correct events. The Router's internal `navigate` method
-      # calls this anyways.
-      Backbone.history.navigate(href, true)
+    # `Backbone.history.navigate` is sufficient for all Routers and will
+    # trigger the correct events. The Router's internal `navigate` method
+    # calls this anyways.
+    Backbone.history.navigate(href, true) if href?

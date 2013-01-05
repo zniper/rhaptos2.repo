@@ -13,6 +13,7 @@ define [
   'backbone'
   'marionette'
   'jquery'
+  'app/controller'
   './languages'
   # Load the Handlebars templates
   'hbs!app/views/content-list'
@@ -26,7 +27,7 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (_, Backbone, Marionette, jQuery, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
+], (_, Backbone, Marionette, jQuery, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
 
   # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -85,6 +86,10 @@ define [
   # just consider them the same.
   SearchResultItemView = Marionette.ItemView.extend
     template: SEARCH_RESULT_ITEM
+    onRender: ->
+      @$el.on 'click', =>
+        id = @model.get 'id'
+        Controller.editContent(id)
 
   # This can also be thought of as the Workspace view
   SearchResultView = Marionette.CompositeView.extend
