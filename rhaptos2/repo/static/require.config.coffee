@@ -67,7 +67,7 @@ require.config
 
     # ## UI Libraries
     bootstrap:
-      deps: ['jquery'] # For some reason we can't add CSS dependencies like `css!lib/bootstrap/css/bootstrap`
+      deps: ['jquery', 'css!lib/bootstrap/css/bootstrap']
       exports: 'jQuery'
 
     select2:
@@ -76,7 +76,7 @@ require.config
       init: -> ret = @Select2; delete @Select2; ret
 
     aloha:
-      deps: ['jquery', 'css!../cdn/aloha/src/css/aloha']
+      deps: ['jquery', 'bootstrap', 'css!../cdn/aloha/src/css/aloha']
       exports: 'Aloha'
 
   # Maps prefixes (like `less!path/to/less-file`) to use the LESS CSS plugin

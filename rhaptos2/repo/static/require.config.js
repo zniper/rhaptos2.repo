@@ -46,7 +46,7 @@
         }
       },
       bootstrap: {
-        deps: ['jquery'],
+        deps: ['jquery', 'css!lib/bootstrap/css/bootstrap'],
         exports: 'jQuery'
       },
       select2: {
@@ -60,7 +60,7 @@
         }
       },
       aloha: {
-        deps: ['jquery', 'css!../cdn/aloha/src/css/aloha'],
+        deps: ['jquery', 'bootstrap', 'css!../cdn/aloha/src/css/aloha'],
         exports: 'Aloha'
       }
     },

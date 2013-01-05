@@ -1,5 +1,8 @@
 /* Import 3rd party libraries first */
-@import url('lib/bootstrap/css/bootstrap.css');
+/* These should probably be explicitly defined in require.config.coffee
+ * instead of here.
+   @import url('lib/bootstrap/css/bootstrap.css');
+ */
 
 /* Add some space because the toolbar floats */
 #main {
