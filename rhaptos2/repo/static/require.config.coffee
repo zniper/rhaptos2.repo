@@ -8,9 +8,11 @@ require.config
 
   # # Configure Library Locations
   paths:
+    # ## Requirejs plugins
     i18n: 'i18n-custom'
     text: 'lib/require-text/text'
     json: 'lib/requirejs-plugins/json'
+    hbs: 'lib/require-handlebars-plugin/hbs'
 
     # ## Core Libraries
     jquery: 'lib/jquery-1.8.3'
@@ -20,7 +22,8 @@ require.config
     marionette: 'lib/backbone.marionette'
 
     # ## UI libraries
-    aloha: '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
+    # **FIXME:** Replace `../cdn/` with `lib/` when aloha is moved into `static/`
+    aloha: '../cdn/aloha/src/lib/aloha'
     bootstrap: 'lib/bootstrap/js/bootstrap'
     select2: 'lib/select2/select2'
     spin: 'lib/spin'
@@ -28,14 +31,14 @@ require.config
     # ## Handlebars modules
     # The requirejs plugin to support handlebars has several dependencies
     # that need to be loaded
-    hbs: 'lib/require-handlebars-plugin/hbs'
     handlebars: 'lib/require-handlebars-plugin/Handlebars'
     i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile'
     json2: 'lib/require-handlebars-plugin/hbs/json2'
 
   # # Shims
-  # To support libraries that were not written for requirejs
+  # To support libraries that were not written for AMD
   # configure a shim around them that mimics a `define` call.
+  #
   # List the dependencies and what global object is available
   # when the library is done loading (for jQuery plugins this can be `jQuery`)
   shim:
@@ -59,12 +62,12 @@ require.config
       # global `Backbone` object we can delete it from the globals.
       #
       # We can also delete `_` at this point and can delete `Backbone.Marionette`
-      # so we never assume Marionette is already loaded as a dependency.
+      # so we never always include `marionette` and never assume Marionette is already loaded as a dependency.
       init: -> ret = @Backbone.Marionette; delete @Backbone.Marionette; delete @Backbone; delete @_; ret
 
     # ## UI Libraries
     bootstrap:
-      deps: ['jquery'] # For some reason we can't add use 'css!lib/bootstrap/css/bootstrap'
+      deps: ['jquery'] # For some reason we can't add CSS dependencies like `css!lib/bootstrap/css/bootstrap`
       exports: 'jQuery'
 
     select2:
@@ -84,8 +87,9 @@ require.config
       less: 'lib/require-less/less'
       json: 'lib/requirejs-plugins/src/json'
 
-  # ## module Configuration
-  # This configures `requirejs` plugins and modules.
+  # ## Module and requirejs Plugin Configuration
+  # This configures `requirejs` plugins (like `'hbs!...'`) and our modules (like `'app/views'`).
+  #
   # Modules can get to the configuration by including the `module` dependency
   # and then calling `module.config()`
   hbs:

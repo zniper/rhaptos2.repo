@@ -65,7 +65,7 @@ define [
       content = new Models.Content()
       content.set 'id', id
       content.fetch()
-      # **FIXME:** display a spinner while we fetch the content and then call @_editContent
+      # **FIXME:** display a spinner while we fetch the content and then call `@_editContent`
       @_editContent content
       # Update the URL
       Backbone.history.navigate "content/#{id}"

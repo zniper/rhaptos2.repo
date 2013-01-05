@@ -248,9 +248,7 @@
         title = this.$el.find('input[name=title]').val();
         language = this.$el.find('select[name=language]').val();
         variant = this.$el.find('select[name=variantLanguage]').val();
-        if (variant) {
-          language = variant;
-        }
+        language = variant || language;
         subjects = (function() {
           var _i, _len, _ref1, _results;
           _ref1 = this.$el.find('input[name=subjects]:checked');

@@ -1,9 +1,14 @@
-define ['backbone', 'i18n!app/nls/strings'], (Backbone, __) ->
-  models = {}
+# # Backbone Models
+# This module contains backbone models used throughout the application
+#
+# It also has some hardcoded URLs for syncing with the server (GET/POST/PUT URLs)
+define ['backbone', 'exports', 'i18n!app/nls/strings'], (Backbone, exports, __) ->
 
-  # **FIXME:** The URL prefix to content and the workspace should be `/content` instead of `/module` and `/workspace`
+  # **FIXME:** URLs (and functions to generate them) should probably live in a separate module
+  #
+  # **FIXME:** The URL prefix to content and the workspace should be `/content` instead of `/module`
   CONTENT_PREFIX = '/module/' # Should be '/content'
-  WORKSPACE_PREFIX = '/workspace/' # Should be '/content'
+  WORKSPACE_PREFIX = '/workspace/'
 
   # The `Content` model contains the following members:
   #
@@ -12,7 +17,7 @@ define ['backbone', 'i18n!app/nls/strings'], (Backbone, __) ->
   # * `subjects` - an array of strings (eg `['Mathematics', 'Business']`)
   # * `keywords` - an array of keywords (eg `['constant', 'boltzmann constant']`)
   # * `authors` - an `Collection` of `User`s that are attributed as authors
-  models.Content = Backbone.Model.extend
+  exports.Content = Backbone.Model.extend
     defaults:
       title: __('Untitled')
       subjects: []
@@ -20,7 +25,7 @@ define ['backbone', 'i18n!app/nls/strings'], (Backbone, __) ->
       authors: []
       copyrightHolders: []
       # Default language for new content is the browser's language
-      language: if navigator then (navigator.userLanguage or navigator.language or 'en').toLowerCase() else 'en'
+      language: (navigator?.userLanguage or navigator?.language or 'en').toLowerCase()
 
     # Set a URL to POST/PUT to when sync'ing the model with the server
     url: -> if @get 'id' then "#{CONTENT_PREFIX}#{@get 'id'}" else CONTENT_PREFIX
@@ -47,13 +52,13 @@ define ['backbone', 'i18n!app/nls/strings'], (Backbone, __) ->
   # * `modified` - Timestamp
   # * `modifiedBy` - User that last modified the content (maybe just the user id for now)
   # * `icon?` - for collections (optional) that have a custom book cover
-  models.SearchResultItem = Backbone.Model.extend
+  exports.SearchResultItem = Backbone.Model.extend
     defaults:
       type: 'BUG_UNSPECIFIED_TYPE'
       title: 'BUG_UNSPECIFIED_TITLE'
 
-  models.Workspace = Backbone.Collection.extend
-    model: models.SearchResultItem
+  exports.Workspace = Backbone.Collection.extend
+    model: exports.SearchResultItem
     url: WORKSPACE_PREFIX
 
-  return models
+  return exports

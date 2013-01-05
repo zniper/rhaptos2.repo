@@ -3,7 +3,7 @@
 #
 # 1. Load dependencies (JS/CSS/JSON)
 # 2. Register client-side routes
-# 3. Load any HTML/JSON sent from the server that is sprinkled in the HTML file
+# 3. **TODO:** Load any HTML/JSON sent from the server that is sprinkled in the HTML file
 #
 # For example, if the user goes to a piece of content we already send
 # the content inside a `div` tag.
@@ -70,19 +70,13 @@ define [
   # instead of relying on the URL
   #
   # For now, I trust that the programmer knows what they are doing and:
+  #
   # 1. warn them
   # 2. trigger the route change
   # 3. hope a router matches that URL
   jQuery(document).on 'click', 'a:not([data-bypass])', (evt) ->
-    # Stop the default event to ensure the link will not cause a page
-    # refresh.
     evt.preventDefault()
-
-    # Get the anchor href.
     href = $(@).attr('href')
-
-    # Warn the developer that they should probably call the controller method
-    # instead of using an anchor link
     console.warn "User clicked on an internal link. Use the app/controller module instead of the URL #{href}"
 
     # `Backbone.history.navigate` is sufficient for all Routers and will

@@ -8,6 +8,7 @@
       i18n: 'i18n-custom',
       text: 'lib/require-text/text',
       json: 'lib/requirejs-plugins/json',
+      hbs: 'lib/require-handlebars-plugin/hbs',
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
       backbone: 'lib/backbone-0.9.9',
@@ -16,7 +17,6 @@
       bootstrap: 'lib/bootstrap/js/bootstrap',
       select2: 'lib/select2/select2',
       spin: 'lib/spin',
-      hbs: 'lib/require-handlebars-plugin/hbs',
       handlebars: 'lib/require-handlebars-plugin/Handlebars',
       i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile',
       json2: 'lib/require-handlebars-plugin/hbs/json2'
