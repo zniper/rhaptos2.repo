@@ -111,27 +111,20 @@ def index():
     return render_template('index.html', confd=app.config)
 
 
+# Content GET, POST (create), and PUT (change)
 
+@app.route("/module/<uuid>", methods=['GET'])
+def moduleGET(uuid):
+    dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
+    try:
+        jsonstr = model.fetch_module(uuid)
+    except Exception, e:
+        raise e
 
-@app.route("/module/<uuid>", methods=['PUT'])
-def modulePUT(uuid):
-    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
-
-    d = request.json
-
-    current_nd = model.mod_from_file(uuid)
-    current_nd.load_from_djson(d) #this checks permis
-    current_nd.save()
-
-    # FIXME: A response is not needed if the save is successful
-    s = model.asjson({'hashid':uuid})
-    resp = flask.make_response(s)
+    resp = flask.make_response(jsonstr)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
-
     return resp
-
-
 
 
 @app.route("/module/", methods=['POST'])
@@ -156,6 +149,26 @@ def modulePOST():
     return uid
 
 
+@app.route("/module/<uuid>", methods=['PUT'])
+def modulePUT(uuid):
+    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
+
+    d = request.json
+
+    current_nd = model.mod_from_file(uuid)
+    current_nd.load_from_djson(d) #this checks permis
+    current_nd.save()
+
+    # FIXME: A response is not needed if the save is successful
+    s = model.asjson({'hashid':uuid})
+    resp = flask.make_response(s)
+    resp.content_type='application/json'
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    return resp
+
+
+
 @app.route("/workspace/", methods=['GET'])
 def workspaceGET():
     ''' '''
@@ -177,49 +190,6 @@ def workspaceGET():
     model.callstatsd('rhaptos2.e2repo.workspace.GET')
     return resp
 
-
-@app.route("/module/<uuid>", methods=['GET'])
-def moduleGET(uuid):
-    dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
-    try:
-        jsonstr = model.fetch_module(uuid)
-    except Exception, e:
-        raise e
-
-    resp = flask.make_response(jsonstr)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    return resp
-
-@app.route("/module/<modname>/metadata/", methods=['POST', 'PUT'])
-@apply_cors
-def post_metadata(modname):
-    """Receive posted data that will creator or update the metadata storage
-    for a module.
-    """
-    # XXX 'modname' is used for consistancy, but it's not ideal, since
-    #     the value isn't actually a module name.
-    uuid = modname
-    data = request.json
-    model.create_or_update_metadata(uuid, data)
-
-    resp = flask.make_response()
-    resp.status_code = 200
-    return resp
-
-@app.route("/module/<modname>/metadata/", methods=['GET'])
-@apply_cors
-def get_metadata(modname):
-    """Return data for the requested module."""
-    # XXX 'modname' is used for consistancy, but it's not ideal, since
-    #     the value isn't actually a module name.
-    uuid = modname
-    data = model.get_metadata(uuid)
-
-    resp = flask.make_response(data)
-    resp.status_code = 200
-    resp.content_type='application/json'
-    return resp
 
 @app.route("/resource/", methods=['POST', 'PUT'])
 @apply_cors
