@@ -63,6 +63,19 @@ define [
         results: ({id:id, text:id} for id in data)
       }
 
+  # Make a multiselect widget sortable using jQueryUI.
+  # Unfortunately jQueryUI is not available until Aloha finishes loading
+  # so postpone making it sortable until `Aloha.ready`
+  SELECT2_MAKE_SORTABLE = ($el) ->
+    Aloha.ready ->
+      $el.select2('container')
+      .find('ul.select2-choices')
+      .sortable
+        cursor: 'move'
+        containment: 'parent'
+        start: ->  $el.select2 'onSortStart'
+        update: -> $el.select2 'onSortEnd'
+
 
   # **FIXME:** Move these subjects to a common module so the mock code can use them and can be used elsewhere
   METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business',
@@ -337,6 +350,9 @@ define [
         tokenSeparators: [',']
         separator: '|'
         #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
+
+      SELECT2_MAKE_SORTABLE $authors
+      SELECT2_MAKE_SORTABLE $copyrightHolders
 
       # Populate the multiselect widgets with data from the backbone model
       @_updateAuthors()

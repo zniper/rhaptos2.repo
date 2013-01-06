@@ -2,7 +2,7 @@
 (function() {
 
   define(['underscore', 'backbone', 'marionette', 'jquery', 'aloha', 'app/controller', './languages', 'i18n!app/nls/strings', 'hbs!app/views/content-list', 'hbs!app/views/content-list-item', 'hbs!app/views/modal-wrapper', 'hbs!app/views/edit-metadata', 'hbs!app/views/edit-roles', 'hbs!app/views/language-variants', 'hbs!app/views/aloha-toolbar', 'bootstrap', 'select2'], function(_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, __, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) {
-    var AlohaEditView, ContentEditView, ContentToolbarView, DELAY_BEFORE_SAVING, DialogWrapper, KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, RolesEditView, SELECT2_AJAX_HANDLER, SearchResultItemView, SearchResultView, TitleEditView, USERS_URL, languageCode, value, _ref;
+    var AlohaEditView, ContentEditView, ContentToolbarView, DELAY_BEFORE_SAVING, DialogWrapper, KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, RolesEditView, SELECT2_AJAX_HANDLER, SELECT2_MAKE_SORTABLE, SearchResultItemView, SearchResultView, TitleEditView, USERS_URL, languageCode, value, _ref;
     KEYWORDS_URL = '/keywords/';
     USERS_URL = '/users/';
     DELAY_BEFORE_SAVING = 3000;
@@ -34,6 +34,20 @@
           };
         }
       };
+    };
+    SELECT2_MAKE_SORTABLE = function($el) {
+      return Aloha.ready(function() {
+        return $el.select2('container').find('ul.select2-choices').sortable({
+          cursor: 'move',
+          containment: 'parent',
+          start: function() {
+            return $el.select2('onSortStart');
+          },
+          update: function() {
+            return $el.select2('onSortEnd');
+          }
+        });
+      });
     };
     METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business', 'Science and Technology', 'Humanities', 'Social Sciences'];
     MODAL_SPINNER_OPTIONS = {
@@ -338,6 +352,8 @@
           tokenSeparators: [','],
           separator: '|'
         });
+        SELECT2_MAKE_SORTABLE($authors);
+        SELECT2_MAKE_SORTABLE($copyrightHolders);
         this._updateAuthors();
         this._updateCopyrightHolders();
         return this.delegateEvents();

@@ -10,6 +10,7 @@
       return jQuery.apply(this, arguments);
     };
     jQuery.extend(this.jQuery, jQuery);
+    jQuery.curCSS = jQuery.css;
     Backbone_sync_orig = Backbone.sync;
     Backbone.sync = function(method, model, options) {
       var data, href, params;

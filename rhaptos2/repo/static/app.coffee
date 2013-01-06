@@ -39,6 +39,11 @@ define [
     jQuery.apply @, arguments
   jQuery.extend(@jQuery, jQuery)
 
+  # jQueryUI in aloha relies on a very old function.
+  # Used for re-ordering Authors and copyright holders
+  # in the Select2 widget
+  jQuery.curCSS = jQuery.css
+
 
   # ## Custom POST/PUT syntax
   # **FIXME:** By default Backbone sends the JSON object as the body when a PUT is called.
