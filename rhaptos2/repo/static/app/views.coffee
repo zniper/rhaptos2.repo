@@ -26,6 +26,7 @@ define [
   'aloha'
   'app/controller'
   './languages'
+  'i18n!app/nls/strings'
   # Load the Handlebar templates
   'hbs!app/views/content-list'
   'hbs!app/views/content-list-item'
@@ -38,7 +39,7 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
+], (_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, __, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
 
   # **FIXME:** Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -200,8 +201,7 @@ define [
     _updateLanguage: () ->
       language = @model.get('language') or ''
       [lang] = language.split('-')
-      @$el.find("select[name=language] option[value=#{lang}]")
-      .attr('selected', true)
+      @$el.find("select[name=language]").select2('val', lang)
       @_updateLanguageVariant()
 
     _updateLanguageVariant: () ->
@@ -248,6 +248,9 @@ define [
       for lang in LANGUAGES
         $lang = jQuery('<option></option>').attr('value', lang.code).text(lang.native)
         $languages.append($lang)
+
+      $languages.select2
+        placeholder: __('Select a language')
 
       $subjects = @$el.find('.subjects')
       for subject in METADATA_SUBJECTS

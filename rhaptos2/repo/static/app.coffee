@@ -82,4 +82,7 @@ define [
     # `Backbone.history.navigate` is sufficient for all Routers and will
     # trigger the correct events. The Router's internal `navigate` method
     # calls this anyways.
-    Backbone.history.navigate(href, true) if href?
+    #
+    # Added the `javascript:` test because Select2 generates anchor links
+    # but we should not change the URL.
+    Backbone.history.navigate(href, true) if href? and not /^javascript:/.test(href)

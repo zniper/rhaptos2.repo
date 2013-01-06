@@ -38,7 +38,7 @@
       evt.preventDefault();
       href = $(this).attr('href');
       console.warn("User clicked on an internal link. Use the app/controller module instead of the URL " + href);
-      if (href != null) {
+      if ((href != null) && !/^javascript:/.test(href)) {
         return Backbone.history.navigate(href, true);
       }
     });
