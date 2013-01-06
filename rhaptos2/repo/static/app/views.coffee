@@ -39,7 +39,7 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, __, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
+], (_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, __, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
 
   # **FIXME:** Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -243,6 +243,9 @@ define [
     # Populate some of the dropdowns like language and subjects.
     # Also, initialize the select2 widget on elements
     onRender: ->
+      # Set the title
+      @$el.find('*[name=title]').val(@model.get 'title')
+
       # Populate the Language dropdown and Subjects checkboxes
       $languages = @$el.find('*[name=language]')
       for lang in LANGUAGES
@@ -283,7 +286,7 @@ define [
       @$el.find('input[name=title]').focus()
       @
 
-    # This is used by `ModalWrapper` that offers a "Save" button
+    # This is used by `DialogWrapper` which offers a "Save" and "Cancel" buttons
     attrsToSave: () ->
       title = @$el.find('input[name=title]').val()
       language = @$el.find('select[name=language]').val()
@@ -291,6 +294,8 @@ define [
       language = variant or language
       subjects = (jQuery(checkbox).val() for checkbox in @$el.find('input[name=subjects]:checked'))
       keywords = (kw for kw in @$el.find('*[name=keywords]').val().split('|'))
+      # Keywords could be the empty string in which case it would be set to `[""]`
+      keywords = [] if '' is keywords[0]
 
       return {
         title: title
@@ -341,48 +346,42 @@ define [
 
 
 
-  # ## ModalWrapper
-  # This class wraps a view in a modal dialog and only causes changes when
+  # ## DialogWrapper
+  # This class wraps a view in a div and only causes changes when
   # the 'Save' button is clicked.
   #
   # Looks like phil came to the same conclusion as the author of Marionette
   # (Don't make a Bootstrap Modal in a `Backbone.View`):
   # [http://lostechies.com/derickbailey/2012/04/17/managing-a-modal-dialog-with-backbone-and-marionette/]
-  class ModalWrapper
-    constructor: (@view, title) ->
-      @view.render()
-      @$el = jQuery(MODAL_WRAPPER(title: title))
-      @$el.find('.modal-body').html('').append @view.$el
+  DialogWrapper = Marionette.ItemView.extend
+    template: DIALOG_WRAPPER
+    onRender: ->
+      @options.view.render()
+      @$el.find('.dialog-body').append @options.view.$el
+
+      # Fire a cancel event when the cancel button is pressed
+      @$el.on 'click', '.cancel', => @trigger 'cancelled'
 
       # Trigger the `model.save` when the save button is clicked
-      # using the attributes from `@view.attrsToSave()`
+      # using the attributes from `@options.view.attrsToSave()`
       @$el.on 'click', '.save', (evt) =>
         evt.preventDefault()
-        attrs = @view.attrsToSave()
+        attrs = @options.view.attrsToSave()
 
-        @view.model.save attrs,
+        @options.view.model.save attrs,
           success: (res) =>
             # Trigger a 'sync' because if 'success' is provided 'sync' is not triggered
-            @view.model.trigger('sync')
-            @$el.modal('hide')
+            @options.view.model.trigger('sync')
+            @trigger 'saved'
 
           error: (res) =>
             alert('Something went wrong when saving: ' + res)
-
-    show: ->
-      # Attach the modal dialog to the body since it floats on top of
-      # everything on the page and does not "live" inside any div
-      # unlike other views
-      @$el.appendTo('body') if not @$el.parent()[0]
-      @$el.modal(keyboard: true)
-    hide: ->
-      @$el.modal('hide')
 
 
   return {
     WorkspaceView: SearchResultView
     SearchResultView: SearchResultView
-    ModalWrapper: ModalWrapper
+    DialogWrapper: DialogWrapper
     MetadataEditView: MetadataEditView
     RolesEditView: RolesEditView
     ContentEditView: ContentEditView

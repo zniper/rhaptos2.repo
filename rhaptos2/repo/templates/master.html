@@ -89,15 +89,9 @@
                      data-toggle="modal">Publish</a>
                 </li>
                 <li>
-                  <a id="roles-link" tabindex="-1">Roles Management</a>
-                </li>
-                <li>
                   <a tabindex="-1" href="#sharing-modal"
                      id="sharing-link"
                      data-toggle="modal">Sharing and Access Management</a>
-                </li>
-                <li>
-                  <a id="metadata-link" tabindex="-1">Metadata</a>
                 </li>
               </ul>
             </li>
@@ -121,30 +115,19 @@
     </div>
     {# End page navigation controls #}
 
+    <div id="main">
+      <p>Please wait while this page loads</p>
+      <p>This DIV should be populated by the server and should contain either:</p>
+      <ul>
+        <li>The HTML body of a module (to prepopulate the Backbone model) and some JSON for the metadata or</li>
+        <li>The HTML list of the workspace/search results and some JSON representation of those results so they can be loaded up by app.js</li>
+      </ul>
+    </div>
 
-    <!-- Content well -->
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <!-- Main content -->
-        <div class="span9" id="main">
-          <p>Please wait while this page loads</p>
-          <p>This DIV should be populated by the server and should contain either:</p>
-          <ul>
-            <li>The HTML body of a module (to prepopulate the Backbone model) and some JSON for the metadata or</li>
-            <li>The HTML list of the workspace/search results and some JSON representation of those results so they can be loaded up by app.js</li>
-          </ul>
-        </div>
-
-        <div class="span3">
-        </div>
-
-      </div>
-      <footer class="hide" >
-        copyright &copy; 2012 connexions |
-        <a href="http://www.dcarter.co.uk"> design by dcarter</a>
-      </footer>
-    </div> <!-- /.container-fluid -->
+    <footer class="hide" >
+      copyright &copy; 2012 connexions |
+      <a href="http://www.dcarter.co.uk"> design by dcarter</a>
+    </footer>
 
   {% endblock %}
 </body>
