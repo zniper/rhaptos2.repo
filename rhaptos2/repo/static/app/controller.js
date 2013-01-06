@@ -115,47 +115,6 @@
         '': 'workspace',
         'content': 'createContent',
         'content/:id': 'editContent'
-      },
-      routes: {
-        '_layout': 'showLayout'
-      },
-      showLayout: function() {
-        var DesignView;
-        DesignView = Backbone.View.extend({
-          render: function() {
-            this.$el.css({
-              border: '1px dotted',
-              'background-color': '#ccc'
-            });
-            this.$el.css(this.options.css);
-            return this.$el.text(this.options.name);
-          }
-        });
-        mainRegion.show(contentLayout);
-        contentLayout.body.show(new DesignView({
-          name: 'body',
-          css: {
-            height: '100em'
-          }
-        }));
-        contentLayout.sidebar.show(new DesignView({
-          name: 'sidebar',
-          css: {
-            height: '10em'
-          }
-        }));
-        contentLayout.sidebarRight.show(new DesignView({
-          name: 'sidebar-right',
-          css: {
-            height: '10em'
-          }
-        }));
-        return contentLayout.aboveBody.show(new DesignView({
-          name: 'above-body',
-          css: {
-            height: '5em'
-          }
-        }));
       }
     });
     new ContentRouter();

@@ -140,21 +140,6 @@ define [
       'content':      'createContent' # Create a new piece of content
       'content/:id':  'editContent' # Edit an existing piece of content
 
-    routes:
-      '_layout':  'showLayout'
-
-    showLayout: ->
-      DesignView = Backbone.View.extend
-        render: ->
-          @$el.css {border: '1px dotted', 'background-color': '#ccc'}
-          @$el.css @options.css
-          @$el.text @options.name
-      mainRegion.show contentLayout
-      contentLayout.body.show new DesignView {name:'body', css: {height: '100em'}}
-      contentLayout.sidebar.show new DesignView {name:'sidebar', css: {height: '10em'}}
-      contentLayout.sidebarRight.show new DesignView {name:'sidebar-right', css: {height: '10em'}}
-      contentLayout.aboveBody.show new DesignView {name:'above-body', css: {height: '5em'}}
-
   # Start listening to URL changes
   new ContentRouter()
 
