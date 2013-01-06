@@ -7,7 +7,7 @@ define ['backbone', 'exports', 'i18n!app/nls/strings'], (Backbone, exports, __) 
   # **FIXME:** URLs (and functions to generate them) should probably live in a separate module
   #
   # **FIXME:** The URL prefix to content and the workspace should be `/content` instead of `/module`
-  CONTENT_PREFIX = '/module/' # Should be '/content'
+  CONTENT_PREFIX = '/content/' # Should be '/content'
   WORKSPACE_PREFIX = '/workspace/'
 
   # The `Content` model contains the following members:

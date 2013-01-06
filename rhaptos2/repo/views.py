@@ -113,7 +113,7 @@ def index():
 
 # Content GET, POST (create), and PUT (change)
 
-@app.route("/module/<uuid>", methods=['GET'])
+@app.route("/content/<uuid>", methods=['GET'])
 def moduleGET(uuid):
     dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
     try:
@@ -127,7 +127,7 @@ def moduleGET(uuid):
     return resp
 
 
-@app.route("/module/", methods=['POST'])
+@app.route("/content/", methods=['POST'])
 @apply_cors
 def modulePOST():
     """
@@ -149,7 +149,7 @@ def modulePOST():
     return uid
 
 
-@app.route("/module/<uuid>", methods=['PUT'])
+@app.route("/content/<uuid>", methods=['PUT'])
 def modulePUT(uuid):
     dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
 
