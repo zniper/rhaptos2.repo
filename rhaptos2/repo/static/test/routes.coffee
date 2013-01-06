@@ -25,14 +25,14 @@ define ['jquery', 'jquery-mockjax'], ($) ->
   RESPONSE_METADATA = $.extend({}, MOCK_CONTENT)
   $.mockjax
     type: 'GET'
-    url: '/content/*' # FIXME: Should be `/content/*.metadata` eventually
+    url: '/content/*'
     responseTime: SHORT
     contentType: 'application/json'
     responseText: RESPONSE_METADATA
 
   $.mockjax
     type: 'POST'
-    url: '/content/*' # FIXME: Should be `/content/*.metadata` eventually
+    url: '/content/*'
     responseTime: SHORT
     contentType: 'application/json'
     response: (settings) ->
