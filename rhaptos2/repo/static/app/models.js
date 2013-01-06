@@ -3,7 +3,7 @@
 
   define(['backbone', 'exports', 'i18n!app/nls/strings'], function(Backbone, exports, __) {
     var CONTENT_PREFIX, WORKSPACE_PREFIX;
-    CONTENT_PREFIX = '/module/';
+    CONTENT_PREFIX = '/content/';
     WORKSPACE_PREFIX = '/workspace/';
     exports.Content = Backbone.Model.extend({
       defaults: {
