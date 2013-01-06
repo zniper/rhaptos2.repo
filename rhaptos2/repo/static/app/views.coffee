@@ -117,6 +117,8 @@ define [
       @listenTo @collection, 'reset', => @render()
       @listenTo @collection, 'update', => @render()
 
+
+
   # ## Edit Content
   # Edit the module body and (eventually) metadata from the same view
   ContentEditView = Marionette.ItemView.extend
@@ -184,8 +186,10 @@ define [
       # Instead, autosave after some period of inactivity.
       $body.on 'blur', updateModelAndSave
 
+
+
   MetadataEditView = Marionette.ItemView.extend
-    template: -> '<div class="metadata"></div>'
+    template: EDIT_METADATA
 
     # Bind methods onto jQuery events that happen in the view
     events:
@@ -236,16 +240,22 @@ define [
     # Update the View with new keywords selected
     _updateKeywords: -> @$el.find('input[name=keywords]').select2('val', @model.get 'keywords')
 
-    # This view doesn't just use the model to populate,
-    # it also uses `LANGUAGES` and `METADATA_SUBJECTS` to generate the
-    # dropdowns so we don't use onRender.
-    #
-    # **FIXME:** Refactor to just use `onRender`
-    render: ->
-      templateObj = jQuery.extend({}, @model.toJSON())
-      templateObj._languages = LANGUAGES
-      templateObj._subjects = METADATA_SUBJECTS
-      @$el.append EDIT_METADATA(templateObj)
+    # Populate some of the dropdowns like language and subjects.
+    # Also, initialize the select2 widget on elements
+    onRender: ->
+      # Populate the Language dropdown and Subjects checkboxes
+      $languages = @$el.find('*[name=language]')
+      for lang in LANGUAGES
+        $lang = jQuery('<option></option>').attr('value', lang.code).text(lang.native)
+        $languages.append($lang)
+
+      $subjects = @$el.find('.subjects')
+      for subject in METADATA_SUBJECTS
+        $subject = jQuery('<label class="checkbox"><input type="checkbox" name="subjects"/></label>')
+        .append(subject)
+        # Add the value attribute onto the child `input` element
+        $subject.children().attr('value', subject)
+        $subjects.append $subject
 
       # Enable multiselect on certain elements
       $keywords = @$el.find('*[name=keywords]')
@@ -311,7 +321,6 @@ define [
       @_updateCopyrightHolders()
 
       @delegateEvents()
-      @
 
     _updateAuthors: -> @$el.find('*[name=authors]').select2 'val', (@model.get('authors') or [])
     _updateCopyrightHolders: -> @$el.find('*[name=copyrightHolders]').select2 'val', (@model.get('copyrightHolders') or [])
@@ -326,6 +335,7 @@ define [
         authors: authors
         copyrightHolders: copyrightHolders
       }
+
 
 
   # ## ModalWrapper
@@ -368,6 +378,7 @@ define [
 
   return {
     WorkspaceView: SearchResultView
+    SearchResultView: SearchResultView
     ModalWrapper: ModalWrapper
     MetadataEditView: MetadataEditView
     RolesEditView: RolesEditView

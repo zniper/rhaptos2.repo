@@ -147,9 +147,7 @@
       }
     });
     MetadataEditView = Marionette.ItemView.extend({
-      template: function() {
-        return '<div class="metadata"></div>';
-      },
+      template: EDIT_METADATA,
       events: {
         'change select[name=language]': '_updateLanguageVariant'
       },
@@ -216,12 +214,21 @@
       _updateKeywords: function() {
         return this.$el.find('input[name=keywords]').select2('val', this.model.get('keywords'));
       },
-      render: function() {
-        var $keywords, templateObj;
-        templateObj = jQuery.extend({}, this.model.toJSON());
-        templateObj._languages = LANGUAGES;
-        templateObj._subjects = METADATA_SUBJECTS;
-        this.$el.append(EDIT_METADATA(templateObj));
+      onRender: function() {
+        var $keywords, $lang, $languages, $subject, $subjects, lang, subject, _i, _j, _len, _len1;
+        $languages = this.$el.find('*[name=language]');
+        for (_i = 0, _len = LANGUAGES.length; _i < _len; _i++) {
+          lang = LANGUAGES[_i];
+          $lang = jQuery('<option></option>').attr('value', lang.code).text(lang["native"]);
+          $languages.append($lang);
+        }
+        $subjects = this.$el.find('.subjects');
+        for (_j = 0, _len1 = METADATA_SUBJECTS.length; _j < _len1; _j++) {
+          subject = METADATA_SUBJECTS[_j];
+          $subject = jQuery('<label class="checkbox"><input type="checkbox" name="subjects"/></label>').append(subject);
+          $subject.children().attr('value', subject);
+          $subjects.append($subject);
+        }
         $keywords = this.$el.find('*[name=keywords]');
         $keywords.select2({
           tags: this.model.get('keywords') || [],
@@ -299,8 +306,7 @@
         });
         this._updateAuthors();
         this._updateCopyrightHolders();
-        this.delegateEvents();
-        return this;
+        return this.delegateEvents();
       },
       _updateAuthors: function() {
         return this.$el.find('*[name=authors]').select2('val', this.model.get('authors') || []);
@@ -380,6 +386,7 @@
     })();
     return {
       WorkspaceView: SearchResultView,
+      SearchResultView: SearchResultView,
       ModalWrapper: ModalWrapper,
       MetadataEditView: MetadataEditView,
       RolesEditView: RolesEditView,

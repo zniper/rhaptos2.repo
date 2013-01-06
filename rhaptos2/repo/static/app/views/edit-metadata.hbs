@@ -2,23 +2,15 @@
 <input required type="text" name="title" value="{{title}}">
 
 <label>Language</label>
-<select required name="language">
-{{#_languages}}
-  <option value="{{code}}">
-    {{native}}
-  </option>
-{{/_languages}}
-</select>
+{{! The language select box will be populated by the view}}
+<select required name="language"></select>
 
 <label for="variantLanguage">Language variant</label>
 <select name="variantLanguage"></select>
 
 <label>Subjects</label>
-{{#_subjects}}
-<label class="checkbox">
-  <input type="checkbox" name="subjects" value="{{.}}"/> {{.}}
-</label>
-{{/_subjects}}
+{{! The subjects checkboxes will be populated by the view}}
+<div class="subjects"></div>
 
 <label>Keywords</label>
 <input name="keywords" type="text" placeholder="keywords help people find this content"/>
