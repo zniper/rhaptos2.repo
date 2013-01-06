@@ -194,24 +194,25 @@ define [
 
     # Bind methods onto jQuery events that happen in the view
     events:
-      'change select[name=language]': '_updateLanguageVariant'
+      'change *[name=language]': '_updateLanguageVariant'
 
     # Update the UI when the language changes.
     # Also called during initial render
     _updateLanguage: () ->
       language = @model.get('language') or ''
       [lang] = language.split('-')
-      @$el.find("select[name=language]").select2('val', lang)
+      @$el.find("*[name=language]").select2('val', lang)
       @_updateLanguageVariant()
 
     _updateLanguageVariant: () ->
-      $language = @$el.find('select[name=language]')
+      $language = @$el.find('*[name=language]')
       language = @model.get('language') or ''
       [lang, variant] = language.split('-')
       if $language.val() != lang
         lang = $language.val()
         variant = null
-      $variant = @$el.find('select[name=variantLanguage]')
+      $variant = @$el.find('*[name=variantLanguage]')
+      $label = @$el.find('*[for=variantLanguage]')
       variants = []
       for code, value of Languages.getCombined()
         if code[..1] == lang
@@ -222,23 +223,22 @@ define [
         $variant.removeAttr('disabled')
         $variant.html(LANGUAGE_VARIANTS('variants': variants))
         $variant.find("option[value=#{language}]").attr('selected', true)
+        $label.removeClass('hidden')
+        $variant.removeClass('hidden')
       else
-        $variant.html('').attr('disabled', true)
+        $variant.empty().attr('disabled', true)
+        $variant.addClass('hidden')
+        $label.addClass('hidden')
 
     # Helper method to populate a multiselect input
-    _updateSelect2: (inputName, modelKey) ->
-      @$el.find("input[name=#{inputName}]").attr('checked', false)
-      for subject in @model.get(modelKey) or []
-        @$el.find("input[name=#{inputName}][value='#{subject}']").attr('checked', true)
+    _updateSelect2: (key) ->
+      @$el.find("*[name=#{key}]").select2('val', @model.get key)
 
     # Update the View with new subjects selected
-    _updateSubjects: ->
-      @$el.find('input[name=subjects]').attr('checked', false)
-      for subject in @model.get('subjects') or []
-        @$el.find("input[name=subjects][value='#{subject}']").attr('checked', true)
+    _updateSubjects: -> @_updateSelect2 'subjects'
 
     # Update the View with new keywords selected
-    _updateKeywords: -> @$el.find('input[name=keywords]').select2('val', @model.get 'keywords')
+    _updateKeywords: -> @_updateSelect2 'keywords'
 
     # Populate some of the dropdowns like language and subjects.
     # Also, initialize the select2 widget on elements
@@ -255,13 +255,11 @@ define [
       $languages.select2
         placeholder: __('Select a language')
 
-      $subjects = @$el.find('.subjects')
-      for subject in METADATA_SUBJECTS
-        $subject = jQuery('<label class="checkbox"><input type="checkbox" name="subjects"/></label>')
-        .append(subject)
-        # Add the value attribute onto the child `input` element
-        $subject.children().attr('value', subject)
-        $subjects.append $subject
+      $subjects = @$el.find('*[name=subjects]')
+      $subjects.select2
+        tags: METADATA_SUBJECTS
+        tokenSeparators: [',']
+        separator: '|' # String used to delimit ids in $('input').val()
 
       # Enable multiselect on certain elements
       $keywords = @$el.find('*[name=keywords]')
@@ -289,12 +287,14 @@ define [
     # This is used by `DialogWrapper` which offers a "Save" and "Cancel" buttons
     attrsToSave: () ->
       title = @$el.find('input[name=title]').val()
-      language = @$el.find('select[name=language]').val()
-      variant = @$el.find('select[name=variantLanguage]').val()
+      language = @$el.find('*[name=language]').val()
+      variant = @$el.find('*[name=variantLanguage]').val()
       language = variant or language
-      subjects = (jQuery(checkbox).val() for checkbox in @$el.find('input[name=subjects]:checked'))
-      keywords = (kw for kw in @$el.find('*[name=keywords]').val().split('|'))
+      # subjects could be the empty string in which case it would be set to `[""]`
+      subjects = (kw for kw in @$el.find('*[name=subjects]').val().split('|'))
+      subjects = [] if '' is subjects[0]
       # Keywords could be the empty string in which case it would be set to `[""]`
+      keywords = (kw for kw in @$el.find('*[name=keywords]').val().split('|'))
       keywords = [] if '' is keywords[0]
 
       return {

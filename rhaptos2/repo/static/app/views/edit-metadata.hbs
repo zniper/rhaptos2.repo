@@ -1,16 +1,33 @@
-<label>Title</label>
-<input required type="text" name="title" value="{{title}}">
+<div class="form-horizontal">
 
-<label>Language</label>
-{{! The language select box will be populated by the view}}
-<select required name="language"></select>
+  <div class="control-group">
+    <label class="control-label" for="title">Title</label>
+    <div class="controls">
+      <input required type="text" name="title" value="{{title}}">
+    </div>
+  </div>
 
-<label for="variantLanguage">Language variant</label>
-<select name="variantLanguage"></select>
+  <div class="control-group">
+    <label class="control-label" for="language">Language</label>
+    <div class="controls form-inline" style="white-space: nowrap">
+      <select required name="language"></select>
+      <label for="variantLanguage">and variant</span>
+      <select name="variantLanguage"></select>
+    </div>
+  </div>
 
-<label>Subjects</label>
-{{! The subjects checkboxes will be populated by the view}}
-<div class="subjects"></div>
+  <div class="control-group">
+    <label class="control-label" for="subjects">Subjects</label>
+    <div class="controls">
+      <input name="subjects" type="text" placeholder="Subjects help organize this content"/>
+    </div>
+  </div>
 
-<label>Keywords</label>
-<input name="keywords" type="text" placeholder="keywords help people find this content"/>
+  <div class="control-group">
+    <label class="control-label" for="keywords">Keywords</label>
+    <div class="controls">
+      <input name="keywords" type="text" placeholder="Keywords help people find this content"/>
+    </div>
+  </div>
+
+</div>

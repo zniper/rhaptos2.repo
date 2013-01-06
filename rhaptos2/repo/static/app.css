@@ -11,6 +11,7 @@
 
 /* Used to visually disable editable areas and views until their contents have loaded */
 .disabled { opacity: 0.5; }
+.hidden { display: none !important; }
 
 .select2-container {
   min-width: 15em;

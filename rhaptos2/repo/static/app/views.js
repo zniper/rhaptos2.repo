@@ -149,25 +149,26 @@
     MetadataEditView = Marionette.ItemView.extend({
       template: EDIT_METADATA,
       events: {
-        'change select[name=language]': '_updateLanguageVariant'
+        'change *[name=language]': '_updateLanguageVariant'
       },
       _updateLanguage: function() {
         var lang, language;
         language = this.model.get('language') || '';
         lang = language.split('-')[0];
-        this.$el.find("select[name=language]").select2('val', lang);
+        this.$el.find("*[name=language]").select2('val', lang);
         return this._updateLanguageVariant();
       },
       _updateLanguageVariant: function() {
-        var $language, $variant, code, lang, language, variant, variants, _ref1, _ref2;
-        $language = this.$el.find('select[name=language]');
+        var $label, $language, $variant, code, lang, language, variant, variants, _ref1, _ref2;
+        $language = this.$el.find('*[name=language]');
         language = this.model.get('language') || '';
         _ref1 = language.split('-'), lang = _ref1[0], variant = _ref1[1];
         if ($language.val() !== lang) {
           lang = $language.val();
           variant = null;
         }
-        $variant = this.$el.find('select[name=variantLanguage]');
+        $variant = this.$el.find('*[name=variantLanguage]');
+        $label = this.$el.find('*[for=variantLanguage]');
         variants = [];
         _ref2 = Languages.getCombined();
         for (code in _ref2) {
@@ -184,38 +185,26 @@
           $variant.html(LANGUAGE_VARIANTS({
             'variants': variants
           }));
-          return $variant.find("option[value=" + language + "]").attr('selected', true);
+          $variant.find("option[value=" + language + "]").attr('selected', true);
+          $label.removeClass('hidden');
+          return $variant.removeClass('hidden');
         } else {
-          return $variant.html('').attr('disabled', true);
+          $variant.empty().attr('disabled', true);
+          $variant.addClass('hidden');
+          return $label.addClass('hidden');
         }
       },
-      _updateSelect2: function(inputName, modelKey) {
-        var subject, _i, _len, _ref1, _results;
-        this.$el.find("input[name=" + inputName + "]").attr('checked', false);
-        _ref1 = this.model.get(modelKey) || [];
-        _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          subject = _ref1[_i];
-          _results.push(this.$el.find("input[name=" + inputName + "][value='" + subject + "']").attr('checked', true));
-        }
-        return _results;
+      _updateSelect2: function(key) {
+        return this.$el.find("*[name=" + key + "]").select2('val', this.model.get(key));
       },
       _updateSubjects: function() {
-        var subject, _i, _len, _ref1, _results;
-        this.$el.find('input[name=subjects]').attr('checked', false);
-        _ref1 = this.model.get('subjects') || [];
-        _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          subject = _ref1[_i];
-          _results.push(this.$el.find("input[name=subjects][value='" + subject + "']").attr('checked', true));
-        }
-        return _results;
+        return this._updateSelect2('subjects');
       },
       _updateKeywords: function() {
-        return this.$el.find('input[name=keywords]').select2('val', this.model.get('keywords'));
+        return this._updateSelect2('keywords');
       },
       onRender: function() {
-        var $keywords, $lang, $languages, $subject, $subjects, lang, subject, _i, _j, _len, _len1;
+        var $keywords, $lang, $languages, $subjects, lang, _i, _len;
         this.$el.find('*[name=title]').val(this.model.get('title'));
         $languages = this.$el.find('*[name=language]');
         for (_i = 0, _len = LANGUAGES.length; _i < _len; _i++) {
@@ -226,13 +215,12 @@
         $languages.select2({
           placeholder: __('Select a language')
         });
-        $subjects = this.$el.find('.subjects');
-        for (_j = 0, _len1 = METADATA_SUBJECTS.length; _j < _len1; _j++) {
-          subject = METADATA_SUBJECTS[_j];
-          $subject = jQuery('<label class="checkbox"><input type="checkbox" name="subjects"/></label>').append(subject);
-          $subject.children().attr('value', subject);
-          $subjects.append($subject);
-        }
+        $subjects = this.$el.find('*[name=subjects]');
+        $subjects.select2({
+          tags: METADATA_SUBJECTS,
+          tokenSeparators: [','],
+          separator: '|'
+        });
         $keywords = this.$el.find('*[name=keywords]');
         $keywords.select2({
           tags: this.model.get('keywords') || [],
@@ -259,21 +247,24 @@
         return this;
       },
       attrsToSave: function() {
-        var checkbox, keywords, kw, language, subjects, title, variant;
+        var keywords, kw, language, subjects, title, variant;
         title = this.$el.find('input[name=title]').val();
-        language = this.$el.find('select[name=language]').val();
-        variant = this.$el.find('select[name=variantLanguage]').val();
+        language = this.$el.find('*[name=language]').val();
+        variant = this.$el.find('*[name=variantLanguage]').val();
         language = variant || language;
         subjects = (function() {
           var _i, _len, _ref1, _results;
-          _ref1 = this.$el.find('input[name=subjects]:checked');
+          _ref1 = this.$el.find('*[name=subjects]').val().split('|');
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            checkbox = _ref1[_i];
-            _results.push(jQuery(checkbox).val());
+            kw = _ref1[_i];
+            _results.push(kw);
           }
           return _results;
         }).call(this);
+        if ('' === subjects[0]) {
+          subjects = [];
+        }
         keywords = (function() {
           var _i, _len, _ref1, _results;
           _ref1 = this.$el.find('*[name=keywords]').val().split('|');
