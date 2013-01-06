@@ -13,8 +13,8 @@ define [
   # There is a cyclic dependency between views and controllers
   # So we use the `exports` module to get around that problem.
   'app/views'
-  'hbs!app/layout-content'
-  'hbs!app/layout-workspace'
+  'hbs!app/layouts/content'
+  'hbs!app/layouts/workspace'
   'exports'
   'i18n!app/nls/strings'
 ], (jQuery, Backbone, Marionette, Models, Views, LAYOUT_CONTENT, LAYOUT_WORKSPACE, exports, __) ->
