@@ -9,6 +9,9 @@
   margin-top: 40px;
 }
 
+/* Used to visually disable editable areas and views until their contents have loaded */
+.disabled { opacity: 0.5; }
+
 .select2-container {
   min-width: 10em;
 }

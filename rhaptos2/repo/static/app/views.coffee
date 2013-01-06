@@ -23,6 +23,7 @@ define [
   'backbone'
   'marionette'
   'jquery'
+  'aloha'
   'app/controller'
   './languages'
   # Load the Handlebar templates
@@ -37,7 +38,7 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (_, Backbone, Marionette, jQuery, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
+], (_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
 
   # **FIXME:** Move these URLs into a common module so the mock AJAX code can use them too
   KEYWORDS_URL = '/keywords/'
@@ -129,7 +130,7 @@ define [
     #     if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
     #      Aloha.activeEditable.blur();
     #      ...
-    template: (serialized_model) -> "<div class='content-edit-view'><div class='toolbar aloha-dialog'></div><div class='body'>#{serialized_model.body or 'This module is empty. Please change it'}</div></div>"
+    template: (serialized_model) -> "<div class='content-edit-view'><div class='toolbar aloha-dialog'></div><div class='body disabled'>#{serialized_model.body or 'This module is empty. Please change it'}</div></div>"
 
     initialize: ->
       @listenTo @model, 'change:body', (model, value) =>
@@ -155,9 +156,12 @@ define [
       $body = @$el.find('.body')
       $toolbar = @$el.find('.toolbar')
 
-      $body.aloha()
-      # Move the focus onto the body (needs to be delayed though)
-      setTimeout (=> $body.focus()), 100
+      # Once Aloha has finished loading enable the body
+      Aloha.ready ->
+        $body.aloha()
+        $body.removeClass('disabled')
+        # Move the focus onto the body (needs to be delayed though)
+        setTimeout (=> $body.focus()), 100
 
       # Populate the toolbar from the handlebars template
       $toolbar.html(ALOHA_TOOLBAR {})

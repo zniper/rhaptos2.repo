@@ -75,8 +75,12 @@ require.config
       exports: 'Select2'
       init: -> ret = @Select2; delete @Select2; ret
 
+    # Some of the Aloha plugins depend on bootstrap being initialized on jQuery
+    # (like the popover plugin).
+    #
+    # Also, configure Aloha for the application using the `aloha.config` module.
     aloha:
-      deps: ['jquery', 'bootstrap', 'css!../cdn/aloha/src/css/aloha']
+      deps: ['bootstrap', 'aloha.config', 'css!../cdn/aloha/src/css/aloha']
       exports: 'Aloha'
 
   # Maps prefixes (like `less!path/to/less-file`) to use the LESS CSS plugin
