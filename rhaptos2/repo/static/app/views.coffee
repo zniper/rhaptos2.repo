@@ -120,31 +120,22 @@ define [
 
 
 
-  # ## Edit Content
-  # Edit the module body and (eventually) metadata from the same view
-  ContentEditView = Marionette.ItemView.extend
-    # **TODO:** Turn this into a handlebars module so we can add editing metadata in the same div
-    #
-    # The toolbar div has a `.aloha-dialog` so clicking on it
-    # doesn't cause the editable area to lose focus.
-    #
-    # See `Aloha-Editor/src/lib/aloha.js`:
-    #
-    #     if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
-    #      Aloha.activeEditable.blur();
-    #      ...
-    template: (serialized_model) -> "<div class='content-edit-view'><div class='toolbar aloha-dialog'></div><div class='body disabled'>#{serialized_model.body or 'This module is empty. Please change it'}</div></div>"
+  AlohaEditView = Marionette.ItemView.extend
+    # **NOTE:** This template is not wrapped in an element
+    template: () -> throw 'You need to specify a template, modelKey, and optionally alohaOptions'
+    modelKey: null
+    alohaOptions: null
 
     initialize: ->
-      @listenTo @model, 'change:body', (model, value) =>
-        alohaId = @$el.find('.body').attr('id')
+      @listenTo @model, "change:#{@modelKey}", (model, value) =>
+        alohaId = @$el.attr('id')
         # Sometimes Aloha hasn't loaded up yet
         if alohaId and @$el.parents()[0]
           alohaEditable = Aloha.getEditableById(alohaId)
           editableBody = alohaEditable.getContents()
           alohaEditable.setContents(value) if value != editableBody
         else
-          @$el.find('.body').empty().append(value)
+          @$el.empty().append(value)
 
     onRender: ->
       # Wait until Aloha is started before loading MathJax.
@@ -155,29 +146,21 @@ define [
       @$el.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
       MathJax.Hub.Configured() if MathJax?
 
-      # Inside the view is a toolbar and a .body which will have an aloha editable area
-      $body = @$el.find('.body')
-      $toolbar = @$el.find('.toolbar')
-
-      # Once Aloha has finished loading enable the body
-      Aloha.ready ->
-        $body.aloha()
-        $body.removeClass('disabled')
-        # Move the focus onto the body (needs to be delayed though)
-        setTimeout (=> $body.focus()), 100
-
-      # Populate the toolbar from the handlebars template
-      $toolbar.html(ALOHA_TOOLBAR {})
+      # Once Aloha has finished loading enable
+      @$el.addClass('disabled')
+      Aloha.ready =>
+        @$el.aloha(@alohaOptions)
+        @$el.removeClass('disabled')
 
       # Auto save after the user has stopped making changes
       updateModelAndSave = =>
-        alohaId = $body.attr('id')
+        alohaId = @$el.attr('id')
         # Sometimes Aloha hasn't loaded up yet
-        # Only save when the body has changed
+        # Only save when the editable has changed
         if alohaId
           alohaEditable = Aloha.getEditableById(alohaId)
           editableBody = alohaEditable.getContents()
-          @model.set 'body', editableBody
+          @model.set @modelKey, editableBody
           @model.save() if @model.changedAttributes()
 
       # Grr, the `aloha-smart-content-changed` can only be listened to globally
@@ -185,8 +168,31 @@ define [
       #
       # This is problematic when we have multiple Aloha editors on a page.
       # Instead, autosave after some period of inactivity.
-      $body.on 'blur', updateModelAndSave
+      @$el.on 'blur', updateModelAndSave
 
+
+
+  # ## Edit Content Body
+  ContentEditView = AlohaEditView.extend
+    # **NOTE:** This template is not wrapped in an element
+    template: (serialized_model) -> "#{serialized_model.body or 'This module is empty. Please change it'}"
+    modelKey: 'body'
+
+  TitleEditView = AlohaEditView.extend
+    # **NOTE:** This template is not wrapped in an element
+    template: (serialized_model) -> "#{serialized_model.title or 'Untitled'}"
+    modelKey: 'title'
+    tagName: 'span' # override the default tagName of `div` so titles can be edited inline.
+
+
+  ContentToolbarView = Marionette.ItemView.extend
+    template: ALOHA_TOOLBAR
+
+    onRender: ->
+      # Wait until Aloha is started before enabling the toolbar
+      @$el.addClass('disabled')
+      Aloha.ready =>
+        @$el.removeClass('disabled')
 
 
   MetadataEditView = Marionette.ItemView.extend
@@ -195,6 +201,15 @@ define [
     # Bind methods onto jQuery events that happen in the view
     events:
       'change *[name=language]': '_updateLanguageVariant'
+
+    initialize: ->
+      @listenTo @model, 'change:title', => @_updateTitle()
+      @listenTo @model, 'change:language', => @_updateLanguage()
+      @listenTo @model, 'change:subjects', => @_updateSubjects()
+      @listenTo @model, 'change:keywords', => @_updateKeywords()
+
+    _updateTitle: () ->
+      @$el.find('*[name=title]').val(@model.get 'title')
 
     # Update the UI when the language changes.
     # Also called during initial render
@@ -282,7 +297,6 @@ define [
 
       # Focus on the title
       @$el.find('input[name=title]').focus()
-      @
 
     # This is used by `DialogWrapper` which offers a "Save" and "Cancel" buttons
     attrsToSave: () ->
@@ -385,4 +399,6 @@ define [
     MetadataEditView: MetadataEditView
     RolesEditView: RolesEditView
     ContentEditView: ContentEditView
+    TitleEditView: TitleEditView
+    ContentToolbarView: ContentToolbarView
   }

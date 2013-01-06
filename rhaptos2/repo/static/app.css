@@ -6,7 +6,18 @@
 
 /* Add some space because the toolbar floats */
 #main {
-  margin-top: 40px;
+  margin-top: 80px;
+}
+
+/* Hint that the user can edit the title here */
+#layout-title { cursor: pointer; }
+#layout-title + .popover { font-size: 12pt; font-weight: normal; }
+
+
+.navbar-fixed-top h3 {
+  margin: 0;
+  padding: 10px 0;
+  background-color: #fff;
 }
 
 /* Used to visually disable editable areas and views until their contents have loaded */

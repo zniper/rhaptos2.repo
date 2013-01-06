@@ -2,7 +2,7 @@
 (function() {
 
   define(['underscore', 'backbone', 'marionette', 'jquery', 'aloha', 'app/controller', './languages', 'i18n!app/nls/strings', 'hbs!app/views/content-list', 'hbs!app/views/content-list-item', 'hbs!app/views/modal-wrapper', 'hbs!app/views/edit-metadata', 'hbs!app/views/edit-roles', 'hbs!app/views/language-variants', 'hbs!app/views/aloha-toolbar', 'bootstrap', 'select2'], function(_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, __, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) {
-    var ContentEditView, DELAY_BEFORE_SAVING, DialogWrapper, KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, RolesEditView, SELECT2_AJAX_HANDLER, SearchResultItemView, SearchResultView, USERS_URL, languageCode, value, _ref;
+    var AlohaEditView, ContentEditView, ContentToolbarView, DELAY_BEFORE_SAVING, DialogWrapper, KEYWORDS_URL, LANGUAGES, METADATA_SUBJECTS, MODAL_SPINNER_OPTIONS, MetadataEditView, RolesEditView, SELECT2_AJAX_HANDLER, SearchResultItemView, SearchResultView, TitleEditView, USERS_URL, languageCode, value, _ref;
     KEYWORDS_URL = '/keywords/';
     USERS_URL = '/users/';
     DELAY_BEFORE_SAVING = 3000;
@@ -93,15 +93,17 @@
         });
       }
     });
-    ContentEditView = Marionette.ItemView.extend({
-      template: function(serialized_model) {
-        return "<div class='content-edit-view'><div class='toolbar aloha-dialog'></div><div class='body disabled'>" + (serialized_model.body || 'This module is empty. Please change it') + "</div></div>";
+    AlohaEditView = Marionette.ItemView.extend({
+      template: function() {
+        throw 'You need to specify a template, modelKey, and optionally alohaOptions';
       },
+      modelKey: null,
+      alohaOptions: null,
       initialize: function() {
         var _this = this;
-        return this.listenTo(this.model, 'change:body', function(model, value) {
+        return this.listenTo(this.model, "change:" + this.modelKey, function(model, value) {
           var alohaEditable, alohaId, editableBody;
-          alohaId = _this.$el.find('.body').attr('id');
+          alohaId = _this.$el.attr('id');
           if (alohaId && _this.$el.parents()[0]) {
             alohaEditable = Aloha.getEditableById(alohaId);
             editableBody = alohaEditable.getContents();
@@ -109,47 +111,82 @@
               return alohaEditable.setContents(value);
             }
           } else {
-            return _this.$el.find('.body').empty().append(value);
+            return _this.$el.empty().append(value);
           }
         });
       },
       onRender: function() {
-        var $body, $toolbar, updateModelAndSave,
+        var updateModelAndSave,
           _this = this;
         this.$el.find('math').wrap('<span class="math-element aloha-cleanme"></span>');
         if (typeof MathJax !== "undefined" && MathJax !== null) {
           MathJax.Hub.Configured();
         }
-        $body = this.$el.find('.body');
-        $toolbar = this.$el.find('.toolbar');
+        this.$el.addClass('disabled');
         Aloha.ready(function() {
-          var _this = this;
-          $body.aloha();
-          $body.removeClass('disabled');
-          return setTimeout((function() {
-            return $body.focus();
-          }), 100);
+          _this.$el.aloha(_this.alohaOptions);
+          return _this.$el.removeClass('disabled');
         });
-        $toolbar.html(ALOHA_TOOLBAR({}));
         updateModelAndSave = function() {
           var alohaEditable, alohaId, editableBody;
-          alohaId = $body.attr('id');
+          alohaId = _this.$el.attr('id');
           if (alohaId) {
             alohaEditable = Aloha.getEditableById(alohaId);
             editableBody = alohaEditable.getContents();
-            _this.model.set('body', editableBody);
+            _this.model.set(_this.modelKey, editableBody);
             if (_this.model.changedAttributes()) {
               return _this.model.save();
             }
           }
         };
-        return $body.on('blur', updateModelAndSave);
+        return this.$el.on('blur', updateModelAndSave);
+      }
+    });
+    ContentEditView = AlohaEditView.extend({
+      template: function(serialized_model) {
+        return "" + (serialized_model.body || 'This module is empty. Please change it');
+      },
+      modelKey: 'body'
+    });
+    TitleEditView = AlohaEditView.extend({
+      template: function(serialized_model) {
+        return "" + (serialized_model.title || 'Untitled');
+      },
+      modelKey: 'title',
+      tagName: 'span'
+    });
+    ContentToolbarView = Marionette.ItemView.extend({
+      template: ALOHA_TOOLBAR,
+      onRender: function() {
+        var _this = this;
+        this.$el.addClass('disabled');
+        return Aloha.ready(function() {
+          return _this.$el.removeClass('disabled');
+        });
       }
     });
     MetadataEditView = Marionette.ItemView.extend({
       template: EDIT_METADATA,
       events: {
         'change *[name=language]': '_updateLanguageVariant'
+      },
+      initialize: function() {
+        var _this = this;
+        this.listenTo(this.model, 'change:title', function() {
+          return _this._updateTitle();
+        });
+        this.listenTo(this.model, 'change:language', function() {
+          return _this._updateLanguage();
+        });
+        this.listenTo(this.model, 'change:subjects', function() {
+          return _this._updateSubjects();
+        });
+        return this.listenTo(this.model, 'change:keywords', function() {
+          return _this._updateKeywords();
+        });
+      },
+      _updateTitle: function() {
+        return this.$el.find('*[name=title]').val(this.model.get('title'));
       },
       _updateLanguage: function() {
         var lang, language;
@@ -243,8 +280,7 @@
         this._updateSubjects();
         this._updateKeywords();
         this.delegateEvents();
-        this.$el.find('input[name=title]').focus();
-        return this;
+        return this.$el.find('input[name=title]').focus();
       },
       attrsToSave: function() {
         var keywords, kw, language, subjects, title, variant;
@@ -371,7 +407,9 @@
       DialogWrapper: DialogWrapper,
       MetadataEditView: MetadataEditView,
       RolesEditView: RolesEditView,
-      ContentEditView: ContentEditView
+      ContentEditView: ContentEditView,
+      TitleEditView: TitleEditView,
+      ContentToolbarView: ContentToolbarView
     };
   });
 

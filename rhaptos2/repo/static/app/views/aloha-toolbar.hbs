@@ -1,4 +1,17 @@
-<div class="btn-toolbar">
+<div class="btn-toolbar aloha-dialog">
+  <!-- =====================================================================
+
+      The toolbar div has a `.aloha-dialog` so clicking on it
+      doesn't cause the editable area to lose focus.
+
+      See `Aloha-Editor/src/lib/aloha.js`:
+
+         if (Aloha.activeEditable && !jQuery(".aloha-dialog").is(':visible') && !Aloha.eventHandled) {
+          Aloha.activeEditable.blur();
+          ...
+       ===================================================================== -->
+
+
   <!-- ================= -->
   <!--  Toolbar Buttons  -->
   <!-- ================= -->
