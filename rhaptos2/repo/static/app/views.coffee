@@ -128,8 +128,10 @@ define [
     itemView: SearchResultItemView
 
     initialize: ->
-      @listenTo @collection, 'reset', => @render()
-      @listenTo @collection, 'update', => @render()
+      @listenTo @collection, 'reset',   => @render()
+      @listenTo @collection, 'update',  => @render()
+      @listenTo @collection, 'add',     => @render()
+      @listenTo @collection, 'remove',  => @render()
 
 
 
