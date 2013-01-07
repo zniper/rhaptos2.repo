@@ -32,6 +32,9 @@
       start: function() {
         return Backbone.history.start();
       },
+      getRegion: function() {
+        return mainRegion;
+      },
       workspace: function() {
         var view, workspace;
         workspace = new Models.Workspace();
@@ -41,7 +44,7 @@
         });
         mainRegion.show(workspaceLayout);
         workspaceLayout.body.show(view);
-        Backbone.history.navigate('');
+        Backbone.history.navigate('workspace');
         return workspace.on('change', function() {
           return view.render();
         });
@@ -113,6 +116,7 @@
       controller: mainController,
       appRoutes: {
         '': 'workspace',
+        'workspace': 'workspace',
         'content': 'createContent',
         'content/:id': 'editContent'
       }

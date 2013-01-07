@@ -60,6 +60,8 @@ define [
     # In here so App can call it once it has completed loading
     start: -> Backbone.history.start()
 
+    getRegion: -> mainRegion
+
     # ### Show Workspace
     # Shows the workspace listing and updates the URL
     workspace: ->
@@ -70,7 +72,7 @@ define [
       mainRegion.show workspaceLayout
       workspaceLayout.body.show view
       # Update the URL
-      Backbone.history.navigate ''
+      Backbone.history.navigate 'workspace'
 
       workspace.on 'change', ->
         view.render()
@@ -137,6 +139,7 @@ define [
     controller: mainController
     appRoutes:
       '':             'workspace' # Show the workspace list of content
+      'workspace':    'workspace'
       'content':      'createContent' # Create a new piece of content
       'content/:id':  'editContent' # Edit an existing piece of content
 
