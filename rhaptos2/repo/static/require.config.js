@@ -41,7 +41,6 @@
           ret = this.Backbone.Marionette;
           delete this.Backbone.Marionette;
           delete this.Backbone;
-          delete this._;
           return ret;
         }
       },
