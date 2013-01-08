@@ -84,6 +84,7 @@
       LANGUAGES.push(value);
     }
     SearchResultItemView = Marionette.ItemView.extend({
+      tagName: 'tr',
       template: SEARCH_RESULT_ITEM,
       onRender: function() {
         var _this = this;
@@ -96,6 +97,7 @@
     });
     SearchResultView = Marionette.CompositeView.extend({
       template: SEARCH_RESULT,
+      itemViewContainer: 'tbody',
       itemView: SearchResultItemView,
       initialize: function() {
         var _this = this;

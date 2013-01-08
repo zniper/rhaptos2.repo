@@ -116,6 +116,7 @@ define [
   # Since we don't really distinguish between a search result view and a workspace/collection/etc
   # just consider them the same.
   SearchResultItemView = Marionette.ItemView.extend
+    tagName: 'tr'
     template: SEARCH_RESULT_ITEM
     onRender: ->
       @$el.on 'click', =>
@@ -125,6 +126,7 @@ define [
   # This can also be thought of as the Workspace view
   SearchResultView = Marionette.CompositeView.extend
     template: SEARCH_RESULT
+    itemViewContainer: 'tbody'
     itemView: SearchResultItemView
 
     initialize: ->
