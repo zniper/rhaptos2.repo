@@ -59,7 +59,7 @@
         }
       },
       aloha: {
-        deps: ['bootstrap', 'aloha.config', 'css!../cdn/aloha/src/css/aloha'],
+        deps: ['bootstrap', 'aloha-config', 'css!../cdn/aloha/src/css/aloha'],
         exports: 'Aloha'
       }
     },

@@ -79,9 +79,9 @@ require.config
     # Some of the Aloha plugins depend on bootstrap being initialized on jQuery
     # (like the popover plugin).
     #
-    # Also, configure Aloha for the application using the `aloha.config` module.
+    # Also, configure Aloha for the application using the `aloha-config` module.
     aloha:
-      deps: ['bootstrap', 'aloha.config', 'css!../cdn/aloha/src/css/aloha']
+      deps: ['bootstrap', 'aloha-config', 'css!../cdn/aloha/src/css/aloha']
       exports: 'Aloha'
 
   # Maps prefixes (like `less!path/to/less-file`) to use the LESS CSS plugin
