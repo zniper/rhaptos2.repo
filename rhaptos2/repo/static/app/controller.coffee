@@ -9,6 +9,7 @@ define [
   'jquery'
   'backbone'
   'marionette'
+  'app/auth'
   'app/models'
   # There is a cyclic dependency between views and controllers
   # So we use the `exports` module to get around that problem.
@@ -17,7 +18,7 @@ define [
   'hbs!app/layouts/workspace'
   'exports'
   'i18n!app/nls/strings'
-], (jQuery, Backbone, Marionette, Models, Views, LAYOUT_CONTENT, LAYOUT_WORKSPACE, exports, __) ->
+], (jQuery, Backbone, Marionette, Auth, Models, Views, LAYOUT_CONTENT, LAYOUT_WORKSPACE, exports, __) ->
 
   # Squirrel away the original contents of the main div (content HTML when viewing the content page for example)
   $main = jQuery('#main')
@@ -32,12 +33,14 @@ define [
     regions:
       toolbar:      '#layout-toolbar'
       body:         '#layout-body'
+      auth:         '#layout-auth'
   workspaceLayout = new WorkspaceLayout()
 
 
   ContentLayout = Marionette.Layout.extend
     template: LAYOUT_CONTENT
     regions:
+      auth:         '#layout-auth'
       toolbar:      '#layout-toolbar'
       title:        '#layout-title'
       body:         '#layout-body'
@@ -71,6 +74,9 @@ define [
       view = new Views.WorkspaceView {collection: workspace}
       mainRegion.show workspaceLayout
       workspaceLayout.body.show view
+
+      view = new Views.AuthView {model: Auth}
+      workspaceLayout.auth.show view
       # Update the URL
       Backbone.history.navigate 'workspace'
 
@@ -123,6 +129,10 @@ define [
 
       view = new Views.TitleEditView(model: content)
       contentLayout.title.show view
+
+      view = new Views.AuthView {model: Auth}
+      contentLayout.auth.show view
+
       # Enable the tooltip letting the user know to edit
       contentLayout.title.$el.popover
         trigger: 'hover'

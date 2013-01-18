@@ -19,14 +19,15 @@
 
 #
 define [
+  'exports'
   'underscore'
   'backbone'
   'marionette'
   'jquery'
   'aloha'
+  'app/urls'
   'app/controller'
   './languages'
-  'i18n!app/nls/strings'
   # Load the Handlebar templates
   'hbs!app/views/content-list'
   'hbs!app/views/content-list-item'
@@ -35,15 +36,16 @@ define [
   'hbs!app/views/edit-roles'
   'hbs!app/views/language-variants'
   'hbs!app/views/aloha-toolbar'
+  'hbs!app/views/sign-in-out'
+  # Load internationalized strings
+  'i18n!app/nls/strings'
   # `bootstrap` and `select2` add to jQuery and don't export anything of their own
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (_, Backbone, Marionette, jQuery, Aloha, Controller, Languages, __, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR) ->
+], (exports, _, Backbone, Marionette, jQuery, Aloha, URLS, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR, SIGN_IN_OUT, __) ->
 
-  # **FIXME:** Move these URLs into a common module so the mock AJAX code can use them too
-  KEYWORDS_URL = '/keywords/'
-  USERS_URL = '/users/'
+  # **FIXME:** Move this delay into a common module so the mock AJAX code can use them too
   DELAY_BEFORE_SAVING = 3000
 
   # Select2 is a multiselect UI library.
@@ -81,24 +83,6 @@ define [
   METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business',
     'Science and Technology', 'Humanities', 'Social Sciences']
 
-  MODAL_SPINNER_OPTIONS = {
-    lines: 13  # The number of lines to draw
-    length: 16  # The length of each line
-    width: 6  # The line thickness
-    radius: 27  # The radius of the inner circle
-    corners: 1  # Corner roundness (0..1)
-    rotate: 0  # The rotation offset
-    color: '#444'  # #rgb or #rrggbb
-    speed: 0.9  # Rounds per second
-    trail: 69  # Afterglow percentage
-    shadow: false  # Whether to render a shadow
-    hwaccel: false  # Whether to use hardware acceleration
-    className: 'spinner'  # The CSS class to assign to the spinner
-    zIndex: 2e9  # The z-index (defaults to 2000000000)
-    top: 'auto'  # Top position relative to parent in px
-    left: '265px'  # Left position relative to parent in px
-  }
-
   # Given the language list in [languages.coffee](languages.html)
   # this reorganizes them so they can be shown in a dropdown.
   LANGUAGES = [{code: '', native: '', english: ''}]
@@ -115,7 +99,7 @@ define [
   #
   # Since we don't really distinguish between a search result view and a workspace/collection/etc
   # just consider them the same.
-  SearchResultItemView = Marionette.ItemView.extend
+  exports.SearchResultItemView = Marionette.ItemView.extend
     tagName: 'tr'
     template: SEARCH_RESULT_ITEM
     onRender: ->
@@ -124,10 +108,10 @@ define [
         Controller.editContent(id)
 
   # This can also be thought of as the Workspace view
-  SearchResultView = Marionette.CompositeView.extend
+  exports.SearchResultView = Marionette.CompositeView.extend
     template: SEARCH_RESULT
     itemViewContainer: 'tbody'
-    itemView: SearchResultItemView
+    itemView: exports.SearchResultItemView
 
     initialize: ->
       @listenTo @collection, 'reset',   => @render()
@@ -190,19 +174,19 @@ define [
 
 
   # ## Edit Content Body
-  ContentEditView = AlohaEditView.extend
+  exports.ContentEditView = AlohaEditView.extend
     # **NOTE:** This template is not wrapped in an element
     template: (serialized_model) -> "#{serialized_model.body or 'This module is empty. Please change it'}"
     modelKey: 'body'
 
-  TitleEditView = AlohaEditView.extend
+  exports.TitleEditView = AlohaEditView.extend
     # **NOTE:** This template is not wrapped in an element
     template: (serialized_model) -> "#{serialized_model.title or 'Untitled'}"
     modelKey: 'title'
     tagName: 'span' # override the default tagName of `div` so titles can be edited inline.
 
 
-  ContentToolbarView = Marionette.ItemView.extend
+  exports.ContentToolbarView = Marionette.ItemView.extend
     template: ALOHA_TOOLBAR
 
     onRender: ->
@@ -212,7 +196,7 @@ define [
         @$el.removeClass('disabled')
 
 
-  MetadataEditView = Marionette.ItemView.extend
+  exports.MetadataEditView = Marionette.ItemView.extend
     template: EDIT_METADATA
 
     # Bind methods onto jQuery events that happen in the view
@@ -299,7 +283,7 @@ define [
         tags: @model.get('keywords') or []
         tokenSeparators: [',']
         separator: '|' # String used to delimit ids in $('input').val()
-        ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
+        ajax: SELECT2_AJAX_HANDLER(URLS.KEYWORDS)
         initSelection: (element, callback) ->
           data = []
           _.each element.val().split('|'), (str) -> data.push {id: str, text: str}
@@ -336,7 +320,7 @@ define [
       }
 
 
-  RolesEditView = Marionette.ItemView.extend
+  exports.RolesEditView = Marionette.ItemView.extend
     template: EDIT_ROLES
 
     onRender: ->
@@ -348,12 +332,12 @@ define [
         tags: @model.get('authors') or []
         tokenSeparators: [',']
         separator: '|'
-        #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
+        #ajax: SELECT2_AJAX_HANDLER(URLS.USERS)
       $copyrightHolders.select2
         tags: @model.get('copyrightHolders') or []
         tokenSeparators: [',']
         separator: '|'
-        #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
+        #ajax: SELECT2_AJAX_HANDLER(URLS.USERS)
 
       SELECT2_MAKE_SORTABLE $authors
       SELECT2_MAKE_SORTABLE $copyrightHolders
@@ -387,7 +371,7 @@ define [
   # Looks like phil came to the same conclusion as the author of Marionette
   # (Don't make a Bootstrap Modal in a `Backbone.View`):
   # [http://lostechies.com/derickbailey/2012/04/17/managing-a-modal-dialog-with-backbone-and-marionette/]
-  DialogWrapper = Marionette.ItemView.extend
+  exports.DialogWrapper = Marionette.ItemView.extend
     template: DIALOG_WRAPPER
     onRender: ->
       @options.view.render()
@@ -412,13 +396,19 @@ define [
             alert('Something went wrong when saving: ' + res)
 
 
-  return {
-    WorkspaceView: SearchResultView
-    SearchResultView: SearchResultView
-    DialogWrapper: DialogWrapper
-    MetadataEditView: MetadataEditView
-    RolesEditView: RolesEditView
-    ContentEditView: ContentEditView
-    TitleEditView: TitleEditView
-    ContentToolbarView: ContentToolbarView
-  }
+  exports.AuthView = Marionette.ItemView.extend
+    template: SIGN_IN_OUT
+    events:
+      'click #sign-in': 'signIn'
+      'click #sign-out': 'signOut'
+    onRender: ->
+      @listenTo @model, 'change', => @render()
+      @listenTo @model, 'change:userid', => @render()
+
+    signIn: ->
+      alert 'login not supported yet'
+    signOut: -> @model.signOut()
+
+
+  exports.WorkspaceView = exports.SearchResultView
+  return exports

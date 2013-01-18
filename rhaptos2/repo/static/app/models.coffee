@@ -2,11 +2,7 @@
 # This module contains backbone models used throughout the application
 #
 # It also has some hardcoded URLs for syncing with the server (GET/POST/PUT URLs)
-define ['backbone', 'exports', 'i18n!app/nls/strings'], (Backbone, exports, __) ->
-
-  # **FIXME:** URLs (and functions to generate them) should probably live in a separate module
-  CONTENT_PREFIX = '/content/'
-  WORKSPACE_PREFIX = '/workspace/'
+define ['backbone', 'exports', 'app/urls', 'i18n!app/nls/strings'], (Backbone, exports, URLS, __) ->
 
   # The `Content` model contains the following members:
   #
@@ -26,7 +22,7 @@ define ['backbone', 'exports', 'i18n!app/nls/strings'], (Backbone, exports, __) 
       language: (navigator?.userLanguage or navigator?.language or 'en').toLowerCase()
 
     # Set a URL to POST/PUT to when sync'ing the model with the server
-    url: -> if @get 'id' then "#{CONTENT_PREFIX}#{@get 'id'}" else CONTENT_PREFIX
+    url: -> if @get 'id' then "#{URLS.CONTENT_PREFIX}#{@get 'id'}" else URLS.CONTENT_PREFIX
 
     # Perform some validation before saving
     validate: (attrs) ->
@@ -57,6 +53,6 @@ define ['backbone', 'exports', 'i18n!app/nls/strings'], (Backbone, exports, __) 
 
   exports.Workspace = Backbone.Collection.extend
     model: exports.SearchResultItem
-    url: WORKSPACE_PREFIX
+    url: URLS.WORKSPACE
 
   return exports

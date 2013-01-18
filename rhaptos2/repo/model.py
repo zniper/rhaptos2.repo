@@ -192,6 +192,7 @@ class Identity(object):
 
     def user_as_dict(self):
         return {"auth_identifier": self.authenticated_identifier,
+                "id": self.userID,
                 "email": self.email,
                 "name": self.name}
 
@@ -262,7 +263,7 @@ def whoami():
 
 
 ## .. todo:: why is there a view in here??
-@app.route("/whoami/", methods=['GET'])
+@app.route("/me/", methods=['GET'])
 def whoamiGET():
     '''
 

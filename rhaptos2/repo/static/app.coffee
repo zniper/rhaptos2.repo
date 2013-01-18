@@ -14,12 +14,18 @@ define [
   'backbone'
   'marionette'
   'aloha'
+  'app/auth'
   'app/controller'
   'css!app'
-], (jQuery, _, Backbone, Marionette, Aloha, Controller) ->
+], (jQuery, _, Backbone, Marionette, Aloha, Auth, Controller) ->
 
   # # Application Code
   # The Single Page Application starts here
+  #
+  # ## Authenticated User
+  # Find out whether the user is authenticated
+  Auth.fetch()
+
   #
   # The controller begins listening to route changes
   # and loads the initial views based on the URL.
