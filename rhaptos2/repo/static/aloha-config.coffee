@@ -6,12 +6,6 @@
 define ['jquery'], (jQuery) ->
 
   @Aloha = @Aloha or {}
-  @Aloha.settings = @Aloha.settings or {}
-  @Aloha.settings.plugins = @Aloha.settings.plugins or {}
-  @Aloha.settings.plugins.load = @Aloha.settings.plugins.load or []
-
-
-  @Aloha = @Aloha or {}
   @Aloha.settings =
     jQuery: jQuery # Use the same version of jQuery
     logLevels:

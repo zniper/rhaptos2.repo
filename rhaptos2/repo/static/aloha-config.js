@@ -3,10 +3,6 @@
 
   define(['jquery'], function(jQuery) {
     this.Aloha = this.Aloha || {};
-    this.Aloha.settings = this.Aloha.settings || {};
-    this.Aloha.settings.plugins = this.Aloha.settings.plugins || {};
-    this.Aloha.settings.plugins.load = this.Aloha.settings.plugins.load || [];
-    this.Aloha = this.Aloha || {};
     this.Aloha.settings = {
       jQuery: jQuery,
       logLevels: {
