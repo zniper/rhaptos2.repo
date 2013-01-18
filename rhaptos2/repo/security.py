@@ -80,11 +80,12 @@ class WorkSpace(object):
             if not os.path.isdir(fpath):
                 ndoc = NodeDoc()
                 ndoc.load_from_file(fpath)
-                if user_id in ndoc.contentrw:
-                    plain.append(os.path.basename(fpath))
-                    annotated.append({'id': os.path.basename(fpath),
-                                     'title': ndoc.title
-                                     })
+
+                #if user_id in ndoc.contentrw:
+                plain.append(os.path.basename(fpath))
+                annotated.append({'id': os.path.basename(fpath),
+                                 'title': hasattr(ndoc, 'title') and ndoc.title
+                                 })
         self.files_plain = plain
         self.files_annotated = annotated
 
@@ -224,7 +225,7 @@ class NodeDoc(object):
         filepath = os.path.join(repodir, self.id)
         ###aaarrgh check keys
         d = {}
-        for k in self.versionkeys:
+        for k in self.__dict__:
             d[k] = self.__dict__[k]
         open(filepath, 'wb').write(json.dumps(d))
 
