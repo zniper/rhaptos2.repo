@@ -44,6 +44,7 @@ define [
       toolbar:      '#layout-toolbar'
       title:        '#layout-title'
       body:         '#layout-body'
+      back:         '#layout-back'
       # Specific to content
       metadata:     '#layout-metadata'
       roles:        '#layout-roles'
@@ -139,6 +140,8 @@ define [
         placement: 'right'
         content: __('Click to change title')
 
+      contentLayout.back.ensureEl() # Not sure why this particular region needs this...
+      contentLayout.back.$el.on 'click', -> Backbone.history.history.back()
 
       view = new Views.ContentEditView(model: content)
       contentLayout.body.show view

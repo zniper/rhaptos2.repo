@@ -25,6 +25,7 @@
         toolbar: '#layout-toolbar',
         title: '#layout-title',
         body: '#layout-body',
+        back: '#layout-back',
         metadata: '#layout-metadata',
         roles: '#layout-roles'
       }
@@ -115,6 +116,10 @@
           trigger: 'hover',
           placement: 'right',
           content: __('Click to change title')
+        });
+        contentLayout.back.ensureEl();
+        contentLayout.back.$el.on('click', function() {
+          return Backbone.history.history.back();
         });
         view = new Views.ContentEditView({
           model: content
