@@ -400,7 +400,7 @@ define [
     template: SIGN_IN_OUT
     events:
       'click #sign-in': 'signIn'
-      'click #sign-out': 'signOut'
+      'submit #sign-out': 'signOut'
     onRender: ->
       @listenTo @model, 'change', => @render()
       @listenTo @model, 'change:userid', => @render()

@@ -1,7 +1,9 @@
 <div class="sign-in-out">
   {{#if id}}
-    <button id="sign-out" class="btn btn-link">Sign Out</button>
-    <span class="name">[{{name}}]</span>
+    <form action="logout">
+      <button type="submit" id="sign-out" class="btn btn-link">Sign Out</button>
+      <span class="name">[{{name}}]</span>
+    </form>
   {{else}}
     <!-- Set 'data-bypass' so we don't use the Backbone router to handle the link
          and instead go to the login page directly.
