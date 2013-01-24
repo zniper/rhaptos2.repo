@@ -35,6 +35,8 @@ require.config
     i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile'
     json2: 'lib/require-handlebars-plugin/hbs/json2'
 
+    'font-awesome': 'lib/font-awesome/css/font-awesome'
+
   # # Shims
   # To support libraries that were not written for AMD
   # configure a shim around them that mimics a `define` call.

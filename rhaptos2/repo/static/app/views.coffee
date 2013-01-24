@@ -43,6 +43,8 @@ define [
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
+  # Include CSS icons used by the toolbar
+  'css!font-awesome'
 ], (exports, _, Backbone, Marionette, jQuery, Aloha, URLS, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR, SIGN_IN_OUT, __) ->
 
   # **FIXME:** Move this delay into a common module so the mock AJAX code can use them too

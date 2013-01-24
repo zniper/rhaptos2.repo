@@ -19,7 +19,8 @@
       spin: 'lib/spin',
       handlebars: 'lib/require-handlebars-plugin/Handlebars',
       i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile',
-      json2: 'lib/require-handlebars-plugin/hbs/json2'
+      json2: 'lib/require-handlebars-plugin/hbs/json2',
+      'font-awesome': 'lib/font-awesome/css/font-awesome'
     },
     shim: {
       jquery: {
