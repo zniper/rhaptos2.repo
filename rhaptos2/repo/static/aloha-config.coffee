@@ -18,18 +18,19 @@ define ['jquery'], (jQuery) ->
     plugins:
       # All the plugins we use in Aloha
       load: [
-        'oer/toolbar',
-        'common/ui',
-        'common/format',
-        'common/paste',
-        'common/block',
-        'common/list',
-        'common/table',
-        'extra/draganddropfiles',
-        'common/image',
-        'oerpub/popover',
-        'cnx/math',
+        'oer/toolbar'
+        'common/ui'
+        'common/format'
+        'common/paste'
+        'common/block'
+        'common/list'
+        'common/table'
+        'extra/draganddropfiles'
+        'common/image'
+        'oerpub/popover'
+        'cnx/math'
         'oerpub/assorted'
+        'cnx/note'
       ]
 
       # This whole thing is what's needed to:

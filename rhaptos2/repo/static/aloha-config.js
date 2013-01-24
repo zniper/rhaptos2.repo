@@ -13,7 +13,7 @@
       },
       errorhandling: true,
       plugins: {
-        load: ['oer/toolbar', 'common/ui', 'common/format', 'common/paste', 'common/block', 'common/list', 'common/table', 'extra/draganddropfiles', 'common/image', 'oerpub/popover', 'cnx/math', 'oerpub/assorted'],
+        load: ['oer/toolbar', 'common/ui', 'common/format', 'common/paste', 'common/block', 'common/list', 'common/table', 'extra/draganddropfiles', 'common/image', 'oerpub/popover', 'cnx/math', 'oerpub/assorted', 'cnx/note'],
         draganddropfiles: {
           upload: {
             config: {
