@@ -5,8 +5,21 @@
  */
 
 /* Add some space because the toolbar floats */
-#main {
-  margin-top: 80px;
+.layout-content.layout-root {
+  background-color: #ebebeb;
+  margin-top: 55px;
+}
+
+.layout-content.layout-root > .row > .span11 {
+  /* give the document a little space below the toolbar */
+  margin-top: 10px;
+  padding: 1em;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.layout-content #layout-body > * {
+  min-height: 5in;
 }
 
 /* Hint that the user can edit the title here */
