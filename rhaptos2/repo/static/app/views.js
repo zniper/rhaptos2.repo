@@ -175,9 +175,6 @@
       },
       initialize: function() {
         var _this = this;
-        this.listenTo(this.model, 'change:title', function() {
-          return _this._updateTitle();
-        });
         this.listenTo(this.model, 'change:language', function() {
           return _this._updateLanguage();
         });
@@ -187,9 +184,6 @@
         return this.listenTo(this.model, 'change:keywords', function() {
           return _this._updateKeywords();
         });
-      },
-      _updateTitle: function() {
-        return this.$el.find('*[name=title]').val(this.model.get('title'));
       },
       _updateLanguage: function() {
         var lang, language;
@@ -245,7 +239,6 @@
       },
       onRender: function() {
         var $keywords, $lang, $languages, $subjects, lang, _i, _len;
-        this.$el.find('*[name=title]').val(this.model.get('title'));
         $languages = this.$el.find('*[name=language]');
         for (_i = 0, _len = LANGUAGES.length; _i < _len; _i++) {
           lang = LANGUAGES[_i];
@@ -282,12 +275,10 @@
         this._updateLanguage();
         this._updateSubjects();
         this._updateKeywords();
-        this.delegateEvents();
-        return this.$el.find('input[name=title]').focus();
+        return this.delegateEvents();
       },
       attrsToSave: function() {
-        var keywords, kw, language, subjects, title, variant;
-        title = this.$el.find('input[name=title]').val();
+        var keywords, kw, language, subjects, variant;
         language = this.$el.find('*[name=language]').val();
         variant = this.$el.find('*[name=variantLanguage]').val();
         language = variant || language;
@@ -318,7 +309,6 @@
           keywords = [];
         }
         return {
-          title: title,
           language: language,
           subjects: subjects,
           keywords: keywords

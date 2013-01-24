@@ -24,6 +24,7 @@
         auth: '#layout-auth',
         toolbar: '#layout-toolbar',
         title: '#layout-title',
+        title2: '#layout-title2',
         body: '#layout-body',
         back: '#layout-back',
         metadata: '#layout-metadata',
@@ -108,6 +109,10 @@
           model: content
         });
         contentLayout.title.show(view);
+        view = new Views.TitleEditView({
+          model: content
+        });
+        contentLayout.title2.show(view);
         view = new Views.AuthView({
           model: Auth
         });

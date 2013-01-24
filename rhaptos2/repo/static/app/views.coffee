@@ -206,13 +206,9 @@ define [
       'change *[name=language]': '_updateLanguageVariant'
 
     initialize: ->
-      @listenTo @model, 'change:title', => @_updateTitle()
       @listenTo @model, 'change:language', => @_updateLanguage()
       @listenTo @model, 'change:subjects', => @_updateSubjects()
       @listenTo @model, 'change:keywords', => @_updateKeywords()
-
-    _updateTitle: () ->
-      @$el.find('*[name=title]').val(@model.get 'title')
 
     # Update the UI when the language changes.
     # Also called during initial render
@@ -261,9 +257,6 @@ define [
     # Populate some of the dropdowns like language and subjects.
     # Also, initialize the select2 widget on elements
     onRender: ->
-      # Set the title
-      @$el.find('*[name=title]').val(@model.get 'title')
-
       # Populate the Language dropdown and Subjects checkboxes
       $languages = @$el.find('*[name=language]')
       for lang in LANGUAGES
@@ -298,12 +291,8 @@ define [
 
       @delegateEvents()
 
-      # Focus on the title
-      @$el.find('input[name=title]').focus()
-
     # This is used by `DialogWrapper` which offers a "Save" and "Cancel" buttons
     attrsToSave: () ->
-      title = @$el.find('input[name=title]').val()
       language = @$el.find('*[name=language]').val()
       variant = @$el.find('*[name=variantLanguage]').val()
       language = variant or language
@@ -315,7 +304,6 @@ define [
       keywords = [] if '' is keywords[0]
 
       return {
-        title: title
         language: language
         subjects: subjects
         keywords: keywords

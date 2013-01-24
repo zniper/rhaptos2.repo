@@ -4,6 +4,11 @@
    @import url('lib/bootstrap/css/bootstrap.css');
  */
 
+.layout-content .content-title:before {
+  content: "Title: ";
+  opacity: 0.5;
+}
+
 /* Add some space because the toolbar floats */
 .layout-content.layout-root {
   background-color: #ebebeb;

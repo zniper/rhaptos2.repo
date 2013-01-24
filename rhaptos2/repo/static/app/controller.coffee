@@ -42,7 +42,8 @@ define [
     regions:
       auth:         '#layout-auth'
       toolbar:      '#layout-toolbar'
-      title:        '#layout-title'
+      title:        '#layout-title'  # Title shows up twice; once on top of the page
+      title2:       '#layout-title2' # and at the top of the document. Both are editable
       body:         '#layout-body'
       back:         '#layout-back'
       # Specific to content
@@ -130,6 +131,9 @@ define [
 
       view = new Views.TitleEditView(model: content)
       contentLayout.title.show view
+
+      view = new Views.TitleEditView(model: content)
+      contentLayout.title2.show view
 
       view = new Views.AuthView {model: Auth}
       contentLayout.auth.show view
