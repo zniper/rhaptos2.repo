@@ -1,4 +1,6 @@
 {% set cdnaloha = "/cdn/aloha" %}
+{% set cdnmathjax = "http://cdn.mathjax.org/mathjax/latest" %}
+
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -31,7 +33,7 @@
     {% endblock %}
 
     {% block js %}
-  <script src="{{ cdnaloha }}/src/plugins/extra/math/lib/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
+  <script src="{{ cdnmathjax }}/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
 
     <script type="text/javascript" src="static/authortools_mathjax_settings.js"></script>
     <script type="text/javascript" src="conf.js"></script>
