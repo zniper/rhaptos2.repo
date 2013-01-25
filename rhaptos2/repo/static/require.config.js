@@ -8,17 +8,19 @@
       i18n: 'i18n-custom',
       text: 'lib/require-text/text',
       json: 'lib/requirejs-plugins/json',
+      hbs: 'lib/require-handlebars-plugin/hbs',
       jquery: 'lib/jquery-1.8.3',
       underscore: 'lib/underscore-1.4.3',
-      backbone: 'lib/backbone-0.9.2',
-      'aloha': '../cdn/aloha/src/lib/aloha',
+      backbone: 'lib/backbone-0.9.9',
+      marionette: 'lib/backbone.marionette',
+      aloha: '../cdn/aloha/src/lib/aloha',
       bootstrap: 'lib/bootstrap/js/bootstrap',
       select2: 'lib/select2/select2',
       spin: 'lib/spin',
-      hbs: 'lib/require-handlebars-plugin/hbs',
       handlebars: 'lib/require-handlebars-plugin/Handlebars',
       i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile',
-      json2: 'lib/require-handlebars-plugin/hbs/json2'
+      json2: 'lib/require-handlebars-plugin/hbs/json2',
+      'font-awesome': 'lib/font-awesome/css/font-awesome'
     },
     shim: {
       jquery: {
@@ -30,17 +32,21 @@
       },
       backbone: {
         deps: ['underscore', 'jquery'],
+        exports: 'Backbone'
+      },
+      marionette: {
+        deps: ['underscore', 'backbone'],
         exports: 'Backbone',
         init: function() {
           var ret;
-          ret = this.Backbone;
+          ret = this.Backbone.Marionette;
+          delete this.Backbone.Marionette;
           delete this.Backbone;
-          delete this._;
           return ret;
         }
       },
       bootstrap: {
-        deps: ['jquery'],
+        deps: ['jquery', 'css!lib/bootstrap/css/bootstrap'],
         exports: 'jQuery'
       },
       select2: {
@@ -54,7 +60,7 @@
         }
       },
       aloha: {
-        deps: ['jquery', 'css!../cdn/aloha/src/css/aloha'],
+        deps: ['bootstrap', 'aloha-config', 'css!../cdn/aloha/src/css/aloha'],
         exports: 'Aloha'
       }
     },

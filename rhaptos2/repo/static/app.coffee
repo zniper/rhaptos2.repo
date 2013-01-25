@@ -3,14 +3,39 @@
 #
 # 1. Load dependencies (JS/CSS/JSON)
 # 2. Register client-side routes
-# 3. Load any HTML/JSON sent from the server that is sprinkled in the HTML file
+# 3. **TODO:** Load any HTML/JSON sent from the server that is sprinkled in the HTML file
 #
 # For example, if the user goes to a piece of content we already send
 # the content inside a `div` tag.
 # The same can be done with metadata/roles (as a JSON object sent in the HTML)
-define ['jquery', 'aloha', 'app/views', 'i18n!app/nls/strings', 'css!app'], (jQuery, Aloha, Views, __) ->
+define [
+  'jquery'
+  'underscore'
+  'backbone'
+  'marionette'
+  'aloha'
+  'app/auth'
+  'app/controller'
+  'css!app'
+], (jQuery, _, Backbone, Marionette, Aloha, Auth, Controller) ->
+
+  # # Application Code
+  # The Single Page Application starts here
+  #
+  # ## Authenticated User
+  # Find out whether the user is authenticated
+  Auth.fetch()
+
+  #
+  # The controller begins listening to route changes
+  # and loads the initial views based on the URL.
+  Controller.start()
 
 
+  # # Various HACKS
+  # These cross over many modules and do not have a better home than here.
+
+  # ## Global Variables like jQuery
   # **HACK:** to discourage people from using the global jQuery
   # and instead use the `requirejs` version.
   # This helps ensure plugins that extend jQuery (like bootstrap)
@@ -20,46 +45,55 @@ define ['jquery', 'aloha', 'app/views', 'i18n!app/nls/strings', 'css!app'], (jQu
     jQuery.apply @, arguments
   jQuery.extend(@jQuery, jQuery)
 
-  # ## Load the Model
-  # Assume the app starts with editing a single `Module`.
-  # Either the user is editing an existing `Module` or a new one.
-  content = null
-  loadModel = ->
-    uuid = jQuery('#uuid').val() # TODO: Replace `#uuid` with Backbone Routes
-    if uuid
-      content = new Views.Module(id: uuid, url: "/module/#{uuid}/metadata/")
-      content.fetch()
+  # jQueryUI in aloha relies on a very old function.
+  # Used for re-ordering Authors and copyright holders
+  # in the Select2 widget
+  jQuery.curCSS = jQuery.css
+
+
+  # ## Custom POST/PUT syntax
+  # **FIXME:** By default Backbone sends the JSON object as the body when a PUT is called.
+  # Instead, send each key/value as a PUT parameter
+  Backbone_sync_orig = Backbone.sync
+  Backbone.sync = (method, model, options) =>
+    if 'update' == method
+      data = _.extend {}, model.toJSON()
+      # **FIXME:** This URL (and the funky data.json param) is a HACK and should be fixed
+      data.json = JSON.stringify(model)
+      href = options['url'] or model.url() or throw 'URL to sync to not defined'
+      href = "#{href}?#{jQuery.param(model.toJSON())}"
+
+      params =
+        type: 'PUT'
+        url: href
+        data: JSON.stringify(model)
+        processData: false
+        dataType: 'json'
+        contentType: 'application/json'
+
+      jQuery.ajax(_.extend(params, options))
     else
-      content = new Views.Module()
-  loadModel()
-  # **TODO:** Use backbone routes instead of `#uuid` to figure out the current content
-  jQuery('#uuid').on 'change', ->
-    loadModel()
+      Backbone_sync_orig method, model, options
 
 
-  # ## Bind UI Popups
-  # This section generates the UI menus and buttons
+  # # Hash tags in links
+  # Code should use the `Controller` module to change the page
+  # instead of relying on the URL
   #
-  # `__()` is a i18n function that looks up a localized string
-  jQuery('#metadata-link').on 'click', (evt) ->
+  # For now, I trust that the programmer knows what they are doing and:
+  #
+  # 1. warn them
+  # 2. trigger the route change
+  # 3. hope a router matches that URL
+  jQuery(document).on 'click', 'a:not([data-bypass])', (evt) ->
     evt.preventDefault()
-    modal = new Views.ModalWrapper(new Views.MetadataEditView(model: content), __('Edit Metadata'))
-    modal.show()
+    href = $(@).attr('href')
+    console.warn "User clicked on an internal link. Use the app/controller module instead of the URL #{href}"
 
-  jQuery('#roles-link').on 'click', (evt) ->
-    evt.preventDefault()
-    modal = new Views.ModalWrapper(new Views.RolesEditView(model: content), __('Edit Roles'))
-    modal.show()
-
-
-  # ## Start Aloha
-  # Once Aloha has finished loading, enable it on the document and let MathJax know it can start rendering
-  Aloha.ready ->
-    Aloha.jQuery('.document').aloha().focus()
-
-    # Wait until Aloha is started before loading MathJax
-    # Also, wrap all math in a span/div. MathJax replaces the MathJax element
-    # losing all jQuery data attached to it (like popover data, the original Math Formula, etc)
-    # Add `aloha-cleanme` so this span is unwrapped when serialized to XHTML
-    jQuery('math').wrap '<span class="math-element aloha-cleanme"></span>'
-    MathJax.Hub.Configured()
+    # `Backbone.history.navigate` is sufficient for all Routers and will
+    # trigger the correct events. The Router's internal `navigate` method
+    # calls this anyways.
+    #
+    # Added the `javascript:` test because Select2 generates anchor links
+    # but we should not change the URL.
+    Backbone.history.navigate(href, true) if href? and not /^javascript:/.test(href)

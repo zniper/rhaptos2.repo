@@ -1,4 +1,6 @@
 {% set cdnaloha = "/cdn/aloha" %}
+{% set cdnmathjax = "http://cdn.mathjax.org/mathjax/latest" %}
+
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -31,29 +33,10 @@
     {% endblock %}
 
     {% block js %}
-  <script src="{{ cdnaloha }}/src/plugins/extra/math/lib/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
+  <script src="{{ cdnmathjax }}/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
 
     <script type="text/javascript" src="static/authortools_mathjax_settings.js"></script>
-    <script type="text/javascript" src="static/authortools_aloha_settings.js"></script>
-
-    <script type="text/javascript" src="{{ cdnaloha }}/src/lib/aloha.js"
-        data-aloha-plugins="
-            extra/toolbar,
-            common/ui,
-            common/format,
-            common/paste,
-            common/block,
-            common/list,
-            common/table,
-            extra/draganddropfiles,
-            common/image,
-            oerpub/popover,
-            oerpub/math,
-            oerpub/assorted"></script>
-
-
     <script type="text/javascript" src="conf.js"></script>
-    <script type="text/javascript" src="static/authortools_client.js"></script>
 
     <script type="text/javascript">
       /* To be simple means to get current logged in USer back to JQuery*/
@@ -86,12 +69,11 @@
 	    <li class="active">
 	      <a class="brand" href="#">Connexions</a>
 	    </li>
-	    <li><a href="#">About</a></li>
+	    <li><a href="#about">About</a></li>
 	    <li><a href="#">MyCNX</a></li>
 
             <li class="dropdown">
-              <a href="#"
-                 class="dropdown-toggle"
+              <a class="dropdown-toggle"
                  data-toggle="dropdown">
                 Tools
                 <b class="caret"></b>
@@ -109,15 +91,9 @@
                      data-toggle="modal">Publish</a>
                 </li>
                 <li>
-                  <a id="roles-link" tabindex="-1" href="#">Roles Management</a>
-                </li>
-                <li>
                   <a tabindex="-1" href="#sharing-modal"
                      id="sharing-link"
                      data-toggle="modal">Sharing and Access Management</a>
-                </li>
-                <li>
-                  <a id="metadata-link" tabindex="-1" href="#">Metadata</a>
                 </li>
               </ul>
             </li>
@@ -141,26 +117,19 @@
     </div>
     {# End page navigation controls #}
 
+    <div id="main">
+      <p>Please wait while this page loads</p>
+      <p>This DIV should be populated by the server and should contain either:</p>
+      <ul>
+        <li>The HTML body of a module (to prepopulate the Backbone model) and some JSON for the metadata or</li>
+        <li>The HTML list of the workspace/search results and some JSON representation of those results so they can be loaded up by app.js</li>
+      </ul>
+    </div>
 
-    <!-- Content well -->
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <!-- Main content -->
-        <div class="span9" id="editorspan">
-          {% block editor %}{% endblock %}
-        </div>
-
-        <!-- Collection Editor -->
-        <div class="span3" id="collectionspan">
-          <div id="workspaces"></div>
-        </div>
-      </div>
-      <footer class="hide" >
-        copyright &copy; 2012 connexions |
-        <a href="http://www.dcarter.co.uk"> design by dcarter</a>
-      </footer>
-    </div> <!-- /.container-fluid -->
+    <footer class="hide" >
+      copyright &copy; 2012 connexions |
+      <a href="http://www.dcarter.co.uk"> design by dcarter</a>
+    </footer>
 
   {% endblock %}
 </body>

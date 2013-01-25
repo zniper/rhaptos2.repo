@@ -62,7 +62,12 @@ def make_app(config):
     app = Flask(__name__)
     app.config.update(config)
 
-    set_up_logging(app)
+    # Try to set up logging. If not connected to a network this throws
+    # "socket.gaierror: [Errno 8] nodename nor servname provided, or not known"
+    try:
+        set_up_logging(app)
+    except:
+        pass
 
     # Set the application
     app = set_app(app)

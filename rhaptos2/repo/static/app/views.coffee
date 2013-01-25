@@ -1,6 +1,15 @@
-#  authoringtools_client_tools.{coffee,js} - The script used set up and control
-#    the extended tools interface. These are the tools that are found in the
-#    tools dropdown in the interface.
+# # Backbone Views
+# Most views have the following properties:
+#
+# 1. Load a Handlebar template using the `hbs` plugin (see `define` below)
+# 2. Attach listeners to the corresponding model (see `initialize` methods)
+# 3. Attach jQuery listeners to the rendered template (see `onRender` methods)
+# 4. Navigate to a different "page" (see `Controller.*` in the `jQuery.on` handlers)
+#
+# Description of method naming:
+#
+# 1. `_change*` Modifies the model based on a change in the view
+# 2. `_update*` Modifies the view based on changes to the model
 #
 #  Authors: Michael Mulich, Philip Schatz
 #  Copyright (c) 2012 Rice University
@@ -8,25 +17,44 @@
 #  This software is subject to the provisions of the GNU Lesser General
 #  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
+#
 define [
+  'exports'
+  'underscore'
   'backbone'
+  'marionette'
   'jquery'
+  'aloha'
+  'app/urls'
+  'app/controller'
   './languages'
-  # Load the Handlebars templates
+  # Load the Handlebar templates
+  'hbs!app/views/content-list'
+  'hbs!app/views/content-list-item'
   'hbs!app/views/modal-wrapper'
   'hbs!app/views/edit-metadata'
   'hbs!app/views/edit-roles'
   'hbs!app/views/language-variants'
+  'hbs!app/views/aloha-toolbar'
+  'hbs!app/views/sign-in-out'
+  # Load internationalized strings
+  'i18n!app/nls/strings'
   # `bootstrap` and `select2` add to jQuery and don't export anything of their own
   # so they are 'defined' _after_ everything else
   'bootstrap'
   'select2'
-], (Backbone, jQuery, Languages, MODAL_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS) ->
+  # Include CSS icons used by the toolbar
+  'css!font-awesome'
+], (exports, _, Backbone, Marionette, jQuery, Aloha, URLS, Controller, Languages, SEARCH_RESULT, SEARCH_RESULT_ITEM, DIALOG_WRAPPER, EDIT_METADATA, EDIT_ROLES, LANGUAGE_VARIANTS, ALOHA_TOOLBAR, SIGN_IN_OUT, __) ->
 
-  # FIXME: Move these URLs into a common module so the mock AJAX code can use them too
-  KEYWORDS_URL = '/keywords/'
-  USERS_URL = '/users/'
+  # **FIXME:** Move this delay into a common module so the mock AJAX code can use them too
+  DELAY_BEFORE_SAVING = 3000
 
+  # Select2 is a multiselect UI library.
+  # It queries the webserver to provide search results as you type
+  #
+  # Given a `url` to query (like `/users` or `/keywords`) this returns a config
+  # used when binding select2 to an input.
   SELECT2_AJAX_HANDLER = (url) ->
     quietMillis: 500
     url: url
@@ -35,85 +63,170 @@ define [
       q: term # search term
     # parse the results into the format expected by Select2
     results: (data, page) ->
-      #data.unshift query.term
       return {
         results: ({id:id, text:id} for id in data)
       }
 
+  # Make a multiselect widget sortable using jQueryUI.
+  # Unfortunately jQueryUI is not available until Aloha finishes loading
+  # so postpone making it sortable until `Aloha.ready`
+  SELECT2_MAKE_SORTABLE = ($el) ->
+    Aloha.ready ->
+      $el.select2('container')
+      .find('ul.select2-choices')
+      .sortable
+        cursor: 'move'
+        containment: 'parent'
+        start: ->  $el.select2 'onSortStart'
+        update: -> $el.select2 'onSortEnd'
 
-  # FIXME: Move these subjects to a common module so the mock code can use them and can be used elsewhere
+
+  # **FIXME:** Move these subjects to a common module so the mock code can use them and can be used elsewhere
   METADATA_SUBJECTS = ['Arts', 'Mathematics and Statistics', 'Business',
     'Science and Technology', 'Humanities', 'Social Sciences']
 
-  MODAL_SPINNER_OPTIONS = {
-    lines: 13  # The number of lines to draw
-    length: 16  # The length of each line
-    width: 6  # The line thickness
-    radius: 27  # The radius of the inner circle
-    corners: 1  # Corner roundness (0..1)
-    rotate: 0  # The rotation offset
-    color: '#444'  # #rgb or #rrggbb
-    speed: 0.9  # Rounds per second
-    trail: 69  # Afterglow percentage
-    shadow: false  # Whether to render a shadow
-    hwaccel: false  # Whether to use hardware acceleration
-    className: 'spinner'  # The CSS class to assign to the spinner
-    zIndex: 2e9  # The z-index (defaults to 2000000000)
-    top: 'auto'  # Top position relative to parent in px
-    left: '265px'  # Left position relative to parent in px
-  }
-
+  # Given the language list in [languages.coffee](languages.html)
+  # this reorganizes them so they can be shown in a dropdown.
   LANGUAGES = [{code: '', native: '', english: ''}]
   for languageCode, value of Languages.getLanguages()
     value = jQuery.extend({}, value)  # Clone the value.
     jQuery.extend(value, {code: languageCode})
     LANGUAGES.push(value)
 
-  # Default language for new content is the browser's language
-  browserLanguage = (navigator.userLanguage or navigator.language or '').toLowerCase()
 
-  # This model contains the following members:
+  # ## "Generic" Views
   #
-  # * `title` - a text title of the module
-  # * `language` - the main language (eg `en-us`)
-  # * `subjects` - an array of strings (eg `['Mathematics', 'Business']`)
-  # * `keywords` - an array of keywords (eg `['constant', 'boltzmann constant']`)
-  # * `authors` - an `Collection` of `User`s that are attributed as authors
-  Module = Backbone.Model.extend
-    defaults:
-      language: browserLanguage
-    url: ->
-      @get 'url'
+  # A list of search results (stubs of models only containing an icon, url, title)
+  # need a generic view for an item.
+  #
+  # Since we don't really distinguish between a search result view and a workspace/collection/etc
+  # just consider them the same.
+  exports.SearchResultItemView = Marionette.ItemView.extend
+    tagName: 'tr'
+    template: SEARCH_RESULT_ITEM
+    onRender: ->
+      @$el.on 'click', =>
+        id = @model.get 'id'
+        Controller.editContent(id)
+
+  # This can also be thought of as the Workspace view
+  exports.SearchResultView = Marionette.CompositeView.extend
+    template: SEARCH_RESULT
+    itemViewContainer: 'tbody'
+    itemView: exports.SearchResultItemView
+
+    initialize: ->
+      @listenTo @collection, 'reset',   => @render()
+      @listenTo @collection, 'update',  => @render()
+      @listenTo @collection, 'add',     => @render()
+      @listenTo @collection, 'remove',  => @render()
 
 
-  MetadataEditView = Backbone.View.extend
-    tagName: 'div'
-    className: 'metadata'
 
-    # Description of method naming:
-    #
-    # 1. `_change*` Modifies the model based on a change in the view
-    # 2. `_update*` Modifies the view based on changes to the model
+  AlohaEditView = Marionette.ItemView.extend
+    # **NOTE:** This template is not wrapped in an element
+    template: () -> throw 'You need to specify a template, modelKey, and optionally alohaOptions'
+    modelKey: null
+    alohaOptions: null
+
+    initialize: ->
+      @listenTo @model, "change:#{@modelKey}", (model, value) =>
+        alohaId = @$el.attr('id')
+        # Sometimes Aloha hasn't loaded up yet
+        if alohaId and @$el.parents()[0]
+          alohaEditable = Aloha.getEditableById(alohaId)
+          editableBody = alohaEditable.getContents()
+          alohaEditable.setContents(value) if value != editableBody
+        else
+          @$el.empty().append(value)
+
+    onRender: ->
+      # Wait until Aloha is started before loading MathJax.
+      # Also, wrap all math in a span/div. MathJax replaces the MathJax element
+      # losing all jQuery data attached to it (like popover data, the original Math Formula, etc).
+      #
+      # Add `aloha-cleanme` so this span is unwrapped when serialized to XHTML
+      @$el.find('math').wrap '<span class="math-element aloha-cleanme"></span>'
+      MathJax.Hub.Configured() if MathJax?
+
+      # Once Aloha has finished loading enable
+      @$el.addClass('disabled')
+      Aloha.ready =>
+        @$el.aloha(@alohaOptions)
+        @$el.removeClass('disabled')
+
+      # Auto save after the user has stopped making changes
+      updateModelAndSave = =>
+        alohaId = @$el.attr('id')
+        # Sometimes Aloha hasn't loaded up yet
+        # Only save when the editable has changed
+        if alohaId
+          alohaEditable = Aloha.getEditableById(alohaId)
+          editableBody = alohaEditable.getContents()
+          @model.set @modelKey, editableBody
+          @model.save() if @model.changedAttributes()
+
+      # Grr, the `aloha-smart-content-changed` can only be listened to globally
+      # (via `Aloha.bind`) instead of on each editable.
+      #
+      # This is problematic when we have multiple Aloha editors on a page.
+      # Instead, autosave after some period of inactivity.
+      @$el.on 'blur', updateModelAndSave
+
+
+
+  # ## Edit Content Body
+  exports.ContentEditView = AlohaEditView.extend
+    # **NOTE:** This template is not wrapped in an element
+    template: (serialized_model) -> "#{serialized_model.body or 'This module is empty. Please change it'}"
+    modelKey: 'body'
+
+  exports.TitleEditView = AlohaEditView.extend
+    # **NOTE:** This template is not wrapped in an element
+    template: (serialized_model) -> "#{serialized_model.title or 'Untitled'}"
+    modelKey: 'title'
+    tagName: 'span' # override the default tagName of `div` so titles can be edited inline.
+
+
+  exports.ContentToolbarView = Marionette.ItemView.extend
+    template: ALOHA_TOOLBAR
+
+    onRender: ->
+      # Wait until Aloha is started before enabling the toolbar
+      @$el.addClass('disabled')
+      Aloha.ready =>
+        @$el.removeClass('disabled')
+
+
+  exports.MetadataEditView = Marionette.ItemView.extend
+    template: EDIT_METADATA
+
+    # Bind methods onto jQuery events that happen in the view
     events:
-      'change select[name=language]': '_updateLanguageVariant'
+      'change *[name=language]': '_updateLanguageVariant'
 
-    # Update the UI when the language changes
+    initialize: ->
+      @listenTo @model, 'change:language', => @_updateLanguage()
+      @listenTo @model, 'change:subjects', => @_updateSubjects()
+      @listenTo @model, 'change:keywords', => @_updateKeywords()
+
+    # Update the UI when the language changes.
     # Also called during initial render
     _updateLanguage: () ->
       language = @model.get('language') or ''
       [lang] = language.split('-')
-      @$el.find("select[name=language] option[value=#{lang}]")
-      .attr('selected', true)
+      @$el.find("*[name=language]").select2('val', lang)
       @_updateLanguageVariant()
 
     _updateLanguageVariant: () ->
-      $language = @$el.find('select[name=language]')
+      $language = @$el.find('*[name=language]')
       language = @model.get('language') or ''
       [lang, variant] = language.split('-')
       if $language.val() != lang
         lang = $language.val()
         variant = null
-      $variant = @$el.find('select[name=variantLanguage]')
+      $variant = @$el.find('*[name=variantLanguage]')
+      $label = @$el.find('*[for=variantLanguage]')
       variants = []
       for code, value of Languages.getCombined()
         if code[..1] == lang
@@ -124,85 +237,113 @@ define [
         $variant.removeAttr('disabled')
         $variant.html(LANGUAGE_VARIANTS('variants': variants))
         $variant.find("option[value=#{language}]").attr('selected', true)
+        $label.removeClass('hidden')
+        $variant.removeClass('hidden')
       else
-        $variant.html('').attr('disabled', true)
+        $variant.empty().attr('disabled', true)
+        $variant.addClass('hidden')
+        $label.addClass('hidden')
+
+    # Helper method to populate a multiselect input
+    _updateSelect2: (key) ->
+      @$el.find("*[name=#{key}]").select2('val', @model.get key)
 
     # Update the View with new subjects selected
-    _updateSubjects: ->
-      @$el.find('input[name=subjects]').attr('checked', false)
-      for subject in @model.get('subjects') or []
-        @$el.find("input[name=subjects][value='#{subject}']").attr('checked', true)
+    _updateSubjects: -> @_updateSelect2 'subjects'
 
-    render: () ->
-      templateObj = jQuery.extend({}, @model.toJSON())
-      templateObj._languages = LANGUAGES
-      templateObj._subjects = METADATA_SUBJECTS
-      @$el.append EDIT_METADATA(templateObj)
+    # Update the View with new keywords selected
+    _updateKeywords: -> @_updateSelect2 'keywords'
 
-      # Select the correct language (mustache can't do that)
-      @_updateLanguage()
-      @_updateSubjects()
+    # Populate some of the dropdowns like language and subjects.
+    # Also, initialize the select2 widget on elements
+    onRender: ->
+      # Populate the Language dropdown and Subjects checkboxes
+      $languages = @$el.find('*[name=language]')
+      for lang in LANGUAGES
+        $lang = jQuery('<option></option>').attr('value', lang.code).text(lang.native)
+        $languages.append($lang)
 
-      # tagit (specifically its config of autocomplete) requires this element be part of the DOM
-      # so we add the keywords to the body and then put it back
+      $languages.select2
+        placeholder: __('Select a language')
+
+      $subjects = @$el.find('*[name=subjects]')
+      $subjects.select2
+        tags: METADATA_SUBJECTS
+        tokenSeparators: [',']
+        separator: '|' # String used to delimit ids in $('input').val()
+
+      # Enable multiselect on certain elements
       $keywords = @$el.find('*[name=keywords]')
       $keywords.select2
         tags: @model.get('keywords') or []
         tokenSeparators: [',']
         separator: '|' # String used to delimit ids in $('input').val()
-        ajax: SELECT2_AJAX_HANDLER(KEYWORDS_URL)
+        ajax: SELECT2_AJAX_HANDLER(URLS.KEYWORDS)
+        initSelection: (element, callback) ->
+          data = []
+          _.each element.val().split('|'), (str) -> data.push {id: str, text: str}
+          callback(data)
+
+      # Select the correct language (Handlebars can't do that)
+      @_updateLanguage()
+      @_updateSubjects()
+      @_updateKeywords()
 
       @delegateEvents()
 
-      # Focus on the title
-      @$el.find('input[name=title]').focus()
-      @
-
-    # This is used by wrappers like ModalWrapper that offer a "Save" button
+    # This is used by `DialogWrapper` which offers a "Save" and "Cancel" buttons
     attrsToSave: () ->
-      title = @$el.find('input[name=title]').val()
-      language = @$el.find('select[name=language]').val()
-      variant = @$el.find('select[name=variantLanguage]').val()
-      language = variant if variant
-      subjects = (jQuery(checkbox).val() for checkbox in @$el.find('input[name=subjects]:checked'))
-      # Grab the keywords differently, because they are not part
-      #   of the form. They are entered as 'li' entries.
+      language = @$el.find('*[name=language]').val()
+      variant = @$el.find('*[name=variantLanguage]').val()
+      language = variant or language
+      # subjects could be the empty string in which case it would be set to `[""]`
+      subjects = (kw for kw in @$el.find('*[name=subjects]').val().split('|'))
+      subjects = [] if '' is subjects[0]
+      # Keywords could be the empty string in which case it would be set to `[""]`
       keywords = (kw for kw in @$el.find('*[name=keywords]').val().split('|'))
+      keywords = [] if '' is keywords[0]
 
       return {
-        title: title
         language: language
         subjects: subjects
         keywords: keywords
       }
 
 
-  RolesEditView = Backbone.View.extend
-    tagName: 'div'
-    className: 'roles'
+  exports.RolesEditView = Marionette.ItemView.extend
+    template: EDIT_ROLES
 
-    render: () ->
-      @$el.append jQuery(EDIT_ROLES(@model.toJSON()))
-
+    onRender: ->
       $authors = @$el.find('*[name=authors]')
       $copyrightHolders = @$el.find('*[name=copyrightHolders]')
 
       $authors.select2
+        # **FIXME:** The authors should be looked up instead of being arbitrary text
         tags: @model.get('authors') or []
         tokenSeparators: [',']
         separator: '|'
-        #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
+        #ajax: SELECT2_AJAX_HANDLER(URLS.USERS)
       $copyrightHolders.select2
         tags: @model.get('copyrightHolders') or []
         tokenSeparators: [',']
         separator: '|'
-        #ajax: SELECT2_AJAX_HANDLER(USERS_URL)
+        #ajax: SELECT2_AJAX_HANDLER(URLS.USERS)
+
+      SELECT2_MAKE_SORTABLE $authors
+      SELECT2_MAKE_SORTABLE $copyrightHolders
+
+      # Populate the multiselect widgets with data from the backbone model
+      @_updateAuthors()
+      @_updateCopyrightHolders()
 
       @delegateEvents()
-      @
+
+    _updateAuthors: -> @$el.find('*[name=authors]').select2 'val', (@model.get('authors') or [])
+    _updateCopyrightHolders: -> @$el.find('*[name=copyrightHolders]').select2 'val', (@model.get('copyrightHolders') or [])
 
     attrsToSave: () ->
-      # Grab the authors
+      # Grab the authors from the multiselect input element.
+      # They are separated with a `|` character defined when select2 was configured
       authors = (kw for kw in @$el.find('*[name=authors]').val().split('|'))
       copyrightHolders = (kw for kw in @$el.find('*[name=copyrightHolders]').val().split('|'))
 
@@ -212,42 +353,52 @@ define [
       }
 
 
-  # ## ModalWrapper
-  # This class wraps a view in a modal dialog and only causes changes when
-  # the 'Save' button is clicked.
-  class ModalWrapper
-    constructor: (@view, title) ->
-      @view.render()
-      @$el = jQuery(MODAL_WRAPPER(title: title))
-      @$el.find('.modal-body').html('').append @view.$el
 
-      # Trigger the save when the save button is clicked
+  # ## DialogWrapper
+  # This class wraps a view in a div and only causes changes when
+  # the 'Save' button is clicked.
+  #
+  # Looks like phil came to the same conclusion as the author of Marionette
+  # (Don't make a Bootstrap Modal in a `Backbone.View`):
+  # [http://lostechies.com/derickbailey/2012/04/17/managing-a-modal-dialog-with-backbone-and-marionette/]
+  exports.DialogWrapper = Marionette.ItemView.extend
+    template: DIALOG_WRAPPER
+    onRender: ->
+      @options.view.render()
+      @$el.find('.dialog-body').append @options.view.$el
+
+      # Fire a cancel event when the cancel button is pressed
+      @$el.on 'click', '.cancel', => @trigger 'cancelled'
+
+      # Trigger the `model.save` when the save button is clicked
+      # using the attributes from `@options.view.attrsToSave()`
       @$el.on 'click', '.save', (evt) =>
         evt.preventDefault()
-        # Get the value of the attributes that need to be saved from the View
-        # and then save them to the server
-        attrs = @view.attrsToSave()
+        attrs = @options.view.attrsToSave()
 
-        @view.model.save attrs,
+        @options.view.model.save attrs,
           success: (res) =>
             # Trigger a 'sync' because if 'success' is provided 'sync' is not triggered
-            @view.model.trigger('sync')
-            @$el.modal('hide')
+            @options.view.model.trigger('sync')
+            @trigger 'saved'
 
           error: (res) =>
             alert('Something went wrong when saving: ' + res)
 
 
-    show: ->
-      @$el.appendTo('body') if not @$el.parent()[0]
-      @$el.modal(keyboard: true)
-    hide: ->
-      @$el.modal('hide')
+  exports.AuthView = Marionette.ItemView.extend
+    template: SIGN_IN_OUT
+    events:
+      'click #sign-in': 'signIn'
+      'submit #sign-out': 'signOut'
+    onRender: ->
+      @listenTo @model, 'change', => @render()
+      @listenTo @model, 'change:userid', => @render()
+
+    signIn: ->
+      alert 'login not supported yet'
+    signOut: -> @model.signOut()
 
 
-  return {
-    Module: Module
-    ModalWrapper: ModalWrapper
-    MetadataEditView: MetadataEditView
-    RolesEditView: RolesEditView
-  }
+  exports.WorkspaceView = exports.SearchResultView
+  return exports

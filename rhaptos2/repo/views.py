@@ -111,58 +111,62 @@ def index():
     return render_template('index.html', confd=app.config)
 
 
+# Content GET, POST (create), and PUT (change)
 
-
-@app.route("/module/", methods=['PUT'])
-def modulePUT():
-    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
+@app.route("/content/<uuid>", methods=['GET'])
+def moduleGET(uuid):
+    dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
     try:
-
-
-        d = request.json
-        if d['uuid'] == u'':
-            return ("PUT WITHOUT A UUID" , 400)
-
-        current_nd = model.mod_from_file(d['uuid'])
-        current_nd.load_from_djson(d) #this checks permis
-        uid = current_nd.uuid
-        current_nd.save()
-
+        jsonstr = model.fetch_module(uuid)
     except Exception, e:
-        raise(e)
+        raise e
 
-    s = model.asjson({'hashid':uid})
-    resp = flask.make_response(s)
+    resp = flask.make_response(jsonstr)
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
-
     return resp
 
 
-
-
-@app.route("/module/", methods=['POST'])
+@app.route("/content/", methods=['POST'])
 @apply_cors
 def modulePOST():
     """
     """
     dolog("INFO", 'A Module POSTed', caller=modulePOST, statsd=['rhaptos2.repo.module.POST',])
 
+    # Autogenerate a new ID for the new content
+    uid = str(uuid.uuid4())
+
     d = request.json
-    if d['uuid'] != u'':
-        return ("POSTED WITH A UUID" , 400)
-    else:
-        d['uuid'] = None
+    d['id'] = uid
 
     #app.logger.info(repr(d))
     ### maybe we know too much about nodedocs
     nd = model.mod_from_json(d)
-    uid = nd.uuid
     nd.save()
     del(nd)
 
-    s = model.asjson({'hashid':uid})
-    return s
+    return uid
+
+
+@app.route("/content/<uuid>", methods=['PUT'])
+def modulePUT(uuid):
+    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
+
+    d = request.json
+
+    current_nd = model.mod_from_file(uuid)
+    current_nd.load_from_djson(d) #this checks permis
+    current_nd.save()
+
+    # FIXME: A response is not needed if the save is successful
+    s = model.asjson({'hashid':uuid})
+    resp = flask.make_response(s)
+    resp.content_type='application/json'
+    resp.headers["Access-Control-Allow-Origin"]= "*"
+
+    return resp
+
 
 
 @app.route("/workspace/", methods=['GET'])
@@ -186,70 +190,6 @@ def workspaceGET():
     model.callstatsd('rhaptos2.e2repo.workspace.GET')
     return resp
 
-
-@app.route("/module/<modname>", methods=['GET'])
-def moduleGET(modname):
-    dolog("INFO", 'MODULE GET CALLED on %s' % modname, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
-    try:
-        jsonstr = model.fetch_module(modname)
-    except Exception, e:
-        raise e
-
-    resp = flask.make_response(jsonstr)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    return resp
-
-@app.route("/module/<modname>", methods=['DELETE'])
-def moduleDELETE(modname):
-    '''support deletion of a module
-
-    200 - delete file successful                                                                                             202 - queued for deletion
-    404 - no such file found                                                                                                 '''
-
-    status_code = 200
-    headers = []
-
-    dolog("INFO", 'DELETE CALLED on %s' % modname, caller=moduleDELETE, statsd=['rhaptos2.repo.module.DELETE',])
-    try:
-        jsonstr = model.delete_module(modname)
-    except IOError, e:
-        status_code = 404
-
-    resp = flask.make_response(jsonstr)
-    resp.status_code = status_code
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    return resp
-
-@app.route("/module/<modname>/metadata/", methods=['POST', 'PUT'])
-@apply_cors
-def post_metadata(modname):
-    """Receive posted data that will creator or update the metadata storage
-    for a module.
-    """
-    # XXX 'modname' is used for consistancy, but it's not ideal, since
-    #     the value isn't actually a module name.
-    uuid = modname
-    data = request.json
-    model.create_or_update_metadata(uuid, data)
-
-    resp = flask.make_response()
-    resp.status_code = 200
-    return resp
-
-@app.route("/module/<modname>/metadata/", methods=['GET'])
-@apply_cors
-def get_metadata(modname):
-    """Return data for the requested module."""
-    # XXX 'modname' is used for consistancy, but it's not ideal, since
-    #     the value isn't actually a module name.
-    uuid = modname
-    data = model.get_metadata(uuid)
-
-    resp = flask.make_response(data)
-    resp.status_code = 200
-    resp.content_type='application/json'
-    return resp
 
 @app.route("/resource/", methods=['POST', 'PUT'])
 @apply_cors

@@ -192,6 +192,7 @@ class Identity(object):
 
     def user_as_dict(self):
         return {"auth_identifier": self.authenticated_identifier,
+                "id": self.userID,
                 "email": self.email,
                 "name": self.name}
 
@@ -262,7 +263,7 @@ def whoami():
 
 
 ## .. todo:: why is there a view in here??
-@app.route("/whoami/", methods=['GET'])
+@app.route("/me/", methods=['GET'])
 def whoamiGET():
     '''
 
@@ -333,10 +334,15 @@ def userspace():
 
 def callstatsd(dottedcounter):
     ''' '''
-    c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
-                       int(app.config['globals']['bamboo_global']['statsd_port']))
-    c.incr(dottedcounter)
-    #todo: really return c and keep elsewhere for efficieny I suspect
+    # Try to call logging. If not connected to a network this throws
+    # "socket.gaierror: [Errno 8] nodename nor servname provided, or not known"
+    try:
+        c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
+                           int(app.config['globals']['bamboo_global']['statsd_port']))
+        c.incr(dottedcounter)
+        #todo: really return c and keep elsewhere for efficieny I suspect
+    except:
+        pass
 
 
 def asjson(pyobj):
@@ -390,6 +396,22 @@ def mod_from_file(uid):
     n = security.NodeDoc()
     n.load_from_file(uid)
     return n
+
+def create_or_update_module(uuid, data):
+    """Given a `uuid` and json `data`, this function will create or update the
+    stored conten and metadata.
+    """
+    filename = uuid
+    file_path = os.path.join(userspace(), filename)
+    stored_data = {}
+    # Grab the existing data if it exists.
+    if os.path.exists(file_path):
+        with open(file_path) as f:
+            stored_data = json.load(f)
+    # Update the data and write it back to disk.
+    stored_data.update(data)
+    with open(file_path, 'w') as f:
+        json.dump(stored_data, f)
 
 def create_or_update_metadata(uuid, data):
     """Given a `uuid` and json `data`, this function will create or update the

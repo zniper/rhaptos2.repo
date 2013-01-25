@@ -1,8 +1,82 @@
 /* Import 3rd party libraries first */
-@import url('lib/bootstrap/css/bootstrap.css');
+/* These should probably be explicitly defined in require.config.coffee
+ * instead of here.
+   @import url('lib/bootstrap/css/bootstrap.css');
+ */
+
+.layout-content .content-title:before {
+  content: "Title: ";
+  opacity: 0.5;
+}
+
+/* Add some space because the toolbar floats */
+.layout-content.layout-root {
+  background-color: #ebebeb;
+  margin-top: 55px;
+}
+
+.layout-content.layout-root > .row > .span11 {
+  /* give the document a little space below the toolbar */
+  margin-top: 10px;
+  padding: 1em;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.layout-content #layout-body > * {
+  min-height: 5in;
+}
+
+/* Hint that the user can edit the title here */
+#layout-title { cursor: pointer; }
+#layout-title + .popover { font-size: 12pt; font-weight: normal; }
+
+
+/* Add graphics to Roles inputs to show the type of input */
+/* Bootstrap ".input-prepend .add-on" does not work with select2 inputs so we use a new class "add-on-prepend" */
+.add-on-prepend,
+.add-on-append {
+
+  display: inline-block;
+  width: auto;
+  height: 20px;
+  min-width: 16px;
+  padding: 4px 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+  text-align: center;
+  text-shadow: 0 1px 0 #ffffff;
+  background-color: #eeeeee;
+  border: 1px solid #ccc;
+}
+.add-on-prepend {
+  -webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+  vertical-align: top;
+  margin-right: -5px;
+}
+.add-on-append {
+  -webkit-border-radius: 0 4px 4px 0;
+  -moz-border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
+  vertical-align: top;
+  margin-left: -5px;
+}
+
+.navbar-fixed-top h3 {
+  margin: 0;
+  padding: 10px 0;
+  background-color: #fff;
+}
+
+/* Used to visually disable editable areas and views until their contents have loaded */
+.disabled { opacity: 0.5; }
+.hidden { display: none !important; }
 
 .select2-container {
-  min-width: 10em;
+  min-width: 15em;
 }
 
 /* Apparently MathJax still renders the annotation element as plain text */

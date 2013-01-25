@@ -8,17 +8,22 @@ require.config
 
   # # Configure Library Locations
   paths:
+    # ## Requirejs plugins
     i18n: 'i18n-custom'
     text: 'lib/require-text/text'
     json: 'lib/requirejs-plugins/json'
+    hbs: 'lib/require-handlebars-plugin/hbs'
 
     # ## Core Libraries
     jquery: 'lib/jquery-1.8.3'
     underscore: 'lib/underscore-1.4.3'
-    backbone: 'lib/backbone-0.9.2'
+    backbone: 'lib/backbone-0.9.9'
+    # Layout manager for backbone
+    marionette: 'lib/backbone.marionette'
 
     # ## UI libraries
-    'aloha': '../cdn/aloha/src/lib/aloha' # FIXME: Remove the '/cdn/' when aloha is moved into static/
+    # **FIXME:** Replace `../cdn/` with `lib/` when aloha is moved into `static/`
+    aloha: '../cdn/aloha/src/lib/aloha'
     bootstrap: 'lib/bootstrap/js/bootstrap'
     select2: 'lib/select2/select2'
     spin: 'lib/spin'
@@ -26,14 +31,16 @@ require.config
     # ## Handlebars modules
     # The requirejs plugin to support handlebars has several dependencies
     # that need to be loaded
-    hbs: 'lib/require-handlebars-plugin/hbs'
     handlebars: 'lib/require-handlebars-plugin/Handlebars'
     i18nprecompile: 'lib/require-handlebars-plugin/hbs/i18nprecompile'
     json2: 'lib/require-handlebars-plugin/hbs/json2'
 
+    'font-awesome': 'lib/font-awesome/css/font-awesome'
+
   # # Shims
-  # To support libraries that were not written for requirejs
+  # To support libraries that were not written for AMD
   # configure a shim around them that mimics a `define` call.
+  #
   # List the dependencies and what global object is available
   # when the library is done loading (for jQuery plugins this can be `jQuery`)
   shim:
@@ -49,11 +56,21 @@ require.config
     backbone:
       deps: ['underscore', 'jquery']
       exports: 'Backbone'
-      init: -> ret = @Backbone; delete @Backbone; delete @_; ret
+
+    marionette:
+      deps: ['underscore', 'backbone']
+      exports: 'Backbone'
+      # Since `marionette` is the last library that depends on a
+      # global `Backbone` object we can delete it from the globals.
+      #
+      # We can also delete `_` at this point and can delete `Backbone.Marionette`
+      # so we never always include `marionette` and never assume Marionette is already loaded as a dependency.
+      #    init: -> ret = @Backbone.Marionette; delete @Backbone.Marionette; delete @Backbone; delete @_; ret
+      init: -> ret = @Backbone.Marionette; delete @Backbone.Marionette; delete @Backbone; ret
 
     # ## UI Libraries
     bootstrap:
-      deps: ['jquery'] # For some reason we can't add use 'css!lib/bootstrap/css/bootstrap'
+      deps: ['jquery', 'css!lib/bootstrap/css/bootstrap']
       exports: 'jQuery'
 
     select2:
@@ -61,8 +78,12 @@ require.config
       exports: 'Select2'
       init: -> ret = @Select2; delete @Select2; ret
 
+    # Some of the Aloha plugins depend on bootstrap being initialized on jQuery
+    # (like the popover plugin).
+    #
+    # Also, configure Aloha for the application using the `aloha-config` module.
     aloha:
-      deps: ['jquery', 'css!../cdn/aloha/src/css/aloha']
+      deps: ['bootstrap', 'aloha-config', 'css!../cdn/aloha/src/css/aloha']
       exports: 'Aloha'
 
   # Maps prefixes (like `less!path/to/less-file`) to use the LESS CSS plugin
@@ -73,8 +94,9 @@ require.config
       less: 'lib/require-less/less'
       json: 'lib/requirejs-plugins/src/json'
 
-  # ## module Configuration
-  # This configures `requirejs` plugins and modules.
+  # ## Module and requirejs Plugin Configuration
+  # This configures `requirejs` plugins (like `'hbs!...'`) and our modules (like `'app/views'`).
+  #
   # Modules can get to the configuration by including the `module` dependency
   # and then calling `module.config()`
   hbs:
