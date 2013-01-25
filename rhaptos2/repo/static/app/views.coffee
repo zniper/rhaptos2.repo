@@ -11,11 +11,6 @@
 # 1. `_change*` Modifies the model based on a change in the view
 # 2. `_update*` Modifies the view based on changes to the model
 #
-#  Authors: Michael Mulich, Philip Schatz
-#  Copyright (c) 2012 Rice University
-#
-#  This software is subject to the provisions of the GNU Lesser General
-#  Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 #
 define [
@@ -386,6 +381,13 @@ define [
             alert('Something went wrong when saving: ' + res)
 
 
+  # ## Auth View
+  # The top-right of each page should have either:
+  #
+  # 1. a Sign-up/Login link if not logged in
+  # 2. a logoff link with the current user name if logged in
+  #
+  # This view updates when the login state changes
   exports.AuthView = Marionette.ItemView.extend
     template: SIGN_IN_OUT
     events:
@@ -395,8 +397,8 @@ define [
       @listenTo @model, 'change', => @render()
       @listenTo @model, 'change:userid', => @render()
 
-    signIn: ->
-      alert 'login not supported yet'
+    # Clicking on the link will redirect to the logoff page
+    # Before it does, update the model
     signOut: -> @model.signOut()
 
 

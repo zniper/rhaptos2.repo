@@ -411,9 +411,6 @@
           return _this.render();
         });
       },
-      signIn: function() {
-        return alert('login not supported yet');
-      },
       signOut: function() {
         return this.model.signOut();
       }

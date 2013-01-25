@@ -1,11 +1,12 @@
+# This module contains URLS to communicate with the webserver
 define [], ->
   return {
-    # in `Auth`
+    # Used by the [`auth`](auth.html) module
     ME: '/me'
-    # in `Models`
+    # Used by the [`models`](models.html) module
     CONTENT_PREFIX: '/content/'
     WORKSPACE: '/workspace/'
-    # in `Views`
+    # Used by the [`views`](views.html) module
     KEYWORDS: '/keywords/'
     USERS: '/users/'
   }
