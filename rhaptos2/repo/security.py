@@ -127,7 +127,6 @@ class NodeDoc(object):
 
     def __init__(self):
         self.nodedocversion = "0.1"
-        self.versionkeys = ['aclrw', 'body', 'contentrw', 'uuid', 'title', 'language', 'subjects', 'keywords', 'authors', 'copyrightHolders']
 
     def load_from_file(self, uid):
         """find a file and load up the json doc and store internally
@@ -171,15 +170,11 @@ class NodeDoc(object):
 
         repodir = app.config['repodir']
         filepath = os.path.join(repodir, uid)
-        v01keys = self.versionkeys
 
         try:
             nodedict = json.loads(open(filepath).read())
         except:
-            nodedict = dict(zip(v01keys, [None, None, None, None, None]))
-
-        #if sorted(nodedict.keys()) != v01keys:
-        #    raise  Rhaptos2Error("NodeDoc has incorrect keys - version 0.1" + str(nodedict.keys()) + str(v01keys))
+            nodedict = {}
 
         self.__dict__.update(nodedict)
         self.__dict__.update(metad)
@@ -191,11 +186,6 @@ class NodeDoc(object):
         """
 
 
-
-        v01keys = self.versionkeys
-        #if sorted(djson.keys()) != v01keys:
-        #    raise  Rhaptos2Error("Incoming JSON has incorrect keys" + \
-        #              str(djson.keys()) + str(v01keys))
         if not djson['id'] : djson['id'] = str(uuid.uuid4())
         self.__dict__.update(djson)
 
@@ -210,11 +200,10 @@ class NodeDoc(object):
             raise Rhaptos2Error("unauthorised")
 
         for key in kwds:
-            #if key in self.versionkeys:
-                if key == 'aclrw' and change_acl == False:
-                    raise Rhaptos2Error("Unauthorised")
-                else:
-                    self.__dict__[key] = kwds[key]
+            if key == 'aclrw' and change_acl == False:
+                raise Rhaptos2Error("Unauthorised")
+            else:
+                self.__dict__[key] = kwds[key]
 
     def save(self):
         """ """
