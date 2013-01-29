@@ -4,6 +4,12 @@
    @import url('lib/bootstrap/css/bootstrap.css');
  */
 
+/* Don't use the glyphicons images */
+[class^="icon-"],
+[class*=" icon-"] {
+  background-image:none !important;
+}
+
 .layout-content .content-title:before {
   content: "Title: ";
   opacity: 0.5;
