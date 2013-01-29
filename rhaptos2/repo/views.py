@@ -146,7 +146,7 @@ def modulePOST():
     nd.save()
     del(nd)
 
-    return uid
+    return json.dumps(d)
 
 
 @app.route("/content/<uuid>", methods=['PUT'])
