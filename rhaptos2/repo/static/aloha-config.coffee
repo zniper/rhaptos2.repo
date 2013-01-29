@@ -41,6 +41,7 @@ define ['jquery'], (jQuery) ->
       ]
 
       # This whole thing is what's needed to:
+      #
       # - set a custom URL to send files to
       # - register a callback that updates the IMG with the new src
       draganddropfiles:
@@ -56,24 +57,25 @@ define ['jquery'], (jQuery) ->
               # dropfilesrepository.js triggers 'aloha-upload-success'
               # and 'aloha-upload-failure' but does not provide the
               # response text (URL).
-              # We should probably change dropfilesrepository.js to be
-              #  Aloha.trigger('aloha-upload-success', that, xhr);
+              # We should probably change dropfilesrepository.js to be:
+              #
+              #     Aloha.trigger('aloha-upload-success', that, xhr);
 
-              # Then, instead of configuring a callback we could just listen to that event
+              # Then, instead of configuring a callback we could just listen to that event.
 
               # If the response is a URL then change the Image source to it
-              # The URL could be absolute (/^http/) or relative (/\// or [a-z])
-              # alert('posted file: ' + resp);
+              # The URL could be absolute (`/^http/`) or relative (`/\//` or `[a-z]`).
               unless resp.match(/^http/) or resp.match(/^\//) or resp.match(/^[a-z]/)
                 alert 'You dropped a file and we sent a message to the server to do something with it.\nIt responded with some gibberish so we are showing you some other file to show it worked'
                 resp = 'src/test/AlohaEditorLogo.png'
 
               # Drag and Drop creates an <img id='{this.id}'> element but the
-              #                 * 'New Image' plugin doesn't have access to the UploadFile object (this)
-              #                 * so all it can do is add a class.
-              #                 * If I combine both then we can set the attribute consistently.
-              #                 * FIXME: Don't assume only 1 image can be uploaded at a time
               #
+              # - 'New Image' plugin doesn't have access to the UploadFile object (this)
+              #   so all it can do is add a class.
+              # - If I combine both then we can set the attribute consistently.
+              # - **FIXME:** Don't assume only 1 image can be uploaded at a time
+
               $img = Aloha.jQuery('.aloha-image-uploading').add('#' + @id)
               $img.attr 'src', resp
               $img.removeClass 'aloha-image-uploading'
@@ -85,5 +87,5 @@ define ['jquery'], (jQuery) ->
           figure:
             'aloha-block-type': 'EditableImageBlock'
 
-  # In case some module wants the config object return it
+  # In case some module wants the config object return it.
   return @Aloha

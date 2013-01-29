@@ -1,7 +1,5 @@
 # # Backbone Models
 # This module contains backbone models used throughout the application
-#
-# It also has some hardcoded URLs for syncing with the server (GET/POST/PUT URLs)
 define ['backbone', 'exports', 'app/urls', 'i18n!app/nls/strings'], (Backbone, exports, URLS, __) ->
 
   # The `Content` model contains the following members:

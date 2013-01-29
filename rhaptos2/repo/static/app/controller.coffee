@@ -28,6 +28,9 @@ define [
   mainRegion = new Marionette.Region
     el: '#main'
 
+  # ## Layouts
+  # There are 2 major page layouts; the workspace and content editing.
+
   WorkspaceLayout = Marionette.Layout.extend
     template: LAYOUT_WORKSPACE
     regions:
@@ -65,6 +68,8 @@ define [
     # In here so App can call it once it has completed loading
     start: -> Backbone.history.start()
 
+    # Provide the main region that this controller uses.
+    # Useful for applications that want to extend this editor.
     getRegion: -> mainRegion
 
     # ### Show Workspace
@@ -115,6 +120,16 @@ define [
       # ## Bind Metadata Dialogs
       mainRegion.show contentLayout
 
+      # Load the various views:
+      #
+      # - The Aloha toolbar
+      # - The editable title on top of the page
+      # - The logoff button on the top-right
+      # - The 2nd editable title at the top of the document under the toolbar
+      # - The metadata/roles accordion
+      # - The main editable content area
+
+      # Wrap each 'tab' in the accordion with a Save/Cancel dialog
       configAccordionDialog = (region, view) ->
         dialog = new Views.DialogWrapper {view: view}
         region.show dialog

@@ -3,7 +3,8 @@
 #
 # 1. Load dependencies (JS/CSS/JSON)
 # 2. Register client-side routes
-# 3. **TODO:** Load any HTML/JSON sent from the server that is sprinkled in the HTML file
+#
+# **TODO:** Load any HTML/JSON sent from the server that is sprinkled in the HTML file.
 #
 # For example, if the user goes to a piece of content we already send
 # the content inside a `div` tag.
@@ -21,7 +22,7 @@ define [
 
   # # Application Code
   # The Single Page Application starts here
-  #
+
   # ## Authenticated User
   # Find out whether the user is authenticated
   Auth.fetch()
