@@ -9,7 +9,12 @@
 # See LICENCE.txt for details.
 ###
 
+"""
+. module:: useful_1
+   :platform: Unix, Windows
+   :synopsis: A useful module indeed.
 
+"""
 import uuid
 import json
 import os, sys

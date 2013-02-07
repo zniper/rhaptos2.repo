@@ -1,33 +1,16 @@
-Welcome to frozone's documentation!
-===================================
+Rhaptos2.Repo - Documentation 
+=============================
 
-Frozone is `Connexions <http://www.cnx.org>`_ new editor and other components.
+Welcome to the docs for Rhaptos2.repo.
 
-
-
-.. toctree::
-   :maxdepth: 2
-
-   Overview
-   Installation
-   Architecture
-   DevOps
-   WeeklyReports
-
-
-And the Blog :
+These docs will need filling out - however a number of the modules 
+are internally documented and are laid out below
 
 
 .. toctree::
    :maxdepth: 2
    :glob:
 
-   blog/*
-   
-And the Spec:
+   *
+   */*
 
-.. toctree::
-   :maxdepth: 1
-   
-
-   spec/index

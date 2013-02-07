@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-###  
+###
 # Copyright (c) Rice University 2012
 # This software is subject to
 # the provisions of the GNU Lesser General
@@ -25,7 +25,7 @@ sys.path.append(os.path.abspath('..'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 
+extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.autosummary',
               'sphinx.ext.intersphinx', 'sphinx.ext.todo']
@@ -67,7 +67,7 @@ release = '0.0.1'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'junkdocs']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -248,7 +248,7 @@ texinfo_documents = [
 sys.path.append(os.path.abspath('_themes'))
 html_theme_path = ['_themes']
 html_theme = 'flask'
-html_logo = 'rhaptos2userlogo.jpg' 
+html_logo = 'rhaptos2userlogo.jpg'
 
 
 # Example configuration for intersphinx: refer to the Python standard library.

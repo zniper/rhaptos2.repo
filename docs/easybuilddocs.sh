@@ -2,4 +2,4 @@
 
 make clean
 make html
-firefox _build/html/index.html &
+chrome _build/html/index.html &
