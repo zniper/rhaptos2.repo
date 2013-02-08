@@ -11,7 +11,7 @@
 
 import os
 import pprint
-from rhaptos2.repo import backend, foldermodel
+from rhaptos2.repo import backend, foldermodel2 as foldermodel
 from rhaptos2.repo.backend import db_session
 from rhaptos2.common import conf
 
@@ -26,12 +26,12 @@ print "Running simple prepopulation of database as connected by:"
 print confd['app']
 
 f = foldermodel.Folder()
-f.folderid = "123456789"
 f.title="Test Rhaptos folder"
+f.contentjson = "{some json}"
 usr = foldermodel.UserRole()
 usr.folder_uuid = f.folderid
-usr.user_uuid = "fleeble-rrrr"
-usr.role_type = "owner"
+usr.user_uuid = "fleffefble-rrrrfff"
+usr.role_type = "author"
 
 f.userroles = [usr,]
 # i.identifiertype = 'openid'

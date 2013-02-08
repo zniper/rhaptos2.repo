@@ -33,9 +33,18 @@ from flask import (
     )
 
 from rhaptos2.common import log, err, conf
-from rhaptos2.repo import get_app, dolog, model, security, VERSION
-app = get_app()
+from rhaptos2.repo import (get_app, dolog, model, security,
+                           VERSION, foldermodel2 as foldermodel,
+                           backend)
 
+
+#####
+import datetime
+from rhaptos2.repo.backend import Base, db_session
+from rhaptos2.common.err import Rhaptos2Error
+
+app = get_app()
+backend.initdb(app.config)
 
 @app.before_request
 def requestid():
@@ -386,3 +395,16 @@ def loginpersona():
 
     # Oops, something failed. Abort.
     abort(500)
+
+######################folders
+
+@app.route('/folder/<folderid>/', methods=['GET'])
+def folder_get(folderid):
+    """ """
+    fldr = foldermodel.get_folder(folderid)
+    print fldr
+    print fldr.contentjson
+    resp = flask.make_response(fldr.contentjson)
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp

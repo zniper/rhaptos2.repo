@@ -84,8 +84,8 @@ class UserRole(Base):
     folder_uuid = Column(String, ForeignKey('cnxfolder.folderid'),
                          primary_key=True)
     user_uuid   = Column(String, primary_key=True)
-    role_type   = Column(Enum('owner', 'maintainer',
-                               name="role_type"),
+    role_type   = Column(Enum('author', 'maintainer','copyright',
+                               name="cnxrole_type"),
                                primary_key=True)
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
