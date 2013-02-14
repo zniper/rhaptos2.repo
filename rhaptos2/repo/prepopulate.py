@@ -9,6 +9,19 @@
 # See LICENCE.txt for details.
 ###
 
+"""
+dbtest=> drop table CNXfolder cascade;
+NOTICE:  drop cascades to constraint userrole_folder_folder_uuid_fkey on table userrole_folder
+DROP TABLE
+dbtest=> drop table userrole_folder cascade;
+DROP TABLE
+dbtest=>
+
+
+"""
+
+
+import decl
 import os
 import pprint
 from rhaptos2.repo import backend, foldermodel2 as foldermodel
@@ -25,18 +38,29 @@ backend.initdb(confd['app'])
 print "Running simple prepopulation of database as connected by:"
 print confd['app']
 
-f = foldermodel.Folder()
-f.title="Test Rhaptos folder"
-f.contentjson = "{some json}"
-usr = foldermodel.UserRole()
-usr.folder_uuid = f.folderid
-usr.user_uuid = "fleffefble-rrrrfff"
-usr.role_type = "author"
+owner = "Testuser1"
+incomingjsond = {'date_lastmodified_utc': None,
+                      'title': u'Test Rhaptos folder',
+                      'date_created_utc': None,
+                      'contentjson': u'{some otehr json}' }
 
-f.userroles = [usr,]
-# i.identifiertype = 'openid'
-# i.user_id = u.user_id
-# u.identifiers=[i,]
+aclsd = [
+        {'date_lastmodified_utc': None,
+         'date_created_utc': None,
+       'user_uuid': u'Testuser1',
+      'role_type': 'aclrw'},
+        {'date_lastmodified_utc': None,
+        'date_created_utc': None,
+      'user_uuid': u'testuser2',
+      'role_type': 'aclrw'}
+       ]
 
-# db_session.add(u)
-# db_session.commit()
+
+f2 = foldermodel.Folder(creator_uuid=owner)
+foldermodel.populate_folder(incomingjsond, f2)
+print f2.userroles
+
+#>>> f2.set_acls(f2.folderid, aclsd)
+#>>> print f2.userroles
+#>>> db_session.add(f2)
+#>>> db_session.commit()

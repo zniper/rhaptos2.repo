@@ -294,9 +294,14 @@ sect6 = {"id":  "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
 
 fldr = {"folderid": "fhfhfhfh",
         "title":    "Declaration Folder",
-        "content": ["org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
-                    "org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389"
-                    ],
+        "content": ["org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126",
+                     "org.cnx.sect:350f7859-e6e7-11e1-928f-2c768ae4951b",
+                     "org.cnx.sect:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
+                     "org.cnx.sect:77a45e48-6e91-4814-9cca-0f28348a4aae",
+                     "org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
+                     "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
+                     ],
+
         "roles":
             {
         "Authors":
@@ -318,27 +323,31 @@ collection = {"collectionid": "be7790d1-9ee4-4b25-be84-30b7208f5db7",
                            "Summary": "No."
                           },
               "roles":    {
-                          "Authors": ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-                     "Maintainers": ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-                     "Copyright Holders": ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-                     "aclrw": ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-                     "contentrw": ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
+"Authors":
+  ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
+"Maintainers":
+  ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
+"Copyright Holders":
+  ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
                     },
 
          "parameters": {"style": "LaTeX",
                         "font": "Times"
                        },
 
-         "contents": [
-                     ]
+         "content": ["org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126",
+                      "org.cnx.sect:350f7859-e6e7-11e1-928f-2c768ae4951b",
+                      "org.cnx.sect:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
+                      "org.cnx.sect:77a45e48-6e91-4814-9cca-0f28348a4aae",
+                      "org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
+                      "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
+                     ],
 
        }
-
-             }
 
 
 import json
 
-l = [sect1, sect2, sect3, sect4, sect5, sect6, fldr]
-for s in l:
-    print json.dumps(s,sort_keys=True, indent=4)
+l = [sect1, sect2, sect3, sect4, sect5, sect6, fldr, collection]
+#for s in l:
+#    print json.dumps(s,sort_keys=True, indent=4)
