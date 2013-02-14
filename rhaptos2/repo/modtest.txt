@@ -44,7 +44,7 @@ Blob           urn:cnxblog:<NSS>      urn:cnxblob:529d7edc-63ee-40c6-a4be-5c7a94
 Testing the Folder database 
 ===========================
 
-Folder is a unordered list of modules and collections that the
+Folder is a unordered list of modules and cnxmodules that the
 user may arbitrarily define.  This is represented as::
 
    <link to decl json>
@@ -70,7 +70,7 @@ Setup ::
     >>> import decl
     >>> import os, json
     >>> import pprint
-    >>> from rhaptos2.repo import backend, foldermodel
+    >>> from rhaptos2.repo import backend, modulemodel
     >>> from rhaptos2.repo.backend import db_session
     >>> from rhaptos2.common import conf
 
@@ -93,7 +93,7 @@ We snaffle the folder used for declaration indp
     >>> incomingjsond = {'date_lastmodified_utc': None, 
     ... 'title': u'Test Rhaptos folder', 
     ... 'date_created_utc': None, 
-    ... 'contentjson': json.dumps(decl.declarationdict['folder']) }
+    ... 'contentjson': json.dumps(decl.declarationdict['sect1']) }
 
     >>> aclsd = [
     ...              {'date_lastmodified_utc': None, 
@@ -107,8 +107,8 @@ We snaffle the folder used for declaration indp
     ...               ]
 
 
-    >>> f2 = foldermodel.Folder(creator_uuid=owner)
-    >>> foldermodel.populate_folder(incomingjsond, f2)
+    >>> f2 = modulemodel.CNXModule(creator_uuid=owner)
+    >>> modulemodel.populate_cnxmodule(incomingjsond, f2)
     >>> print len(f2.userroles)
     1
     >>> f2.set_acls(owner, aclsd)

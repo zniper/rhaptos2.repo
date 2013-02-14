@@ -348,6 +348,9 @@ collection = {"collectionid": "be7790d1-9ee4-4b25-be84-30b7208f5db7",
 
 import json
 
-l = [sect1, sect2, sect3, sect4, sect5, sect6, fldr, collection]
+declarationdict = {"sect1":sect1, "sect2":sect2,
+                   "sect3":sect3, "sect4":sect4,
+                   "sect5":sect5, "sect6":sect6,
+                   "folder":fldr, "collection":collection}
 #for s in l:
 #    print json.dumps(s,sort_keys=True, indent=4)

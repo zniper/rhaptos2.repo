@@ -34,8 +34,8 @@ from rhaptos2.repo.backend import Base, db_session
 from rhaptos2.common.err import Rhaptos2Error
 
 
-class UserRoleMod(Base, CNXBase):
-    """The roles and users assigned for a given cnxmodule
+class UserRoleCol(Base, CNXBase):
+    """The roles and users assigned for a given collection
 
     We have following Roles: Owner, Maintainer, XXX
 
@@ -44,8 +44,8 @@ class UserRoleMod(Base, CNXBase):
 
 
     """
-    __tablename__ = 'userrole_cnxmodule'
-    cnxmodule_uuid = Column(String, ForeignKey('cnxmodule.cnxmoduleid'),
+    __tablename__ = 'userrole_col'
+    collection_uuid = Column(String, ForeignKey('cnxcollection.collectionid'),
                          primary_key=True)
     user_uuid   = Column(String, primary_key=True)
     role_type   = Column(Enum('aclrw','aclro',
@@ -59,9 +59,9 @@ class UserRoleMod(Base, CNXBase):
 
 
 
-class CNXModule(Base, CNXBase):
+class Collection(Base, CNXBase):
     """
-    Cnxmodule Class inheriting from SQLAlchemy and from a CNXBase class
+    Collection Class inheriting from SQLAlchemy and from a CNXBase class
     to get a few generic functions.
 
     1. we define the table and columns
@@ -80,28 +80,28 @@ class CNXModule(Base, CNXBase):
 
 
     """
-    __tablename__ = 'cnxmodule'
-    cnxmoduleid = Column(String, primary_key=True)
+    __tablename__ = 'cnxcollection'
+    collectionid = Column(String, primary_key=True)
     title = Column(String)
     contentjson = Column(Text)
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
 
-    userroles = relationship("UserRoleMod", backref="cnxmodule")
+    userroles = relationship("UserRoleCol", backref="cnxcollection")
 
-    def __init__(self, cnxmoduleid=None, creator_uuid=None):
+    def __init__(self, collectionid=None, creator_uuid=None):
         if creator_uuid:
             self.adduserrole({'user_uuid':creator_uuid, 'role_type':'aclrw'})
         else:
-            raise Rhaptos2Error("CNXModulesmust be created with a creator UUID ")
+            raise Rhaptos2Error("Collectionsmust be created with a creator UUID ")
 
-        if cnxmoduleid :
-            self.cnxmoduleid = cnxmoduleid
+        if collectionid :
+            self.collectionid = collectionid
         else:
-            self.cnxmoduleid = str(uuid.uuid4())
+            self.collectionid = str(uuid.uuid4())
 
     def __repr__(self):
-        return "CNXModule:(%s)-%s" % (self.cnxmoduleid, self.title)
+        return "Collection:(%s)-%s" % (self.collectionid, self.title)
 
     def safe_type_out(self, col):
         """return the value of a coulmn field safely for json
@@ -147,7 +147,7 @@ class CNXModule(Base, CNXBase):
     def adduserrole(self, usrdict):
         """ keeping a common funciton in one place
 
-        Given a usr_uuid and a role_type, update a UserRoleMod object
+        Given a usr_uuid and a role_type, update a UserRoleCol object
 
         I am checking setter_user is authorised in calling function.
         Ideally check here too.
@@ -160,7 +160,7 @@ class CNXModule(Base, CNXBase):
 
         if user_uuid not in [u.user_uuid for u in self.userroles]:
             #not got this one, add
-            i = UserRoleMod()
+            i = UserRoleCol()
             i.from_dict(usrdict)
             i.date_created_utc = t
             i.date_lastmodified_utc = t
@@ -169,7 +169,7 @@ class CNXModule(Base, CNXBase):
         elif (user_uuid, role_type) not in [(u.user_uuid, u.role_type) for u
                                              in self.userroles]:
             #user exits but diff role tyoe = update
-            i = UserRoleMod()
+            i = UserRoleCol()
             i.from_dict(usrdict)
             i.date_lastmodified_utc = t
             self.userroles.append(i)
@@ -234,23 +234,23 @@ def mkobjfromlistofdict(o, l):
     return outl
 
 
-def put_user(jsond, cnxmodule_id):
+def put_user(jsond, collection_id):
     """Given a user_id, and a json_str representing the "Updated" fields
        then update those fields for that user_id """
 
     try:
-        uobj =get_cnxmodule(cnxmodule_id)
+        uobj =get_collection(collection_id)
     except Exception, e:
         dolog("INFO", str(e))
         raise Rhaptos2Error("FAiled to get user")
 
     #.. todo:: parser = verify_schema_version(None)
-    updated_obj = populate_cnxmodule(jsond, uobj)
+    updated_obj = populate_collection(jsond, uobj)
     db_session.add(updated_obj); db_session.commit()
     return updated_obj
 
 
-def populate_cnxmodule(incomingd, cnxmodule_obj):
+def populate_collection(incomingd, collection_obj):
     """Given a dict, and an object,
        push dict into object and return it.
 
@@ -258,18 +258,18 @@ def populate_cnxmodule(incomingd, cnxmodule_obj):
 
     """
 
-    ### put every key in json into Cnxmodule(), manually handling
+    ### put every key in json into Collection(), manually handling
     ### userroles
     for k in incomingd:
         if k not in (u'userrole', u'userroles'):
-            setattr(cnxmodule_obj, k, incomingd[k])
+            setattr(collection_obj, k, incomingd[k])
         else:
             ### create a list of Identifer objects from the list of
             ### identifier strings in JSON
             l = incomingd[k]
-            outl =  mkobjfromlistofdict(UserRoleMod, l)
-            for userrole in outl: userrole.cnxmodule_uuid = cnxmodule_obj.cnxmoduleid
-            cnxmodule_obj.userroles = outl
+            outl =  mkobjfromlistofdict(UserRoleCol, l)
+            for userrole in outl: userrole.collection_uuid = collection_obj.collectionid
+            collection_obj.userroles = outl
 
 
 
@@ -282,95 +282,34 @@ def post_user(jsond):
 
     returns User object, for later saveing to DB"""
 
-    u = CNXModule()
+    u = Collection()
 
     #parser = verify_schema_version(None)
     #incomingd = parser(json_str)
     incomingd = json_dict
-    u = populate_cnxmodule(incomingd, u)
+    u = populate_collection(incomingd, u)
     db_session.add(u); db_session.commit()
     return u
 
 
-def get_cnxmodule(cnxmoduleid):
+def get_collection(collectionid):
     """
     returns a User object, when provided with user_id
     """
 
     ### Now lets recreate it.
     global db_session
-    q = db_session.query(CNXModule)
-    q = q.filter(CNXModule.cnxmoduleid == cnxmoduleid)
+    q = db_session.query(Collection)
+    q = q.filter(Collection.collectionid == collectionid)
     rs = q.all()
     if len(rs) == 0:
-        raise Rhaptos2Error("CNXModule ID Not found in this repo")
+        raise Rhaptos2Error("Collection ID Not found in this repo")
     ### There is a uniq constraint on the table, but anyway...
     if len(rs) > 1:
         raise Rhaptos2Error("Too many matches")
 
     newf = rs[0]
     return newf
-
-
-# def get_user_by_identifier(unquoted_id):
-#     """ """
-
-#     ### Now lets recreate it.
-
-#     q = db_session.query(Identifier)
-#     q = q.filter(Identifier.identifierstring == unquoted_id)
-#     rs = q.all()
-
-#     if len(rs) == 0:
-#         raise Rhaptos2Error("Identifer ID Not found in this repo")
-#     if len(rs) > 1:
-#         raise Rhaptos2Error("Too many matches")
-
-#     #.. todo:: stop using indexes on rows - transform to fieldnames
-#     user_id = rs[0].user_id
-#     newu = get_user(user_id)
-#     return newu
-
-
-# def get_user_by_name(namefrag):
-#     """
-#     Perform a case insensitive search on fullname
-
-#     I would like to offer at least two other searches,
-#     specifying the fields to search, and a frag search across
-#     many fields.
-#     """
-
-#     q = db_session.query(User)
-#     q = q.filter(or_(
-#                      User.fullname.ilike("%%%s%%" % namefrag),
-#                      User.email.ilike("%%%s%%" % namefrag),
-#                      ))
-#     rs = q.all()
-#     out_l = []
-#     for row in rs:
-#         out_l.append(row)
-#     return out_l
-
-# def get_all_users():
-#     """ FOr search functionality"""
-
-#     q = db_session.query(User)
-#     rs = q.all()
-#     out_l = []
-#     c = 0
-#     for row in rs:
-#         out_l.append(row)
-#         c += 1
-#         if c >= 25: break
-#     # ..todo:: the worst limiting case ever...
-#     return out_l
-
-
-
-# def delete_user(security_token, user_id):
-#     """ """
-#     raise Rhaptos2Error("delete user not supported")
 
 
 def close_session():

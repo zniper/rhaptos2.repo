@@ -70,7 +70,7 @@ Setup ::
     >>> import decl
     >>> import os, json
     >>> import pprint
-    >>> from rhaptos2.repo import backend, foldermodel
+    >>> from rhaptos2.repo import backend, colmodel
     >>> from rhaptos2.repo.backend import db_session
     >>> from rhaptos2.common import conf
 
@@ -93,7 +93,7 @@ We snaffle the folder used for declaration indp
     >>> incomingjsond = {'date_lastmodified_utc': None, 
     ... 'title': u'Test Rhaptos folder', 
     ... 'date_created_utc': None, 
-    ... 'contentjson': json.dumps(decl.declarationdict['folder']) }
+    ... 'contentjson': json.dumps(decl.declarationdict['collection']) }
 
     >>> aclsd = [
     ...              {'date_lastmodified_utc': None, 
@@ -107,8 +107,8 @@ We snaffle the folder used for declaration indp
     ...               ]
 
 
-    >>> f2 = foldermodel.Folder(creator_uuid=owner)
-    >>> foldermodel.populate_folder(incomingjsond, f2)
+    >>> f2 = colmodel.Collection(creator_uuid=owner)
+    >>> colmodel.populate_collection(incomingjsond, f2)
     >>> print len(f2.userroles)
     1
     >>> f2.set_acls(owner, aclsd)
