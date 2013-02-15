@@ -22,6 +22,7 @@ from sqlalchemy import (Table, ForeignKey, or_,
                         Column, Integer, String,
                         Text, Enum, DateTime)
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy.types
 import datetime
 
@@ -31,6 +32,7 @@ from cnxbase import CNXBase
 #shared session from backend module, for pooling
 
 from rhaptos2.repo.backend import Base, db_session
+from rhaptos2.repo import dolog
 from rhaptos2.common.err import Rhaptos2Error
 
 
@@ -83,6 +85,7 @@ class Folder(Base, CNXBase):
     __tablename__ = 'cnxfolder'
     folderid = Column(String, primary_key=True)
     title = Column(String)
+    testarr = Column(ARRAY(String))
     contentjson = Column(Text)
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
@@ -102,22 +105,11 @@ class Folder(Base, CNXBase):
             self.folderid = folderid
         else:
             self.folderid = str(uuid.uuid4())
-        self.content = self.contentjson
+
+        self.date_created_utc = get_utcnow()
 
     def __repr__(self):
         return "Folder:(%s)-%s" % (self.folderid, self.title)
-
-    def safe_type_out(self, col):
-        """return the value of a coulmn field safely for json
-           This is essentially a JSONEncoder sublclass inside object - ...
-        """
-
-        if isinstance(type(col.type), sqlalchemy.types.DateTime):
-            outstr = getattr(self, col.name).isoformat()
-        else:
-            outstr = getattr(self, col.name)
-        return outstr
-
 
     def set_acls(self, setter_user_uuid, acllist):
         """set the user acls on this object.
@@ -211,9 +203,9 @@ class Folder(Base, CNXBase):
             d['userroles'].append(i.to_dict())
         return d
 
-    def jsonify(self):
-        """Helper function that returns simple json repr """
-        return self.contentjson
+    # def jsonify(self):
+    #     """Helper function that returns simple json repr """
+    #     return self.contentjson
 
 
 def get_utcnow():

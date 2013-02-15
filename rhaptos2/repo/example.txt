@@ -101,7 +101,8 @@ We snaffle the folder used for declaration indp
     >>> incomingjsond = {'date_lastmodified_utc': None, 
     ... 'title': u'Test Rhaptos folder', 
     ... 'date_created_utc': None, 
-    ... 'contentjson': json.dumps(decl.declarationdict['folder']) }
+    ... 'contentjson': "{'foo':'bar'}",
+    ... 'testarr': ['The', 'quick', 'brown', 'fox']}
 
     >>> aclsd = [
     ...              {'date_lastmodified_utc': None, 
@@ -132,8 +133,9 @@ We snaffle the folder used for declaration indp
 
     >>> incomingjsond3 = {'date_lastmodified_utc': None, 
     ... 'title': u'new folder name', 
-    ... 'date_created_utc': None, 
-    ... 'contentjson': json.dumps(decl.declarationdict['folder']) }
+    ... 'contentjson': "{'foo':'bar'}",
+    ... 'testarr': ['The', 'quick', 'brown', 'fox']}
+
 
     >>> newf = foldermodel.put_o(incomingjsond3, 
     ...                          foldermodel.Folder, TESTFOLDERID)
@@ -145,13 +147,16 @@ We snaffle the folder used for declaration indp
 
 
     >>> owner = "cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26"
-    >>> EXAMPLEFOLDERID = "102c7a02-fb4f-48de-bbf0-28e16d6dad3c"
+    >>> EXAMPLEFOLDERID = "cnxfolder:102c7a02-fb4f-48de-bbf0-28e16d6dad3c"
 
     temproary prepopulation fix
+
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
     >>> f2.folderid = EXAMPLEFOLDERID
-    >>> foldermodel.populate_folder(incomingjsond, f2)
+    >>> foldermodel.populate_folder(incomingjsond3, f2)
     >>> f2.set_acls(owner, aclsd)
     >>> db_session.add(f2)
     >>> db_session.commit()
     
+    >>> farr = foldermodel.get_by_id(foldermodel.Folder,EXAMPLEFOLDERID )
+    >>> print farr.testarr

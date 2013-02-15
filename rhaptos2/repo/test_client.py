@@ -33,10 +33,10 @@ def test_viewall():
     assert len(d) > 0
 
 
-EXAMPLEFOLDERID = "102c7a02-fb4f-48de-bbf0-28e16d6dad3c"
+EXAMPLEFOLDERID = "cnxfolder:102c7a02-fb4f-48de-bbf0-28e16d6dad3c"
 def test_get_known_folderid():
     r = requests.get(urljoin(userhost,
-                     "folder/"+ EXAMPLEFOLDERID))
+                     "folder/"+ EXAMPLEFOLDERID + "/"))
     d = r.json
     assert d['title'] == u'Test Rhaptos folder'
 
@@ -44,7 +44,7 @@ def test_get_known_folderid():
 incomingjsond = {'date_lastmodified_utc': None,
  'title': u'Test Rhaptos folder',
  'date_created_utc': None,
- 'contentjson': json.dumps(decl.declarationdict['folder']) }
+ 'contentjson':  }
 
 def test_post():
     payload = json.dumps(incomingjsond)

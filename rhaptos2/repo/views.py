@@ -402,7 +402,7 @@ def loginpersona():
 def folder_get(folderid):
     """ """
     fldr = foldermodel.get_folder(folderid)
-    resp = flask.make_response(fldr.contentjson)
+    resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
@@ -415,7 +415,7 @@ def folder_post():
     print "**************"
     print pprint.pformat(jsond)
     fldr = foldermodel.post_folder(jsond, creator_uuid=owner)
-    resp = flask.make_response(fldr.contentjson)
+    resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
@@ -426,7 +426,7 @@ def folder_put(folderid):
     """ """
     incomingjsond = request.json
     fldr = foldermodel.put_o(incomingjsond, foldermodel.Folder, folderid)
-    resp = flask.make_response(fldr.contentjson)
+    resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp

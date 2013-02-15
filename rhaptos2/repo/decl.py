@@ -258,7 +258,7 @@ sect6 = {"id":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
 
 ##########folder
 
-fldr = {"id":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707"
+fldr = {"id":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
         "title":    "Declaration Folder",
         "content": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
                      "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
@@ -275,7 +275,7 @@ collection = {"id": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
               "subtype":  "Other Report",
               "Subjects": ["Social Sciences",],
               "Keywords": ["Life", "Liberty", "Happiness"],
-              "Summary": "No."
+              "Summary": "No.",
               "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
               "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
               "Copyright Holders":

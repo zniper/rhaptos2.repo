@@ -13,6 +13,7 @@ import datetime
 
 
 class CNXBase():
+
     def from_dict(self, userprofile_dict):
         """
         SHould test for schema validity etc.
@@ -36,14 +37,31 @@ class CNXBase():
         jsonstr = json.dumps(selfd)  # here use the Json ENcoder???
         return jsonstr
 
-    def safe_type_out(self, col):
-        """return the value of a coulmn field safely as something that
-           json can use This is essentially a JSONEncoder sublclass
-           inside this object.
-        """
 
-        if isinstance(type(col.type), sqlalchemy.types.DateTime):
-            outstr = getattr(self, col.name).isoformat()
+    def safe_type_out(self, col):
+        """return the value of a coulmn field safely for json
+        This is essentially a JSONEncoder sublclass inside object - ...
+        """
+        ##XXX cannot get isinstance match on sqlalchem types
+        if str(col.type) == "DATETIME":
+            try:
+                outstr = getattr(self, col.name).isoformat()
+            except:
+                outstr = None
         else:
             outstr = getattr(self, col.name)
         return outstr
+
+
+    # def safe_type_out(self, col):
+    #     """return the value of a coulmn field safely as something that
+    #        json can use This is essentially a JSONEncoder sublclass
+    #        inside this object.
+    #     """
+    #     print col.type, type(col.type)
+    #     if (isinstance(type(col.type), sqlalchemy.types.DateTime) or
+    #         isinstance(type(col.type), datetime.datetime)):
+    #         outstr = str(getattr(self, col.name).isoformat())
+    #     else:
+    #         outstr = getattr(self, col.name)
+    #     return outstr
