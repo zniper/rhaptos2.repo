@@ -87,7 +87,10 @@ class Folder(Base, CNXBase):
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
 
-    userroles = relationship("UserRole", backref="cnxfolder")
+    userroles = relationship("UserRole",
+                             backref="cnxfolder",
+                             cascade="all, delete-orphan")
+
 
     def __init__(self, folderid=None, creator_uuid=None):
         if creator_uuid:
@@ -99,6 +102,7 @@ class Folder(Base, CNXBase):
             self.folderid = folderid
         else:
             self.folderid = str(uuid.uuid4())
+        self.content = self.contentjson
 
     def __repr__(self):
         return "Folder:(%s)-%s" % (self.folderid, self.title)
@@ -217,8 +221,17 @@ def get_utcnow():
     return datetime.datetime.utcnow()
 
 def parse_json(jsonstr):
-    """Ul;timately we should have multiple version handling. """
-    return json.loads(jsonstr)
+    """Given a json-formatted string representing a folder, return a dict
+
+       There is a lot todo here.
+       We should have version handling (see online discussions)
+       We should check that the json is actually valid for a folder
+       """
+    try:
+        jsond = json.loads(jsonstr)
+    except:
+        raise Rhaptos2Error("Error converting json to dict")
+    return jsond
 
 def mkobjfromlistofdict(o, l):
     """ Glimmering of recursion style needed
@@ -273,7 +286,7 @@ def populate_folder(incomingd, folder_obj):
 
 
 
-def post_user(jsond):
+def post_folder(incomingd, creator_uuid):
     """Given a dict representing the complete set
        of fields then create a new user and those fields
 
@@ -282,12 +295,11 @@ def post_user(jsond):
 
     returns User object, for later saveing to DB"""
 
-    u = Folder()
+    u = Folder(creator_uuid=creator_uuid)
 
     #parser = verify_schema_version(None)
     #incomingd = parser(json_str)
-    incomingd = json_dict
-    u = populate_folder(incomingd, u)
+    populate_folder(incomingd, u)  #be careful None returned. XXX
     db_session.add(u); db_session.commit()
     return u
 
@@ -311,6 +323,44 @@ def get_folder(folderid):
     newf = rs[0]
     return newf
 
+
+def get_by_id(klass, ID):
+    """
+
+    part of the re-factor...
+     """
+    q = db_session.query(klass)
+    q = q.filter(klass.folderid == ID)
+    rs = q.all()
+    if len(rs) == 0:
+        raise Rhaptos2Error("User ID Not found in this repo")
+    ### There is a uniq constraint on the table, but anyway...
+    if len(rs) > 1:
+        raise Rhaptos2Error("Too many matches")
+
+    newu = rs[0]
+    return newu
+
+def put_o(jsond, klass, ID):
+    """Given a user_id, and a json_str representing the "Updated" fields
+       then update those fields for that user_id """
+
+    try:
+        uobj = get_by_id(klass, ID)
+    except Exception, e:
+        dolog("INFO", str(e))
+        raise Rhaptos2Error("FAiled to get user")
+
+    #.. todo:: parser = verify_schema_version(None)
+    updated_obj = populate_folder(jsond, uobj)
+    db_session.add(uobj); db_session.commit()
+    return uobj
+
+def delete_o(klass, ID):
+    """ """
+    fldr = get_by_id(klass, ID)
+    db_session.delete(fldr)
+    db_session.commit()
 
 # def get_user_by_identifier(unquoted_id):
 #     """ """

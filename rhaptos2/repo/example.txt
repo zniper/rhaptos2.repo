@@ -40,6 +40,9 @@ Blob           urn:cnxblog:<NSS>      urn:cnxblob:529d7edc-63ee-40c6-a4be-5c7a94
 
 
 
+http://localhost:8000/folder/752419e8-2077-41ea-b950-b0e50262d019/
+psql -h www.frozone.mikadosoftware.com -U test1 -d dbtest
+
 
 Testing the Folder database 
 ===========================
@@ -64,10 +67,16 @@ I will use a URN that is set up in user database.
 .. todo:: enfirce relational check on user id to user dbase
 
     >>> owner = "cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26"
+    >>> TESTFOLDERID = "002c7a02-fb4f-48de-bbf0-28e16d6dad3c"
+
+Yes that should be a URI...
 
 Setup ::
 
     >>> import decl
+
+decl is where I am storing text for examples.
+
     >>> import os, json
     >>> import pprint
     >>> from rhaptos2.repo import backend, foldermodel
@@ -85,7 +94,6 @@ Initiallise the database session
     >>> backend.initdb(confd['app'])
 
 
-http://localhost:8000/folder/752419e8-2077-41ea-b950-b0e50262d019/
 
 OK - we have a json onject coming in - which we represent here as a dictionary...
 We snaffle the folder used for declaration indp 
@@ -108,6 +116,7 @@ We snaffle the folder used for declaration indp
 
 
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
+    >>> f2.folderid = TESTFOLDERID
     >>> foldermodel.populate_folder(incomingjsond, f2)
     >>> print len(f2.userroles)
     1
@@ -118,4 +127,31 @@ We snaffle the folder used for declaration indp
     >>> db_session.commit()
 
 
+    >>> f3 = foldermodel.get_by_id(foldermodel.Folder, TESTFOLDERID)
+    >>> assert f3.folderid == TESTFOLDERID
 
+    >>> incomingjsond3 = {'date_lastmodified_utc': None, 
+    ... 'title': u'new folder name', 
+    ... 'date_created_utc': None, 
+    ... 'contentjson': json.dumps(decl.declarationdict['folder']) }
+
+    >>> newf = foldermodel.put_o(incomingjsond3, 
+    ...                          foldermodel.Folder, TESTFOLDERID)
+    >>> print newf
+    Folder...
+
+    >>> foldermodel.delete_o(foldermodel.Folder,
+    ...  TESTFOLDERID)
+
+
+    >>> owner = "cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26"
+    >>> EXAMPLEFOLDERID = "102c7a02-fb4f-48de-bbf0-28e16d6dad3c"
+
+    temproary prepopulation fix
+    >>> f2 = foldermodel.Folder(creator_uuid=owner)
+    >>> f2.folderid = EXAMPLEFOLDERID
+    >>> foldermodel.populate_folder(incomingjsond, f2)
+    >>> f2.set_acls(owner, aclsd)
+    >>> db_session.add(f2)
+    >>> db_session.commit()
+    

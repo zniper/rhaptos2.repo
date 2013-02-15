@@ -248,9 +248,21 @@ def whoami():
     .. todo:: use secure cookie
 
     I really need to think about session cookies. Default for now.
+
+
+
+    >> headers = {'X-Cnx-FakeUserId': 'fgfgfgf'}
+    >> r = requests.get("http://localhost:8000/me/", headers=headers)
+    >> r.text
+    u'{"email": "Unknown User", "id": "Unknownuser", "name": "Unknown User", "auth_identifier": "fgfgfgf"}'
+    ... todo:: document fajkeuserID
     '''
     dolog("INFO", "Whoami called", caller=whoami)
-    if 'authenticated_identifier' in session:
+    if "X-Cnx-FakeUserId" in request.headers and app.debug == True:
+        fakeuserid = request.headers.get('X-Cnx-FakeUserId')
+        g.user_id = fakeuserid
+        return Identity(fakeuserid)
+    elif 'authenticated_identifier' in session:
         user = Identity(session['authenticated_identifier'])
         g.user_id = user.userID
         return user

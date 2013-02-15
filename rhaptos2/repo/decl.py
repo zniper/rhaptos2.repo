@@ -10,7 +10,7 @@
 ###
 
 
-sect1 = {"id":  "org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126",
+sect1 = {"id":  "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
         "title": "Introduction",
         "content": """<h1>In CONGRESS, July 4, 1776.<h1>
 <p>The unanimous Declaration of the thirteen united States of America,</p>
@@ -22,20 +22,14 @@ equal station to which the Laws of Nature and of Nature's God entitle
 them, a decent respect to the opinions of mankind requires that they
 should declare the causes which impel them to the separation.</p>
 """,
-        "roles":
-            {
-            "Authors":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-            "Maintainers":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             "Copyright Holders":
-                ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             },
-
+         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Copyright Holders":
+             ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
 
-sect2 = {"id":  "org.cnx.sect:350f7859-e6e7-11e1-928f-2c768ae4951b",
+sect2 = {"id":  "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
         "title": "Preamble",
         "content": """
 <p>We hold these truths to be self-evident, that all men are created
@@ -60,21 +54,16 @@ absolute Despotism, it is their right, it is their duty, to throw off
 such Government, and to provide new Guards for their future
 security.</p>
 """,
-        "roles":
-            {
-            "Authors":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-            "Maintainers":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             "Copyright Holders":
-                ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             },
+         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Copyright Holders":
+             ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
 
 
 
-sect3 = {"id":  "org.cnx.sect:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
+sect3 = {"id":  "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
         "title": "Indictment",
         "content": """
 <p>Such has been the patient sufferance of these Colonies; and such is
@@ -186,20 +175,15 @@ by repeated injury. A Prince, whose character is thus marked by every
 act which may define a Tyrant, is unfit to be the ruler of a free
 people.
 """,
-        "roles":
-            {
-            "Authors":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-            "Maintainers":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             "Copyright Holders":
-                ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             },
+         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Copyright Holders":
+             ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
 
 
-sect4 = {"id":  "org.cnx.sect:77a45e48-6e91-4814-9cca-0f28348a4aae",
+sect4 = {"id":  "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
         "title": "Denunciation",
         "content": """
 <p>Nor have We been wanting in attentions to our British brethren. We
@@ -215,21 +199,14 @@ denounces our Separation, and hold them, as we hold the rest of
 mankind, Enemies in War, in Peace Friends.</p>
 
 """,
-        "roles":
-            {
-            "Authors":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-            "Maintainers":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             "Copyright Holders":
-                ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             },
-
-
+         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Copyright Holders":
+             ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
 
-sect5 = {"id":  "org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
+sect5 = {"id":  "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
         "title": "Conclusion",
         "content": """
 <p>We, therefore, the Representatives of the united States of America,
@@ -248,20 +225,15 @@ protection of divine Providence, we mutually pledge to each other our
 Lives, our Fortunes and our sacred Honor.</p>
 
 """,
-        "roles":
-            {
-            "Authors":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-            "Maintainers":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             "Copyright Holders":
-                ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             },
+         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Copyright Holders":
+             ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
 
 
-sect6 = {"id":  "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
+sect6 = {"id":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
         "title": "Signatures",
         "content": """
     New Hampshire: Josiah Bartlett, William Whipple, Matthew Thornton
@@ -278,72 +250,49 @@ sect6 = {"id":  "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
     South Carolina: Edward Rutledge, Thomas Heyward, Jr., Thomas Lynch, Jr., Arthur Middleton
     Georgia: Button Gwinnett, Lyman Hall, George Walton
 """,
-        "roles":
-            {
-            "Authors":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-            "Maintainers":
-                ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             "Copyright Holders":
-                ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-             },
-
+         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+         "Copyright Holders":
+             ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
 ##########folder
 
-fldr = {"folderid": "fhfhfhfh",
+fldr = {"id":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707"
         "title":    "Declaration Folder",
-        "content": ["org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126",
-                     "org.cnx.sect:350f7859-e6e7-11e1-928f-2c768ae4951b",
-                     "org.cnx.sect:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
-                     "org.cnx.sect:77a45e48-6e91-4814-9cca-0f28348a4aae",
-                     "org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
-                     "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
+        "content": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
+                     "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
+                     "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
+                     "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
+                     "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
+                     "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
                      ],
-
-        "roles":
-            {
-        "Authors":
-            ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-        "Maintainers":
-            ["org.cnx.user:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-        "Copyright Holders":
-            ["org.cnx.user.f9647df6-cc6e-4885-9b53-254aa55a3383",],
-        },
-
        }
 
-collection = {"collectionid": "be7790d1-9ee4-4b25-be84-30b7208f5db7",
-              "metadata": {"Title": "United States Declaration Of Independance",
-                           "Language": "English",
-                           "subtype":  "Other Report",
-                           "Subjects": ["Social Sciences",],
-                           "Keywords": ["Life", "Liberty", "Happiness"],
-                           "Summary": "No."
-                          },
-              "roles":    {
-"Authors":
-  ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-"Maintainers":
-  ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-"Copyright Holders":
-  ["org.cnx.user:user.cnx.org-f9647df6-cc6e-4885-9b53-254aa55a3383",],
-                    },
+collection = {"id": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
+              "Title": "United States Declaration Of Independance",
+              "Language": "English",
+              "subtype":  "Other Report",
+              "Subjects": ["Social Sciences",],
+              "Keywords": ["Life", "Liberty", "Happiness"],
+              "Summary": "No."
+              "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+              "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
+              "Copyright Holders":
+                         ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 
-         "parameters": {"style": "LaTeX",
-                        "font": "Times"
-                       },
+              "parameters": {"style": "LaTeX",
+                             "font": "Times"
+                            },
 
-         "content": ["org.cnx.sect:d3911c28-2a9e-4153-9546-f71d83e41126",
-                      "org.cnx.sect:350f7859-e6e7-11e1-928f-2c768ae4951b",
-                      "org.cnx.sect:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
-                      "org.cnx.sect:77a45e48-6e91-4814-9cca-0f28348a4aae",
-                      "org.cnx.sect:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
-                      "org.cnx.sect:c0b149ec-8dd3-4978-9913-ac87c2770de8",
-                     ],
-
-       }
+              "content": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
+                      "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
+                      "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
+                      "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
+                      "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
+                      "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
+                     ]
+             }
 
 
 import json

@@ -34,7 +34,7 @@ from flask import (
 
 from rhaptos2.common import log, err, conf
 from rhaptos2.repo import (get_app, dolog, model, security,
-                           VERSION, foldermodel2 as foldermodel,
+                           VERSION, foldermodel,
                            backend)
 
 
@@ -402,8 +402,30 @@ def loginpersona():
 def folder_get(folderid):
     """ """
     fldr = foldermodel.get_folder(folderid)
-    print fldr
-    print fldr.contentjson
+    resp = flask.make_response(fldr.contentjson)
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+@app.route('/folder/', methods=['POST'])
+def folder_post():
+    """ """
+    owner = g.user_id ##loggedin user
+    jsond = request.json  #flask autoconverts to dict ...
+    print "**************"
+    print pprint.pformat(jsond)
+    fldr = foldermodel.post_folder(jsond, creator_uuid=owner)
+    resp = flask.make_response(fldr.contentjson)
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+
+@app.route('/folder/<folderid>/', methods=['PUT'])
+def folder_put(folderid):
+    """ """
+    incomingjsond = request.json
+    fldr = foldermodel.put_o(incomingjsond, foldermodel.Folder, folderid)
     resp = flask.make_response(fldr.contentjson)
     resp.status_code = 200
     resp.content_type = 'application/json'
