@@ -22,7 +22,7 @@ from sqlalchemy import create_engine, MetaData, Table, ForeignKey
 from sqlalchemy import Column, Integer, String, Text, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
-
+import psycopg2
 
 
 ### Module globals.  Following Pylons lead, having global
@@ -30,9 +30,10 @@ from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 ### all have theit own sessions
 
 
-
 db_session = scoped_session(sessionmaker(autoflush=True,
-                                      autocommit=False,))
+                                         autocommit=False,))
+
+
 Base = declarative_base()
 
 
@@ -47,8 +48,20 @@ def connect_now(confd):
 
 
 def initdb(confd):
-
+    """This could become a conn factory.  """
     global db_session
-    engine = connect_now(confd)
-    db_session.configure(bind=engine)
-    Base.metadata.create_all(engine)
+    db_engine = connect_now(confd)
+    db_session.configure(bind=db_engine)
+    Base.metadata.create_all(db_engine)
+
+def clean_dbase(config):
+    conn = psycopg2.connect("""dbname='%(pgdbname)s'\
+                             user='%(pgusername)s' \
+                             host='%(pghost)s' \
+                             password='%(pgpassword)s'""" % config);
+    c = conn.cursor()
+    c.execute("TRUNCATE TABLE public.cnxfolder CASCADE;")
+    conn.commit()
+    c.execute("TRUNCATE TABLE public.userrole_folder CASCADE;")
+    conn.commit()
+    conn.close()

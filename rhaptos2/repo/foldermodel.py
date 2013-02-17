@@ -85,8 +85,7 @@ class Folder(Base, CNXBase):
     __tablename__ = 'cnxfolder'
     folderid = Column(String, primary_key=True)
     title = Column(String)
-    testarr = Column(ARRAY(String))
-    contentjson = Column(Text)
+    content = Column(ARRAY(String))
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
 
@@ -94,10 +93,11 @@ class Folder(Base, CNXBase):
                              backref="cnxfolder",
                              cascade="all, delete-orphan")
 
-
     def __init__(self, folderid=None, creator_uuid=None):
+        """ """
         if creator_uuid:
-            self.adduserrole({'user_uuid':creator_uuid, 'role_type':'aclrw'})
+            self.adduserrole(UserRole,
+                {'user_uuid':creator_uuid, 'role_type':'aclrw'})
         else:
             raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
 
@@ -110,69 +110,6 @@ class Folder(Base, CNXBase):
 
     def __repr__(self):
         return "Folder:(%s)-%s" % (self.folderid, self.title)
-
-    def set_acls(self, setter_user_uuid, acllist):
-        """set the user acls on this object.
-
-        SOme, not all objects that inherit form CNXBase (!)
-        will have a relatred user_roles table.
-        This will map the object ID to a acl type and a user
-
-
-        [{'date_lastmodified_utc': None,
-          'date_created_utc': None,
-          'user_uuid': u'Testuser1',
-          'role_type': 'author'},
-         {'date_lastmodified_utc': None,
-          'date_created_utc': None,
-          'user_uuid': u'testuser2',
-          'role_type': 'author'}]
-
-
-
-        """
-        ##is this authorised? - sep function?
-        if (setter_user_uuid, "aclrw") not in [(u.user_uuid, u.role_type)
-                                               for u in self.userroles]:
-            raise Rhaptos2Error("http:401")
-        else:
-            for usrdict in acllist:
-                #I am losing modified info...
-                self.adduserrole(usrdict)
-
-    def adduserrole(self, usrdict):
-        """ keeping a common funciton in one place
-
-        Given a usr_uuid and a role_type, update a UserRole object
-
-        I am checking setter_user is authorised in calling function.
-        Ideally check here too.
-        """
-        t = get_utcnow()
-
-        ##why not pass around USerROle objects??
-        user_uuid = usrdict['user_uuid']
-        role_type = usrdict['role_type']
-
-        if user_uuid not in [u.user_uuid for u in self.userroles]:
-            #not got this one, add
-            i = UserRole()
-            i.from_dict(usrdict)
-            i.date_created_utc = t
-            i.date_lastmodified_utc = t
-            self.userroles.append(i)
-
-        elif (user_uuid, role_type) not in [(u.user_uuid, u.role_type) for u
-                                             in self.userroles]:
-            #user exits but diff role tyoe = update
-            i = UserRole()
-            i.from_dict(usrdict)
-            i.date_lastmodified_utc = t
-            self.userroles.append(i)
-        else:
-            #user is there, user and role type is there, rhis is duplicate
-            pass
-
 
     def from_dict(self, d):
         """
@@ -202,11 +139,6 @@ class Folder(Base, CNXBase):
         for i in self.userroles:
             d['userroles'].append(i.to_dict())
         return d
-
-    # def jsonify(self):
-    #     """Helper function that returns simple json repr """
-    #     return self.contentjson
-
 
 def get_utcnow():
     """Eventually we shall handle TZones here too"""
@@ -353,66 +285,6 @@ def delete_o(klass, ID):
     fldr = get_by_id(klass, ID)
     db_session.delete(fldr)
     db_session.commit()
-
-# def get_user_by_identifier(unquoted_id):
-#     """ """
-
-#     ### Now lets recreate it.
-
-#     q = db_session.query(Identifier)
-#     q = q.filter(Identifier.identifierstring == unquoted_id)
-#     rs = q.all()
-
-#     if len(rs) == 0:
-#         raise Rhaptos2Error("Identifer ID Not found in this repo")
-#     if len(rs) > 1:
-#         raise Rhaptos2Error("Too many matches")
-
-#     #.. todo:: stop using indexes on rows - transform to fieldnames
-#     user_id = rs[0].user_id
-#     newu = get_user(user_id)
-#     return newu
-
-
-# def get_user_by_name(namefrag):
-#     """
-#     Perform a case insensitive search on fullname
-
-#     I would like to offer at least two other searches,
-#     specifying the fields to search, and a frag search across
-#     many fields.
-#     """
-
-#     q = db_session.query(User)
-#     q = q.filter(or_(
-#                      User.fullname.ilike("%%%s%%" % namefrag),
-#                      User.email.ilike("%%%s%%" % namefrag),
-#                      ))
-#     rs = q.all()
-#     out_l = []
-#     for row in rs:
-#         out_l.append(row)
-#     return out_l
-
-# def get_all_users():
-#     """ FOr search functionality"""
-
-#     q = db_session.query(User)
-#     rs = q.all()
-#     out_l = []
-#     c = 0
-#     for row in rs:
-#         out_l.append(row)
-#         c += 1
-#         if c >= 25: break
-#     # ..todo:: the worst limiting case ever...
-#     return out_l
-
-
-
-# def delete_user(security_token, user_id):
-#     """ """
-#     raise Rhaptos2Error("delete user not supported")
 
 
 def close_session():

@@ -91,9 +91,10 @@ I am unable to set __file__ in doctest - needs a fix
 
 Initiallise the database session
 
+
+
+    >>> backend.clean_dbase(confd['app'])
     >>> backend.initdb(confd['app'])
-
-
 
 OK - we have a json onject coming in - which we represent here as a dictionary...
 We snaffle the folder used for declaration indp 
@@ -121,7 +122,7 @@ We snaffle the folder used for declaration indp
     >>> foldermodel.populate_folder(incomingjsond, f2)
     >>> print len(f2.userroles)
     1
-    >>> f2.set_acls(owner, aclsd)
+    >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
     >>> print len(f2.userroles)
     2
     >>> db_session.add(f2)
@@ -154,9 +155,10 @@ We snaffle the folder used for declaration indp
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
     >>> f2.folderid = EXAMPLEFOLDERID
     >>> foldermodel.populate_folder(incomingjsond3, f2)
-    >>> f2.set_acls(owner, aclsd)
+    >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
     >>> db_session.add(f2)
     >>> db_session.commit()
     
     >>> farr = foldermodel.get_by_id(foldermodel.Folder,EXAMPLEFOLDERID )
     >>> print farr.testarr
+    ['The', 'quick', 'brown', 'fox']
