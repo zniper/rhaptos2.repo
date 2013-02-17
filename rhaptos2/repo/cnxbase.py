@@ -14,6 +14,16 @@ import datetime
 
 class CNXBase():
 
+    def from_json(self, json_str):
+        """ Not used at moment - json conversion usually done in
+            web servers so this has little use for now."""
+        d = json.loads(json_str)
+        self.from_dict(d)
+
+    def populate_self(self, d):
+        ''' '''
+        self.from_dict(d)
+
     def from_dict(self, userprofile_dict):
         """
         SHould test for schema validity etc.
@@ -137,6 +147,20 @@ class CNXBase():
         else:
             #user is there, user and role type is there, this is duplicate
             pass
+
+    def parse_json(self, jsonstr):
+        """Given a json-formatted string representing a folder, return a dict
+
+        There is a lot todo here.
+        We should have version handling (see online discussions)
+        We should check that the json is actually valid for a folder
+        """
+        try:
+            jsond = json.loads(jsonstr)
+        except:
+            raise Rhaptos2Error("Error converting json to dict")
+        return jsond
+
 
     def get_utcnow(self):
         """Eventually we shall handle TZones here too"""

@@ -29,7 +29,7 @@ import psycopg2
 ### scoped_session will ensure threads (and thread locals in Flask)
 ### all have theit own sessions
 
-
+db_engine = None
 db_session = scoped_session(sessionmaker(autoflush=True,
                                          autocommit=False,))
 
@@ -39,7 +39,6 @@ Base = declarative_base()
 
 ### As long as we subclass everything from Base, we are following
 ### ndeclarative pattern recommended
-
 
 def connect_now(confd):
     connstr = "postgresql+psycopg2://%(pgusername)s:%(pgpassword)s@%(pghost)s/%(pgdbname)s" % confd
@@ -53,6 +52,13 @@ def initdb(confd):
     db_engine = connect_now(confd)
     db_session.configure(bind=db_engine)
     Base.metadata.create_all(db_engine)
+
+# def droptables():
+#     """This could become a conn factory.  """
+#     global db_session
+#     global db_engine
+#     Base.metadata.drop_all(db_engine)
+
 
 def clean_dbase(config):
     conn = psycopg2.connect("""dbname='%(pgdbname)s'\

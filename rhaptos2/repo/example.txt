@@ -91,19 +91,18 @@ I am unable to set __file__ in doctest - needs a fix
 
 Initiallise the database session
 
+   bit of hack to get a clean dbase ready for testing.
+   need to get nose working and do proper transaction based tests.
 
-
+    
     >>> backend.clean_dbase(confd['app'])
     >>> backend.initdb(confd['app'])
+
 
 OK - we have a json onject coming in - which we represent here as a dictionary...
 We snaffle the folder used for declaration indp 
 
-    >>> incomingjsond = {'date_lastmodified_utc': None, 
-    ... 'title': u'Test Rhaptos folder', 
-    ... 'date_created_utc': None, 
-    ... 'contentjson': "{'foo':'bar'}",
-    ... 'testarr': ['The', 'quick', 'brown', 'fox']}
+    >>> incomingjsond = decl.declarationdict['folder']
 
     >>> aclsd = [
     ...              {'date_lastmodified_utc': None, 
@@ -115,28 +114,29 @@ We snaffle the folder used for declaration indp
     ...               'user_uuid': u'testuser2', 
     ...               'role_type': 'aclro'}
     ...               ]
-
-
+    
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
     >>> f2.folderid = TESTFOLDERID
-    >>> foldermodel.populate_folder(incomingjsond, f2)
+    >>> f2.populate_self(incomingjsond)
     >>> print len(f2.userroles)
     1
     >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
     >>> print len(f2.userroles)
     2
+    >>> del(f2)
+
+    >>> f2 = foldermodel.post_o(foldermodel.Folder, 
+    ...             incomingjsond, creator_uuid=owner)
+    >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
+
     >>> db_session.add(f2)
     >>> db_session.commit()
 
-
+    >>> TESTFOLDERID = f2.folderid
     >>> f3 = foldermodel.get_by_id(foldermodel.Folder, TESTFOLDERID)
     >>> assert f3.folderid == TESTFOLDERID
 
-    >>> incomingjsond3 = {'date_lastmodified_utc': None, 
-    ... 'title': u'new folder name', 
-    ... 'contentjson': "{'foo':'bar'}",
-    ... 'testarr': ['The', 'quick', 'brown', 'fox']}
-
+    >>> incomingjsond3 = decl.declarationdict['folder']
 
     >>> newf = foldermodel.put_o(incomingjsond3, 
     ...                          foldermodel.Folder, TESTFOLDERID)
@@ -154,11 +154,12 @@ We snaffle the folder used for declaration indp
 
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
     >>> f2.folderid = EXAMPLEFOLDERID
-    >>> foldermodel.populate_folder(incomingjsond3, f2)
+    >>> f2.populate_self(incomingjsond3)
     >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
     >>> db_session.add(f2)
     >>> db_session.commit()
     
+SHow that we put in and get out same content (list in list out)
     >>> farr = foldermodel.get_by_id(foldermodel.Folder,EXAMPLEFOLDERID )
-    >>> print farr.testarr
-    ['The', 'quick', 'brown', 'fox']
+    >>> assert decl.declarationdict['folder']['content'] == farr.content
+    
