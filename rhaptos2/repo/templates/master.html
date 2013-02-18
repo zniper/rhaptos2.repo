@@ -17,25 +17,25 @@
     <meta name="viewport" content="width=device-width">
 
     {% block css %}
-    <link rel="stylesheet" type="text/css" href="static/app.css"/>
+    <link rel="stylesheet" type="text/css" href="atc/app.css"/>
     {% endblock %}{# css block #}
 
     {% block _js %}
     {# Global Javascript that shouldn't be overridden. #}
     <script type="text/javascript" src="https://login.persona.org/include.js"></script>
-    <script type="text/javascript" src="static/lib/require-2.1.2.js" data-main="app.js"></script>
+    <script type="text/javascript" src="atc/lib/require-2.1.2.js" data-main="atc/app.js"></script>
     {# TODO: Finish removing the global window.jQuery #}
     {# Load jQuery _after_ require so it registers 'jquery' but before Aloha so Aloha uses the same jQuery #}
     {# Currently Aloha loads its own for some reason so plugins that depend on bootstrap don't work #}
-    <script type="text/javascript" src="static/lib/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="atc/lib/jquery-1.8.3.js"></script>
     {# Configure all the require/app plugins #}
-    <script type="text/javascript" src="static/require.config.js"></script>
+    <script type="text/javascript" src="atc/require.config.js"></script>
     {% endblock %}
 
     {% block js %}
   <script src="{{ cdnmathjax }}/MathJax.js?config=TeX-MML-AM_HTMLorMML-full&amp;delayStartupUntil=configured"></script>
 
-    <script type="text/javascript" src="static/authortools_mathjax_settings.js"></script>
+    <script type="text/javascript" src="atc/authortools_mathjax_settings.js"></script>
     <script type="text/javascript" src="conf.js"></script>
 
     <script type="text/javascript">

@@ -66,8 +66,8 @@ def apply_cors(fn):
 
 
 
-@app.route("/cdn/aloha/<path:filename>")
-def serve_aloha(filename):
+@app.route("/atc/<path:filename>")
+def serve_atc(filename):
     """ serve static files for development purposes
 
     We would expect that these routes would be "overwritten" by say
@@ -79,8 +79,8 @@ def serve_aloha(filename):
 
     """
     #os.path.isfile is checked by the below function in Flask.
-    dolog("INFO", repr((app.config["aloha_staging_dir"], filename)))
-    return send_from_directory(app.config["aloha_staging_dir"], filename)
+    dolog("INFO", repr((app.config["atc_dir"], filename)))
+    return send_from_directory(app.config["atc_dir"], filename)
 
 
 @app.route("/cdn/js/<path:filename>/")
