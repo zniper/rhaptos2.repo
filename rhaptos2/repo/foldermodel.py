@@ -72,6 +72,9 @@ from rhaptos2.repo.backend import Base, db_session
 from rhaptos2.repo import dolog
 from rhaptos2.common.err import Rhaptos2Error
 
+##XXX - replace with catchall err handler - conflict5s with debug
+from flask import abort
+
 ################## COLLECTIONS #############################
 
 class UserRoleCollection(Base, CNXBase):
@@ -404,7 +407,8 @@ def get_by_id(klass, ID):
     q = q.filter(klass.id_ == ID)
     rs = q.all()
     if len(rs) == 0:
-        raise Rhaptos2Error("User ID Not found in this repo")
+#        raise Rhaptos2Error("ID Not found in this repo")
+        abort(404)
     ### There is a uniq constraint on the table, but anyway...
     if len(rs) > 1:
         raise Rhaptos2Error("Too many matches")
@@ -427,10 +431,11 @@ def post_o(klass, incomingd, creator_uuid):
     #parser = verify_schema_version(None)
     #incomingd = parser(json_str)
     u.populate_self(incomingd)
+    change_approval(u, incomingd, creator_uuid, "post")
     db_session.add(u); db_session.commit()
     return u
 
-def put_o(jsond, klass, ID, requesting_user_uuid=None):
+def put_o(jsond, klass, ID, requestinguserid=None):
     """Given a user_id, and a json_str representing the "Updated" fields
        then update those fields for that user_id """
 
@@ -438,8 +443,9 @@ def put_o(jsond, klass, ID, requesting_user_uuid=None):
         uobj = get_by_id(klass, ID)
     except Exception, e:
         dolog("INFO", str(e))
-        raise Rhaptos2Error("FAiled to get obj")
-    change_approval(uobj, jsond, requesting_user_uuid, "put")
+#        raise Rhaptos2Error("FAiled to get obj")
+        abort(404)
+    change_approval(uobj, jsond, requestinguserid, "put")
     #.. todo:: parser = verify_schema_version(None)
     uobj.populate_self(jsond)
     db_session.add(uobj); db_session.commit()

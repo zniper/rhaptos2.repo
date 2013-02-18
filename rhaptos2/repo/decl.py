@@ -183,7 +183,7 @@ people.
 
 
 
-sect4 = {"id":  "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
+sect4 = {"id_":  "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
         "title": "Denunciation",
         "content": """
 <p>Nor have We been wanting in attentions to our British brethren. We
@@ -206,7 +206,7 @@ mankind, Enemies in War, in Peace Friends.</p>
 }
 
 
-sect5 = {"id":  "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
+sect5 = {"id_":  "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
         "title": "Conclusion",
         "content": """
 <p>We, therefore, the Representatives of the united States of America,
@@ -233,7 +233,7 @@ Lives, our Fortunes and our sacred Honor.</p>
 
 
 
-sect6 = {"id":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
+sect6 = {"id_":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
         "title": "Signatures",
         "content": """
     New Hampshire: Josiah Bartlett, William Whipple, Matthew Thornton
@@ -258,7 +258,7 @@ sect6 = {"id":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
 
 ##########folder
 
-fldr = {"id":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
+fldr = {"id_":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
         "title":    "Declaration Folder",
         "content": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
                      "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
@@ -269,7 +269,7 @@ fldr = {"id":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
                      ],
        }
 
-collection = {"id": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
+collection = {"id_": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
               "Title": "United States Declaration Of Independance",
               "Language": "English",
               "subtype":  "Other Report",

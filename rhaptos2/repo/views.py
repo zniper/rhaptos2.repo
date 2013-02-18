@@ -481,3 +481,10 @@ def collection_post():
 def collection_put(collectionuri):
     """ """
     return generic_put(foldermodel.Collection, collectionuri)
+
+
+###############
+
+@app.errorhandler(Rhaptos2Error)
+def catchall(err):
+    return "Placeholder for better error handling..." + str(err)
