@@ -397,36 +397,87 @@ def loginpersona():
     abort(500)
 
 ######################folders
+###################### A custom converter in Flask is a better idea
+### todo: custom convertor
 
-@app.route('/folder/<folderid>/', methods=['GET'])
-def folder_get(folderid):
-    """ """
-    fldr = foldermodel.get_folder(folderid)
+@app.route('/folder/<folderuri>/', methods=['GET'])
+def folder_get(folderuri):
+    """    """
+    return generic_get(foldermodel.Folder, folderuri)
+
+@app.route('/collection/<collectionuri>/', methods=['GET'])
+def collection_get(collectionuri):
+    """  """
+    return generic_get(foldermodel.Collection, collectionuri)
+
+@app.route('/module/<moduleuri>/', methods=['GET'])
+def module_get(moduleuri):
+    """    """
+    return generic_get(foldermodel.Module, moduleuri)
+
+######
+
+def generic_get(klass, uri):
+    mod = foldermodel.get_by_id(klass, uri)
+    resp = flask.make_response(mod.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+def generic_post(klass):
+    """Temp fix till get regex working on routes """
+
+    owner = g.user_id ##loggedin user
+    jsond = request.json  #flask autoconverts to dict ...
+    fldr = foldermodel.post_o(klass, jsond, creator_uuid=owner)
     resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
+
+def generic_put(klass, uri):
+
+    owner = g.user_id
+    incomingjsond = request.json
+    fldr = foldermodel.put_o(incomingjsond, klass, uri,
+                              requestinguserid=owner)
+    resp = flask.make_response(fldr.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
 
 @app.route('/folder/', methods=['POST'])
 def folder_post():
     """ """
-    owner = g.user_id ##loggedin user
-    jsond = request.json  #flask autoconverts to dict ...
-    print "**************"
-    print pprint.pformat(jsond)
-    fldr = foldermodel.post_folder(jsond, creator_uuid=owner)
-    resp = flask.make_response(fldr.jsonify())
-    resp.status_code = 200
-    resp.content_type = 'application/json'
-    return resp
+    return generic_post(foldermodel.Folder)
 
 
 @app.route('/folder/<folderid>/', methods=['PUT'])
 def folder_put(folderid):
     """ """
-    incomingjsond = request.json
-    fldr = foldermodel.put_o(incomingjsond, foldermodel.Folder, folderid)
-    resp = flask.make_response(fldr.jsonify())
-    resp.status_code = 200
-    resp.content_type = 'application/json'
-    return resp
+    return generic_put(foldermodel.Folder, folderid)
+
+
+@app.route('/module/', methods=['POST'])
+def module_post():
+    """ """
+    return generic_post(foldermodel.Module)
+
+
+@app.route('/module/<moduleuri>/', methods=['PUT'])
+def module_put(moduleuri):
+    """ """
+    return generic_put(foldermodel.Module, moduleuri)
+
+
+@app.route('/collection/', methods=['POST'])
+def collection_post():
+    """ """
+    return generic_post(foldermodel.Collection)
+
+
+@app.route('/collection/<collectionuri>/', methods=['PUT'])
+def collection_put(collectionuri):
+    """ """
+    return generic_put(foldermodel.Collection, collectionuri)

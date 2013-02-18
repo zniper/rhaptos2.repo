@@ -116,25 +116,25 @@ We snaffle the folder used for declaration indp
     ...               ]
     
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
-    >>> f2.folderid = TESTFOLDERID
+    >>> f2.id_ = TESTFOLDERID
     >>> f2.populate_self(incomingjsond)
     >>> print len(f2.userroles)
     1
-    >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
+    >>> f2.set_acls(owner, aclsd)
     >>> print len(f2.userroles)
     2
     >>> del(f2)
 
     >>> f2 = foldermodel.post_o(foldermodel.Folder, 
     ...             incomingjsond, creator_uuid=owner)
-    >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
+    >>> f2.set_acls(owner, aclsd)
 
     >>> db_session.add(f2)
     >>> db_session.commit()
 
-    >>> TESTFOLDERID = f2.folderid
+    >>> TESTFOLDERID = f2.id_
     >>> f3 = foldermodel.get_by_id(foldermodel.Folder, TESTFOLDERID)
-    >>> assert f3.folderid == TESTFOLDERID
+    >>> assert f3.id_ == TESTFOLDERID
 
     >>> incomingjsond3 = decl.declarationdict['folder']
 
@@ -153,9 +153,9 @@ We snaffle the folder used for declaration indp
     temproary prepopulation fix
 
     >>> f2 = foldermodel.Folder(creator_uuid=owner)
-    >>> f2.folderid = EXAMPLEFOLDERID
+    >>> f2.id_ = EXAMPLEFOLDERID
     >>> f2.populate_self(incomingjsond3)
-    >>> f2.set_acls(owner, aclsd, foldermodel.UserRole)
+    >>> f2.set_acls(owner, aclsd)
     >>> db_session.add(f2)
     >>> db_session.commit()
     
@@ -163,3 +163,12 @@ SHow that we put in and get out same content (list in list out)
     >>> farr = foldermodel.get_by_id(foldermodel.Folder,EXAMPLEFOLDERID )
     >>> assert decl.declarationdict['folder']['content'] == farr.content
     
+    >>> c1 = foldermodel.post_o(foldermodel.Collection,
+    ...  decl.declarationdict['collection'],creator_uuid=owner )
+    >>> c1.set_acls(owner, aclsd)
+    
+    >>> m1 = foldermodel.post_o(foldermodel.Module,
+    ...  decl.declarationdict['sect1'],creator_uuid=owner )
+    >>> m1.set_acls(owner, aclsd)    
+
+

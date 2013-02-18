@@ -10,7 +10,7 @@
 ###
 
 
-sect1 = {"id":  "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
+sect1 = {"id_":  "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
         "title": "Introduction",
         "content": """<h1>In CONGRESS, July 4, 1776.<h1>
 <p>The unanimous Declaration of the thirteen united States of America,</p>
@@ -29,7 +29,7 @@ should declare the causes which impel them to the separation.</p>
 }
 
 
-sect2 = {"id":  "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
+sect2 = {"id_":  "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
         "title": "Preamble",
         "content": """
 <p>We hold these truths to be self-evident, that all men are created
@@ -63,7 +63,7 @@ security.</p>
 
 
 
-sect3 = {"id":  "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
+sect3 = {"id_":  "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
         "title": "Indictment",
         "content": """
 <p>Such has been the patient sufferance of these Colonies; and such is
@@ -278,12 +278,13 @@ collection = {"id": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
               "Summary": "No.",
               "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
               "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-              "Copyright Holders":
+              "CopyrightHolders":
                          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 
-              "parameters": {"style": "LaTeX",
-                             "font": "Times"
-                            },
+### Are these in the defintion going forward?
+#              "parameters": {"style": "LaTeX",
+ #                            "font": "Times"
+  #                          },
 
               "content": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
                       "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",

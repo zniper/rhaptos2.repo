@@ -66,8 +66,12 @@ def clean_dbase(config):
                              host='%(pghost)s' \
                              password='%(pgpassword)s'""" % config);
     c = conn.cursor()
-    c.execute("TRUNCATE TABLE public.cnxfolder CASCADE;")
-    conn.commit()
-    c.execute("TRUNCATE TABLE public.userrole_folder CASCADE;")
+    c.execute("DROP TABLE IF EXISTS public.cnxfolder CASCADE;")
+    c.execute("DROP TABLE IF EXISTS public.userrole_folder CASCADE;")
+    c.execute("DROP TABLE IF EXISTS public.userrole_col CASCADE;")
+    c.execute("DROP TABLE IF EXISTS public.cnxcollection CASCADE;")
+    c.execute("DROP TABLE IF EXISTS public.userrole_module CASCADE;")
+    c.execute("DROP TABLE IF EXISTS public.cnxmodule CASCADE;")
+
     conn.commit()
     conn.close()

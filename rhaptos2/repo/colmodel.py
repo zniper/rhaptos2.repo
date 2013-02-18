@@ -61,23 +61,6 @@ class UserRoleCol(Base, CNXBase):
 
 class Collection(Base, CNXBase):
     """
-    Collection Class inheriting from SQLAlchemy and from a CNXBase class
-    to get a few generic functions.
-
-    1. we define the table and columns
-    2. set a new unique ID if not already one (differen between PUT and POST)
-    3. from_dict - will receive a dictionary of keywords that map exactly
-       to column fields and will populate itself.
-    4. to_dict will emit a dictionary representing the object.
-       If this is a "leaf" table then it is entirely using CNXBase superclass
-       If this is table is PK for anothers FK then we need to manually
-       code a method to get the FK linked object.
-       There is no reliable generic way to do this in SQLALchemy afaik.
-       Frankly thats not a problem, as its pretty cut and paste.
-
-    5. jsonify - wrap to_dict in json.  In otherwords convert self to a JSON doc
-
-
 
     """
     __tablename__ = 'cnxcollection'
@@ -93,7 +76,7 @@ class Collection(Base, CNXBase):
         if creator_uuid:
             self.adduserrole({'user_uuid':creator_uuid, 'role_type':'aclrw'})
         else:
-            raise Rhaptos2Error("Collectionsmust be created with a creator UUID ")
+            raise Rhaptos2Error("Collections created with a creator UUID ")
 
         if collectionid :
             self.collectionid = collectionid

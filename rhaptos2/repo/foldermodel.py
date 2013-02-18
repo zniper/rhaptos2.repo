@@ -72,9 +72,140 @@ from rhaptos2.repo.backend import Base, db_session
 from rhaptos2.repo import dolog
 from rhaptos2.common.err import Rhaptos2Error
 
+################## COLLECTIONS #############################
+
+class UserRoleCollection(Base, CNXBase):
+    """The roles and users assigned for a given folder
+    """
+    __tablename__ = 'userrole_collection'
+    collection_uuid = Column(String, ForeignKey('cnxcollection.id_'),
+                         primary_key=True)
+    user_uuid   = Column(String, primary_key=True)
+    role_type   = Column(Enum('aclrw','aclro',
+                               name="cnxrole_type"),
+                               primary_key=True)
+    date_created_utc = Column(DateTime)
+    date_lastmodified_utc = Column(DateTime)
+
+    def __repr__(self):
+        return "%s-%s" % (self.role_type, self.user_uuid)
+
+
+
+class Collection(Base, CNXBase):
+    """
+    """
+    __tablename__ = 'cnxcollection'
+    id_ = Column(String, primary_key=True)
+    Title = Column(String)
+    Language = Column(String)
+    subtype = Column(String)
+    Subjects = Column(ARRAY(String))
+    Keywords = Column(ARRAY(String))
+    Summary = Column(String)
+    Authors =  Column(ARRAY(String))
+    Maintainers =  Column(ARRAY(String))
+    CopyrightHolders   =  Column(ARRAY(String))
+
+    content = Column(ARRAY(String))
+    date_created_utc = Column(DateTime)
+    date_lastmodified_utc = Column(DateTime)
+
+    userroles = relationship("UserRoleCollection",
+                             backref="cnxcollection",
+                             cascade="all, delete-orphan")
+
+    def __init__(self, id_=None, creator_uuid=None):
+        """ """
+        if creator_uuid:
+            self.adduserrole(UserRoleCollection,
+                {'user_uuid':creator_uuid, 'role_type':'aclrw'})
+        else:
+            raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
+
+        if id_ :
+            self.id_ = id_
+        else:
+            self.id_ = "cnxcollection" + str(uuid.uuid4())
+
+        self.date_created_utc = self.get_utcnow()
+
+    def __repr__(self):
+        return "Col:(%s)-%s" % (self.id_, self.Title)
+
+    def set_acls(self, owner_uuid, aclsd):
+        """ allow each Folder / collection class to have a set_acls call,
+        but catch here and then pass generic function the right UserRoleX
+        klass.  Still want to find way to generically follow sqla"""
+        return super(Collection, self).set_acls(owner_uuid,
+                                                aclsd, UserRoleCollection)
+
+
+################# Modules ##################################
+
+class UserRoleModule(Base, CNXBase):
+    """The roles and users assigned for a given folder
+    """
+    __tablename__ = 'userrole_module'
+    collection_uuid = Column(String, ForeignKey('cnxmodule.id_'),
+                         primary_key=True)
+    user_uuid   = Column(String, primary_key=True)
+    role_type   = Column(Enum('aclrw','aclro',
+                               name="cnxrole_type"),
+                               primary_key=True)
+    date_created_utc = Column(DateTime)
+    date_lastmodified_utc = Column(DateTime)
+
+    def __repr__(self):
+        return "%s-%s" % (self.role_type, self.user_uuid)
+
+
+
+class Module(Base, CNXBase):
+    """
+    """
+    __tablename__ = 'cnxmodule'
+    id_ = Column(String, primary_key=True)
+    Title = Column(String)
+    Authors =  Column(ARRAY(String))
+    Maintainers =  Column(ARRAY(String))
+    CopyrightHolders   =  Column(ARRAY(String))
+    content = Column(String)
+    date_created_utc = Column(DateTime)
+    date_lastmodified_utc = Column(DateTime)
+    userroles = relationship("UserRoleModule",
+                             backref="cnxmodule",
+                             cascade="all, delete-orphan")
+
+    def __init__(self, id_=None, creator_uuid=None):
+        """ """
+        if creator_uuid:
+            self.adduserrole(UserRoleModule,
+                {'user_uuid':creator_uuid, 'role_type':'aclrw'})
+        else:
+            raise Rhaptos2Error("Modules need owner originzlly ")
+
+        if id_ :
+            self.id_ = id_
+        else:
+            self.id_ = "cnxmodule:" + str(uuid.uuid4())
+
+        self.date_created_utc = self.get_utcnow()
+
+    def __repr__(self):
+        return "Module:(%s)-%s" % (self.id_, self.Title)
+
+    def set_acls(self, owner_uuid, aclsd):
+        """ allow each Folder / collection class to have a set_acls call,
+            but catch here and then pass generic function the right UserRoleX
+            klass.  Still want to find way to generically follow sqla"""
+        return super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
+
+
+
 ################## FOLDERS #################################
 
-class UserRole(Base, CNXBase):
+class UserRoleFolder(Base, CNXBase):
     """The roles and users assigned for a given folder
 
     We have following Roles: Owner, Maintainer, XXX
@@ -85,7 +216,7 @@ class UserRole(Base, CNXBase):
 
     """
     __tablename__ = 'userrole_folder'
-    folder_uuid = Column(String, ForeignKey('cnxfolder.folderid'),
+    folder_uuid = Column(String, ForeignKey('cnxfolder.id_'),
                          primary_key=True)
     user_uuid   = Column(String, primary_key=True)
     role_type   = Column(Enum('aclrw','aclro',
@@ -121,33 +252,41 @@ class Folder(Base, CNXBase):
 
     """
     __tablename__ = 'cnxfolder'
-    folderid = Column(String, primary_key=True)
+    id_ = Column(String, primary_key=True)
     title = Column(String)
     content = Column(ARRAY(String))
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
 
-    userroles = relationship("UserRole",
+    userroles = relationship("UserRoleFolder",
                              backref="cnxfolder",
                              cascade="all, delete-orphan")
 
-    def __init__(self, folderid=None, creator_uuid=None):
+    def __init__(self, id_=None, creator_uuid=None):
         """ """
         if creator_uuid:
-            self.adduserrole(UserRole,
+            self.adduserrole(UserRoleFolder,
                 {'user_uuid':creator_uuid, 'role_type':'aclrw'})
         else:
             raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
 
-        if folderid :
-            self.folderid = folderid
+        if id_ :
+            self.id_ = id_
         else:
-            self.folderid = str(uuid.uuid4())
+            self.id_ = "cnxfolder:" + str(uuid.uuid4())
 
         self.date_created_utc = self.get_utcnow()
 
     def __repr__(self):
-        return "Folder:(%s)-%s" % (self.folderid, self.title)
+        return "Folder:(%s)-%s" % (self.id_, self.title)
+
+    def set_acls(self, owner_uuid, aclsd):
+        """ allow each Folder / collection class to have a set_acls call,
+        but catch here and then pass generic function the right UserRoleX
+        klass.  Still want to find way to generically follow sqla.
+
+        convern - this is beginning to smell like java."""
+        return super(Folder, self).set_acls(owner_uuid, aclsd, UserRoleFolder)
 
 
     # def to_dict(self):
@@ -257,10 +396,12 @@ def mkobjfromlistofdict(o, l):
 def get_by_id(klass, ID):
     """
 
-    part of the re-factor...
+    Here we show why we need each Klass to have a generic named id_
+    I want to avoid overly comploex mapping and routing in class calls.
+    However we could map internally in the class (id_ = folderid)  THis does very little.
      """
     q = db_session.query(klass)
-    q = q.filter(klass.folderid == ID)
+    q = q.filter(klass.id_ == ID)
     rs = q.all()
     if len(rs) == 0:
         raise Rhaptos2Error("User ID Not found in this repo")
@@ -289,7 +430,7 @@ def post_o(klass, incomingd, creator_uuid):
     db_session.add(u); db_session.commit()
     return u
 
-def put_o(jsond, klass, ID):
+def put_o(jsond, klass, ID, requesting_user_uuid=None):
     """Given a user_id, and a json_str representing the "Updated" fields
        then update those fields for that user_id """
 
@@ -298,7 +439,7 @@ def put_o(jsond, klass, ID):
     except Exception, e:
         dolog("INFO", str(e))
         raise Rhaptos2Error("FAiled to get obj")
-
+    change_approval(uobj, jsond, requesting_user_uuid, "put")
     #.. todo:: parser = verify_schema_version(None)
     uobj.populate_self(jsond)
     db_session.add(uobj); db_session.commit()
@@ -314,6 +455,14 @@ def delete_o(klass, ID):
 def close_session():
     db_session.remove()
 
+def change_approval(uobj, jsond, requesting_user_uuid, requesttype):
+    """Currently placeholder
+
+    Intended to parse json doc and validate version,
+    validate user can act upon object as requested etc.
+
+     """
+    return
 
 if __name__ == '__main__':
     import doctest
