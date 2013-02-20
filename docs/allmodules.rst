@@ -7,6 +7,7 @@ foldermodel
 -----------
 
 .. automodule:: rhaptos2.repo.foldermodel
+   :members: 
 
 security
 --------
