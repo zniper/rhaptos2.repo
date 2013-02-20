@@ -446,6 +446,24 @@ def generic_put(klass, uri):
     resp.content_type = 'application/json'
     return resp
 
+def generic_delete(klass, uri):
+    """ """
+    owner = g.user_id
+    obj = foldermodel.get_by_id(klass, uri)
+    db_session.delete(obj)
+    db_session.commit()
+    return
+
+def generic_acl(klass, uri, acllist):
+    print "genericacl" + str(klass) + str(uri) + str(acllist)
+    owner = g.user_id
+    fldr = foldermodel.get_by_id(klass, uri)
+    fldr.set_acls(owner, acllist)
+    resp = flask.make_response(fldr.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
 
 @app.route('/folder/', methods=['POST'])
 def folder_post():
@@ -481,6 +499,58 @@ def collection_post():
 def collection_put(collectionuri):
     """ """
     return generic_put(foldermodel.Collection, collectionuri)
+
+@app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
+def collection_acl_put(collectionuri):
+    """ """
+    if request.method == "PUT":
+        jsond = request.json
+        print jsond
+        return generic_acl(foldermodel.Collection, collectionuri, jsond)
+    elif request.method == "GET":
+        obj = foldermodel.get_by_id(foldermodel.Collection,
+                                    collectionuri)
+        return str(obj.userroles)
+
+
+@app.route('/folder/<path:uri>/acl/', methods=['PUT', 'GET'])
+def acl_folder_put(uri):
+    """ """
+    if request.method == "PUT":
+        jsond = request.json
+        print jsond
+        return generic_acl(foldermodel.Folder, uri, jsond)
+    elif request.method == "GET":
+        obj = foldermodel.get_by_id(foldermodel.Folder,
+                                    uri)
+        return str(obj.userroles)
+
+
+
+@app.route('/module/<path:uri>/acl/', methods=['PUT', 'GET'])
+def acl_module_put(uri):
+    """ """
+    if request.method == "PUT":
+        jsond = request.json
+        print jsond
+        return generic_acl(foldermodel.Module, uri, jsond)
+    elif request.method == "GET":
+        obj = foldermodel.get_by_id(foldermodel.Module,
+                                    uri)
+        return str(obj.userroles)
+
+
+
+
+@app.route('/collection/<collectionuri>/', methods=['DELETE'])
+def collection_del(collectionuri):
+    """ """
+    try:
+        generic_delete(foldermodel.Collection, collectionuri)
+    except Exception, e:
+        abort(500)
+    return ""
+
 
 
 ###############

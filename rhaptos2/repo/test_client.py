@@ -19,6 +19,7 @@ import requests
 import os, sys
 import decl
 import json
+import restrest
 
 ###### config - should be replaced with generic runner?
 
@@ -32,6 +33,7 @@ config = Configuration.from_file(CONFD_PATH)
 
 #userhost=config['globals']['bamboo_global']['userserviceurl']
 userhost="http://localhost:8000/"
+#userhost="http://www.frozone.mikadosoftware.com/"
 
 ############################
 
@@ -79,8 +81,35 @@ def stage4_folder():
     d['content'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
     test_put("folder", json.dumps(d), owner, d['id_'])
 
+def get_module():
+    m = "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126"
+    resp = requests.get(urljoin(userhost,"module/" + m + "/"))
+    capture_conversation(resp)
 
 
+def setacl_collection():
+    owner = "cnxuser:1234"
+    acls = decl.acllist
+    headers = {'X-Cnx-FakeUserId': owner,
+               'content-type':'application/json'}
+    resp = requests.put(urljoin(userhost, "collection/" +
+                  "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7" +
+                  "/acl/"),
+                  data=json.dumps(acls), headers=headers)
+    capture_conversation(resp)
+    print resp
+
+
+def del_collection():
+    owner = "cnxuser:1234"
+    headers = {'X-Cnx-FakeUserId': owner,
+              }
+    resp = requests.delete(urljoin(userhost, "collection/" +
+                        "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7"
+                        +"/"),
+                        headers=headers)
+    capture_conversation(resp)
+    print resp
 
 def test_post(resource, json_to_send, fake_user_id):
 
@@ -88,6 +117,7 @@ def test_post(resource, json_to_send, fake_user_id):
                'content-type':'application/json'}
     resp = requests.post(urljoin(userhost, resource + "/"), data=json_to_send,
                          headers=headers)
+    capture_conversation(resp)
     print resp.text
 
 def test_put(resource, json_to_send, fake_user_id, id_):
@@ -98,6 +128,7 @@ def test_put(resource, json_to_send, fake_user_id, id_):
     resp = requests.put(urljoin(userhost, "%s/%s/" % (resource, id_)),
                         data=json_to_send,
                         headers=headers)
+    capture_conversation(resp)
     print resp.text
 
 
@@ -107,6 +138,13 @@ def test_put(resource, json_to_send, fake_user_id, id_):
     #                  "openid/?user=https://paulbrian.myopenid.com"))
     # d = r.json
     # assert d['fullname'] == 'testput-fullname'
+
+def capture_conversation(resp):
+    """ """
+    rst = restrest.restrest(resp)
+    fo = open("output.rst", "a")
+    fo.write(rst)
+    fo.close()
 
 help = """SImple test client for demo
 
@@ -136,10 +174,16 @@ if __name__ == '__main__':
     elif cmd == "putfolder": stage4_folder()
     elif cmd == "putcollection": stage4_collection()
     elif cmd == "putmodule": stage4_module()
+
+    elif cmd == "setacl_folder" : setacl_folder()
+    elif cmd == "setacl_collection" : setacl_collection()
+
     elif cmd == "baduser_module": print "TBD"
     elif cmd == "baduser_folder": print "TBD"
     elif cmd == "baduser_collection": print "TBD"
     elif cmd == "delete_module": print "TBD"
-    elif cmd == "delete_collection": print "TBD"
+    elif cmd == "delete_collection": del_collection()
     elif cmd == "delete_folder": print "TBD"
-    else: print "test_client.py -h"
+
+    elif cmd == "get_module": get_module()
+    else: print "bad arglook here for details test_client.py -h"

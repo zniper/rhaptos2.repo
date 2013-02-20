@@ -42,7 +42,7 @@ Base = declarative_base()
 
 def connect_now(confd):
     connstr = "postgresql+psycopg2://%(pgusername)s:%(pgpassword)s@%(pghost)s/%(pgdbname)s" % confd
-    engine = create_engine(connstr)
+    engine = create_engine(connstr, echo=False)
     return engine
 
 
@@ -66,12 +66,17 @@ def clean_dbase(config):
                              host='%(pghost)s' \
                              password='%(pgpassword)s'""" % config);
     c = conn.cursor()
-    c.execute("DROP TABLE IF EXISTS public.cnxfolder CASCADE;")
-    c.execute("DROP TABLE IF EXISTS public.userrole_folder CASCADE;")
-    c.execute("DROP TABLE IF EXISTS public.userrole_col CASCADE;")
-    c.execute("DROP TABLE IF EXISTS public.cnxcollection CASCADE;")
-    c.execute("DROP TABLE IF EXISTS public.userrole_module CASCADE;")
-    c.execute("DROP TABLE IF EXISTS public.cnxmodule CASCADE;")
 
+    c.execute("DROP TABLE IF EXISTS public.cnxfolder CASCADE;")
+    conn.commit()
+    c.execute("DROP TABLE IF EXISTS public.userrole_folder CASCADE;")
+    conn.commit()
+    c.execute("DROP TABLE IF EXISTS public.userrole_collection CASCADE;")
+    conn.commit()
+    c.execute("DROP TABLE IF EXISTS public.cnxcollection CASCADE;")
+    conn.commit()
+    c.execute("DROP TABLE IF EXISTS public.userrole_module CASCADE;")
+    conn.commit()
+    c.execute("DROP TABLE IF EXISTS public.cnxmodule CASCADE;")
     conn.commit()
     conn.close()

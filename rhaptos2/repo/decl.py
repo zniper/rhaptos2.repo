@@ -304,3 +304,15 @@ declarationdict = {"sect1":sect1, "sect2":sect2,
                    "folder":fldr, "collection":collection}
 #for s in l:
 #    print json.dumps(s,sort_keys=True, indent=4)
+
+acllist = [
+        {'date_lastmodified_utc': None,
+                'date_created_utc': None,
+                  'user_uuid': "cnxuser:1234",
+                  'role_type': 'aclrw'},
+
+        {'date_lastmodified_utc': None,
+                  'date_created_utc': None,
+                  'user_uuid': u'cnxuser:5678',
+                  'role_type': 'aclro'}
+                  ]

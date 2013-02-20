@@ -133,6 +133,7 @@ class Collection(Base, CNXBase):
 
         self.date_created_utc = self.get_utcnow()
 
+
     def __repr__(self):
         return "Col:(%s)-%s" % (self.id_, self.Title)
 
@@ -140,8 +141,10 @@ class Collection(Base, CNXBase):
         """ allow each Folder / collection class to have a set_acls call,
         but catch here and then pass generic function the right UserRoleX
         klass.  Still want to find way to generically follow sqla"""
-        return super(Collection, self).set_acls(owner_uuid,
-                                                aclsd, UserRoleCollection)
+        super(Collection, self).set_acls(owner_uuid,
+                                         aclsd, UserRoleCollection)
+        db_session.add(self)
+        db_session.commit()
 
 
 ################# Modules ##################################
@@ -158,6 +161,7 @@ class UserRoleModule(Base, CNXBase):
                                primary_key=True)
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
+
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uuid)
@@ -194,6 +198,7 @@ class Module(Base, CNXBase):
             self.id_ = "cnxmodule:" + str(uuid.uuid4())
 
         self.date_created_utc = self.get_utcnow()
+        db_session.commit()
 
     def __repr__(self):
         return "Module:(%s)-%s" % (self.id_, self.Title)
@@ -202,8 +207,9 @@ class Module(Base, CNXBase):
         """ allow each Folder / collection class to have a set_acls call,
             but catch here and then pass generic function the right UserRoleX
             klass.  Still want to find way to generically follow sqla"""
-        return super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
-
+        super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
+        db_session.add(self)
+        db_session.commit()
 
 
 ################## FOLDERS #################################
@@ -289,8 +295,9 @@ class Folder(Base, CNXBase):
         klass.  Still want to find way to generically follow sqla.
 
         convern - this is beginning to smell like java."""
-        return super(Folder, self).set_acls(owner_uuid, aclsd, UserRoleFolder)
-
+        super(Folder, self).set_acls(owner_uuid, aclsd, UserRoleFolder)
+        db_session.add(self)
+        db_session.commit()
 
     # def to_dict(self):
     #     """Return self as a dict, suitable for jsonifying """
@@ -432,8 +439,16 @@ def post_o(klass, incomingd, creator_uuid):
     #incomingd = parser(json_str)
     u.populate_self(incomingd)
     change_approval(u, incomingd, creator_uuid, "post")
-    db_session.add(u); db_session.commit()
+    db_session.add(u)
+    db_session.commit()
     return u
+
+
+def acl_setter(klass, uri, requesting_user_uri, acls_list):
+    """ """
+    obj = get_by_id(klass, uri)
+    obj.set_acls(requesting_user_uri, acls_list)
+    return obj
 
 def put_o(jsond, klass, ID, requestinguserid=None):
     """Given a user_id, and a json_str representing the "Updated" fields
@@ -448,7 +463,8 @@ def put_o(jsond, klass, ID, requestinguserid=None):
     change_approval(uobj, jsond, requestinguserid, "put")
     #.. todo:: parser = verify_schema_version(None)
     uobj.populate_self(jsond)
-    db_session.add(uobj); db_session.commit()
+    db_session.add(uobj)
+    db_session.commit()
     return uobj
 
 def delete_o(klass, ID):
