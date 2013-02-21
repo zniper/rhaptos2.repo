@@ -17,6 +17,13 @@ documentation of RESTful interfaces
 
 useage:
 
+    simply execute the script, it should print to stderr the conversation
+    with google.
+
+JSON - we assume pretty much anything we care about is sent as json.
+XML - TBD
+
+This is still very simple.
 
 """
 
@@ -37,8 +44,16 @@ def format_req_body(txt):
     if txt == None or len(txt)==0:
         return ""
     else:
+        #assume its a json dict
         s = "\n\nBody::\n\n"
-        return s + indenttxt(txt)
+        try:
+            pydatatype = json.loads(txt)
+            jsonstr = json.dumps(pydatatype,
+                                 sort_keys=True,
+                                 indent=4)
+            return s + indenttxt(jsonstr)
+        except:
+            return s + indenttxt(txt)
 
 def format_req(req):
     """Neatly format the request """

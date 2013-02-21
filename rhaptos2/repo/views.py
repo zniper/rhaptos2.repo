@@ -552,6 +552,25 @@ def collection_del(collectionuri):
     return ""
 
 
+@app.route('/folder/<folderuri>/', methods=['DELETE'])
+def folder_del(folderuri):
+    """ """
+    try:
+        generic_delete(foldermodel.Folder, folderuri)
+    except Exception, e:
+        abort(500)
+    return ""
+
+@app.route('/module/<moduleuri>/', methods=['DELETE'])
+def module_del(moduleuri):
+    """ """
+    try:
+        generic_delete(foldermodel.Module, moduleuri)
+    except Exception, e:
+        abort(500)
+    return ""
+
+
 
 ###############
 

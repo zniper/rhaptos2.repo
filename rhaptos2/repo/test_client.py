@@ -37,17 +37,24 @@ userhost="http://localhost:8000/"
 
 ############################
 
+###### CONSTANTS
+
+moduleuri = "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126"
+collectionuri = "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7"
+folderuri = "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707"
+gooduseruri = "cnxuser:1234"
+
 def stage1():
     """Create all modules """
-    owner = "cnxuser:1234"
-    for s in ["sect1", "sect2", "sect3", "sect4", "sect5","sect6"]:
+    owner = gooduseruri
+    for s in ["sect1", ]: #"sect2", "sect3", "sect4", "sect5","sect6"]:
         jsond = json.dumps(decl.declarationdict[s])
         res = "module"
         test_post(res, jsond, owner)
 
 def stage2():
     """Create all folders """
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     for s in ["folder",]:
         jsond = json.dumps(decl.declarationdict[s])
         res = "folder"
@@ -56,7 +63,7 @@ def stage2():
 
 def stage3():
     """Create all cols """
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     for s in ["collection",]:
         jsond = json.dumps(decl.declarationdict[s])
         res = "collection"
@@ -64,36 +71,36 @@ def stage3():
 
 
 def stage4_collection():
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     d = decl.declarationdict['collection']
-    d['content'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    d['content'] = [moduleuri,]
     test_put("collection", json.dumps(d), owner, d['id_'])
 
 def stage4_module():
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     d = decl.declarationdict['sect1']
     d['content'] = "Dear King George, cup of tea?"
     test_put("module", json.dumps(d), owner, d['id_'])
 
 def stage4_folder():
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     d = decl.declarationdict['folder']
-    d['content'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    d['content'] = [moduleuri,]
     test_put("folder", json.dumps(d), owner, d['id_'])
 
 def get_module():
-    m = "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126"
+    m = moduleuri
     resp = requests.get(urljoin(userhost,"module/" + m + "/"))
     capture_conversation(resp)
 
 
 def setacl_collection():
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     acls = decl.acllist
     headers = {'X-Cnx-FakeUserId': owner,
                'content-type':'application/json'}
     resp = requests.put(urljoin(userhost, "collection/" +
-                  "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7" +
+                  collectionuri +
                   "/acl/"),
                   data=json.dumps(acls), headers=headers)
     capture_conversation(resp)
@@ -101,15 +108,38 @@ def setacl_collection():
 
 
 def del_collection():
-    owner = "cnxuser:1234"
+    owner =gooduseruri
     headers = {'X-Cnx-FakeUserId': owner,
               }
     resp = requests.delete(urljoin(userhost, "collection/" +
-                        "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7"
+                        collectionuri
                         +"/"),
                         headers=headers)
     capture_conversation(resp)
     print resp
+
+def del_folder():
+    owner = gooduseruri
+    headers = {'X-Cnx-FakeUserId': owner,
+               }
+    resp = requests.delete(urljoin(userhost, "folder/" +
+                                   folderuri
+                                   +"/"),
+                           headers=headers)
+    capture_conversation(resp)
+    print resp
+
+def del_module():
+    owner =gooduseruri
+    headers = {'X-Cnx-FakeUserId': owner,
+               }
+    resp = requests.delete(urljoin(userhost, "module/" +
+                                   moduleuri
+                                   +"/"),
+                           headers=headers)
+    capture_conversation(resp)
+    print resp
+
 
 def test_post(resource, json_to_send, fake_user_id):
 
@@ -181,9 +211,9 @@ if __name__ == '__main__':
     elif cmd == "baduser_module": print "TBD"
     elif cmd == "baduser_folder": print "TBD"
     elif cmd == "baduser_collection": print "TBD"
-    elif cmd == "delete_module": print "TBD"
+    elif cmd == "delete_module": del_module()
     elif cmd == "delete_collection": del_collection()
-    elif cmd == "delete_folder": print "TBD"
+    elif cmd == "delete_folder": del_folder()
 
     elif cmd == "get_module": get_module()
     else: print "bad arglook here for details test_client.py -h"

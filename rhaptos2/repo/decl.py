@@ -24,7 +24,7 @@ should declare the causes which impel them to the separation.</p>
 """,
          "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
          "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-         "Copyright Holders":
+         "CopyrightHolders":
              ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
@@ -56,7 +56,7 @@ security.</p>
 """,
          "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
          "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-         "Copyright Holders":
+         "CopyrightHolders":
              ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
@@ -177,7 +177,7 @@ people.
 """,
          "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
          "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-         "Copyright Holders":
+         "CopyrightHolders":
              ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
@@ -201,7 +201,7 @@ mankind, Enemies in War, in Peace Friends.</p>
 """,
          "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
          "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-         "Copyright Holders":
+         "CopyrightHolders":
              ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
@@ -227,7 +227,7 @@ Lives, our Fortunes and our sacred Honor.</p>
 """,
          "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
          "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-         "Copyright Holders":
+         "CopyrightHolders":
              ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
@@ -252,7 +252,7 @@ sect6 = {"id_":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
 """,
          "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
          "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
-         "Copyright Holders":
+         "CopyrightHolders":
              ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383",],
 }
 
@@ -270,7 +270,7 @@ fldr = {"id_":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
        }
 
 collection = {"id_": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
-              "Title": "United States Declaration Of Independance",
+              "title": "United States Declaration Of Independance",
               "Language": "English",
               "subtype":  "Other Report",
               "Subjects": ["Social Sciences",],

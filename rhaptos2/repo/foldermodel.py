@@ -100,7 +100,7 @@ class Collection(Base, CNXBase):
     """
     __tablename__ = 'cnxcollection'
     id_ = Column(String, primary_key=True)
-    Title = Column(String)
+    title = Column(String)
     Language = Column(String)
     subtype = Column(String)
     Subjects = Column(ARRAY(String))
@@ -135,7 +135,7 @@ class Collection(Base, CNXBase):
 
 
     def __repr__(self):
-        return "Col:(%s)-%s" % (self.id_, self.Title)
+        return "Col:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
@@ -173,11 +173,17 @@ class Module(Base, CNXBase):
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
-    Title = Column(String)
+    title = Column(String)
     Authors =  Column(ARRAY(String))
     Maintainers =  Column(ARRAY(String))
     CopyrightHolders   =  Column(ARRAY(String))
     content = Column(String)
+    Language = Column(String)
+    subtype = Column(String)
+    Subjects = Column(ARRAY(String))
+    Keywords = Column(ARRAY(String))
+    Summary = Column(String)
+
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
     userroles = relationship("UserRoleModule",
@@ -201,7 +207,7 @@ class Module(Base, CNXBase):
         db_session.commit()
 
     def __repr__(self):
-        return "Module:(%s)-%s" % (self.id_, self.Title)
+        return "Module:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
