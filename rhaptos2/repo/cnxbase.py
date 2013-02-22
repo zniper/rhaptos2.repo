@@ -78,7 +78,7 @@ class CNXBase():
 
 
 
-    def set_acls(self, setter_user_uuid, acllist, userrole_klass=None):
+    def set_acls(self, setter_user_uri, acllist, userrole_klass=None):
         """set the user acls on this object.
 
         inheriting from CNXBase implies we are modelling
@@ -96,18 +96,18 @@ class CNXBase():
 
         [{'date_lastmodified_utc': None,
           'date_created_utc': None,
-          'user_uuid': u'Testuser1',
+          'user_uri': u'Testuser1',
           'role_type': 'author'},
          {'date_lastmodified_utc': None,
           'date_created_utc': None,
-          'user_uuid': u'testuser2',
+          'user_uri': u'testuser2',
           'role_type': 'author'}]
 
 
 
         """
         ##is this authorised? - sep function?
-        if (setter_user_uuid, "aclrw") not in [(u.user_uuid, u.role_type)
+        if (setter_user_uri, "aclrw") not in [(u.user_uri, u.role_type)
                                                for u in self.userroles]:
             raise Rhaptos2Error("http:401")
         else:
@@ -126,10 +126,10 @@ class CNXBase():
         t = self.get_utcnow()
 
         ##why not pass around USerROle objects??
-        user_uuid = usrdict['user_uuid']
+        user_uri = usrdict['user_uri']
         role_type = usrdict['role_type']
 
-        if user_uuid not in [u.user_uuid for u in self.userroles]:
+        if user_uri not in [u.user_uri for u in self.userroles]:
             # UserID is not in any assoc. role - add a new one
             i = userrole_klass()
             i.from_dict(usrdict)
@@ -137,7 +137,7 @@ class CNXBase():
             i.date_lastmodified_utc = t
             self.userroles.append(i)
 
-        elif (user_uuid, role_type) not in [(u.user_uuid, u.role_type) for u
+        elif (user_uri, role_type) not in [(u.user_uri, u.role_type) for u
                                              in self.userroles]:
             # UserID has got a role, so *update*
             i = userrole_klass()

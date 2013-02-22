@@ -107,11 +107,11 @@ We snaffle the folder used for declaration indp
     >>> aclsd = [
     ...              {'date_lastmodified_utc': None, 
     ...               'date_created_utc': None, 
-    ...               'user_uuid': owner, 
+    ...               'user_uri': owner, 
     ...               'role_type': 'aclrw'}, 
     ...              {'date_lastmodified_utc': None, 
     ...               'date_created_utc': None, 
-    ...               'user_uuid': u'testuser2', 
+    ...               'user_uri': u'testuser2', 
     ...               'role_type': 'aclro'}
     ...               ]
     
