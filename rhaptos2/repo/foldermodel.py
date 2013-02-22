@@ -83,7 +83,7 @@ class UserRoleCollection(Base, CNXBase):
     __tablename__ = 'userrole_collection'
     collection_uuid = Column(String, ForeignKey('cnxcollection.id_'),
                          primary_key=True)
-    user_uuid   = Column(String, primary_key=True)
+    user_uri   = Column(String, primary_key=True)
     role_type   = Column(Enum('aclrw','aclro',
                                name="cnxrole_type"),
                                primary_key=True)
@@ -91,7 +91,7 @@ class UserRoleCollection(Base, CNXBase):
     date_lastmodified_utc = Column(DateTime)
 
     def __repr__(self):
-        return "%s-%s" % (self.role_type, self.user_uuid)
+        return "%s-%s" % (self.role_type, self.user_uri)
 
 
 
@@ -122,7 +122,7 @@ class Collection(Base, CNXBase):
         """ """
         if creator_uuid:
             self.adduserrole(UserRoleCollection,
-                {'user_uuid':creator_uuid, 'role_type':'aclrw'})
+                {'user_uri':creator_uuid, 'role_type':'aclrw'})
         else:
             raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
 
@@ -153,9 +153,9 @@ class UserRoleModule(Base, CNXBase):
     """The roles and users assigned for a given folder
     """
     __tablename__ = 'userrole_module'
-    collection_uuid = Column(String, ForeignKey('cnxmodule.id_'),
+    module_uri = Column(String, ForeignKey('cnxmodule.id_'),
                          primary_key=True)
-    user_uuid   = Column(String, primary_key=True)
+    user_uri   = Column(String, primary_key=True)
     role_type   = Column(Enum('aclrw','aclro',
                                name="cnxrole_type"),
                                primary_key=True)
@@ -164,7 +164,7 @@ class UserRoleModule(Base, CNXBase):
 
 
     def __repr__(self):
-        return "%s-%s" % (self.role_type, self.user_uuid)
+        return "%s-%s" % (self.role_type, self.user_uri)
 
 
 
@@ -194,7 +194,7 @@ class Module(Base, CNXBase):
         """ """
         if creator_uuid:
             self.adduserrole(UserRoleModule,
-                {'user_uuid':creator_uuid, 'role_type':'aclrw'})
+                {'user_uri':creator_uuid, 'role_type':'aclrw'})
         else:
             raise Rhaptos2Error("Modules need owner originzlly ")
 
@@ -210,7 +210,7 @@ class Module(Base, CNXBase):
         return "Module:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Folder / collection class to have a set_acls call,
+        """ allow each Module class to have a set_acls call,
             but catch here and then pass generic function the right UserRoleX
             klass.  Still want to find way to generically follow sqla"""
         super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
@@ -233,7 +233,7 @@ class UserRoleFolder(Base, CNXBase):
     __tablename__ = 'userrole_folder'
     folder_uuid = Column(String, ForeignKey('cnxfolder.id_'),
                          primary_key=True)
-    user_uuid   = Column(String, primary_key=True)
+    user_uri   = Column(String, primary_key=True)
     role_type   = Column(Enum('aclrw','aclro',
                                name="cnxrole_type"),
                                primary_key=True)
@@ -241,7 +241,7 @@ class UserRoleFolder(Base, CNXBase):
     date_lastmodified_utc = Column(DateTime)
 
     def __repr__(self):
-        return "%s-%s" % (self.role_type, self.user_uuid)
+        return "%s-%s" % (self.role_type, self.user_uri)
 
 
 
@@ -281,7 +281,7 @@ class Folder(Base, CNXBase):
         """ """
         if creator_uuid:
             self.adduserrole(UserRoleFolder,
-                {'user_uuid':creator_uuid, 'role_type':'aclrw'})
+                {'user_uri':creator_uuid, 'role_type':'aclrw'})
         else:
             raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
 
@@ -483,7 +483,7 @@ def delete_o(klass, ID):
 def close_session():
     db_session.remove()
 
-def change_approval(uobj, jsond, requesting_user_uuid, requesttype):
+def change_approval(uobj, jsond, requesting_user_uri, requesttype):
     """Currently placeholder
 
     Intended to parse json doc and validate version,
@@ -491,6 +491,15 @@ def change_approval(uobj, jsond, requesting_user_uuid, requesttype):
 
      """
     return
+
+def workspace_by_user(useruri):
+    """Its at times like these I just want to pass SQL in... """
+    q = db_session.query(Module)
+    q.add_columns(Module.id_, Module.title)
+    subq = db_session.query(UserRoleModule)
+    subq.filter()
+    q.join(Module.userroles)
+    q.filter()
 
 if __name__ == '__main__':
     import doctest
