@@ -57,7 +57,7 @@ import pprint
 
 from sqlalchemy import (Table, ForeignKey, or_,
                         Column, Integer, String,
-                        Text, Enum, DateTime)
+                        Text, Enum, DateTime, UniqueConstraint)
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy.types
@@ -158,10 +158,10 @@ class UserRoleModule(Base, CNXBase):
     user_uri   = Column(String, primary_key=True)
     role_type   = Column(Enum('aclrw','aclro',
                                name="cnxrole_type"),
-                               primary_key=True)
+                        )
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
-
+    UniqueConstraint(module_uri, user_uri, name="uniq_mod_user")
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -492,14 +492,18 @@ def change_approval(uobj, jsond, requesting_user_uri, requesttype):
      """
     return
 
-def workspace_by_user(useruri):
+def workspace_by_user(user_uri):
     """Its at times like these I just want to pass SQL in... """
+
     q = db_session.query(Module)
-    q.add_columns(Module.id_, Module.title)
-    subq = db_session.query(UserRoleModule)
-    subq.filter()
-    q.join(Module.userroles)
-    q.filter()
+    q = q.join(Module.userroles)
+    q = q.add_column(Module.id_).add_column(Module.title)
+    q = q.filter(UserRoleModule.user_uri==user_uri)
+
+    rs = q.all()
+    return rs
+
+
 
 if __name__ == '__main__':
     import doctest
