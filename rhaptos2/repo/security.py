@@ -14,6 +14,62 @@
    :platform: Unix, Windows
    :synopsis: A useful module indeed.
 
+Some notes on security
+----------------------
+
+
+
+
+using SqlAlchemy Event system to prevent unauthorised changes
+-------------------------------------------------------------
+
+The below is an example of how to prevent insecure changes - however
+it requires a per request knowledge of the requesting userid.
+I can do this through g.user_id
+
+
+::
+
+    #########
+
+    from sqlalchemy.orm import mapper
+    from sqlalchemy import event
+
+    def before_insert_listener(mapper, connection, target):
+        print "INSERT %s conn %s mappper %s" % (target, connection, mapper)
+
+    def before_update_listener(mapper, connection, target):
+        print "UPDATE %s conn %s mappper %s" % (target, connection, mapper)
+        target.authorised_action(action="put", requesting_user_uri=g.userid)
+        raise Rhaptos2SecurityError("updte not allowds")
+    def before_delete_listener(mapper, connection, target):
+        print "DELETE %s conn %s mappper %s" % (target, connection, mapper)
+    def before_load_listener(target, context):
+        print "SELECT/LOAD  tgt:%s context:%s" % (target, context)
+
+    # attach to all mappers
+    event.listen(mapper, 'before_insert', before_insert_listener)
+    event.listen(mapper, 'before_update', before_update_listener)
+    event.listen(mapper, 'before_delete', before_delete_listener)
+    event.listen(mapper, 'load', before_load_listener)    
+
+
+
+    ############
+
+At the moment we use a process of a call to the object
+
+:func:is_action_authorised(action="", requesting_user_uri="")
+
+which either returns a True or False, resulting in raising Rhaptos2SecurityError
+an abort(403)
+
+
+
+
+
+
+
 """
 import uuid
 import json

@@ -38,4 +38,15 @@ backend.initdb(confd['app'])
 print "Running simple prepopulation of database as connected by:"
 print confd['app']
 
+m = foldermodel.Module(creator_uuid="Fake1")
+m.title="fake1 module"
+db_session.add(m); db_session.commit()
+
+#m.title = "changed"
+#db_session.add(m); db_session.commit()
+
+#db_session.delete(m);db_session.commit()
+
+
+
 os.environ['PYTHONINSPECT'] = 'True'

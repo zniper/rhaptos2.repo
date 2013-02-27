@@ -70,7 +70,7 @@ from cnxbase import CNXBase
 
 from rhaptos2.repo.backend import Base, db_session
 from rhaptos2.repo import dolog
-from rhaptos2.common.err import Rhaptos2Error
+from err import Rhaptos2Error, Rhaptos2SecurityError
 
 ##XXX - replace with catchall err handler - conflict5s with debug
 from flask import abort
@@ -167,7 +167,6 @@ class UserRoleModule(Base, CNXBase):
         return "%s-%s" % (self.role_type, self.user_uri)
 
 
-
 class Module(Base, CNXBase):
     """
     """
@@ -208,7 +207,7 @@ class Module(Base, CNXBase):
 
     def __repr__(self):
         return "Module:(%s)-%s" % (self.id_, self.title)
-
+    
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Module class to have a set_acls call,
             but catch here and then pass generic function the right UserRoleX
