@@ -10,7 +10,7 @@ SA does not support class based inheritence in the normal Python way for objects
 import json
 import sqlalchemy.types
 import datetime
-
+from err import Rhaptos2Error, Rhaptos2SecurityError
 
 class CNXBase():
 
@@ -165,3 +165,39 @@ class CNXBase():
     def get_utcnow(self):
         """Eventually we shall handle TZones here too"""
         return datetime.datetime.utcnow()
+
+    def is_action_auth(self, action=None,
+                                   requesting_user_uri=None):
+        """ Given a user and a action type, determine if it is
+            authorised on this object
+
+    >>> m.is_action_auth(action="PUT", requesting_user_uri="Fake1")
+*** [u'Fake1']
+True
+>>> m.is_action_auth(action="PUT", requesting_user_uri="ff")
+*** [u'Fake1']
+False
+    
+        """
+        if action in ("GET","HEAD", "OPTIONS"):
+            valid_user_list = [u.user_uri for u in self.userroles
+                                          if u.role_type in ("aclro", "aclrw")]
+        elif action in ("POST", "PUT", "DELETE"):
+            valid_user_list = [u.user_uri for u in self.userroles
+                                          if u.role_type in ("aclrw",)]
+        else:
+            raise Rhaptos2SecurityError("Unknown action type supplied: %s" % action)
+
+
+        if requesting_user_uri is None:
+            raise Rhaptos2SecurityError("No user_uri supplied: %s" %
+                                        requesting_user_uri)
+
+        else:
+            if requesting_user_uri in valid_user_list:
+                return True
+            else:
+                return False
+
+                
+                
