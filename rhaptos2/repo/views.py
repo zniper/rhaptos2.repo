@@ -424,11 +424,18 @@ def generic_get(klass, uri):
     resp.content_type = 'application/json'
     return resp
 
+def qdlog(msg):
+    open('/tmp/log', 'a').write(str(msg) + "\n\n")
+    
 def generic_post(klass):
     """Temp fix till get regex working on routes """
-
+    qdlog(str(klass))
+    
+    qdlog(g)
     owner = g.user_id ##loggedin user
+    qdlog(owner)
     jsond = request.json  #flask autoconverts to dict ...
+    qdlog("posting: %s %s %s" % (str(jsond), owner, str(klass) ))
     fldr = foldermodel.post_o(klass, jsond, creator_uuid=owner)
     resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
@@ -455,7 +462,6 @@ def generic_delete(klass, uri):
     return
 
 def generic_acl(klass, uri, acllist):
-    print "genericacl" + str(klass) + str(uri) + str(acllist)
     owner = g.user_id
     fldr = foldermodel.get_by_id(klass, uri)
     fldr.set_acls(owner, acllist)
@@ -480,8 +486,14 @@ def folder_put(folderid):
 @app.route('/module/', methods=['POST'])
 def module_post():
     """ """
-    return generic_post(foldermodel.Module)
-
+    qdlog("herre")
+    
+    try:
+        r =  generic_post(foldermodel.Module)
+        return r
+    except Exception, e:
+        qdlog(e)
+        return ""
 
 @app.route('/module/<moduleuri>/', methods=['PUT'])
 def module_put(moduleuri):
@@ -505,7 +517,6 @@ def collection_acl_put(collectionuri):
     """ """
     if request.method == "PUT":
         jsond = request.json
-        print jsond
         return generic_acl(foldermodel.Collection, collectionuri, jsond)
     elif request.method == "GET":
         obj = foldermodel.get_by_id(foldermodel.Collection,
@@ -518,7 +529,6 @@ def acl_folder_put(uri):
     """ """
     if request.method == "PUT":
         jsond = request.json
-        print jsond
         return generic_acl(foldermodel.Folder, uri, jsond)
     elif request.method == "GET":
         obj = foldermodel.get_by_id(foldermodel.Folder,
@@ -532,7 +542,6 @@ def acl_module_put(uri):
     """ """
     if request.method == "PUT":
         jsond = request.json
-        print jsond
         return generic_acl(foldermodel.Module, uri, jsond)
     elif request.method == "GET":
         obj = foldermodel.get_by_id(foldermodel.Module,

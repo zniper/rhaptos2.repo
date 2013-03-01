@@ -126,7 +126,7 @@ class User(object):
 
         payload = {'user':authenticated_identifier}
 
-        user_server_url = app.config['globals']['bamboo_global']['userserver'].replace("/user", "/openid")
+        user_server_url = app.config['globals']['userserver'].replace("/user", "/openid")
 
         dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))
@@ -349,8 +349,8 @@ def callstatsd(dottedcounter):
     # Try to call logging. If not connected to a network this throws
     # "socket.gaierror: [Errno 8] nodename nor servname provided, or not known"
     try:
-        c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
-                           int(app.config['globals']['bamboo_global']['statsd_port']))
+        c = statsd.StatsClient(app.config['globals']['statsd_host'],
+                           int(app.config['globals']['statsd_port']))
         c.incr(dottedcounter)
         #todo: really return c and keep elsewhere for efficieny I suspect
     except:

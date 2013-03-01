@@ -8,6 +8,7 @@ Copyright (c) 2012 Rice University
 This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
+
 from collections import Mapping
 import ConfigParser
 
@@ -24,11 +25,41 @@ def find_configuration_file():
 
 
 class Configuration(Mapping):
-    """A configuration settings object"""
+    """A configuration settings object
 
-    def __init__(self, settings={}, global_settings={}):
+    The Configuration class reads from a file, is *case-sensitive*
+    and it transforms the [app] section into top-level dotted values
+    (ie print conf.foo returns "bar")
+    and stores all other sections under a key of the same name
+
+    It looks and acts like a dict. And has 
+
+    >>> initxt = '''[app]
+    ... appkey=appval
+    ... 
+    ... [test]
+    ... foo=1
+    ...
+    ... [test2]
+    ... bar=1
+    ... '''
+    >>> f = "/tmp/foo.ini"
+    >>> open(f, "w").write(initxt)
+    >>> C = Configuration.from_file(f)
+    >>> expected = {'test': {'foo': '1'},
+    ...            'test2': {'bar': '1'},
+    ...            "appkey":"appval"}
+    >>> assert C == expected
+    >>> assert C.test == {'foo': '1'}
+    >>> assert C.appkey == "appval"
+    >>> assert C.test["foo"] == '1'
+    
+    """
+
+    def __init__(self, settings={}, **sections):
         self._settings = settings
-        self._settings['globals'] = global_settings
+        for k in sections:
+            self._settings[k] = sections[k]
 
     @classmethod
     def from_file(cls, file, app_name=DEFAULT_APP_NAME):
@@ -46,8 +77,11 @@ class Configuration(Mapping):
                     settings.update(config.items(section))
                 else:
                     global_settings[section] = dict(config.items(section))
-        return cls(settings, global_settings)
+        return cls(settings, **global_settings)
 
+    def __getattr__(self, i):
+        return self._settings[i]
+        
     def __getitem__(self, key):
         return self._settings[key]
 
@@ -65,3 +99,8 @@ class Configuration(Mapping):
 
     def __repr__(self):
         return repr(self._settings)
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+    
