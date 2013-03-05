@@ -14,6 +14,26 @@ from err import Rhaptos2Error, Rhaptos2SecurityError
 
 class CNXBase():
 
+
+    def validateid(self, id_):
+        """Given a id_ check it is of correct uri format
+
+        .. todo::
+           validateid check really needs improving
+
+        >>> validateid("cnxuser:1234")
+        True
+        >>> validateid("1234")
+        False
+        
+        """
+        if not id_:
+            return True
+        elif id_.find(":") >=0 :
+            return True
+        else:
+            return False
+        
     def from_json(self, json_str):
         """ Not used at moment - json conversion usually done in
             web servers so this has little use for now."""
@@ -29,9 +49,13 @@ class CNXBase():
         SHould test for schema validity etc.
 
         """
+        idnames = ['id_',]
         d = userprofile_dict
         for k in d:
-            setattr(self, k, d[k])
+            if k in idnames and d[k] is None:
+                continue #do not assign a id of None to the internal id
+            else:
+                setattr(self, k, d[k])
 
     def to_dict(self):
         """Return self as a dict, suitable for jsonifying """
@@ -161,7 +185,6 @@ class CNXBase():
             raise Rhaptos2Error("Error converting json to dict")
         return jsond
 
-
     def get_utcnow(self):
         """Eventually we shall handle TZones here too"""
         return datetime.datetime.utcnow()
@@ -171,12 +194,12 @@ class CNXBase():
         """ Given a user and a action type, determine if it is
             authorised on this object
 
-    >>> m.is_action_auth(action="PUT", requesting_user_uri="Fake1")
-*** [u'Fake1']
-True
->>> m.is_action_auth(action="PUT", requesting_user_uri="ff")
-*** [u'Fake1']
-False
+        >>> m.is_action_auth(action="PUT", requesting_user_uri="Fake1")
+        *** [u'Fake1']
+        True
+        >>> m.is_action_auth(action="PUT", requesting_user_uri="ff")
+        *** [u'Fake1']
+        False
     
         """
         if action in ("GET","HEAD", "OPTIONS"):
@@ -186,13 +209,11 @@ False
             valid_user_list = [u.user_uri for u in self.userroles
                                           if u.role_type in ("aclrw",)]
         else:
-            raise Rhaptos2SecurityError("Unknown action type supplied: %s" % action)
-
+            raise Rhaptos2SecurityError("Unknown action type: %s" % action)
 
         if requesting_user_uri is None:
             raise Rhaptos2SecurityError("No user_uri supplied: %s" %
                                         requesting_user_uri)
-
         else:
             if requesting_user_uri in valid_user_list:
                 return True

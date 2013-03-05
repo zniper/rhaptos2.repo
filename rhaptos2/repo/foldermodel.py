@@ -169,6 +169,11 @@ class UserRoleModule(Base, CNXBase):
 
 class Module(Base, CNXBase):
     """
+
+    >>> #test we can autogen a uuid
+    >>> m = Module(id_=None, creator_uuid="cnxuser:1234")
+    >>> m
+    
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
@@ -191,18 +196,21 @@ class Module(Base, CNXBase):
 
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        if not self.validateid(id_):
+            raise RhaptosError("%s not valid id" % id_)
+            
         if creator_uuid:
             self.adduserrole(UserRoleModule,
                 {'user_uri':creator_uuid, 'role_type':'aclrw'})
         else:
             raise Rhaptos2Error("Modules need owner originzlly ")
 
-        if id_ :
+        if id_:
             self.id_ = id_
         else:
             self.id_ = "cnxmodule:" + str(uuid.uuid4())
-
         self.date_created_utc = self.get_utcnow()
+        super(Base, self).__init__()
         db_session.commit()
 
     def __repr__(self):
