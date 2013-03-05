@@ -21,9 +21,10 @@ class CNXBase():
         .. todo::
            validateid check really needs improving
 
-        >>> validateid("cnxuser:1234")
+        >>> C = CNXBase()
+        >>> C.validateid("cnxuser:1234")
         True
-        >>> validateid("1234")
+        >>> C.validateid("1234")
         False
         
         """
@@ -194,10 +195,13 @@ class CNXBase():
         """ Given a user and a action type, determine if it is
             authorised on this object
 
-        >>> m.is_action_auth(action="PUT", requesting_user_uri="Fake1")
+        ### this is really really poor - I cannot test it
+        ### as self.useroles exists on a SQLA object...
+        >> C = CNXBase()
+        >> C.is_action_auth(action="PUT", requesting_user_uri="Fake1")
         *** [u'Fake1']
         True
-        >>> m.is_action_auth(action="PUT", requesting_user_uri="ff")
+        >> C.is_action_auth(action="PUT", requesting_user_uri="ff")
         *** [u'Fake1']
         False
     
@@ -221,4 +225,6 @@ class CNXBase():
                 return False
 
                 
-                
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
