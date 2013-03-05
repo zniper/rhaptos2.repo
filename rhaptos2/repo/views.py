@@ -424,18 +424,10 @@ def generic_get(klass, uri):
     resp.content_type = 'application/json'
     return resp
 
-def qdlog(msg):
-    open('/tmp/log', 'a').write(str(msg) + "\n\n")
-    
 def generic_post(klass):
     """Temp fix till get regex working on routes """
-    qdlog(str(klass))
-    
-    qdlog(g)
     owner = g.user_id ##loggedin user
-    qdlog(owner)
     jsond = request.json  #flask autoconverts to dict ...
-    qdlog("posting: %s %s %s" % (str(jsond), owner, str(klass) ))
     fldr = foldermodel.post_o(klass, jsond, creator_uuid=owner)
     resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
@@ -486,14 +478,12 @@ def folder_put(folderid):
 @app.route('/module/', methods=['POST'])
 def module_post():
     """ """
-    qdlog("herre")
-    
     try:
         r =  generic_post(foldermodel.Module)
         return r
     except Exception, e:
-        qdlog(e)
-        return ""
+        raise e
+        
 
 @app.route('/module/<moduleuri>/', methods=['PUT'])
 def module_put(moduleuri):
