@@ -410,7 +410,7 @@ def collection_get(collectionuri):
     """  """
     return generic_get(foldermodel.Collection, collectionuri)
 
-@app.route('/module/<moduleuri>/', methods=['GET'])
+@app.route('/module/<moduleuri>', methods=['GET'])
 def module_get(moduleuri):
     """    """
     return generic_get(foldermodel.Module, moduleuri)
@@ -469,7 +469,7 @@ def folder_post():
     return generic_post(foldermodel.Folder)
 
 
-@app.route('/folder/<folderid>/', methods=['PUT'])
+@app.route('/folder/<folderid>', methods=['PUT'])
 def folder_put(folderid):
     """ """
     return generic_put(foldermodel.Folder, folderid)
@@ -485,7 +485,7 @@ def module_post():
         raise e
         
 
-@app.route('/module/<moduleuri>/', methods=['PUT'])
+@app.route('/module/<moduleuri>', methods=['PUT'])
 def module_put(moduleuri):
     """ """
     return generic_put(foldermodel.Module, moduleuri)
