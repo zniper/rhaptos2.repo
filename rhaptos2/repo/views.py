@@ -400,6 +400,10 @@ def loginpersona():
 ###################### A custom converter in Flask is a better idea
 ### todo: custom convertor
 
+    
+    
+
+    
 @app.route('/folder/<folderuri>/', methods=['GET'])
 def folder_get(folderuri):
     """    """
@@ -541,7 +545,7 @@ def acl_module_put(uri):
 
 
 
-@app.route('/collection/<collectionuri>/', methods=['DELETE'])
+@app.route('/collection/<collectionuri>', methods=['DELETE'])
 def collection_del(collectionuri):
     """ """
     try:
@@ -551,7 +555,7 @@ def collection_del(collectionuri):
     return ""
 
 
-@app.route('/folder/<folderuri>/', methods=['DELETE'])
+@app.route('/folder/<folderuri>', methods=['DELETE'])
 def folder_del(folderuri):
     """ """
     try:
@@ -560,7 +564,7 @@ def folder_del(folderuri):
         abort(500)
     return ""
 
-@app.route('/module/<moduleuri>/', methods=['DELETE'])
+@app.route('/module/<moduleuri>', methods=['DELETE'])
 def module_del(moduleuri):
     """ """
     try:
