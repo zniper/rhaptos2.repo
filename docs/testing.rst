@@ -36,7 +36,8 @@ To test locally
 
 5. functional HTTP testing of wsgi app
 
-
+nosetests --tc-file=../../pbrian.ini  --tc=HTTPPROXY:http://localhost:8000/ runtests.py
+ python run.py --config=../../pbrian.in
 
 5. example.txt - a demo / example of how the various bits fir together. 
    it is a doctest suite but needs integrated system 

@@ -27,16 +27,16 @@ def main_2():
     app = make_app(config)
     app.debug=True
 
-#    from waitress import serve
-#    serve(app.wsgi_app, host=opts.host,
-#                        port=opts.port
-#                        )
+    from waitress import serve
+    serve(app.wsgi_app, host=opts.host,
+                        port=opts.port
+                        )
     
-    app.run(host=opts.host,
-            port=opts.port,
-            debug=opts.debug,
-            use_reloader=False
-            )
+#    app.run(host=opts.host,
+#            port=opts.port,
+#            debug=opts.debug,
+#            use_reloader=False
+#            )
 
 def parse_args():
     parser = OptionParser()
