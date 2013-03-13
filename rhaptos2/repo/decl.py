@@ -317,3 +317,20 @@ acllist = [
                   'user_uri': u'cnxuser:5678',
                   'role_type': 'aclro'}
                   ]
+
+class tempuser(object):
+    """We want to match the same details as in the user dbase.
+       THis is for testing only - there is no ref int between repo and users
+       openid / Name / user_uri
+    """
+    def __init__(self, openid, name, useruri):
+        self.openid = openid
+        self.name = name
+        self.useruri = useruri
+        
+users = {'paul': tempuser("https://paulbrian.myopenid.com", "Paul Brian", "cnxuser:75e06194-baee-4395-8e1a-566b656f6920"),
+         'ross':tempuser("https://rossreedstrom.myopenid.com", "Ross Reedstrom", "cnxuser:75e06194-baee-4395-8e1a-566b656f6921"),
+         'ed':tempuser("https://edwoodward.myopenid.com", "Ed Woodward", "cnxuser:75e06194-baee-4395-8e1a-566b656f6922"),
+         'phil':tempuser("https://philschatz.myopenid.com", "Phil Schatz", "cnxuser:75e06194-baee-4395-8e1a-566b656f6923"),
+         'michael':tempuser("https://michaelmulich.myopenid.com", "Michael Mulich", "cnxuser:75e06194-baee-4395-8e1a-566b656f6924"),
+         }

@@ -94,14 +94,14 @@ def build_environ():
     return d
     
 
-###### CONSTANTS
+###### CONSTANTS FOR TESTING.
 moduleuri = "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126"
 collectionuri = "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7"
 folderuri = "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707"
 
-gooduseruri = "cnxuser:1234"
-rouseruri = "cnxuser:5432"
-baduseruri = "cnxuser:00000"
+gooduseruri = decl.users['paul'].useruri
+rouseruri = decl.users['ed'].useruri
+baduseruri = decl.users['ross'].useruri
 
 userhost="http://localhost:8000/"
 ###
@@ -253,10 +253,9 @@ def wapp_delete(wapp, resourcetype, id_, owner):
     
 def wapp_put(wapp, data, owner, resourcetype, id_=None):
     headers = {'X-Cnx-FakeUserId': owner,}
-    url = get_url(resourcetype, id_=id_)
-    print url, id_, resourcetype
+    URL = get_url(resourcetype, method="PUT", id_=id_)
     try:
-        resp = wapp.put_json(url, params=data, headers=headers)
+        resp = wapp.put_json(URL, params=data, headers=headers)
     except Exception, e:
         import traceback
         tb = traceback.format_exc()
@@ -379,7 +378,7 @@ if __name__ == '__main__':
 #    serve(c.wapp, host='0.0.0.0', port=8000)
     #its a test appp!!!
     try:
-        r = wapp_delete(c.wapp, "module", moduleuri, gooduseruri)
+        pass#r = wapp_delete(c.wapp, "module", moduleuri, gooduseruri)
     except:
         pass
     r2 = wapp_post(c.wapp, "module", decl.declarationdict['module'], 'niceguyeddie')
@@ -387,7 +386,9 @@ if __name__ == '__main__':
 #    raw_input("?")
     r = wapp_get(c.wapp, "module", moduleuri)
     print r
-    r = wapp_delete(c.wapp, "module", moduleuri, gooduseruri)    
+    print "puttting///"
+    #r = wapp_put(c.wapp, {}, rouseruri, "module", id_=moduleuri)
+    r = wapp_delete(c.wapp, "module", id_=moduleuri, owner=rouseruri)    
 
 #    d = decl.declarationdict['sect1']
 #    d['content'] = "Dear King George, cup of tea?"
