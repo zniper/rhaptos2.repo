@@ -126,7 +126,7 @@ class User(object):
 
         payload = {'user':authenticated_identifier}
 
-        user_server_url = app.config['globals']['userserver'].replace("/user", "/openid")
+        user_server_url = app.config['globals'][u'userserver'].replace("/user", "/openid")
 
         dolog("INFO", "requesting user info - from url %s and query string %s" %
                        (user_server_url, repr(payload)))

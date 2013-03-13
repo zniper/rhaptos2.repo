@@ -51,7 +51,9 @@ def initdb(confd):
     global db_session
     db_engine = connect_now(confd)
     db_session.configure(bind=db_engine)
-    Base.metadata.create_all(db_engine)
+    x = Base.metadata.create_all(db_engine)
+    print x
+    print Base, db_engine
     print "init done"
     
 # def droptables():

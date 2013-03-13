@@ -7,11 +7,19 @@ Author: Paul Brian
 
 This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
+
+
+.. todo::
+
+   * replace mess of functions and @decorators with routes on routes
+     (idea: name each route then can build route from name and vice versa with Routes.)
+
+   * 
 """
 
 from rhaptos2.repo import make_app
 from rhaptos2.common import conf
-import os
+import os, sys
 import json
 import decl
 from webtest import TestApp
@@ -99,19 +107,48 @@ userhost="http://localhost:8000/"
 ###
 
 
-APIMAP = {'modules':     urlparse.urljoin(userhost, "module/"),
-          'collections': urlparse.urljoin(userhost, "collection/"),
-          'folders':     urlparse.urljoin(userhost, "folder/"),
-          'workspace':  urlparse.urljoin(userhost, "workspace/"),
-
-          'module':     urlparse.urljoin(userhost, "module/%(id_)s"),
-          'collection': urlparse.urljoin(userhost, "collection/%(id_)s"),
-          'folder':     urlparse.urljoin(userhost, "folder/%(id_)s"),
-
-          'moduleACL':     urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
-          'collectionACL': urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
-          'folderACL':     urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+APIMAP = {'module':
+                   {"POST" : urlparse.urljoin(userhost, "module/"),
+                    "GET" : urlparse.urljoin(userhost, "module/%(id_)s"),
+                    "PUT" : urlparse.urljoin(userhost, "module/%(id_)s"),
+                    "DELETE" : urlparse.urljoin(userhost, "module/%(id_)s"),
+                   },
           
+          'collection':
+                   {"POST" : urlparse.urljoin(userhost, "collection/"),
+                    "GET" : urlparse.urljoin(userhost, "collection/%(id_)s"),
+                    "PUT" : urlparse.urljoin(userhost, "collection/%(id_)s"),
+                    "DELETE" : urlparse.urljoin(userhost, "collection/%(id_)s"),
+                   },
+
+          'folder':
+                   {"POST" : urlparse.urljoin(userhost, "folder/"),
+                    "GET" : urlparse.urljoin(userhost, "folder/%(id_)s"),
+                    "PUT" : urlparse.urljoin(userhost, "folder/%(id_)s"),
+                    "DELETE" : urlparse.urljoin(userhost, "folder/%(id_)s"),
+                   },
+
+           'module_acl':
+                   {"POST" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+                    "GET" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+                    "PUT" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+                    "DELETE" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+                   },
+          
+          'collection_acl':
+                   {"POST" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+                    "GET" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+                    "PUT" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+                    "DELETE" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+                   },
+
+          'folder_acl':
+                   {"POST" : urlparse.urljoin(userhost, "folder//%(id_)s/"),
+                    "GET" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+                    "PUT" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+                    "DELETE" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+                   },
+                    
           }
 
 
@@ -119,67 +156,80 @@ def get_url(resourcetype, id_=None, method=None):
     """ return the correct URL to call for various resource operations
 
     
-    >>> get_url("collections", id_=None)
+    >>> get_url("collection", id_=None, method="POST")
     'http://localhost:8000/collection/'
 
-    >>> get_url("folders", id_=None)
+    >>> get_url("folder", id_=None, method="POST")
     'http://localhost:8000/folder/'
 
-    >>> get_url("modules", id_=None)
+    >>> get_url("module", method="POST")
     'http://localhost:8000/module/'
     
-    >>> get_url("collection", id_="foo1", method="GET")
-    'http://localhost:8000/collection/foo1'
+    >>> get_url("collection", id_="xxx", method="GET")
+    'http://localhost:8000/collection/xxx'
 
-    >>> get_url("collection", id_="foo1", method="POST")
-    'http://localhost:8000/collection/foo1'
+    >>> get_url("collection", id_="xxx", method="GET")
+    'http://localhost:8000/collection/xxx'
+
+    >>> get_url("folder", id_="xxx", method="GET")
+    'http://localhost:8000/folder/xxx'
     
+    >>> get_url("folder", id_="xxx", method="PUT")
+    'http://localhost:8000/folder/xxx'
 
-    >>> get_url("folder", id_="foo")
-    'http://localhost:8000/folder/foo'
+    >>> get_url("module", id_="xxx", method="PUT")
+    'http://localhost:8000/module/xxx'
 
-    >>> get_url("module", id_="foo")
-    'http://localhost:8000/module/foo'
+    >>> get_url("collection_acl", id_="xxx", method="PUT")
+    'http://localhost:8000/collection/xxx/acl/'
 
-    >>> get_url("collectionACL", id_="foo")
-    'http://localhost:8000/collection/foo/acl/'
+    >>> get_url("folder_acl", id_="xxx", method="PUT")
+    'http://localhost:8000/folder/xxx/acl/'
 
-    >>> get_url("folderACL", id_="foo")
-    'http://localhost:8000/folder/foo/acl/'
+    >>> get_url("module", id_="xxx", method="DELETE")
+    'http://localhost:8000/module/xxx'
 
-    >>> get_url("moduleACL", id_="foo")
-    'http://localhost:8000/module/foo/acl/'
+    >>> get_url("collection_acl", id_="xxx", method="DELETE")
+    'http://localhost:8000/collection/xxx/acl/'
+
+    >>> get_url("folder_acl", id_="xxx", method="DELETE")
+    'http://localhost:8000/folder/xxx/acl/'
     
-    >>> get_url("collection", id_="cnxcollection:1234")
-    'http://localhost:8000/collection/cnxcollection:1234'
-
-
     Its pretty simple api so far...
     
     .. todo::
        ensure urljoin is done well - urlparse version not really as expected...
     
     """
-    baseurl = APIMAP[resourcetype]
+    ##restype, id method
+    ## what if invalid restype?
+    baseurl = APIMAP[resourcetype][method]
+
     if baseurl.find("%")>=0:    
         url = baseurl % {"id_": id_}
     else:
         url = baseurl
     return url
 
-def wapp_post(wapp, url, data, owner):
+def wapp_get(wapp, resourcetype, id_):
+    """ """
+    URL = get_url(resourcetype, id_, "GET")
+    return wapp.get(URL)    
+    
+def wapp_post(wapp, resourcetype, data, owner):
+    """ ?
+    """
+    URL = get_url(resourcetype, "POST")
     headers = {'X-Cnx-FakeUserId': owner,}
-    print "in wapp post"
-    print "**********************"
-    print url
-    print wapp
     
     try:
-        resp = wapp.post_json(url, params=data, headers=headers)
+        resp = wapp.post_json(URL, params=data, headers=headers)
     except Exception, e:
         import traceback
         tb = traceback.format_exc()
+        print "\/" * 32
         print e, tb
+        print "/\\" * 32 
     return resp
 
     
@@ -195,19 +245,6 @@ def wapp_put(wapp, data, owner, resourcetype, id_=None):
         print e, tb
     return resp
 
-    
-def post_generic(wapp, resourcetype, owner):
-    """Create all modules via the wsgi app provided"""
-    print "post generic called", resourcetype
-    data = decl.declarationdict["module"]
-    url  = get_url("modules")
-    resp = wapp_post(wapp, url, data, owner)
-    return resp
-    
-
-def put_generic(wapp, resourcetype, owner, url, data, id_):
-    print "putgeneric called", resourcetype
-    wapp_put(wapp, url, data, owner, resourcetype, id_)
 
 def put_module(wapp):
     owner = gooduseruri
@@ -333,16 +370,16 @@ class test_post(object):
         
     
     def test_post_module(self):
-        resp = post_generic(self.wapp, "modules", gooduseruri)
+        resp = wapp_post(self.wapp, "module", gooduseruri)
         returned_module_uri = resp.json['id_']
         #assert returned_module_uri == moduleuri
 
-    def test_post_folder(self):
+    def ntest_post_folder(self):
         resp = post_generic(self.wapp, "folders", gooduseruri)
         returned_folder_uri = resp.json['id_']
         #assert returned_folder_uri == folderuri
 
-    def test_post_collection(self):
+    def ntest_post_collection(self):
         resp = post_generic(self.wapp, "collections", gooduseruri)
         returned_collection_uri = resp.json['id_']
         #assert returned_collection_uri == collectionuri
@@ -358,14 +395,36 @@ class test_post(object):
 #doctest.testmod()
 
 
+
+        
+
 if __name__ == '__main__':
+
+    try:
+        if sys.argv[1:][0] == "doctest":
+            import doctest
+            doctest.testmod()
+            sys.exit()
+    except:
+        pass
+        
     c = test_post()
     c.setup()
+
+        
 #    from waitress import serve
 #    serve(c.wapp, host='0.0.0.0', port=8000)
     #its a test appp!!!
 
-    r2 = wapp_post(c.wapp, "http://localhost:8000/module/", decl.declarationdict['module'], 'niceguyeddie')
-    r = get_module(c.wapp)
-    r = wapp_del(c.wapp)
+    r = wapp_del(c.wapp)    
+    r2 = wapp_post(c.wapp, "module", decl.declarationdict['module'], 'niceguyeddie')
+    r = wapp_get(c.wapp, "module", moduleuri)
     print r
+#    r = wapp_del(c.wapp)
+
+
+#    r2 = wapp_post(c.wapp, "http://localhost:8000/collection/", decl.declarationdict['collection'], 'niceguyeddie')
+#    r = get_module(c.wapp)
+#    r = wapp_del(c.wapp)
+
+    

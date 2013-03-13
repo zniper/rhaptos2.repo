@@ -19,7 +19,7 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
 from rhaptos2.repo import make_app
 from rhaptos2.common import conf
-import os, sys
+import os, sys, pprint
 import json
 import decl
 from webtest import TestApp
@@ -32,8 +32,8 @@ from rhaptos2.repo.configuration import (
     find_configuration_file,
     Configuration,
     )
-
-
+from wsgiproxy.app import WSGIProxyApp
+from webtest import TestApp
 
 def parse_args():
     parser = OptionParser()
@@ -421,26 +421,45 @@ def test_delete_module_rouser():
 TESTCONFIG = None
 TESTAPP = None
 
+def convert_config(config):
+    defaultsection = 'app'
+    for k in config[defaultsection]:
+        config[k] = config[defaultsection][k]
+    del config[defaultsection]
+    return config
+    
+        
+
 def setup():
 
     global TESTCONFIG
     global TESTAPP
-    CONFD_PATH = os.path.abspath("../../testing.ini")  ##pass in through nose...
-    TESTCONFIG = Configuration.from_file(CONFD_PATH)
-    cleardown(TESTCONFIG)
-    initdb(TESTCONFIG)    
-    app = make_app(TESTCONFIG)
-    app.debug=True
-        
-        #from waitress import serve
-        #serve(app.wsgi_app, host='0.0.0.0', port=8080)
+    
+    ### using nose-testconfig we obtain the config dict passed in through the nosetests command line
+    from testconfig import config
+    ## now "convert" to app-style dict    
+    TESTCONFIG = convert_config(config)
+    
+    #cleardown(TESTCONFIG)
+    #initdb(TESTCONFIG)
 
-    from webtest import TestApp
-    TESTAPP = TestApp(app.wsgi_app)
-        
 
     
+#    open("/tmp/conf", "w").write(pprint.pformat(TESTCONFIG))
+#    open("/tmp/appconf", "w").write(pprint.pformat(app.config.items()))
+#    open("/tmp/foo.txt", "w").write(app.config)
+
+
     
+    if 'HTTPPROXY' in config.keys():
+        app = WSGIProxyApp(config['HTTPPROXY'])
+        TESTAPP = TestApp(app, extra_environ={'REMOTE_ADDR':'1.2.3.4'})
+    else:
+        app = make_app(TESTCONFIG)
+        app.debug=True
+        TESTAPP = TestApp(app.wsgi_app)
+        
+       
     
 def cleardown(config):
     backend.clean_dbase(config)
@@ -452,35 +471,29 @@ def initdb(config):
 #    CONFD_PATH = os.path.abspath("../../testing.ini")  ##pass in through nose...    
     
 if __name__ == '__main__':
-
-    try:
-        if sys.argv[1:][0] == "doctest":
-            import doctest
-            doctest.testmod()
-            sys.exit()
-    except:
-        pass
+    import doctest
+    doctest.testmod()
+    
         
-    c = test_post()
-    c.setup()
+# #    from waitress import serve
+# #    serve(c.wapp, host='0.0.0.0', port=8000)
+#     #its a test appp!!!
+#     try:
+#         pass#r = wapp_delete(c.wapp, "module", moduleuri, gooduseruri)
+#     except:
+#         pass
+#     r2 = wapp_post(c.wapp, "module", decl.declarationdict['module'], 'niceguyeddie')
+#     print r2
+# #    raw_input("?")
+#     r = wapp_get(c.wapp, "module", moduleuri)
+#     print r
+#     print "puttting///"
+#     #r = wapp_put(c.wapp, {}, rouseruri, "module", id_=moduleuri)
+#     r = wapp_delete(c.wapp, "module", id_=moduleuri, owner=rouseruri)    
+
 
         
-#    from waitress import serve
-#    serve(c.wapp, host='0.0.0.0', port=8000)
-    #its a test appp!!!
-    try:
-        pass#r = wapp_delete(c.wapp, "module", moduleuri, gooduseruri)
-    except:
-        pass
-    r2 = wapp_post(c.wapp, "module", decl.declarationdict['module'], 'niceguyeddie')
-    print r2
-#    raw_input("?")
-    r = wapp_get(c.wapp, "module", moduleuri)
-    print r
-    print "puttting///"
-    #r = wapp_put(c.wapp, {}, rouseruri, "module", id_=moduleuri)
-    r = wapp_delete(c.wapp, "module", id_=moduleuri, owner=rouseruri)    
-
-
+        #from waitress import serve
+        #serve(app.wsgi_app, host='0.0.0.0', port=8080)
 
 #### So we should be able to nosetests runtests.py as well as runtests.py direct
