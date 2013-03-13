@@ -33,7 +33,9 @@ from flask import (
     )
 
 from rhaptos2.common import log, err, conf
-from rhaptos2.repo import (get_app, dolog, model, security,
+from rhaptos2.repo import (get_app, dolog,
+                           model,
+                           #security,
                            VERSION, foldermodel,
                            backend)
 

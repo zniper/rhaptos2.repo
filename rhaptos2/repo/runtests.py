@@ -329,58 +329,58 @@ def test_post_collection():
 
 def test_put_collection():
     data = decl.declarationdict['collection']
-    data['content'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    data['Body'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
     resp = wapp_put(TESTAPP, "collection", data, gooduseruri, collectionuri)    
-    assert len(resp.json['content']) == 1
+    assert len(resp.json['Body']) == 1
 
 def test_put_collection_rouser():
     data = decl.declarationdict['collection']
-    data['content'] = ["cnxmodule:SHOULDNEVERHITDB0",]
+    data['Body'] = ["cnxmodule:SHOULDNEVERHITDB0",]
     resp = wapp_put(TESTAPP, "collection", data, rouseruri, collectionuri)
     assert resp.status_int == 403
 
 def test_put_collection_baduser():
     data = decl.declarationdict['collection']
-    data['content'] = ["cnxmodule:SHOULDNEVERHITDB1",]
+    data['Body'] = ["cnxmodule:SHOULDNEVERHITDB1",]
     resp = wapp_put(TESTAPP, "collection", data, rouseruri, collectionuri)
     assert resp.status_int == 403
 
 
 def test_put_module():
     data = decl.declarationdict['module']
-    data['content'] = "Declaration test text"
+    data['Body'] = "Declaration test text"
     resp = wapp_put(TESTAPP, "module", data, gooduseruri, moduleuri)
     print resp
-    assert resp.json['content'] == "Declaration test text"
+    assert resp.json['Body'] == "Declaration test text"
 
 def test_put_module_rouser():
     data = decl.declarationdict['module']
-    data['content'] = "NEVER HIT DB"
+    data['Body'] = "NEVER HIT DB"
     resp = wapp_put(TESTAPP, "module", data, rouseruri, moduleuri)    
     assert resp.status_int == 403
 
 def test_put_module_baduser():
     data = decl.declarationdict['module']
-    data['content'] = "NEVER HIT DB"
+    data['Body'] = "NEVER HIT DB"
     resp = wapp_put(TESTAPP, "module", data, baduseruri, moduleuri)
     print "status =", resp.status
     assert resp.status_int == 403
 
 def test_put_folder():
     data = decl.declarationdict['folder']
-    data['content'] =  ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    data['Body'] =  ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
     resp = wapp_put(TESTAPP, "folder", data, gooduseruri, folderuri)
-    assert len(resp.json['content']) == 1
+    assert len(resp.json['Body']) == 1
 
 def test_put_folder_ro():
     data = decl.declarationdict['folder']
-    data['content'] =  ["ROUSER",]
+    data['Body'] =  ["ROUSER",]
     resp = wapp_put(TESTAPP, "folder", data, rouseruri, folderuri)
     assert resp.status_int == 403
 
 def test_put_folder_bad():
     data = decl.declarationdict['folder']
-    data['content'] =  ["BADUSER",]
+    data['Body'] =  ["BADUSER",]
     resp = wapp_put(TESTAPP, "folder", data, baduseruri, folderuri)
     assert resp.status_int == 403
 
@@ -481,7 +481,6 @@ if __name__ == '__main__':
     #r = wapp_put(c.wapp, {}, rouseruri, "module", id_=moduleuri)
     r = wapp_delete(c.wapp, "module", id_=moduleuri, owner=rouseruri)    
 
-#    d = decl.declarationdict['sect1']
-#    d['content'] = "Dear King George, cup of tea?"
+
 
 #### So we should be able to nosetests runtests.py as well as runtests.py direct

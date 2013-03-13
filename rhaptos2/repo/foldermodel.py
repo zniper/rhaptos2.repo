@@ -100,9 +100,9 @@ class Collection(Base, CNXBase):
     """
     __tablename__ = 'cnxcollection'
     id_ = Column(String, primary_key=True)
-    title = Column(String)
+    Title = Column(String)
     Language = Column(String)
-    subtype = Column(String)
+    Subtype = Column(String)
     Subjects = Column(ARRAY(String))
     Keywords = Column(ARRAY(String))
     Summary = Column(String)
@@ -110,7 +110,7 @@ class Collection(Base, CNXBase):
     Maintainers =  Column(ARRAY(String))
     CopyrightHolders   =  Column(ARRAY(String))
 
-    content = Column(ARRAY(String))
+    Body = Column(ARRAY(String))
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
 
@@ -120,6 +120,7 @@ class Collection(Base, CNXBase):
 
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        self.content = self.Body
         if creator_uuid:
             self.adduserrole(UserRoleCollection,
                 {'user_uri':creator_uuid, 'role_type':'aclrw'})
@@ -135,7 +136,7 @@ class Collection(Base, CNXBase):
 
 
     def __repr__(self):
-        return "Col:(%s)-%s" % (self.id_, self.title)
+        return "Col:(%s)-%s" % (self.id_, self.Title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
@@ -177,13 +178,13 @@ class Module(Base, CNXBase):
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
-    title = Column(String)
+    Title = Column(String)
     Authors =  Column(ARRAY(String))
     Maintainers =  Column(ARRAY(String))
     CopyrightHolders   =  Column(ARRAY(String))
-    content = Column(String)
+    Body = Column(String)
     Language = Column(String)
-    subtype = Column(String)
+    Subtype = Column(String)
     Subjects = Column(ARRAY(String))
     Keywords = Column(ARRAY(String))
     Summary = Column(String)
@@ -193,9 +194,10 @@ class Module(Base, CNXBase):
     userroles = relationship("UserRoleModule",
                              backref="cnxmodule",
                              cascade="all, delete-orphan")
-
+    
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        self.content = self.Body
         if not self.validateid(id_):
             raise RhaptosError("%s not valid id" % id_)
             
@@ -214,7 +216,7 @@ class Module(Base, CNXBase):
         db_session.commit()
 
     def __repr__(self):
-        return "Module:(%s)-%s" % (self.id_, self.title)
+        return "Module:(%s)-%s" % (self.id_, self.Title)
     
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Module class to have a set_acls call,
@@ -275,8 +277,8 @@ class Folder(Base, CNXBase):
     """
     __tablename__ = 'cnxfolder'
     id_ = Column(String, primary_key=True)
-    title = Column(String)
-    content = Column(ARRAY(String))
+    Title = Column(String)
+    Body = Column(ARRAY(String))
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
 
@@ -286,6 +288,7 @@ class Folder(Base, CNXBase):
 
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        self.content = self.Body
         if creator_uuid:
             self.adduserrole(UserRoleFolder,
                 {'user_uri':creator_uuid, 'role_type':'aclrw'})
@@ -300,7 +303,7 @@ class Folder(Base, CNXBase):
         self.date_created_utc = self.get_utcnow()
 
     def __repr__(self):
-        return "Folder:(%s)-%s" % (self.id_, self.title)
+        return "Folder:(%s)-%s" % (self.id_, self.Title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
@@ -508,7 +511,7 @@ def workspace_by_user(user_uri):
 
     q = db_session.query(Module)
     q = q.join(Module.userroles)
-    q = q.add_column(Module.id_).add_column(Module.title)
+    q = q.add_column(Module.id_).add_column(Module.Title)
     q = q.filter(UserRoleModule.user_uri==user_uri)
 
     rs = q.all()
