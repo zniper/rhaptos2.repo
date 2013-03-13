@@ -26,6 +26,7 @@ from webtest import TestApp
 import webtest
 from optparse import OptionParser
 import urlparse
+import backend
 
 from rhaptos2.repo.configuration import (
     find_configuration_file,
@@ -143,7 +144,7 @@ APIMAP = {'module':
                    },
 
           'folder_acl':
-                   {"POST" : urlparse.urljoin(userhost, "folder//%(id_)s/"),
+                   {"POST" : urlparse.urljoin(userhost, "folder/%(id_)s/"),
                     "GET" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
                     "PUT" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
                     "DELETE" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
@@ -211,11 +212,12 @@ def get_url(resourcetype, id_=None, method=None):
         url = baseurl
     return url
 
-def wapp_get(wapp, resourcetype, id_):
+def wapp_get(wapp, resourcetype, id_, owner):
     """ """
+    headers = {'X-Cnx-FakeUserId': owner,}
     URL = get_url(resourcetype, id_=id_, method="GET")
     try:
-        resp =  wapp.get(URL)    
+        resp =  wapp.get(URL, status="*", headers=headers)    
     except Exception, e:
         import traceback
         tb = traceback.format_exc()
@@ -231,13 +233,14 @@ def wapp_post(wapp, resourcetype, data, owner):
     headers = {'X-Cnx-FakeUserId': owner,}
     
     try:
-        resp = wapp.post_json(URL, params=data, headers=headers)
+        resp = wapp.post_json(URL, params=data, headers=headers, status="*")
     except Exception, e:
         import traceback
         tb = traceback.format_exc()
         print "\/" * 32
-        print e, tb
-        print "/\\" * 32 
+        print e, tb,
+        print "/\\" * 32
+        print URL
     return resp
 
 def wapp_delete(wapp, resourcetype, id_, owner):
@@ -246,24 +249,23 @@ def wapp_delete(wapp, resourcetype, id_, owner):
     URL = get_url(resourcetype, id_=id_, method="DELETE")
     headers = {'X-Cnx-FakeUserId': owner,
                }
-    resp = wapp.delete(URL, headers=headers)
-    print resp
+    resp = wapp.delete(URL, headers=headers, status="*")
+    return resp
     
     
     
-def wapp_put(wapp, data, owner, resourcetype, id_=None):
+def wapp_put(wapp, resourcetype, data, owner, id_=None):
     headers = {'X-Cnx-FakeUserId': owner,}
     URL = get_url(resourcetype, method="PUT", id_=id_)
+    print "Putting to %s" % URL
     try:
-        resp = wapp.put_json(URL, params=data, headers=headers)
+        resp = wapp.put_json(URL, params=data, headers=headers, status="*")
     except Exception, e:
         import traceback
         tb = traceback.format_exc()
         print e, tb
     return resp
 
-
-    wapp_put(wapp, d, owner, "module", d['id_'])
 
 def setacl_collection():
     owner =gooduseruri
@@ -310,56 +312,145 @@ test_delete_module
  """
 
 
-### this is all so generic i should use test generators
-class test_post(object):
+def test_post_module():
+    resp = wapp_post(TESTAPP, "module", decl.declarationdict['module'], gooduseruri)
+    returned_module_uri = resp.json['id_']
+    assert returned_module_uri == moduleuri
 
-    def setup(self):
-#        opts, args = parse_args()
-        CONFD_PATH = os.path.abspath("../../pbrian.ini")  ##pass in through nose...
-        print "here"
+def test_post_folder():
+    resp = wapp_post(TESTAPP, "folder", decl.declarationdict['folder'], gooduseruri)
+    returned_folder_uri = resp.json['id_']
+    assert returned_folder_uri == folderuri
 
-    #    confd = conf.get_config(CONFD_PATH)
-        config = Configuration.from_file(CONFD_PATH)
+def test_post_collection():
+    resp = wapp_post(TESTAPP, "collection", decl.declarationdict['collection'], gooduseruri)    
+    returned_collection_uri = resp.json['id_']
+    assert returned_collection_uri == collectionuri
 
-        app = make_app(config)
-        app.debug=True
-        
-        #from waitress import serve
-        #serve(app.wsgi_app, host='0.0.0.0', port=8080)
+def test_put_collection():
+    data = decl.declarationdict['collection']
+    data['content'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    resp = wapp_put(TESTAPP, "collection", data, gooduseruri, collectionuri)    
+    assert len(resp.json['content']) == 1
 
-        from webtest import TestApp
-        self.wapp = TestApp(app.wsgi_app)
-        
+def test_put_collection_rouser():
+    data = decl.declarationdict['collection']
+    data['content'] = ["cnxmodule:SHOULDNEVERHITDB0",]
+    resp = wapp_put(TESTAPP, "collection", data, rouseruri, collectionuri)
+    assert resp.status_int == 403
+
+def test_put_collection_baduser():
+    data = decl.declarationdict['collection']
+    data['content'] = ["cnxmodule:SHOULDNEVERHITDB1",]
+    resp = wapp_put(TESTAPP, "collection", data, rouseruri, collectionuri)
+    assert resp.status_int == 403
+
+
+def test_put_module():
+    data = decl.declarationdict['module']
+    data['content'] = "Declaration test text"
+    resp = wapp_put(TESTAPP, "module", data, gooduseruri, moduleuri)
+    print resp
+    assert resp.json['content'] == "Declaration test text"
+
+def test_put_module_rouser():
+    data = decl.declarationdict['module']
+    data['content'] = "NEVER HIT DB"
+    resp = wapp_put(TESTAPP, "module", data, rouseruri, moduleuri)    
+    assert resp.status_int == 403
+
+def test_put_module_baduser():
+    data = decl.declarationdict['module']
+    data['content'] = "NEVER HIT DB"
+    resp = wapp_put(TESTAPP, "module", data, baduseruri, moduleuri)
+    print "status =", resp.status
+    assert resp.status_int == 403
+
+def test_put_folder():
+    data = decl.declarationdict['folder']
+    data['content'] =  ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    resp = wapp_put(TESTAPP, "folder", data, gooduseruri, folderuri)
+    assert len(resp.json['content']) == 1
+
+def test_put_folder_ro():
+    data = decl.declarationdict['folder']
+    data['content'] =  ["ROUSER",]
+    resp = wapp_put(TESTAPP, "folder", data, rouseruri, folderuri)
+    assert resp.status_int == 403
+
+def test_put_folder_bad():
+    data = decl.declarationdict['folder']
+    data['content'] =  ["BADUSER",]
+    resp = wapp_put(TESTAPP, "folder", data, baduseruri, folderuri)
+    assert resp.status_int == 403
+
+def test_put_module_acl():
+    data = decl.acllist
+    resp = wapp_put(TESTAPP, "module_acl", data, gooduseruri, moduleuri)
+    assert resp.status_int == 200
+
+def test_read_module_rouser():
+    resp = wapp_get(TESTAPP, "module", moduleuri, rouseruri)
+    assert resp.status_int == 200
+
+def test_read_module_baduser():
+    resp = wapp_get(TESTAPP, "module", moduleuri, baduseruri)
+    print resp, resp.status, baduseruri
+    assert resp.status_int == 403
+
+def test_delete_module_baduser():
+    resp = wapp_delete(TESTAPP, "module", moduleuri, baduseruri)
+    assert resp.status_int == 403
     
-    def test_post_module(self):
-        resp = wapp_post(self.wapp, "module", decl.declarationdict['module'], gooduseruri)
-        returned_module_uri = resp.json['id_']
-        assert returned_module_uri == moduleuri
-        
-    def ntest_post_folder(self):
-        resp = post_generic(self.wapp, "folders", gooduseruri)
-        returned_folder_uri = resp.json['id_']
-        #assert returned_folder_uri == folderuri
+def test_delete_module_rouser():
+    resp = wapp_delete(TESTAPP, "module", moduleuri, rouseruri)
+    assert resp.status_int == 403
+    
+def test_delete_module_rouser():
+    resp = wapp_delete(TESTAPP, "module", moduleuri, gooduseruri)
+    assert resp.status_int == 200
+    
+    
 
-    def ntest_post_collection(self):
-        resp = post_generic(self.wapp, "collections", gooduseruri)
-        returned_collection_uri = resp.json['id_']
-        #assert returned_collection_uri == collectionuri
-
-
-    ### PUTS
-    #def test_put_module(self):
-    #    url = get_url("module", id_=moduleuri)
-    #    resp = wapp_put(self.wapp, "module", gooduseruri, moduleuri)
-
+    
+    
 
 #import doctest
 #doctest.testmod()
 
+TESTCONFIG = None
+TESTAPP = None
 
+def setup():
 
+    global TESTCONFIG
+    global TESTAPP
+    CONFD_PATH = os.path.abspath("../../testing.ini")  ##pass in through nose...
+    TESTCONFIG = Configuration.from_file(CONFD_PATH)
+    cleardown(TESTCONFIG)
+    initdb(TESTCONFIG)    
+    app = make_app(TESTCONFIG)
+    app.debug=True
+        
+        #from waitress import serve
+        #serve(app.wsgi_app, host='0.0.0.0', port=8080)
+
+    from webtest import TestApp
+    TESTAPP = TestApp(app.wsgi_app)
         
 
+    
+    
+    
+def cleardown(config):
+    backend.clean_dbase(config)
+
+def initdb(config):
+    backend.initdb(config)
+    ### kind of useless as have not instantiated the models yet.
+    
+#    CONFD_PATH = os.path.abspath("../../testing.ini")  ##pass in through nose...    
+    
 if __name__ == '__main__':
 
     try:

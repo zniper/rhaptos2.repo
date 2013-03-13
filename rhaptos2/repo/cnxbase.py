@@ -195,8 +195,7 @@ class CNXBase():
         """ Given a user and a action type, determine if it is
             authorised on this object
 
-        ### this is really really poor - I cannot test it
-        ### as self.useroles exists on a SQLA object...
+        #unittest not available as setup is large.
         >> C = CNXBase()
         >> C.is_action_auth(action="PUT", requesting_user_uri="Fake1")
         *** [u'Fake1']
@@ -206,6 +205,11 @@ class CNXBase():
         False
     
         """
+        print "*****AUTH"
+        print "model", self
+        print "action", action
+        print "user", requesting_user_uri
+        print "*****/AUTH"        
         if action in ("GET","HEAD", "OPTIONS"):
             valid_user_list = [u.user_uri for u in self.userroles
                                           if u.role_type in ("aclro", "aclrw")]
@@ -213,11 +217,13 @@ class CNXBase():
             valid_user_list = [u.user_uri for u in self.userroles
                                           if u.role_type in ("aclrw",)]
         else:
-            raise Rhaptos2SecurityError("Unknown action type: %s" % action)
-
+            #raise Rhaptos2SecurityError("Unknown action type: %s" % action)
+            return False
+            
         if requesting_user_uri is None:
-            raise Rhaptos2SecurityError("No user_uri supplied: %s" %
-                                        requesting_user_uri)
+            #raise Rhaptos2SecurityError("No user_uri supplied: %s" %
+            #                            requesting_user_uri)
+            return False
         else:
             if requesting_user_uri in valid_user_list:
                 return True

@@ -416,7 +416,7 @@ def mkobjfromlistofdict(o, l):
 #     return newf
 
 
-def get_by_id(klass, ID):
+def get_by_id(klass, ID, useruri):
     """
 
     Here we show why we need each Klass to have a generic named id_
@@ -432,12 +432,14 @@ def get_by_id(klass, ID):
     ### There is a uniq constraint on the table, but anyway...
     if len(rs) > 1:
         raise Rhaptos2Error("Too many matches")
+        
 
     newu = rs[0]
+    if not change_approval(newu, {}, useruri, "GET"): abort(403)
     return newu
 
 
-def post_o(klass, incomingd, creator_uuid):
+def post_o(klass, incomingd, requesting_user_uri):
     """Given a dict representing the complete set
     of fields then create a new user and those fields
 
@@ -446,12 +448,12 @@ def post_o(klass, incomingd, creator_uuid):
 
     returns User object, for later saveing to DB"""
 
-    u = klass(creator_uuid=creator_uuid)
+    u = klass(creator_uuid=requesting_user_uri)
 
     #parser = verify_schema_version(None)
     #incomingd = parser(json_str)
     u.populate_self(incomingd)
-    change_approval(u, incomingd, creator_uuid, "post")
+    if not change_approval(u, incomingd, requesting_user_uri, "POST"): abort(403)
     db_session.add(u)
     db_session.commit()
     return u
@@ -459,32 +461,32 @@ def post_o(klass, incomingd, creator_uuid):
 
 def acl_setter(klass, uri, requesting_user_uri, acls_list):
     """ """
-    obj = get_by_id(klass, uri)
+    obj = get_by_id(klass, uri, requesting_user_uri)
+    if not change_approval(obj, None, requesting_user_uri, "PUT"): abort(403)
     obj.set_acls(requesting_user_uri, acls_list)
     return obj
 
-def put_o(jsond, klass, ID, requestinguserid=None):
+def put_o(jsond, klass, ID, requesting_user_uri):
     """Given a user_id, and a json_str representing the "Updated" fields
        then update those fields for that user_id """
 
-    try:
-        uobj = get_by_id(klass, ID)
-    except Exception, e:
-        dolog("INFO", str(e))
-#        raise Rhaptos2Error("FAiled to get obj")
-        abort(404)
-    change_approval(uobj, jsond, requestinguserid, "put")
+
+    uobj = get_by_id(klass, ID, requesting_user_uri)
+    if not change_approval(uobj, jsond, requesting_user_uri, "PUT"): abort(403)
     #.. todo:: parser = verify_schema_version(None)
     uobj.populate_self(jsond)
     db_session.add(uobj)
     db_session.commit()
     return uobj
 
-def delete_o(klass, ID):
+def delete_o(klass, ID, requesting_user_uri):
     """ """
-    fldr = get_by_id(klass, ID)
-    db_session.delete(fldr)
-    db_session.commit()
+    fldr = get_by_id(klass, ID, requesting_user_uri)
+    if not change_approval(fldr, None, requesting_user_uri, "DELETE"):
+        abort(403)
+    else:    
+        db_session.delete(fldr)
+        db_session.commit()
 
 
 def close_session():
@@ -495,9 +497,11 @@ def change_approval(uobj, jsond, requesting_user_uri, requesttype):
 
     Intended to parse json doc and validate version,
     validate user can act upon object as requested etc.
-
+    def is_action_auth(self, action=None,
+                                   requesting_user_uri=None)
      """
-    return
+    return uobj.is_action_auth(action=requesttype,
+                               requesting_user_uri=requesting_user_uri)
 
 def workspace_by_user(user_uri):
     """Its at times like these I just want to pass SQL in... """

@@ -52,7 +52,8 @@ def initdb(confd):
     db_engine = connect_now(confd)
     db_session.configure(bind=db_engine)
     Base.metadata.create_all(db_engine)
-
+    print "init done"
+    
 # def droptables():
 #     """This could become a conn factory.  """
 #     global db_session
@@ -80,3 +81,11 @@ def clean_dbase(config):
     c.execute("DROP TABLE IF EXISTS public.cnxmodule CASCADE;")
     conn.commit()
     conn.close()
+
+# def cleardb():
+    
+#     with contextlib.closing(engine.connect()) as con:
+#         trans = con.begin()
+#         for table in reversed(meta.sorted_tables):
+#             con.execute(table.delete())
+#         trans.commit()

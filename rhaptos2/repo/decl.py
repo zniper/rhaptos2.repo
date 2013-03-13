@@ -305,19 +305,6 @@ declarationdict = {"sect1":sect1, "sect2":sect2,
                    "module":sect1}
 #for s in l:
 #    print json.dumps(s,sort_keys=True, indent=4)
-
-acllist = [
-        {'date_lastmodified_utc': None,
-                'date_created_utc': None,
-                  'user_uri': "cnxuser:1234",
-                  'role_type': 'aclrw'},
-
-        {'date_lastmodified_utc': None,
-                  'date_created_utc': None,
-                  'user_uri': u'cnxuser:5678',
-                  'role_type': 'aclro'}
-                  ]
-
 class tempuser(object):
     """We want to match the same details as in the user dbase.
        THis is for testing only - there is no ref int between repo and users
@@ -334,3 +321,17 @@ users = {'paul': tempuser("https://paulbrian.myopenid.com", "Paul Brian", "cnxus
          'phil':tempuser("https://philschatz.myopenid.com", "Phil Schatz", "cnxuser:75e06194-baee-4395-8e1a-566b656f6923"),
          'michael':tempuser("https://michaelmulich.myopenid.com", "Michael Mulich", "cnxuser:75e06194-baee-4395-8e1a-566b656f6924"),
          }
+
+###added as extra people to every module etc.
+acllist = [
+        {'date_lastmodified_utc': None,
+                'date_created_utc': None,
+                  'user_uri': users['phil'].useruri,
+                  'role_type': 'aclrw'},
+
+        {'date_lastmodified_utc': None,
+                  'date_created_utc': None,
+                  'user_uri': users['ed'].useruri,
+                  'role_type': 'aclro'}
+                  ]
+
