@@ -300,7 +300,7 @@ def admin_config():
 
         return outstr
     else:
-        abort(404)
+        abort(403)
 
 ################ openid views - from flask
 
