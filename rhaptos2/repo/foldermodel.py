@@ -10,8 +10,7 @@
 ###
 
 
-"""
-dbase-backed models for content on unpub repositories
+"""dbase-backed models for content on unpub repositories
 -----------------------------------------------------
 
 This module provides the class defintions for
@@ -20,19 +19,21 @@ This module provides the class defintions for
 * :class:`Folder`
 * :class:`Collection`
 
-These are backd onto SQLAlchemy foundations and then onto PostgresQL database.
-An explcit use of the ARRAY datatype in postgres limits the ability to swap out backends.
+These are backd onto SQLAlchemy foundations and then onto PostgresQL
+database.  An explcit use of the ARRAY datatype in postgres limits the
+ability to swap out backends.
 
 Security
 --------
 
-We expect to receive a HTTP HEADER (REMOTE_USER / X-Fake-CNXUser) with a user-uri
+We expect to receive a HTTP HEADER (REMOTE_USER / X-Fake-CNXUser) with
+a user-uri
 
 A cnx user-uri is in the glossary (!)
 
 .. todo::
-   We may need to write a custom handfler for sqlite3 to deal with ARRAY typoes
-   to make on local dev machine testing easier.
+   We may need to write a custom handfler for sqlite3 to deal
+   with ARRAY typoes to make on local dev machine testing easier.
 
 
 
@@ -73,31 +74,18 @@ So, this basically implies a protocol for objects / classes
 3. Support ACLs
 4. err ....
 
-
-
-
 """
-import json
-import uuid
-import pprint
 
-from sqlalchemy import (Table, ForeignKey, or_,
-                        Column, Integer, String,
-                        Text, Enum, DateTime, UniqueConstraint)
+from sqlalchemy import (ForeignKey,
+                        Column, String,
+                        Enum, DateTime,
+                        UniqueConstraint)
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
-import sqlalchemy.types
-import datetime
-
-
+import uuid
 from cnxbase import CNXBase
-
-# shared session from backend module, for pooling
-
 from rhaptos2.repo.backend import Base, db_session
-from rhaptos2.repo import dolog
-from err import Rhaptos2Error, Rhaptos2SecurityError
-
+from err import Rhaptos2Error  # Rhaptos2SecurityError
 # XXX - replace with catchall err handler - conflict5s with debug
 from flask import abort
 
@@ -108,17 +96,13 @@ class UserRoleCollection(Base, CNXBase):
     """The roles and users assigned for a given folder
     """
     __tablename__ = 'userrole_collection'
-
-    collection_uuid = Column(String,
-                             ForeignKey('cnxcollection.id_'),
+    collection_uuid = Column(String, ForeignKey('cnxcollection.id_'),
                              primary_key=True)
-    user_uri = Column(String,
-                      primary_key=True)
-    role_type = Column(Enum('aclrw', 'aclro',
-                            name="cnxrole_type"),
+    user_uri = Column(String, primary_key=True)
+    role_type = Column(Enum('aclrw', 'aclro', name="cnxrole_type"),
                        primary_key=True)
     date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)
+    date_lastmodified_utc = Column(DateTime)  # noqa
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -227,7 +211,7 @@ class Module(Base, CNXBase):
         """ """
         self.content = self.Body
         if not self.validateid(id_):
-            raise RhaptosError("%s not valid id" % id_)
+            raise Rhaptos2Error("%s not valid id" % id_)
 
         if creator_uuid:
             self.adduserrole(UserRoleModule,
@@ -282,8 +266,7 @@ class UserRoleFolder(Base, CNXBase):
 
 
 class Folder(Base, CNXBase):
-    """
-    FOlder Class inheriting from SQLAlchemy and from a CNXBase class
+    """FOlder Class inheriting from SQLAlchemy and from a CNXBase class
     to get a few generic functions.
 
     1. we define the table and columns
@@ -297,9 +280,8 @@ class Folder(Base, CNXBase):
        There is no reliable generic way to do this in SQLALchemy afaik.
        Frankly thats not a problem, as its pretty cut and paste.
 
-    5. jsonify - wrap to_dict in json.  In otherwords convert self to a JSON doc
-
-
+    5. jsonify - wrap to_dict in json.  In otherwords convert self to
+       a JSON doc
 
     """
     __tablename__ = 'cnxfolder'
@@ -437,12 +419,12 @@ def mkobjfromlistofdict(o, l):
 #     newf = rs[0]
 #     return newf
 def get_by_id(klass, ID, useruri):
-    """
+    """Here we show why we need each Klass to have a generic named id_
+    I want to avoid overly comploex mapping and routing in class
+    calls.  However we could map internally in the class (id_ =
+    folderid) THis does very little.
 
-    Here we show why we need each Klass to have a generic named id_
-    I want to avoid overly comploex mapping and routing in class calls.
-    However we could map internally in the class (id_ = folderid)  THis does very little.
-     """
+    """
     q = db_session.query(klass)
     q = q.filter(klass.id_ == ID)
     rs = q.all()
