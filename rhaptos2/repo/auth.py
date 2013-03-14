@@ -9,60 +9,42 @@
 # See LICENCE.txt for details.
 ###
 
-
 import datetime
-import datetime
-import md5, random
-import os, sys
-import hashlib
+import os
 import statsd
 import json
-from functools import wraps
-import urlparse
 import pprint
 
-from rhaptos2.common import conf
-from rhaptos2.common import log
 from rhaptos2.common.err import Rhaptos2Error
 from rhaptos2.repo import get_app, dolog
 
 import flask
-from flask import Flask, render_template, request, g, session, flash, \
-     redirect, url_for, abort
+from flask import request, g, session
 from flaskext.openid import OpenID
-import memcache
 import requests
-import urllib
 
-### XXX This needs to be wrapped in makeapp function ...
+
 app = get_app()
 
 app.config.update(
-    SECRET_KEY = app.config['openid_secretkey'],
-    DEBUG      = app.debug
+    SECRET_KEY=app.config['openid_secretkey'],
+    DEBUG=app.debug
 )
 RESOURCES_DIR_PATH = os.path.join(app.config['repodir'],
                                   'resources')
-METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH, 'resource-metadata')
+METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH,
+                                  'resource-metadata')
 
 # setup flask-openid
 oid = OpenID(app)
 
 
-#def resp_as_json():
-#    '''decorator that will convert to json '''
-#    @wraps(f)
-#    def decorated_function(*args, **kwargs):
-#        resp = flask.make_response(f)
-#        resp.content_type='application/json'
-#        return resp
-#    return decorated_function
-
 '''
 
 Wanted:
 
-onbjects to standarse the things like username lookups, username to directory, etc etc
+onbjects to standarse the things like username lookups,
+username to directory, etc etc
 
 Tests I want to see
 -------------------
@@ -98,7 +80,6 @@ ToDO:
 '''
 
 
-
 class User(object):
     """
     represents the user as looked up by an authneticated identifer
@@ -115,26 +96,32 @@ class User(object):
     def __init__(self, authenticated_identifier):
         """initialise from a id we have had verified by third party
 
-        .. todo:: this is stubbed out - it should always go to user dbase and lookup fromidentifer
-        .. todo:: what should I do if user dbase is unavilable???
-        .. todo:: totally unsafe laoding of user details
+        .. todo::
+           this is stubbed out - it should always go to user
+           dbase and lookup fromidentifer
+
+        .. todo::
+           what should I do if user dbase is unavilable???
+
+        .. todo::
+           totally unsafe laoding of user details
 
         """
-#        try:
-#        safe_auth_identifier = urllib.quote_plus(authenticated_identifier)
 
-        payload = {'user':authenticated_identifier}
+        payload = {'user': authenticated_identifier}
 
-        user_server_url = app.config['globals'][u'userserver'].replace("/user", "/openid")
+        user_server_url = app.config['globals'][
+            u'userserver'].replace("/user", "/openid")
 
-        dolog("INFO", "requesting user info - from url %s and query string %s" %
-                       (user_server_url, repr(payload)))
+        dolog("INFO", "user info - from url %s and query string %s" %
+                      (user_server_url, repr(payload)))
 
         try:
             r = requests.get(user_server_url, params=payload)
             userdetails = r.json
         except Exception, e:
             #.. todo:: not sure what to do here ... the user dbase is down
+            dolog("INFO", e)
             userdetails = None
 
         dolog("INFO", "Got back %s " % str(userdetails))
@@ -146,7 +133,6 @@ class User(object):
             self.fullname = "Unknown User"
             self.user_id = "Unknownuser"
 
-
     def __repr__(self):
         return pprint.pformat(self.__dict__)
 
@@ -157,11 +143,11 @@ class User(object):
         self.__dict__.update(user_dict)
 
 
-
-
 class Identity(object):
-    """ THis 'owns' User - its rubbish to have two clases doing the same basic thing.
-        I should merge them but need longer to test (demo day)
+    """THis 'owns' User - its rubbish to have two clases doing the
+        same basic thing.  I should merge them but need longer to test
+        (demo day)
+
     """
 
     def __init__(self, authenticated_identifier):
@@ -206,9 +192,10 @@ def after_authentication(authenticated_identifier, method):
     dolog("INFO", "before session - %s" % repr(session))
     userobj = get_user_from_identifier(authenticated_identifier)
 
-    ##set session, set g, set JS
-    #session update?
-    if method not in ('openid', 'persona'): raise Rhaptos2Error("Incorrect method of authenticating ID")
+    # set session, set g, set JS
+    # session update?
+    if method not in ('openid', 'persona'):
+        raise Rhaptos2Error("Incorrect method of authenticating ID")
     session['authenticated_identifier'] = authenticated_identifier
     g.user = userobj
 
@@ -219,11 +206,10 @@ def after_authentication(authenticated_identifier, method):
     return userobj
 
 
-
 def get_user_from_identifier(authenticated_identifier):
     """
     """
-    #supposed to be memcache lookup
+    # supposed to be memcache lookup
     return User(authenticated_identifier)
 
 
@@ -231,10 +217,10 @@ def store_identity(identity_url, **kwds):
     """no-op but would push idneity to backend storage ie memcvache """
     pass
 
+
 def retrieve_identity(identity_url, **kwds):
     """no-op but would pull idneity to backend storage ie memcvache """
     pass
-
 
 
 def whoami():
@@ -242,22 +228,22 @@ def whoami():
     return the identity url stored in session cookie
     TODO: store the userid in session cookie too ?
 
-    .. todo:: session assumes there will be a key of 'authenticated_identifier'
-    .. todo:: I always go and look this up - decide if this is sensible / secure
-    .. todo:: use secure cookie
+    .. todo::
+       session assumes there will be a key of 'authenticated_identifier'
+
+    .. todo::
+       I always go and look this up - decide if this is sensible / secure
+
+    .. todo::
+       use secure cookie
 
     I really need to think about session cookies. Default for now.
 
 
-
-    >> headers = {'X-Cnx-FakeUserId': 'fgfgfgf'}
-    >> r = requests.get("http://localhost:8000/me/", headers=headers)
-    >> r.text
-    u'{"email": "Unknown User", "id": "Unknownuser", "name": "Unknown User", "auth_identifier": "fgfgfgf"}'
-    ... todo:: document fajkeuserID
+    ..  todo:: document fajkeuserID
     '''
     dolog("INFO", "Whoami called", caller=whoami)
-    if "X-Cnx-FakeUserId" in request.headers and app.debug == True:
+    if "X-Cnx-FakeUserId" in request.headers and app.debug is True:
         fakeuserid = request.headers.get('X-Cnx-FakeUserId')
         g.user_id = fakeuserid
         return Identity(fakeuserid)
@@ -270,7 +256,7 @@ def whoami():
         g.user_id = None
         g.user = None
         return None
-        #is this alwasys desrireed?
+        # is this alwasys desrireed?
 
 
 ## .. todo:: why is there a view in here??
@@ -281,7 +267,7 @@ def whoamiGET():
     returns
     Either 401 if OpenID not available or JSON document of form
 
-    {"openid_url": "https://www.google.com/accounts/o8/id?id=AItOawlWRa8JTK7NyaAvAC4KrGaZik80gsKfe2U",
+    {"openid_url": "https://www.google.com/accounts/o8/id?id=AItOawlWRa8JTK7NyaAvAC4KrGaZik80gsKfe2U",  # noqa
      "email": "Not Implemented",
      "name": "Not Implemented"}
 
@@ -290,14 +276,14 @@ def whoamiGET():
 
     '''
     ### todo: return 401 code and let ajax client put up login.
-    user =  whoami()
+    user = whoami()
 
     if user:
         d = user.user_as_dict()
         jsond = asjson(d)
         ### make decorators !!!
         resp = flask.make_response(jsond)
-        resp.content_type='application/json'
+        resp.content_type = 'application/json'
         resp = apply_cors(resp)
         return resp
     else:
@@ -306,24 +292,25 @@ def whoamiGET():
 
 def apply_cors(resp):
     '''  '''
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    resp.headers["Access-Control-Allow-Credentials"]= "true"
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Credentials"] = "true"
     return resp
 
 
-
 def add_location_header_to_response(fn):
-    ''' add Location: header
+    '''add Location: header
 
         from: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        For 201 (Created) responses, the Location is that of the new resource which was created by the request
+        For 201 (Created) responses, the Location is that of the new
+        resource which was created by the request
 
 
-    decorator that assumes we are getting a flask response object'''
+    decorator that assumes we are getting a flask response object
+
+    '''
 
     resp = fn()
-    resp.headers["Location"]= "URL NEEDED FROM HASHID"
-
+    resp.headers["Location"] = "URL NEEDED FROM HASHID"
 
 
 #@property ## need to evolve a class here I feel...
@@ -334,13 +321,13 @@ def userspace():
     if os.path.isdir(userspace):
         return userspace
     else:
-       try:
-           os.makedirs(userspace)
-           return userspace
-       except Exception,e:
-           raise Rhaptos2Error('cannot create repo \
+        try:
+            os.makedirs(userspace)
+            return userspace
+        except Exception, e:
+            raise Rhaptos2Error('cannot create repo \
                                 or userspace %s - %s' % (
-                                 userspace, e))
+                                userspace, e))
 
 
 def callstatsd(dottedcounter):
@@ -349,9 +336,9 @@ def callstatsd(dottedcounter):
     # "socket.gaierror: [Errno 8] nodename nor servname provided, or not known"
     try:
         c = statsd.StatsClient(app.config['globals']['statsd_host'],
-                           int(app.config['globals']['statsd_port']))
+                               int(app.config['globals']['statsd_port']))
         c.incr(dottedcounter)
-        #todo: really return c and keep elsewhere for efficieny I suspect
+        # todo: really return c and keep elsewhere for efficieny I suspect
     except:
         pass
 
@@ -366,6 +353,7 @@ def asjson(pyobj):
 
     '''
     return json.dumps(pyobj)
+
 
 def gettime():
     return datetime.datetime.today().isoformat()

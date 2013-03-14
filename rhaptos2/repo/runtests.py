@@ -12,28 +12,25 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 .. todo::
 
    * replace mess of functions and @decorators with routes on routes
-     (idea: name each route then can build route from name and vice versa with Routes.)
+     (idea: name each route then can build route
+      from name and vice versa with Routes.)
 
-   * 
+   *
 """
 
 from rhaptos2.repo import make_app
-from rhaptos2.common import conf
-import os, sys, pprint
-import json
 import decl
 from webtest import TestApp
-import webtest
+from wsgiproxy.app import WSGIProxyApp
 from optparse import OptionParser
 import urlparse
 import backend
 
-from rhaptos2.repo.configuration import (
+from rhaptos2.repo.configuration import (  # noqa
     find_configuration_file,
     Configuration,
-    )
-from wsgiproxy.app import WSGIProxyApp
-from webtest import TestApp
+)
+
 
 def parse_args():
     parser = OptionParser()
@@ -51,12 +48,6 @@ def parse_args():
     return (options, args)
 
 
-
-
-
-
-
-    
 def build_environ():
     """
     We are playing at a low level with WSGI - wanting to wrap repoze.
@@ -67,17 +58,17 @@ def build_environ():
     import StringIO
     request_fo = StringIO.StringIO()
     err_fo = StringIO.StringIO()
-    
-    ###wsgi reqd keys and default valus
-    wsgi_specific_headers = {"wsgi.version": (1,0),
+
+    # wsgi reqd keys and default valus
+    wsgi_specific_headers = {"wsgi.version": (1, 0),
                              "wsgi.url_scheme": "http",
                              "wsgi.input": request_fo,
                              "wsgi.errors": err_fo,
                              "wsgi.multithread": False,
                              "wsgi.multiprocess": False,
                              "wsgi.run_once": False
-                            }
-    
+                             }
+
     ### key = HEADER (RFCLOC, NOTNULL, validvalues)
     HTTP_HEADERS = {"REQUEST_METHOD": "GET",
                     "SCRIPT_NAME": "module",
@@ -93,7 +84,7 @@ def build_environ():
     d.update(wsgi_specific_headers)
     d.update(HTTP_HEADERS)
     return d
-    
+
 
 ###### CONSTANTS FOR TESTING.
 moduleuri = "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126"
@@ -104,59 +95,59 @@ gooduseruri = decl.users['paul'].useruri
 rouseruri = decl.users['ed'].useruri
 baduseruri = decl.users['ross'].useruri
 
-userhost="http://localhost:8000/"
+userhost = "http://localhost:8000/"
 ###
 
 
 APIMAP = {'module':
-                   {"POST" : urlparse.urljoin(userhost, "module/"),
-                    "GET" : urlparse.urljoin(userhost, "module/%(id_)s"),
-                    "PUT" : urlparse.urljoin(userhost, "module/%(id_)s"),
-                    "DELETE" : urlparse.urljoin(userhost, "module/%(id_)s"),
-                   },
-          
+         {"POST": urlparse.urljoin(userhost, "module/"),
+          "GET": urlparse.urljoin(userhost, "module/%(id_)s"),
+          "PUT": urlparse.urljoin(userhost, "module/%(id_)s"),
+          "DELETE": urlparse.urljoin(userhost, "module/%(id_)s"),
+          },
+
           'collection':
-                   {"POST" : urlparse.urljoin(userhost, "collection/"),
-                    "GET" : urlparse.urljoin(userhost, "collection/%(id_)s"),
-                    "PUT" : urlparse.urljoin(userhost, "collection/%(id_)s"),
-                    "DELETE" : urlparse.urljoin(userhost, "collection/%(id_)s"),
-                   },
+         {"POST": urlparse.urljoin(userhost, "collection/"),
+          "GET": urlparse.urljoin(userhost, "collection/%(id_)s"),
+          "PUT": urlparse.urljoin(userhost, "collection/%(id_)s"),
+          "DELETE": urlparse.urljoin(userhost, "collection/%(id_)s"),
+          },
 
           'folder':
-                   {"POST" : urlparse.urljoin(userhost, "folder/"),
-                    "GET" : urlparse.urljoin(userhost, "folder/%(id_)s"),
-                    "PUT" : urlparse.urljoin(userhost, "folder/%(id_)s"),
-                    "DELETE" : urlparse.urljoin(userhost, "folder/%(id_)s"),
-                   },
+         {"POST": urlparse.urljoin(userhost, "folder/"),
+          "GET": urlparse.urljoin(userhost, "folder/%(id_)s"),
+          "PUT": urlparse.urljoin(userhost, "folder/%(id_)s"),
+          "DELETE": urlparse.urljoin(userhost, "folder/%(id_)s"),
+          },
 
-           'module_acl':
-                   {"POST" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
-                    "GET" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
-                    "PUT" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
-                    "DELETE" : urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
-                   },
-          
+          'module_acl':
+         {"POST": urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+          "GET": urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+          "PUT": urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+          "DELETE": urlparse.urljoin(userhost, "module/%(id_)s/acl/"),
+          },
+
           'collection_acl':
-                   {"POST" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
-                    "GET" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
-                    "PUT" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
-                    "DELETE" : urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
-                   },
+         {"POST": urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+          "GET": urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+          "PUT": urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+          "DELETE": urlparse.urljoin(userhost, "collection/%(id_)s/acl/"),
+          },
 
           'folder_acl':
-                   {"POST" : urlparse.urljoin(userhost, "folder/%(id_)s/"),
-                    "GET" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
-                    "PUT" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
-                    "DELETE" : urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
-                   },
-                    
+         {"POST": urlparse.urljoin(userhost, "folder/%(id_)s/"),
+          "GET": urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+          "PUT": urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+          "DELETE": urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
+          },
+
           }
 
 
 def get_url(resourcetype, id_=None, method=None):
     """ return the correct URL to call for various resource operations
 
-    
+
     >>> get_url("collection", id_=None, method="POST")
     'http://localhost:8000/collection/'
 
@@ -165,7 +156,7 @@ def get_url(resourcetype, id_=None, method=None):
 
     >>> get_url("module", method="POST")
     'http://localhost:8000/module/'
-    
+
     >>> get_url("collection", id_="xxx", method="GET")
     'http://localhost:8000/collection/xxx'
 
@@ -174,7 +165,7 @@ def get_url(resourcetype, id_=None, method=None):
 
     >>> get_url("folder", id_="xxx", method="GET")
     'http://localhost:8000/folder/xxx'
-    
+
     >>> get_url("folder", id_="xxx", method="PUT")
     'http://localhost:8000/folder/xxx'
 
@@ -195,43 +186,45 @@ def get_url(resourcetype, id_=None, method=None):
 
     >>> get_url("folder_acl", id_="xxx", method="DELETE")
     'http://localhost:8000/folder/xxx/acl/'
-    
+
     Its pretty simple api so far...
-    
+
     .. todo::
        ensure urljoin is done well - urlparse version not really as expected...
-    
+
     """
-    ##restype, id method
+    # restype, id method
     ## what if invalid restype?
     baseurl = APIMAP[resourcetype][method]
 
-    if baseurl.find("%")>=0:    
+    if baseurl.find("%") >= 0:
         url = baseurl % {"id_": id_}
     else:
         url = baseurl
     return url
 
+
 def wapp_get(wapp, resourcetype, id_, owner):
     """ """
-    headers = {'X-Cnx-FakeUserId': owner,}
+    headers = {'X-Cnx-FakeUserId': owner, }
     URL = get_url(resourcetype, id_=id_, method="GET")
     try:
-        resp =  wapp.get(URL, status="*", headers=headers)    
+        resp = wapp.get(URL, status="*", headers=headers)
     except Exception, e:
         import traceback
         tb = traceback.format_exc()
         print "\/" * 32
         print e, tb
-        print "/\\" * 32 
+        print "/\\" * 32
     return resp
+
 
 def wapp_post(wapp, resourcetype, data, owner):
     """ ?
     """
     URL = get_url(resourcetype, id_=None, method="POST")
-    headers = {'X-Cnx-FakeUserId': owner,}
-    
+    headers = {'X-Cnx-FakeUserId': owner, }
+
     try:
         resp = wapp.post_json(URL, params=data, headers=headers, status="*")
     except Exception, e:
@@ -243,6 +236,7 @@ def wapp_post(wapp, resourcetype, data, owner):
         print URL
     return resp
 
+
 def wapp_delete(wapp, resourcetype, id_, owner):
     """
     """
@@ -251,11 +245,10 @@ def wapp_delete(wapp, resourcetype, id_, owner):
                }
     resp = wapp.delete(URL, headers=headers, status="*")
     return resp
-    
-    
-    
+
+
 def wapp_put(wapp, resourcetype, data, owner, id_=None):
-    headers = {'X-Cnx-FakeUserId': owner,}
+    headers = {'X-Cnx-FakeUserId': owner, }
     URL = get_url(resourcetype, method="PUT", id_=id_)
     print "Putting to %s" % URL
     try:
@@ -267,33 +260,9 @@ def wapp_put(wapp, resourcetype, data, owner, id_=None):
     return resp
 
 
-def setacl_collection():
-    owner =gooduseruri
-    acls = decl.acllist
-    headers = {'X-Cnx-FakeUserId': owner,
-               'content-type':'application/json'}
-    resp = requests.put(urljoin(userhost, "collection/" +
-                  collectionuri +
-                  "/acl/"),
-                  data=json.dumps(acls), headers=headers)
-    capture_conversation(resp)
-    print resp
-
-
-def del_collection():
-    owner =gooduseruri
-    headers = {'X-Cnx-FakeUserId': owner,
-              }
-    resp = requests.delete(urljoin(userhost, "collection/" +
-                        collectionuri
-                        +"/"),
-                        headers=headers)
-    capture_conversation(resp)
-    print resp
-
 def capture_conversation(resp):
-    """ """
-    rst = restrest.restrest(resp)
+    """Need to adapt the requests specicfic capture to WebTest """
+    rst = "adapt"  # restrest.restrest(resp)
     fo = open("output.rst", "a")
     fo.write(rst)
     fo.close()
@@ -313,35 +282,43 @@ test_delete_module
 
 
 def test_post_module():
-    resp = wapp_post(TESTAPP, "module", decl.declarationdict['module'], gooduseruri)
+    resp = wapp_post(TESTAPP, "module", decl.declarationdict[
+                     'module'], gooduseruri)
     returned_module_uri = resp.json['id_']
     assert returned_module_uri == moduleuri
 
+
 def test_post_folder():
-    resp = wapp_post(TESTAPP, "folder", decl.declarationdict['folder'], gooduseruri)
+    resp = wapp_post(TESTAPP, "folder", decl.declarationdict[
+                     'folder'], gooduseruri)
     returned_folder_uri = resp.json['id_']
     assert returned_folder_uri == folderuri
 
+
 def test_post_collection():
-    resp = wapp_post(TESTAPP, "collection", decl.declarationdict['collection'], gooduseruri)    
+    resp = wapp_post(TESTAPP, "collection", decl.declarationdict[
+                     'collection'], gooduseruri)
     returned_collection_uri = resp.json['id_']
     assert returned_collection_uri == collectionuri
 
+
 def test_put_collection():
     data = decl.declarationdict['collection']
-    data['Body'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
-    resp = wapp_put(TESTAPP, "collection", data, gooduseruri, collectionuri)    
+    data['Body'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126", ]
+    resp = wapp_put(TESTAPP, "collection", data, gooduseruri, collectionuri)
     assert len(resp.json['Body']) == 1
+
 
 def test_put_collection_rouser():
     data = decl.declarationdict['collection']
-    data['Body'] = ["cnxmodule:SHOULDNEVERHITDB0",]
+    data['Body'] = ["cnxmodule:SHOULDNEVERHITDB0", ]
     resp = wapp_put(TESTAPP, "collection", data, rouseruri, collectionuri)
     assert resp.status_int == 403
 
+
 def test_put_collection_baduser():
     data = decl.declarationdict['collection']
-    data['Body'] = ["cnxmodule:SHOULDNEVERHITDB1",]
+    data['Body'] = ["cnxmodule:SHOULDNEVERHITDB1", ]
     resp = wapp_put(TESTAPP, "collection", data, rouseruri, collectionuri)
     assert resp.status_int == 403
 
@@ -353,11 +330,13 @@ def test_put_module():
     print resp
     assert resp.json['Body'] == "Declaration test text"
 
+
 def test_put_module_rouser():
     data = decl.declarationdict['module']
     data['Body'] = "NEVER HIT DB"
-    resp = wapp_put(TESTAPP, "module", data, rouseruri, moduleuri)    
+    resp = wapp_put(TESTAPP, "module", data, rouseruri, moduleuri)
     assert resp.status_int == 403
+
 
 def test_put_module_baduser():
     data = decl.declarationdict['module']
@@ -366,60 +345,65 @@ def test_put_module_baduser():
     print "status =", resp.status
     assert resp.status_int == 403
 
+
 def test_put_folder():
     data = decl.declarationdict['folder']
-    data['Body'] =  ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",]
+    data['Body'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126", ]
     resp = wapp_put(TESTAPP, "folder", data, gooduseruri, folderuri)
     assert len(resp.json['Body']) == 1
 
+
 def test_put_folder_ro():
     data = decl.declarationdict['folder']
-    data['Body'] =  ["ROUSER",]
+    data['Body'] = ["ROUSER", ]
     resp = wapp_put(TESTAPP, "folder", data, rouseruri, folderuri)
     assert resp.status_int == 403
 
+
 def test_put_folder_bad():
     data = decl.declarationdict['folder']
-    data['Body'] =  ["BADUSER",]
+    data['Body'] = ["BADUSER", ]
     resp = wapp_put(TESTAPP, "folder", data, baduseruri, folderuri)
     assert resp.status_int == 403
+
 
 def test_put_module_acl():
     data = decl.acllist
     resp = wapp_put(TESTAPP, "module_acl", data, gooduseruri, moduleuri)
     assert resp.status_int == 200
 
+
 def test_read_module_rouser():
     resp = wapp_get(TESTAPP, "module", moduleuri, rouseruri)
     assert resp.status_int == 200
+
 
 def test_read_module_baduser():
     resp = wapp_get(TESTAPP, "module", moduleuri, baduseruri)
     print resp, resp.status, baduseruri
     assert resp.status_int == 403
 
+
 def test_delete_module_baduser():
     resp = wapp_delete(TESTAPP, "module", moduleuri, baduseruri)
     assert resp.status_int == 403
-    
+
+
 def test_delete_module_rouser():
     resp = wapp_delete(TESTAPP, "module", moduleuri, rouseruri)
     assert resp.status_int == 403
-    
-def test_delete_module_rouser():
+
+
+def test_delete_module_good():
     resp = wapp_delete(TESTAPP, "module", moduleuri, gooduseruri)
     assert resp.status_int == 200
-    
-    
 
-    
-    
 
-#import doctest
-#doctest.testmod()
-
+# import doctest
+# doctest.testmod()
 TESTCONFIG = None
 TESTAPP = None
+
 
 def convert_config(config):
     defaultsection = 'app'
@@ -427,74 +411,41 @@ def convert_config(config):
         config[k] = config[defaultsection][k]
     del config[defaultsection]
     return config
-    
-        
+
 
 def setup():
 
     global TESTCONFIG
     global TESTAPP
-    
-    ### using nose-testconfig we obtain the config dict passed in through the nosetests command line
+
+    # using nose-testconfig we obtain the config dict passed in through the
+    # nosetests command line
     from testconfig import config
-    ## now "convert" to app-style dict    
+    ## now "convert" to app-style dict
     TESTCONFIG = convert_config(config)
-    
-    #cleardown(TESTCONFIG)
-    #initdb(TESTCONFIG)
 
+    # cleardown(TESTCONFIG)
+    # initdb(TESTCONFIG)
 
-    
-#    open("/tmp/conf", "w").write(pprint.pformat(TESTCONFIG))
-#    open("/tmp/appconf", "w").write(pprint.pformat(app.config.items()))
-#    open("/tmp/foo.txt", "w").write(app.config)
-
-
-    
     if 'HTTPPROXY' in config.keys():
         app = WSGIProxyApp(config['HTTPPROXY'])
-        TESTAPP = TestApp(app, extra_environ={'REMOTE_ADDR':'1.2.3.4'})
+        TESTAPP = TestApp(app, extra_environ={'REMOTE_ADDR': '1.2.3.4'})
     else:
-        cleardown(TESTCONFIG) ##use this in setup - via a renaming?
+        cleardown(TESTCONFIG)  # use this in setup - via a renaming?
         app = make_app(TESTCONFIG)
-        app.debug=True
+        app.debug = True
         TESTAPP = TestApp(app.wsgi_app)
-        
-       
-    
+
+
 def cleardown(config):
     backend.clean_dbase(config)
+
 
 def initdb(config):
     backend.initdb(config)
     ### kind of useless as have not instantiated the models yet.
-    
-#    CONFD_PATH = os.path.abspath("../../testing.ini")  ##pass in through nose...    
-    
+
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-    
-        
-# #    from waitress import serve
-# #    serve(c.wapp, host='0.0.0.0', port=8000)
-#     #its a test appp!!!
-#     try:
-#         pass#r = wapp_delete(c.wapp, "module", moduleuri, gooduseruri)
-#     except:
-#         pass
-#     r2 = wapp_post(c.wapp, "module", decl.declarationdict['module'], 'niceguyeddie')
-#     print r2
-# #    raw_input("?")
-#     r = wapp_get(c.wapp, "module", moduleuri)
-#     print r
-#     print "puttting///"
-#     #r = wapp_put(c.wapp, {}, rouseruri, "module", id_=moduleuri)
-#     r = wapp_delete(c.wapp, "module", id_=moduleuri, owner=rouseruri)    
-
-
-        
-        #from waitress import serve
-        #serve(app.wsgi_app, host='0.0.0.0', port=8080)
-
-#### So we should be able to nosetests runtests.py as well as runtests.py direct

@@ -1,19 +1,18 @@
 
-"""
-THis exists solely to provide less typing for a "leaf node"
-in a simple realtional schema (1:M and 1:M-N:1) when used with SQLAlchemy
+"""THis exists solely to provide less typing for a "leaf node" in a
+simple realtional schema (1:M and 1:M-N:1) when used with SQLAlchemy
 
-SA does not support class based inheritence in the normal Python way for objects inheriting from Base.  Thus we have those objects perform multiple inheritence...
-
+SA does not support class based inheritence in the normal Python way
+for objects inheriting from Base.  Thus we have those objects perform
+multiple inheritence...
 
 """
 import json
-import sqlalchemy.types
 import datetime
-from err import Rhaptos2Error, Rhaptos2SecurityError
+from err import Rhaptos2Error
+
 
 class CNXBase():
-
 
     def validateid(self, id_):
         """Given a id_ check it is of correct uri format
@@ -26,15 +25,15 @@ class CNXBase():
         True
         >>> C.validateid("1234")
         False
-        
+
         """
         if not id_:
             return True
-        elif id_.find(":") >=0 :
+        elif id_.find(":") >= 0:
             return True
         else:
             return False
-        
+
     def from_json(self, json_str):
         """ Not used at moment - json conversion usually done in
             web servers so this has little use for now."""
@@ -50,11 +49,11 @@ class CNXBase():
         SHould test for schema validity etc.
 
         """
-        idnames = ['id_',]
+        idnames = ['id_', ]
         d = userprofile_dict
         for k in d:
             if k in idnames and d[k] is None:
-                continue #do not assign a id of None to the internal id
+                continue  # do not assign a id of None to the internal id
             else:
                 setattr(self, k, d[k])
 
@@ -72,12 +71,11 @@ class CNXBase():
         jsonstr = json.dumps(selfd)  # here use the Json ENcoder???
         return jsonstr
 
-
     def safe_type_out(self, col):
         """return the value of a coulmn field safely for json
         This is essentially a JSONEncoder sublclass inside object - ...
         """
-        ##XXX cannot get isinstance match on sqlalchem types
+        # XXX cannot get isinstance match on sqlalchem types
         if str(col.type) == "DATETIME":
             try:
                 outstr = getattr(self, col.name).isoformat()
@@ -86,22 +84,6 @@ class CNXBase():
         else:
             outstr = getattr(self, col.name)
         return outstr
-
-
-    # def safe_type_out(self, col):
-    #     """return the value of a coulmn field safely as something that
-    #        json can use This is essentially a JSONEncoder sublclass
-    #        inside this object.
-    #     """
-    #     print col.type, type(col.type)
-    #     if (isinstance(type(col.type), sqlalchemy.types.DateTime) or
-    #         isinstance(type(col.type), datetime.datetime)):
-    #         outstr = str(getattr(self, col.name).isoformat())
-    #     else:
-    #         outstr = getattr(self, col.name)
-    #     return outstr
-
-
 
     def set_acls(self, setter_user_uri, acllist, userrole_klass=None):
         """set the user acls on this object.
@@ -131,13 +113,13 @@ class CNXBase():
 
 
         """
-        ##is this authorised? - sep function?
+        # is this authorised? - sep function?
         if (setter_user_uri, "aclrw") not in [(u.user_uri, u.role_type)
-                                               for u in self.userroles]:
+           for u in self.userroles]:
             raise Rhaptos2Error("http:401")
         else:
             for usrdict in acllist:
-                #I am losing modified info...
+                # I am losing modified info...
                 self.adduserrole(userrole_klass, usrdict)
 
     def adduserrole(self, userrole_klass, usrdict):
@@ -150,7 +132,7 @@ class CNXBase():
         """
         t = self.get_utcnow()
 
-        ##why not pass around USerROle objects??
+        # why not pass around USerROle objects??
         user_uri = usrdict['user_uri']
         role_type = usrdict['role_type']
 
@@ -163,14 +145,14 @@ class CNXBase():
             self.userroles.append(i)
 
         elif (user_uri, role_type) not in [(u.user_uri, u.role_type) for u
-                                             in self.userroles]:
+                                           in self.userroles]:
             # UserID has got a role, so *update*
             i = userrole_klass()
             i.from_dict(usrdict)
             i.date_lastmodified_utc = t
             self.userroles.append(i)
         else:
-            #user is there, user and role type is there, this is duplicate
+            # user is there, user and role type is there, this is duplicate
             pass
 
     def parse_json(self, jsonstr):
@@ -191,7 +173,7 @@ class CNXBase():
         return datetime.datetime.utcnow()
 
     def is_action_auth(self, action=None,
-                                   requesting_user_uri=None):
+                       requesting_user_uri=None):
         """ Given a user and a action type, determine if it is
             authorised on this object
 
@@ -203,25 +185,25 @@ class CNXBase():
         >> C.is_action_auth(action="PUT", requesting_user_uri="ff")
         *** [u'Fake1']
         False
-    
+
         """
         print "*****AUTH"
         print "model", self
         print "action", action
         print "user", requesting_user_uri
-        print "*****/AUTH"        
-        if action in ("GET","HEAD", "OPTIONS"):
+        print "*****/AUTH"
+        if action in ("GET", "HEAD", "OPTIONS"):
             valid_user_list = [u.user_uri for u in self.userroles
-                                          if u.role_type in ("aclro", "aclrw")]
+                               if u.role_type in ("aclro", "aclrw")]
         elif action in ("POST", "PUT", "DELETE"):
             valid_user_list = [u.user_uri for u in self.userroles
-                                          if u.role_type in ("aclrw",)]
+                               if u.role_type in ("aclrw",)]
         else:
-            #raise Rhaptos2SecurityError("Unknown action type: %s" % action)
+            # raise Rhaptos2SecurityError("Unknown action type: %s" % action)
             return False
-            
+
         if requesting_user_uri is None:
-            #raise Rhaptos2SecurityError("No user_uri supplied: %s" %
+            # raise Rhaptos2SecurityError("No user_uri supplied: %s" %
             #                            requesting_user_uri)
             return False
         else:
@@ -230,7 +212,7 @@ class CNXBase():
             else:
                 return False
 
-                
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
