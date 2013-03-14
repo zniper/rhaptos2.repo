@@ -34,7 +34,7 @@ from flask import (
 
 from rhaptos2.common import log, err, conf
 from rhaptos2.repo import (get_app, dolog,
-                           model,
+                           auth,
                            security,
                            VERSION, foldermodel,
                            backend)
@@ -120,63 +120,6 @@ def index():
 
 
 # Content GET, POST (create), and PUT (change)
-
-@app.route("/content/<uuid>", methods=['GET'])
-def moduleGET(uuid):
-    dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
-    try:
-        jsonstr = model.fetch_module(uuid)
-    except Exception, e:
-        raise e
-
-    resp = flask.make_response(jsonstr)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    return resp
-
-
-@app.route("/content/", methods=['POST'])
-@apply_cors
-def modulePOST():
-    """
-    """
-    dolog("INFO", 'A Module POSTed', caller=modulePOST, statsd=['rhaptos2.repo.module.POST',])
-
-    # Autogenerate a new ID for the new content
-    uid = str(uuid.uuid4())
-
-    d = request.json
-    d['id'] = uid
-
-    #app.logger.info(repr(d))
-    ### maybe we know too much about nodedocs
-    nd = model.mod_from_json(d)
-    nd.save()
-    del(nd)
-
-    return json.dumps(d)
-
-
-@app.route("/content/<uuid>", methods=['PUT'])
-def modulePUT(uuid):
-    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
-
-    d = request.json
-
-    current_nd = model.mod_from_file(uuid)
-    current_nd.load_from_djson(d) #this checks permis
-    current_nd.save()
-
-    # FIXME: A response is not needed if the save is successful
-    s = model.asjson({'hashid':uuid})
-    resp = flask.make_response(s)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-
-    return resp
-
-
-
 @app.route("/workspace/", methods=['GET'])
 def workspaceGET():
     ''' '''
@@ -184,7 +127,7 @@ def workspaceGET():
     ### yes the client should only expect to handle HTTP CODES
     ### compare on userID
 
-    identity = model.whoami()
+    identity = auth.whoami()
     if not identity:
         json_dirlist = json.dumps([])
     else:
@@ -195,36 +138,9 @@ def workspaceGET():
     resp.content_type='application/json'
     resp.headers["Access-Control-Allow-Origin"]= "*"
 
-    model.callstatsd('rhaptos2.e2repo.workspace.GET')
+    auth.callstatsd('rhaptos2.e2repo.workspace.GET')
     return resp
 
-
-@app.route("/resource/", methods=['POST', 'PUT'])
-@apply_cors
-def post_resource():
-    """Receives file resource uploads."""
-    file = request.files['upload']
-    # FIXME We should use magic to determine the mimetype. See also,
-    #       https://github.com/Connexions/rhaptos2.repo/commit/7452bee85ecbbbec66232f3c04e4f2e40d72be1c
-    mimetype = file.mimetype
-    metadata = model.create_or_update_resource(file.stream, mimetype)
-
-    url = "/resource/{0}".format(metadata['id'])
-    resp = flask.make_response(url)
-    resp.status_code = 200
-    return resp
-
-@app.route("/resource/<id>/", methods=['GET'])
-def get_resource(id):
-    """Send the resource data in the response."""
-    data_stream, metadata = model.obtain_resource(id)
-
-    resp = flask.make_response(data_stream.read())
-    # XXX No mime-type headers... The following content-type
-    #     is strictly temporary.
-    resp.content_type = metadata['mimetype']
-    resp.status_code = 200
-    return resp
 
 @app.route("/keywords/", methods=["GET"])
 def keywords():
@@ -304,7 +220,7 @@ def admin_config():
 
 @app.before_request
 def before_request():
-    g.user = model.whoami()
+    g.user = auth.whoami()
 
 
 @app.after_request
@@ -322,33 +238,33 @@ def temp_openid_image_url():
     return resp
 
 @app.route('/login', methods=['GET', 'POST'])
-@model.oid.loginhandler
+@auth.oid.loginhandler
 def login():
-    """Does the login via OpenID.  Has to call into `model.oid.try_login`
+    """Does the login via OpenID.  Has to call into `auth.oid.try_login`
     to start the OpenID machinery.
     """
     # if we are already logged in, go back to were we came from
     if g.user is not None:
-        return redirect(model.oid.get_next_url())
+        return redirect(auth.oid.get_next_url())
     if request.method == 'POST':
         openid = request.form.get('openid')
         if openid:
-            return model.oid.try_login(openid, ask_for=['email', 'fullname',
+            return auth.oid.try_login(openid, ask_for=['email', 'fullname',
                                                   'nickname'])
-    return render_template('login.html', next=model.oid.get_next_url(),
-                           error=model.oid.fetch_error(),
+    return render_template('login.html', next=auth.oid.get_next_url(),
+                           error=auth.oid.fetch_error(),
                            confd=app.config)
 
 
-@model.oid.after_login
+@auth.oid.after_login
 def create_or_login(resp):
     """This is called when login with OpenID succeeded and it's not
     necessary to figure out if this is the users's first login or not.
 
     """
 
-    model.after_authentication(resp.identity_url, 'openid')
-    return redirect(model.oid.get_next_url())
+    auth.after_authentication(resp.identity_url, 'openid')
+    return redirect(auth.oid.get_next_url())
 
 
 @app.route('/logout')
@@ -356,7 +272,7 @@ def logout():
     session.pop('openid', None)
     session.pop('authenticated_identifier', None)
     flash(u'You have been signed out')
-    return redirect(model.oid.get_next_url())
+    return redirect(auth.oid.get_next_url())
 
 
 ##############
@@ -389,7 +305,7 @@ def loginpersona():
         if verification_data['status'] == 'okay':
             # Log the user in by setting a secure session cookie
 #            session.update({'email': verification_data['email']})
-            model.after_authentication(verification_data['email'], 'persona')
+            auth.after_authentication(verification_data['email'], 'persona')
             return resp.content
 
     # Oops, something failed. Abort.
