@@ -455,6 +455,7 @@ def setup():
         app = WSGIProxyApp(config['HTTPPROXY'])
         TESTAPP = TestApp(app, extra_environ={'REMOTE_ADDR':'1.2.3.4'})
     else:
+        cleardown(TESTCONFIG) ##use this in setup - via a renaming?
         app = make_app(TESTCONFIG)
         app.debug=True
         TESTAPP = TestApp(app.wsgi_app)
