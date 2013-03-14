@@ -70,18 +70,20 @@ def clean_dbase(config):
                              password='%(pgpassword)s'""" % config);
     c = conn.cursor()
 
-    c.execute("DROP TABLE IF EXISTS public.cnxfolder CASCADE;")
-    conn.commit()
-    c.execute("DROP TABLE IF EXISTS public.userrole_folder CASCADE;")
-    conn.commit()
-    c.execute("DROP TABLE IF EXISTS public.userrole_collection CASCADE;")
-    conn.commit()
-    c.execute("DROP TABLE IF EXISTS public.cnxcollection CASCADE;")
-    conn.commit()
-    c.execute("DROP TABLE IF EXISTS public.userrole_module CASCADE;")
-    conn.commit()
-    c.execute("DROP TABLE IF EXISTS public.cnxmodule CASCADE;")
-    conn.commit()
+    stmts = [
+            "TRUNCATE TABLE public.cnxmodule CASCADE",
+            "TRUNCATE TABLE public.userrole_module CASCADE",
+
+          "TRUNCATE TABLE public.cnxfolder CASCADE",
+          "TRUNCATE TABLE public.userrole_folder CASCADE",
+
+          "TRUNCATE TABLE public.cnxcollection CASCADE",
+          "TRUNCATE TABLE public.userrole_collection CASCADE",
+
+          ]
+    for stmt in stmts:
+        c.execute(stmt)
+        conn.commit()
     conn.close()
 
 # def cleardb():
