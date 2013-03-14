@@ -14,14 +14,13 @@
 Provide a abstracted SQL Alchemy backend to allow
 models to connect to postegres.
 
-cut paste from rhaptos2.user
+
 """
 
 
-from sqlalchemy import create_engine, MetaData, Table, ForeignKey
-from sqlalchemy import Column, Integer, String, Text, Enum
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session, relationship
+from sqlalchemy.orm import sessionmaker, scoped_session
 import psycopg2
 
 
@@ -31,17 +30,16 @@ import psycopg2
 
 db_engine = None
 db_session = scoped_session(sessionmaker(autoflush=True,
-                                         autocommit=False,))
-
+                                         autocommit=False))
 
 Base = declarative_base()
 
 
 ### As long as we subclass everything from Base, we are following
-### ndeclarative pattern recommended
+### declarative pattern recommended by sa docs.
 
 def connect_now(confd):
-    connstr = "postgresql+psycopg2://%(pgusername)s:%(pgpassword)s@%(pghost)s/%(pgdbname)s" % confd
+    connstr = "postgresql+psycopg2://%(pgusername)s:%(pgpassword)s@%(pghost)s/%(pgdbname)s" % confd  # noqa
     engine = create_engine(connstr, echo=False)
     return engine
 
@@ -51,45 +49,27 @@ def initdb(confd):
     global db_session
     db_engine = connect_now(confd)
     db_session.configure(bind=db_engine)
-    x = Base.metadata.create_all(db_engine)
-    print x
-    print Base, db_engine
-    print "init done"
-    
-# def droptables():
-#     """This could become a conn factory.  """
-#     global db_session
-#     global db_engine
-#     Base.metadata.drop_all(db_engine)
+    Base.metadata.create_all(db_engine)
 
 
 def clean_dbase(config):
+    """clear down the database tables - used for testing purposes
+    """
     conn = psycopg2.connect("""dbname='%(pgdbname)s'\
                              user='%(pgusername)s' \
                              host='%(pghost)s' \
-                             password='%(pgpassword)s'""" % config);
+                             password='%(pgpassword)s'""" % config)
     c = conn.cursor()
 
     stmts = [
-            "TRUNCATE TABLE public.cnxmodule CASCADE",
-            "TRUNCATE TABLE public.userrole_module CASCADE",
-
-          "TRUNCATE TABLE public.cnxfolder CASCADE",
-          "TRUNCATE TABLE public.userrole_folder CASCADE",
-
-          "TRUNCATE TABLE public.cnxcollection CASCADE",
-          "TRUNCATE TABLE public.userrole_collection CASCADE",
-
-          ]
+        "TRUNCATE TABLE public.cnxmodule CASCADE",
+        "TRUNCATE TABLE public.userrole_module CASCADE",
+        "TRUNCATE TABLE public.cnxfolder CASCADE",
+        "TRUNCATE TABLE public.userrole_folder CASCADE",
+        "TRUNCATE TABLE public.cnxcollection CASCADE",
+        "TRUNCATE TABLE public.userrole_collection CASCADE",
+    ]
     for stmt in stmts:
         c.execute(stmt)
         conn.commit()
     conn.close()
-
-# def cleardb():
-    
-#     with contextlib.closing(engine.connect()) as con:
-#         trans = con.begin()
-#         for table in reversed(meta.sorted_tables):
-#             con.execute(table.delete())
-#         trans.commit()
