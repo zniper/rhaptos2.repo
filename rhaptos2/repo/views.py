@@ -35,7 +35,6 @@ from flask import (
 from rhaptos2.common import log, err, conf
 from rhaptos2.repo import (get_app, dolog,
                            auth,
-                           security,
                            VERSION, foldermodel,
                            backend)
 import datetime
