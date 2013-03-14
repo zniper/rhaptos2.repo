@@ -32,11 +32,11 @@ class Configuration(Mapping):
     (ie print conf.foo returns "bar")
     and stores all other sections under a key of the same name
 
-    It looks and acts like a dict. And has 
+    It looks and acts like a dict. And has
 
     >>> initxt = '''[app]
     ... appkey=appval
-    ... 
+    ...
     ... [test]
     ... foo=1
     ...
@@ -53,7 +53,7 @@ class Configuration(Mapping):
     >>> assert C.test == {'foo': '1'}
     >>> assert C.appkey == "appval"
     >>> assert C.test["foo"] == '1'
-    
+
     """
 
     def __init__(self, settings={}, **sections):
@@ -81,12 +81,12 @@ class Configuration(Mapping):
 
     def __getattr__(self, i):
         return self._settings[i]
-        
+
     def __getitem__(self, key):
         return self._settings[key]
 
     def __setitem__(self, key, val):
-        self._settings.__setitem__(key,val)
+        self._settings.__setitem__(key, val)
 
     def __delitem__(self, key):
         self._settings.__delitem__(key)
@@ -103,4 +103,3 @@ class Configuration(Mapping):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-    
