@@ -14,6 +14,16 @@ deployed using the bamboo setup files.
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
+quick notes
+-----------
+
+$ workon vscaffold
+
+$ nosetests --tc-file=../../testing.ini runtests.py
+
+$ python run.py --config=../../testing.ini --host=0.0.0.0 --port=8000
+$ nosetests --tc-file=../../testing.ini --tc=HTTPPROXY=http://localhost:8000
+
 
 Quick developer install 
 -----------------------

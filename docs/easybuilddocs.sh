@@ -1,4 +1,3 @@
-. ~/cleanuphere.sh
 
 make clean
 make html
