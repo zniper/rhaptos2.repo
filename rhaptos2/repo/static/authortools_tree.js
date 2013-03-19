@@ -1,7 +1,12 @@
 
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
 
-
-//dUMPING THE jstREE, BUT KEEPING THIS HERE AS A REF
 
 function start_tree() {
 
@@ -55,4 +60,5 @@ function populate_tree(jsonstr) {
     // Refresh whole our tree (-1 means root of tree)
     $.jstree._reference('coltree').refresh(-1);
 }
+
 

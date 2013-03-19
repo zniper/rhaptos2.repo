@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-###  
-# Copyright (c) Rice University 2012
+###
+# Copyright (c) Rice University 2012-13
 # This software is subject to
-# the provisions of the GNU Lesser General
-# Public License Version 2.1 (LGPL).
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
 # See LICENCE.txt for details.
 ###
 
@@ -27,5 +27,6 @@ rv = tclient.get('/')
 rv = tclient.get('/version/')
 assert "0.0.4" in rv.data
 print rv.data
+
 
 

@@ -1,21 +1,12 @@
-// Copyright (c) Rice University 2012
+
+// <!--
+// Copyright (c) Rice University 2012-3
 // This software is subject to
-// the provisions of the GNU Lesser General
-// Public License Version 2.1 (LGPL).
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
 // See LICENCE.txt for details.
-//
+// -->
 
-
-// Notes
-// This file is the (messy) beginings of Author TOols on browseer
-// It will supply an API for _editor_ to use,
-// It will commiunicate with the unpub repo and user profile server
-// it will make tea
-
-
-// ..todo:: Persona fires through navigator.id.watch at odd times on start up
-
-// pick up some constants, from constants file
 
     var REPOBASEURL = FROZONE.e2repoFQDN;
     var MODULEURL = FROZONE.e2repoFQDN + '/module/';
@@ -433,3 +424,4 @@ Aloha.ready( function() {
 //      MathJax.Hub.Configured();
       //jQuery('*[rel=tooltip]').tooltip();
 });
+

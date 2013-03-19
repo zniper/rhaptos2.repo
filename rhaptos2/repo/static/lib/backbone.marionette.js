@@ -1,3 +1,13 @@
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
  // Backbone.Marionette, v1.0.0-rc2
  // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
  // Distributed under MIT license
@@ -2226,3 +2236,4 @@ _.extend(Marionette.Module, {
 
   return Marionette;
 })(Backbone, _, $ || window.jQuery || window.Zepto || window.ender);
+

@@ -1,3 +1,13 @@
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
 /* Customized i18n plugin:
  * Added support for looking up a string and defaulting to the original string if it can't be found
  * Starting at "Create function to look up i18n strings"
@@ -198,3 +208,4 @@
         };
     });
 }());
+

@@ -1,4 +1,13 @@
-//>>excludeStart('excludeAfterBuild', pragmas.excludeAfterBuild)
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
 /*
     http://www.JSON.org/json2.js
     2011-10-19
@@ -363,3 +372,4 @@ define(function(){
     
 }).call(this, this);
 //>>excludeEnd('excludeAfterBuild')
+

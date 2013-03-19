@@ -1,7 +1,12 @@
-//     Underscore.js 1.4.3
-//     http://underscorejs.org
-//     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
-//     Underscore may be freely distributed under the MIT license.
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
 
 (function() {
 
@@ -1219,3 +1224,4 @@
   });
 
 }).call(this);
+

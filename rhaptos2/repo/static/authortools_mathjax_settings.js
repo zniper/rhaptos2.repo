@@ -1,3 +1,13 @@
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
 /**
  * Used to initialize the MathJax settings for this application.
  *
@@ -27,3 +37,4 @@ if (window.MathJax && window.MathJax.Hub) {
 } else if (console) {
   console.error('MathJax did not load for some reason.');
 }
+

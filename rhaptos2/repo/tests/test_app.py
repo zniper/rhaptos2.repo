@@ -1,4 +1,15 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
+###
+# Copyright (c) Rice University 2012-13
+# This software is subject to
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
+# See LICENCE.txt for details.
+###
+
+
 """test_app.py - ???
 
 Author: Paul Brian
@@ -17,3 +28,4 @@ def test_can_log():
     # ??? How do we know this worked? The nature of logging in python
     #     is to log even if a handler hasn't been registered. We
     #     should have a handler set up here to catch log messages.
+

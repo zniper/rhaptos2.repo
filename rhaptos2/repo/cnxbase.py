@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
+###
+# Copyright (c) Rice University 2012-13
+# This software is subject to
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
+# See LICENCE.txt for details.
+###
+
 
 """THis exists solely to provide less typing for a "leaf node" in a
 simple realtional schema (1:M and 1:M-N:1) when used with SQLAlchemy
@@ -216,3 +227,4 @@ class CNXBase():
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+

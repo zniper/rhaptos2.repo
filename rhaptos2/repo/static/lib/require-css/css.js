@@ -1,3 +1,13 @@
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
 /*
  * css! loader plugin
  * Allows for loading stylesheets with the 'css!' syntax.
@@ -154,3 +164,4 @@ define(['./normalize'], function(normalize) {
   
   return cssAPI;
 });
+

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
-###  
-# Copyright (c) Rice University 2012
+###
+# Copyright (c) Rice University 2012-13
 # This software is subject to
-# the provisions of the GNU Lesser General
-# Public License Version 2.1 (LGPL).
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
 # See LICENCE.txt for details.
 ###
 
@@ -20,6 +20,7 @@ if major != 2 or minor < 7:
   print "You are using python %s, but \
 version 2.7 or greater is required" % py_version
   raise SystemExit(1)
+
 
 
 

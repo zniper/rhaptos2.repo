@@ -1,15 +1,11 @@
-//requirejs server changes - 
-//  typeof window === 'undefined' ? undefined : window on window inclusion.
-//  changed require stub on line 17
-//  line 3232:   if (typeof window === 'undefined') return;
 
-//
-// LESS - Leaner CSS v1.3.0
-// http://lesscss.org
-// 
-// Copyright (c) 2009-2011, Alexis Sellier
-// Licensed under the Apache 2.0 License.
-//
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
 
 
 (function (root, factory) {
@@ -3491,3 +3487,4 @@ function error(e, href) {
 return less;
 
 }));
+

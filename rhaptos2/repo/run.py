@@ -1,5 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#! -*- coding: utf-8 -*-
+
+###
+# Copyright (c) Rice University 2012-13
+# This software is subject to
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
+# See LICENCE.txt for details.
+###
+
 
 """run.py - Launch the repo app.
 
@@ -64,3 +73,4 @@ def parse_args():
 
 if __name__ == '__main__':
     main_2()
+

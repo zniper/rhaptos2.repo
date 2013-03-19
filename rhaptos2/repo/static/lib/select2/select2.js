@@ -1,3 +1,13 @@
+
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
 /*
 Copyright 2012 Igor Vaynberg
 
@@ -2444,3 +2454,4 @@ the specific language governing permissions and limitations under the Apache Lic
     };
 
 }(jQuery));
+

@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
+###
+# Copyright (c) Rice University 2012-13
+# This software is subject to
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
+# See LICENCE.txt for details.
+###
+
+
 """
 
 This is to test the user service once it is up and running on http.
@@ -217,3 +229,4 @@ if __name__ == '__main__':
 
     elif cmd == "get_module": get_module()
     else: print "bad arglook here for details test_client.py -h"
+
