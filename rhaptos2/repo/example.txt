@@ -172,3 +172,7 @@ SHow that we put in and get out same content (list in list out)
     >>> m1.set_acls(owner, aclsd)    
 
 
+notes
+after shell:
+
+m = foldermodel.workspace_by_user("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
