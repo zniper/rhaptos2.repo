@@ -151,6 +151,11 @@ APIMAP = {'module':
           "DELETE": urlparse.urljoin(userhost, "folder/%(id_)s/acl/"),
           },
 
+          'workspace':
+         {"GET": urlparse.urljoin(userhost, "workspace/"),
+          },
+
+          
           }
 
 
@@ -197,6 +202,10 @@ def get_url(resourcetype, id_=None, method=None):
     >>> get_url("folder_acl", id_="xxx", method="DELETE")
     'http://localhost:8000/folder/xxx/acl/'
 
+    >>> get_url("workspace", id_=None, method="GET")
+    'http://localhost:8000/workspace/'
+
+    
     Its pretty simple api so far...
 
     .. todo::
@@ -407,6 +416,13 @@ def test_delete_module_rouser():
 def test_delete_module_good():
     resp = wapp_delete(TESTAPP, "module", moduleuri, gooduseruri)
     assert resp.status_int == 200
+
+def test_get_workspace_good():
+    resp = wapp_get(TESTAPP, "workspace", None, gooduseruri)
+    assert len(resp.json) == 3
+    assert resp.status_int == 200
+
+
 
 
 # import doctest
