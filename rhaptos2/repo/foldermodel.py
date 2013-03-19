@@ -514,16 +514,35 @@ def change_approval(uobj, jsond, requesting_user_uri, requesttype):
 def workspace_by_user(user_uri):
     """Its at times like these I just want to pass SQL in... """
 
-    q = db_session.query(Module)
-    q = q.join(Module.userroles)
-    q = q.add_column(Module.id_).add_column(Module.Title)
-    q = q.filter(UserRoleModule.user_uri == user_uri)
+    qm = db_session.query(Module)
+    qm = qm.join(Module.userroles)
+#    q = q.add_column(Module.id_).add_column(Module.Title)
+    qm = qm.filter(UserRoleModule.user_uri == user_uri)
+    rs1 = qm.all()
 
-    rs = q.all()
-    return rs
+    qf = db_session.query(Folder)
+    qf = qf.join(Folder.userroles)
+    qf = qf.filter(UserRoleFolder.user_uri == user_uri)
+    rs2 =qf.all()
+
+    qc = db_session.query(Collection)
+    qc = qc.join(Collection.userroles)
+    qc = qc.filter(UserRoleCollection.user_uri == user_uri)
+    rs3 = qc.all()
+    
+    
+    return {
+        "Module":rs1,
+        "Folder":rs2,
+        "Collection":rs3
+    }
 
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+
+
+
 

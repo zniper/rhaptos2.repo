@@ -130,12 +130,17 @@ def workspaceGET():
 
     identity = auth.whoami()
     if not identity:
-        json_dirlist = json.dumps([])
+        abort(403)
     else:
-        w = foldermodel.workspace_by_user(identity.userID)
-        json_dirlist = json.dumps(w.annotatedfiles)
+        wout = {}
+        w = foldermodel.workspace_by_user(identity.authenticated_identifier)
+        ##flatten
+        for k in w:
+            wout[k] = [o.to_dict() for o in w[k]]
+        flatten = json.dumps(wout)
 
-    resp = flask.make_response(json_dirlist)
+    resp = flask.make_response(flatten)
+#    resp = flask.make_response(str(identity.authenticated_identifier))
     resp.content_type = 'application/json'
     resp.headers["Access-Control-Allow-Origin"] = "*"
 
@@ -495,4 +500,8 @@ def module_del(moduleuri):
 @app.errorhandler(Rhaptos2Error)
 def catchall(err):
     return "Placeholder for better error handling..." + str(err)
+
+
+
+
 
