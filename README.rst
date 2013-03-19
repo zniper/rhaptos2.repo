@@ -14,15 +14,6 @@ deployed using the bamboo setup files.
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
-quick notes
------------
-
-$ workon vscaffold
-
-$ nosetests --tc-file=../../testing.ini runtests.py
-
-$ python run.py --config=../../testing.ini --host=0.0.0.0 --port=8000
-$ nosetests --tc-file=../../testing.ini --tc=HTTPPROXY=http://localhost:8000
 
 
 Quick developer install 
@@ -78,7 +69,18 @@ Python setup::
    sudo python ez_setup.py
    sudo easy_install pip      
    sudo pip install virtualenv
-   
+
+Doug Hellmans' virtualenvwrapper will make your life easier::
+
+   sudo pip install mkvirtualenv   
+   $ export WORKON_HOME=~/venvs
+   $ mkdir -p $WORKON_HOME
+   $ source /usr/local/bin/virtualenvwrapper.sh
+   $ mkvirtualenv env1
+   (This will create a venv in your ~/venvs
+   you can now bring up a venv wherever you are with workon <venvenmae>)
+
+
 Other things to check
 
 ::
@@ -88,6 +90,8 @@ Other things to check
    
    apt-get install libxml2-dev
    apt-get install libxslt1-dev
+   apt-get install python-psycopg2
+
 
 
 You should now have correct system environment, and we shall 
@@ -178,4 +182,18 @@ localhost) ::
 
 
 
+running Tests
+-------------
+
+Functional tests have been written in runtests.py and 
+are able to both run as tests of the output of an inprocess wsgi app 
+(ie we call the app callable with our made up environ and start_repsonse)
+It is also able to "reverse the flow through the gate" and generate HTTP 
+requests which are pushed against a live server
+
+
+$ nosetests --tc-file=../../testing.ini runtests.py
+
+$ python run.py --config=../../testing.ini --host=0.0.0.0 --port=8000
+$ nosetests --tc-file=../../testing.ini --tc=HTTPPROXY:http://localhost:8000
 
