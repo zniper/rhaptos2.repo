@@ -62,15 +62,43 @@ def clean_dbase(config):
     c = conn.cursor()
 
     stmts = [
-        "TRUNCATE TABLE public.cnxmodule CASCADE",
-        "TRUNCATE TABLE public.userrole_module CASCADE",
-        "TRUNCATE TABLE public.cnxfolder CASCADE",
-        "TRUNCATE TABLE public.userrole_folder CASCADE",
-        "TRUNCATE TABLE public.cnxcollection CASCADE",
-        "TRUNCATE TABLE public.userrole_collection CASCADE",
+        "DELETE FROM public.userrole_module",
+        "DELETE FROM public.cnxmodule",
+
+        "DELETE FROM public.userrole_folder",
+        "DELETE FROM public.cnxfolder",
+
+        "DELETE FROM public.userrole_collection",
+        "DELETE FROM public.cnxcollection",
+
     ]
     for stmt in stmts:
         c.execute(stmt)
         conn.commit()
     conn.close()
+
+
+def status_dbase(config):
+    """clear down the database tables - used for testing purposes
+    """
+    conn = psycopg2.connect("""dbname='%(pgdbname)s'\
+                             user='%(pgusername)s' \
+                             host='%(pghost)s' \
+                             password='%(pgpassword)s'""" % config)
+    c = conn.cursor()
+    tables = [
+        "public.cnxmodule",
+        "public.userrole_module",
+        "public.cnxfolder",
+        "public.userrole_folder",
+        "public.cnxcollection",
+        "public.userrole_collection",
+    ]
+    
+    for tbl in tables:
+        c.execute("SELECT COUNT(*) FROM %s" % tbl)
+        print c.fetchall()
+    conn.close()
+
+
 
