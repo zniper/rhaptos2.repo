@@ -126,10 +126,12 @@ class User(object):
             userdetails = None
 
         dolog("INFO", "Got back %s " % str(userdetails))
-        if userdetails:
-            self.__dict__.update(r.json)
+        if userdetails and r.status_code == 200:
+            ### todo:: better self update
+            self.__dict__.update(userdetails)
         else:
-            ### needs rethinkgin - time of deamo dday too close
+            ### we have a authenticated user but no name.
+            ### todo:: force user to give us their details for user db
             self.email = "Unknown User"
             self.fullname = "Unknown User"
             self.user_id = "Unknownuser"
