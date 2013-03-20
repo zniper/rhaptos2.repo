@@ -79,6 +79,11 @@ class CNXBase():
     def jsonify(self):
         """Helper function that returns simple json repr """
         selfd = self.to_dict()
+        
+        ##hacky - change output to use id not id_(backbone.js issue)
+        ## .. todo:: validate broad assumptions about existence of these keys
+        selfd['id'] = selfd['id_']; del selfd['id_']
+        
         jsonstr = json.dumps(selfd)  # here use the Json ENcoder???
         return jsonstr
 

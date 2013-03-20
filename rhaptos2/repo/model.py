@@ -83,6 +83,7 @@ from sqlalchemy import (ForeignKey,
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import uuid
+import json
 from cnxbase import CNXBase
 from rhaptos2.repo.backend import Base, db_session
 from err import Rhaptos2Error  # Rhaptos2SecurityError
@@ -126,13 +127,15 @@ class Collection(Base, CNXBase):
     Body = Column(ARRAY(String))
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
-
+    mediaType = Column(String)
+    
     userroles = relationship("UserRoleCollection",
                              backref="cnxcollection",
                              cascade="all, delete-orphan")
 
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        self.mediaType = "application/vnd.org.cnx.collection"
         self.content = self.Body
         if creator_uuid:
             self.adduserrole(UserRoleCollection,
@@ -185,8 +188,13 @@ class Module(Base, CNXBase):
 
     >>> #test we can autogen a uuid
     >>> m = Module(id_=None, creator_uuid="cnxuser:1234")
-    >>> m
-
+    >>> m.mediaType
+    'application/vnd.org.cnx.module'
+    >>> j = m.jsonify()
+    >>> d = json.loads(j)
+    >>> assert 'id' in d.keys()
+    >>> assert 'mediaType' in d.keys()
+    
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
@@ -203,12 +211,16 @@ class Module(Base, CNXBase):
 
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
+    mediaType = Column(String)
+    
     userroles = relationship("UserRoleModule",
                              backref="cnxmodule",
                              cascade="all, delete-orphan")
 
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        self.mediaType = "application/vnd.org.cnx.module"
+        
         self.content = self.Body
         if not self.validateid(id_):
             raise Rhaptos2Error("%s not valid id" % id_)
@@ -217,7 +229,7 @@ class Module(Base, CNXBase):
             self.adduserrole(UserRoleModule,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
         else:
-            raise Rhaptos2Error("Modules need owner originzlly ")
+            raise Rhaptos2Error("Modules need owner provided at init ")
 
         if id_:
             self.id_ = id_
@@ -290,13 +302,14 @@ class Folder(Base, CNXBase):
     Body = Column(ARRAY(String))
     date_created_utc = Column(DateTime)
     date_lastmodified_utc = Column(DateTime)
-
+    mediaType = Column(String)
     userroles = relationship("UserRoleFolder",
                              backref="cnxfolder",
                              cascade="all, delete-orphan")
 
     def __init__(self, id_=None, creator_uuid=None):
         """ """
+        self.mediaType = "application/vnd.org.cnx.folder"
         self.content = self.Body
         if creator_uuid:
             self.adduserrole(UserRoleFolder,

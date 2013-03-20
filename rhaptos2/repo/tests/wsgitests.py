@@ -298,21 +298,21 @@ test_delete_module
 def test_post_module():
     resp = wapp_post(TESTAPP, "module", decl.declarationdict[
                      'module'], gooduseruri)
-    returned_module_uri = resp.json['id_']
+    returned_module_uri = resp.json['id']
     assert returned_module_uri == moduleuri
 
 
 def test_post_folder():
     resp = wapp_post(TESTAPP, "folder", decl.declarationdict[
                      'folder'], gooduseruri)
-    returned_folder_uri = resp.json['id_']
+    returned_folder_uri = resp.json['id']
     assert returned_folder_uri == folderuri
 
 
 def test_post_collection():
     resp = wapp_post(TESTAPP, "collection", decl.declarationdict[
                      'collection'], gooduseruri)
-    returned_collection_uri = resp.json['id_']
+    returned_collection_uri = resp.json['id']
     assert returned_collection_uri == collectionuri
 
 

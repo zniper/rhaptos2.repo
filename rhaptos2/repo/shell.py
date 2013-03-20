@@ -1,13 +1,12 @@
 
-import decl
 import os, json
 import pprint
 from rhaptos2.repo import backend, model
+from rhaptos2.repo.tests import decl
 from rhaptos2.repo.backend import db_session
 from rhaptos2.common import conf
 
-owner = "cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26"
-
+owner = decl.users['paul'].useruri
 
 
 CONFD_PATH = os.path.join(".", "../../testing.ini")
