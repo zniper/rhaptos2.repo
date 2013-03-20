@@ -28,6 +28,10 @@ from wsgiproxy.app import WSGIProxyApp
 from optparse import OptionParser
 import urlparse
 
+def simplelog(r):
+    fo = open("foo.log","a")
+    fo.write(str(r.json))
+    fo.close()
 
 from rhaptos2.repo.configuration import (  # noqa
     Configuration,
@@ -402,6 +406,7 @@ def test_get_workspace_good():
     resp = wapp_get(TESTAPP, "workspace", None, gooduseruri)
     assert len(resp.json) == 3
     assert resp.status_int == 200
+    simplelog(resp)
 
 ###############    
 
