@@ -450,12 +450,10 @@ def workspace_by_user(user_uri):
     qc = qc.filter(UserRoleCollection.user_uri == user_uri)
     rs3 = qc.all()
 
-    return {
-        "Module": rs1,
-        "Folder": rs2,
-        "Collection": rs3
-    }
-
+    rs1.extend(rs2)
+    rs1.extend(rs3)
+    return rs1
+    
 
 if __name__ == '__main__':
     import doctest

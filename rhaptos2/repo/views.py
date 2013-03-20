@@ -130,13 +130,12 @@ def workspaceGET():
     else:
         wout = {}
         w = model.workspace_by_user(identity.authenticated_identifier)
-        ##flatten
-        for k in w:
-            wout[k] = [o.to_dict() for o in w[k]]
-        flatten = json.dumps(wout)
+        ## w is a list of models (folders, cols etc).
+        ## it would require some flattening or a JSONEncoder but we just want short form for now
+        short_format_list = [{"id":i.id_, "Title":i.Title, "mediaType":i.mediaType} for i in w]
+        flatten = json.dumps(short_format_list)
 
     resp = flask.make_response(flatten)
-#    resp = flask.make_response(str(identity.authenticated_identifier))
     resp.content_type = 'application/json'
     resp.headers["Access-Control-Allow-Origin"] = "*"
 
