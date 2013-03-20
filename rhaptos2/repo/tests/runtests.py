@@ -28,13 +28,12 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
    *
 """
 
-from rhaptos2.repo import make_app
-import decl
+from rhaptos2.repo import make_app, decl, backend
 from webtest import TestApp
 from wsgiproxy.app import WSGIProxyApp
 from optparse import OptionParser
 import urlparse
-import backend
+
 
 from rhaptos2.repo.configuration import (  # noqa
     find_configuration_file,
@@ -402,6 +401,13 @@ def test_read_module_baduser():
     print resp, resp.status, baduseruri
     assert resp.status_int == 403
 
+    
+def test_get_workspace_good():
+    resp = wapp_get(TESTAPP, "workspace", None, gooduseruri)
+    assert len(resp.json) == 3
+    assert resp.status_int == 200
+
+###############    
 
 def test_delete_module_baduser():
     resp = wapp_delete(TESTAPP, "module", moduleuri, baduseruri)
@@ -412,14 +418,40 @@ def test_delete_module_rouser():
     resp = wapp_delete(TESTAPP, "module", moduleuri, rouseruri)
     assert resp.status_int == 403
 
-
 def test_delete_module_good():
     resp = wapp_delete(TESTAPP, "module", moduleuri, gooduseruri)
     assert resp.status_int == 200
 
-def test_get_workspace_good():
-    resp = wapp_get(TESTAPP, "workspace", None, gooduseruri)
-    assert len(resp.json) == 3
+###
+    
+def test_delete_collection_baduser():
+    resp = wapp_delete(TESTAPP, "collection", collectionuri, baduseruri)
+    assert resp.status_int == 403
+
+
+def test_delete_collection_rouser():
+    resp = wapp_delete(TESTAPP, "collection", collectionuri, rouseruri)
+    assert resp.status_int == 403
+
+
+def test_delete_collection_good():
+    resp = wapp_delete(TESTAPP, "collection", collectionuri, gooduseruri)
+    assert resp.status_int == 200
+
+###
+    
+def test_delete_folder_baduser():
+    resp = wapp_delete(TESTAPP, "folder", folderuri, baduseruri)
+    assert resp.status_int == 403
+
+
+def test_delete_folder_rouser():
+    resp = wapp_delete(TESTAPP, "folder", folderuri, rouseruri)
+    assert resp.status_int == 403
+
+
+def test_delete_folder_good():
+    resp = wapp_delete(TESTAPP, "folder", folderuri, gooduseruri)
     assert resp.status_int == 200
 
 
