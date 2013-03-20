@@ -36,7 +36,6 @@ import urlparse
 
 
 from rhaptos2.repo.configuration import (  # noqa
-    find_configuration_file,
     Configuration,
 )
 

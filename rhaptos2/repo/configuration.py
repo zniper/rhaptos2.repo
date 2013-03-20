@@ -27,14 +27,6 @@ import ConfigParser
 DEFAULT_APP_NAME = 'app'
 
 
-def find_configuration_file():
-    """A way to automatically discovery/find a configuration file using
-    a constant set of path locations.
-
-    """
-    return None
-
-
 class Configuration(Mapping):
     """A configuration settings object
 
