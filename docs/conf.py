@@ -245,12 +245,6 @@ texinfo_documents = [
 #texinfo_show_urls = 'footnote'
 
 
-sys.path.append(os.path.abspath('_themes'))
-html_theme_path = ['_themes']
-html_theme = 'flask'
-html_logo = 'rhaptos2userlogo.jpg'
-
-
 # Example configuration for intersphinx: refer to the Python standard library.
 
 intersphinx_mapping = {
