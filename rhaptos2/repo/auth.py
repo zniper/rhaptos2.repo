@@ -24,6 +24,10 @@ from flask import request, g, session
 from flaskext.openid import OpenID
 import requests
 
+### THis header is where we put the authenticated ID
+HTTPHEADER_STORING_USERAUTH = "REMOTE_AUTHID"
+HTTPHEADER_STORING_USERURI = "REMOTE_USERURI"
+
 
 app = get_app()
 
@@ -246,8 +250,8 @@ def whoami():
     ..  todo:: document fajkeuserID
     '''
     dolog("INFO", "Whoami called", caller=whoami)
-    if "X-Cnx-FakeUserId" in request.headers and app.debug is True:
-        fakeuserid = request.headers.get('X-Cnx-FakeUserId')
+    if HTTPHEADER_STORING_USERURI in request.headers and app.debug is True:
+        fakeuserid = request.headers.get(HTTPHEADER_STORING_USERURI)
         g.user_id = fakeuserid
         return Identity(fakeuserid)
     elif 'authenticated_identifier' in session:

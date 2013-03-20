@@ -27,8 +27,8 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 
    *
 """
-
-from rhaptos2.repo import make_app, decl, backend
+import decl
+from rhaptos2.repo import make_app, backend
 from webtest import TestApp
 from wsgiproxy.app import WSGIProxyApp
 from optparse import OptionParser
@@ -105,6 +105,9 @@ rouseruri = decl.users['ed'].useruri
 baduseruri = decl.users['ross'].useruri
 
 userhost = "http://localhost:8000/"
+### THis header is where we put the authenticated ID
+HTTPHEADER_STORING_USERAUTH = "REMOTE_AUTHID"
+HTTPHEADER_STORING_USERURI = "REMOTE_USERURI"
 ###
 
 
@@ -224,7 +227,7 @@ def get_url(resourcetype, id_=None, method=None):
 
 def wapp_get(wapp, resourcetype, id_, owner):
     """ """
-    headers = {'X-Cnx-FakeUserId': owner, }
+    headers = {HTTPHEADER_STORING_USERURI: owner, }
     URL = get_url(resourcetype, id_=id_, method="GET")
     try:
         resp = wapp.get(URL, status="*", headers=headers)
@@ -241,7 +244,7 @@ def wapp_post(wapp, resourcetype, data, owner):
     """ ?
     """
     URL = get_url(resourcetype, id_=None, method="POST")
-    headers = {'X-Cnx-FakeUserId': owner, }
+    headers = {HTTPHEADER_STORING_USERURI: owner, }
 
     try:
         resp = wapp.post_json(URL, params=data, headers=headers, status="*")
@@ -259,14 +262,14 @@ def wapp_delete(wapp, resourcetype, id_, owner):
     """
     """
     URL = get_url(resourcetype, id_=id_, method="DELETE")
-    headers = {'X-Cnx-FakeUserId': owner,
+    headers = {HTTPHEADER_STORING_USERURI: owner,
                }
     resp = wapp.delete(URL, headers=headers, status="*")
     return resp
 
 
 def wapp_put(wapp, resourcetype, data, owner, id_=None):
-    headers = {'X-Cnx-FakeUserId': owner, }
+    headers = {HTTPHEADER_STORING_USERURI: owner, }
     URL = get_url(resourcetype, method="PUT", id_=id_)
     print "Putting to %s" % URL
     try:
