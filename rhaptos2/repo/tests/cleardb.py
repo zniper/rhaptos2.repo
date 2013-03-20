@@ -1,7 +1,7 @@
 
 import os, json
 import pprint
-from rhaptos2.repo import backend, foldermodel
+from rhaptos2.repo import backend, model
 from rhaptos2.repo.backend import db_session
 from rhaptos2.common import conf
 

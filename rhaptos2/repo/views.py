@@ -34,7 +34,7 @@ from flask import (
 
 from rhaptos2.repo import (get_app, dolog,
                            auth,
-                           VERSION, foldermodel,
+                           VERSION, model,
                            backend)
 from rhaptos2.common.err import Rhaptos2Error
 
@@ -129,7 +129,7 @@ def workspaceGET():
         abort(403)
     else:
         wout = {}
-        w = foldermodel.workspace_by_user(identity.authenticated_identifier)
+        w = model.workspace_by_user(identity.authenticated_identifier)
         ##flatten
         for k in w:
             wout[k] = [o.to_dict() for o in w[k]]
@@ -330,25 +330,25 @@ def loginpersona():
 @app.route('/folder/<folderuri>', methods=['GET'])
 def folder_get(folderuri):
     """    """
-    return generic_get(foldermodel.Folder, folderuri, g.user_id)
+    return generic_get(model.Folder, folderuri, g.user_id)
 
 
 @app.route('/collection/<collectionuri>', methods=['GET'])
 def collection_get(collectionuri):
     """  """
-    return generic_get(foldermodel.Collection, collectionuri, g.user_id)
+    return generic_get(model.Collection, collectionuri, g.user_id)
 
 
 @app.route('/module/<moduleuri>', methods=['GET'])
 def module_get(moduleuri):
     """    """
-    return generic_get(foldermodel.Module, moduleuri, g.user_id)
+    return generic_get(model.Module, moduleuri, g.user_id)
 
 ######
 
 
 def generic_get(klass, uri, requesting_user_uri):
-    mod = foldermodel.get_by_id(klass, uri, requesting_user_uri)
+    mod = model.get_by_id(klass, uri, requesting_user_uri)
     resp = flask.make_response(mod.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
@@ -359,7 +359,7 @@ def generic_post(klass):
     """Temp fix till get regex working on routes """
     owner = g.user_id  # loggedin user
     jsond = request.json  # flask autoconverts to dict ...
-    fldr = foldermodel.post_o(klass, jsond, requesting_user_uri=owner)
+    fldr = model.post_o(klass, jsond, requesting_user_uri=owner)
     resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
@@ -370,7 +370,7 @@ def generic_put(klass, uri):
 
     owner = g.user_id
     incomingjsond = request.json
-    fldr = foldermodel.put_o(incomingjsond, klass, uri,
+    fldr = model.put_o(incomingjsond, klass, uri,
                              requesting_user_uri=owner)
     resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
@@ -381,7 +381,7 @@ def generic_put(klass, uri):
 def generic_delete(klass, uri):
     """ """
     owner = g.user_id
-    foldermodel.delete_o(klass, uri, requesting_user_uri=owner)
+    model.delete_o(klass, uri, requesting_user_uri=owner)
     resp = flask.make_response("%s is no more" % uri)
     resp.status_code = 200
     resp.content_type = 'application/json'
@@ -390,7 +390,7 @@ def generic_delete(klass, uri):
 
 def generic_acl(klass, uri, acllist):
     owner = g.user_id
-    fldr = foldermodel.get_by_id(klass, uri, owner)
+    fldr = model.get_by_id(klass, uri, owner)
     fldr.set_acls(owner, acllist)
     resp = flask.make_response(fldr.jsonify())
     resp.status_code = 200
@@ -401,38 +401,38 @@ def generic_acl(klass, uri, acllist):
 @app.route('/folder/', methods=['POST'])
 def folder_post():
     """ """
-    return generic_post(foldermodel.Folder)
+    return generic_post(model.Folder)
 
 
 @app.route('/folder/<folderid>', methods=['PUT'])
 def folder_put(folderid):
     """ """
-    return generic_put(foldermodel.Folder, folderid)
+    return generic_put(model.Folder, folderid)
 
 
 @app.route('/module/', methods=['POST'])
 def module_post():
     """ """
-    r = generic_post(foldermodel.Module)
+    r = generic_post(model.Module)
     return r
 
 
 @app.route('/module/<moduleuri>', methods=['PUT'])
 def module_put(moduleuri):
     """ """
-    return generic_put(foldermodel.Module, moduleuri)
+    return generic_put(model.Module, moduleuri)
 
 
 @app.route('/collection/', methods=['POST'])
 def collection_post():
     """ """
-    return generic_post(foldermodel.Collection)
+    return generic_post(model.Collection)
 
 
 @app.route('/collection/<collectionuri>', methods=['PUT'])
 def collection_put(collectionuri):
     """ """
-    return generic_put(foldermodel.Collection, collectionuri)
+    return generic_put(model.Collection, collectionuri)
 
 
 @app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
@@ -441,9 +441,9 @@ def collection_acl_put(collectionuri):
     requesting_user_uri = g.user_id
     if request.method == "PUT":
         jsond = request.json
-        return generic_acl(foldermodel.Collection, collectionuri, jsond)
+        return generic_acl(model.Collection, collectionuri, jsond)
     elif request.method == "GET":
-        obj = foldermodel.get_by_id(foldermodel.Collection,
+        obj = model.get_by_id(model.Collection,
                                     collectionuri, requesting_user_uri)
         return str(obj.userroles)
 
@@ -454,9 +454,9 @@ def acl_folder_put(uri):
     requesting_user_uri = g.user_id
     if request.method == "PUT":
         jsond = request.json
-        return generic_acl(foldermodel.Folder, uri, jsond)
+        return generic_acl(model.Folder, uri, jsond)
     elif request.method == "GET":
-        obj = foldermodel.get_by_id(foldermodel.Folder,
+        obj = model.get_by_id(model.Folder,
                                     uri, requesting_user_uri)
         return str(obj.userroles)
 
@@ -467,9 +467,9 @@ def acl_module_put(uri):
     requesting_user_uri = g.user_id
     if request.method == "PUT":
         jsond = request.json
-        return generic_acl(foldermodel.Module, uri, jsond)
+        return generic_acl(model.Module, uri, jsond)
     elif request.method == "GET":
-        obj = foldermodel.get_by_id(foldermodel.Module,
+        obj = model.get_by_id(model.Module,
                                     uri, requesting_user_uri)
         return str(obj.userroles)
 
@@ -477,19 +477,19 @@ def acl_module_put(uri):
 @app.route('/collection/<collectionuri>', methods=['DELETE'])
 def collection_del(collectionuri):
     """ """
-    return generic_delete(foldermodel.Collection, collectionuri)
+    return generic_delete(model.Collection, collectionuri)
 
 
 @app.route('/folder/<folderuri>', methods=['DELETE'])
 def folder_del(folderuri):
     """ """
-    return generic_delete(foldermodel.Folder, folderuri)
+    return generic_delete(model.Folder, folderuri)
 
 
 @app.route('/module/<moduleuri>', methods=['DELETE'])
 def module_del(moduleuri):
     """ """
-    return generic_delete(foldermodel.Module, moduleuri)
+    return generic_delete(model.Module, moduleuri)
 
 
 ###############

@@ -79,7 +79,7 @@ decl is where I am storing text for examples.
 
     >>> import os, json
     >>> import pprint
-    >>> from rhaptos2.repo import backend, foldermodel
+    >>> from rhaptos2.repo import backend, model
     >>> from rhaptos2.repo.backend import db_session
     >>> from rhaptos2.common import conf
 
@@ -115,7 +115,7 @@ We snaffle the folder used for declaration indp
     ...               'role_type': 'aclro'}
     ...               ]
     
-    >>> f2 = foldermodel.Folder(creator_uuid=owner)
+    >>> f2 = model.Folder(creator_uuid=owner)
     >>> f2.id_ = TESTFOLDERID
     >>> f2.populate_self(incomingjsond)
     >>> print len(f2.userroles)
@@ -125,7 +125,7 @@ We snaffle the folder used for declaration indp
     2
     >>> del(f2)
 
-    >>> f2 = foldermodel.post_o(foldermodel.Folder, 
+    >>> f2 = model.post_o(model.Folder, 
     ...             incomingjsond, creator_uuid=owner)
     >>> f2.set_acls(owner, aclsd)
 
@@ -133,17 +133,17 @@ We snaffle the folder used for declaration indp
     >>> db_session.commit()
 
     >>> TESTFOLDERID = f2.id_
-    >>> f3 = foldermodel.get_by_id(foldermodel.Folder, TESTFOLDERID)
+    >>> f3 = model.get_by_id(model.Folder, TESTFOLDERID)
     >>> assert f3.id_ == TESTFOLDERID
 
     >>> incomingjsond3 = decl.declarationdict['folder']
 
-    >>> newf = foldermodel.put_o(incomingjsond3, 
-    ...                          foldermodel.Folder, TESTFOLDERID)
+    >>> newf = model.put_o(incomingjsond3, 
+    ...                          model.Folder, TESTFOLDERID)
     >>> print newf
     Folder...
 
-    >>> foldermodel.delete_o(foldermodel.Folder,
+    >>> model.delete_o(model.Folder,
     ...  TESTFOLDERID)
 
 
@@ -152,7 +152,7 @@ We snaffle the folder used for declaration indp
 
     temproary prepopulation fix
 
-    >>> f2 = foldermodel.Folder(creator_uuid=owner)
+    >>> f2 = model.Folder(creator_uuid=owner)
     >>> f2.id_ = EXAMPLEFOLDERID
     >>> f2.populate_self(incomingjsond3)
     >>> f2.set_acls(owner, aclsd)
@@ -160,14 +160,14 @@ We snaffle the folder used for declaration indp
     >>> db_session.commit()
     
 SHow that we put in and get out same content (list in list out)
-    >>> farr = foldermodel.get_by_id(foldermodel.Folder,EXAMPLEFOLDERID )
+    >>> farr = model.get_by_id(model.Folder,EXAMPLEFOLDERID )
     >>> assert decl.declarationdict['folder']['content'] == farr.content
     
-    >>> c1 = foldermodel.post_o(foldermodel.Collection,
+    >>> c1 = model.post_o(model.Collection,
     ...  decl.declarationdict['collection'],creator_uuid=owner )
     >>> c1.set_acls(owner, aclsd)
     
-    >>> m1 = foldermodel.post_o(foldermodel.Module,
+    >>> m1 = model.post_o(model.Module,
     ...  decl.declarationdict['sect1'],creator_uuid=owner )
     >>> m1.set_acls(owner, aclsd)    
 
@@ -175,4 +175,4 @@ SHow that we put in and get out same content (list in list out)
 notes
 after shell:
 
-m = foldermodel.workspace_by_user("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
+m = model.workspace_by_user("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
