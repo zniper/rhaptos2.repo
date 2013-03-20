@@ -11,8 +11,8 @@
 
 
 sect1 = {"id_":  "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
-         "Title": "Introduction",
-         "Body": """<h1>In CONGRESS, July 4, 1776.<h1>
+         "title": "Introduction",
+         "body": """<h1>In CONGRESS, July 4, 1776.<h1>
 <p>The unanimous Declaration of the thirteen united States of America,</p>
 
 <p>When in the Course of human events, it becomes necessary for one
@@ -22,16 +22,16 @@ equal station to which the Laws of Nature and of Nature's God entitles
 them, a decent respect to the opinions of mankind requires that they
 should declare the causes which impel them to the separation.</p>
 """,
-         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "CopyrightHolders":
+         "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "copyrightHolders":
          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
          }
 
 
 sect2 = {"id_":  "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
          "title": "Preamble",
-         "Body": """
+         "body": """
 <p>We hold these truths to be self-evident, that all men are created
 equal, that they are endowed by their Creator with certain unalienable
 Rights, that among these are Life, Liberty and the pursuit of
@@ -54,16 +54,16 @@ absolute Despotism, it is their right, it is their duty, to throw off
 such Government, and to provide new Guards for their future
 security.</p>
 """,
-         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "CopyrightHolders":
+         "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "copyrightHolders":
          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
          }
 
 
 sect3 = {"id_":  "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
-         "Title": "Indictment",
-         "Body": """
+         "title": "Indictment",
+         "body": """
 <p>Such has been the patient sufferance of these Colonies; and such is
 now the necessity which constrains them to alter their former Systems
 of Government. The history of the present King of Great Britain is a
@@ -173,16 +173,16 @@ by repeated injury. A Prince, whose character is thus marked by every
 act which may define a Tyrant, is unfit to be the ruler of a free
 people.
 """,
-         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "CopyrightHolders":
+         "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "copyrightHolders":
          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
          }
 
 
 sect4 = {"id_":  "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
-         "Title": "Denunciation",
-         "Body": """
+         "title": "Denunciation",
+         "body": """
 <p>Nor have We been wanting in attentions to our British brethren. We
 have warned them from time to time of attempts by their legislature to
 extend an unwarrantable jurisdiction over us. We have reminded them of
@@ -196,16 +196,16 @@ denounces our Separation, and hold them, as we hold the rest of
 mankind, Enemies in War, in Peace Friends.</p>
 
 """,
-         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "CopyrightHolders":
+         "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "copyrightHolders":
          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
          }
 
 
 sect5 = {"id_":  "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
-         "Title": "Conclusion",
-         "Body": """
+         "title": "Conclusion",
+         "body": """
 <p>We, therefore, the Representatives of the united States of America,
 in General Congress, Assembled, appealing to the Supreme Judge of the
 world for the rectitude of our intentions, do, in the Name, and by
@@ -222,16 +222,16 @@ protection of divine Providence, we mutually pledge to each other our
 Lives, our Fortunes and our sacred Honor.</p>
 
 """,
-         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "CopyrightHolders":
+         "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "copyrightHolders":
          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
          }
 
 
 sect6 = {"id_":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
-         "Title": "Signatures",
-         "Body": """
+         "title": "Signatures",
+         "body": """
     New Hampshire: Josiah Bartlett, William Whipple, Matthew Thornton
     Massachusetts: Samuel Adams, John Adams, John Hancock, Robert Treat Paine, Elbridge Gerry
     Rhode Island: Stephen Hopkins, William Ellery
@@ -246,17 +246,17 @@ sect6 = {"id_":  "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
     South Carolina: Edward Rutledge, Thomas Heyward, Jr., Thomas Lynch, Jr., Arthur Middleton
     Georgia: Button Gwinnett, Lyman Hall, George Walton
 """,
-         "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-         "CopyrightHolders":
+         "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+         "copyrightHolders":
          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
          }
 
 # folder
 
 fldr = {"id_":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
-        "Title":    "Declaration Folder",
-        "Body": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
+        "title":    "Declaration Folder",
+        "body": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
                     "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
                     "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
                     "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
@@ -266,15 +266,15 @@ fldr = {"id_":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
         }
 
 collection = {"id_": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
-              "Title": "United States Declaration Of Independance",
-              "Language": "English",
+              "title": "United States Declaration Of Independance",
+              "language": "English",
               "subtype":  "Other Report",
-              "Subjects": ["Social Sciences", ],
-              "Keywords": ["Life", "Liberty", "Happiness"],
-              "Summary": "No.",
-              "Authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-              "Maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
-              "CopyrightHolders":
+              "subjects": ["Social Sciences", ],
+              "keywords": ["Life", "Liberty", "Happiness"],
+              "summary": "No.",
+              "authors": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+              "maintainers": ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
+              "copyrightHolders":
                          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
 
               ### Are these in the defintion going forward?
@@ -282,7 +282,7 @@ collection = {"id_": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
               #                            "font": "Times"
               #                          },
 
-              "Body": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
+              "body": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
                           "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
                           "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
                           "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
@@ -322,13 +322,13 @@ users = {
 
 # added as extra people to every module etc.
 acllist = [
-    {'date_lastmodified_utc': None,
-     'date_created_utc': None,
+    {'dateLastModifiedUTC': None,
+     'dateCreatedUTC': None,
      'user_uri': users['phil'].useruri,
      'role_type': 'aclrw'},
 
-    {'date_lastmodified_utc': None,
-     'date_created_utc': None,
+    {'dateLastModifiedUTC': None,
+     'dateCreatedUTC': None,
      'user_uri': users['ed'].useruri,
      'role_type': 'aclro'}
 ]

@@ -117,12 +117,12 @@ class CNXBase():
         This will map the object ID to a acl type and a user
 
 
-        [{'date_lastmodified_utc': None,
-          'date_created_utc': None,
+        [{'dateLastModifiedUTC': None,
+          'dateCreatedUTC': None,
           'user_uri': u'Testuser1',
           'role_type': 'author'},
-         {'date_lastmodified_utc': None,
-          'date_created_utc': None,
+         {'dateLastModifiedUTC': None,
+          'dateCreatedUTC': None,
           'user_uri': u'testuser2',
           'role_type': 'author'}]
 
@@ -156,8 +156,8 @@ class CNXBase():
             # UserID is not in any assoc. role - add a new one
             i = userrole_klass()
             i.from_dict(usrdict)
-            i.date_created_utc = t
-            i.date_lastmodified_utc = t
+            i.dateCreatedUTC = t
+            i.dateLastModifiedUTC = t
             self.userroles.append(i)
 
         elif (user_uri, role_type) not in [(u.user_uri, u.role_type) for u
@@ -165,7 +165,7 @@ class CNXBase():
             # UserID has got a role, so *update*
             i = userrole_klass()
             i.from_dict(usrdict)
-            i.date_lastmodified_utc = t
+            i.dateLastModifiedUTC = t
             self.userroles.append(i)
         else:
             # user is there, user and role type is there, this is duplicate

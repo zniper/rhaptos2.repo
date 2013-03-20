@@ -105,12 +105,12 @@ We snaffle the folder used for declaration indp
     >>> incomingjsond = decl.declarationdict['folder']
 
     >>> aclsd = [
-    ...              {'date_lastmodified_utc': None, 
-    ...               'date_created_utc': None, 
+    ...              {'dateLastModifiedUTC': None, 
+    ...               'dateCreatedUTC': None, 
     ...               'user_uri': owner, 
     ...               'role_type': 'aclrw'}, 
-    ...              {'date_lastmodified_utc': None, 
-    ...               'date_created_utc': None, 
+    ...              {'dateLastModifiedUTC': None, 
+    ...               'dateCreatedUTC': None, 
     ...               'user_uri': u'testuser2', 
     ...               'role_type': 'aclro'}
     ...               ]

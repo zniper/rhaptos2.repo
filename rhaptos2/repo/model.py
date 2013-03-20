@@ -102,8 +102,8 @@ class UserRoleCollection(Base, CNXBase):
     user_uri = Column(String, primary_key=True)
     role_type = Column(Enum('aclrw', 'aclro', name="cnxrole_type"),
                        primary_key=True)
-    date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)  # noqa
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)  # noqa
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -114,19 +114,19 @@ class Collection(Base, CNXBase):
     """
     __tablename__ = 'cnxcollection'
     id_ = Column(String, primary_key=True)
-    Title = Column(String)
-    Language = Column(String)
-    Subtype = Column(String)
-    Subjects = Column(ARRAY(String))
-    Keywords = Column(ARRAY(String))
-    Summary = Column(String)
-    Authors = Column(ARRAY(String))
-    Maintainers = Column(ARRAY(String))
-    CopyrightHolders = Column(ARRAY(String))
+    title = Column(String)
+    language = Column(String)
+    subType = Column(String)
+    subjects = Column(ARRAY(String))
+    keywords = Column(ARRAY(String))
+    summary = Column(String)
+    authors = Column(ARRAY(String))
+    maintainers = Column(ARRAY(String))
+    copyrightHolders = Column(ARRAY(String))
 
-    Body = Column(ARRAY(String))
-    date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)
+    body = Column(ARRAY(String))
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
     
     userroles = relationship("UserRoleCollection",
@@ -136,7 +136,7 @@ class Collection(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.collection"
-        self.content = self.Body
+        self.content = self.body
         if creator_uuid:
             self.adduserrole(UserRoleCollection,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
@@ -148,10 +148,10 @@ class Collection(Base, CNXBase):
         else:
             self.id_ = "cnxcollection" + str(uuid.uuid4())
 
-        self.date_created_utc = self.get_utcnow()
+        self.dateCreatedUTC = self.get_utcnow()
 
     def __repr__(self):
-        return "Col:(%s)-%s" % (self.id_, self.Title)
+        return "Col:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
@@ -175,8 +175,8 @@ class UserRoleModule(Base, CNXBase):
     role_type = Column(Enum('aclrw', 'aclro',
                             name="cnxrole_type"),
                        )
-    date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
     UniqueConstraint(module_uri, user_uri, name="uniq_mod_user")
 
     def __repr__(self):
@@ -198,19 +198,19 @@ class Module(Base, CNXBase):
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
-    Title = Column(String)
-    Authors = Column(ARRAY(String))
-    Maintainers = Column(ARRAY(String))
-    CopyrightHolders = Column(ARRAY(String))
-    Body = Column(String)
-    Language = Column(String)
-    Subtype = Column(String)
-    Subjects = Column(ARRAY(String))
-    Keywords = Column(ARRAY(String))
-    Summary = Column(String)
+    title = Column(String)
+    authors = Column(ARRAY(String))
+    maintainers = Column(ARRAY(String))
+    copyrightHolders = Column(ARRAY(String))
+    body = Column(String)
+    language = Column(String)
+    subType = Column(String)
+    subjects = Column(ARRAY(String))
+    keywords = Column(ARRAY(String))
+    summary = Column(String)
 
-    date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
     
     userroles = relationship("UserRoleModule",
@@ -221,7 +221,7 @@ class Module(Base, CNXBase):
         """ """
         self.mediaType = "application/vnd.org.cnx.module"
         
-        self.content = self.Body
+        self.content = self.body
         if not self.validateid(id_):
             raise Rhaptos2Error("%s not valid id" % id_)
 
@@ -235,12 +235,12 @@ class Module(Base, CNXBase):
             self.id_ = id_
         else:
             self.id_ = "cnxmodule:" + str(uuid.uuid4())
-        self.date_created_utc = self.get_utcnow()
+        self.dateCreatedUTC = self.get_utcnow()
         super(Base, self).__init__()
         db_session.commit()
 
     def __repr__(self):
-        return "Module:(%s)-%s" % (self.id_, self.Title)
+        return "Module:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Module class to have a set_acls call,
@@ -270,8 +270,8 @@ class UserRoleFolder(Base, CNXBase):
     role_type = Column(Enum('aclrw', 'aclro',
                             name="cnxrole_type"),
                        primary_key=True)
-    date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -298,10 +298,10 @@ class Folder(Base, CNXBase):
     """
     __tablename__ = 'cnxfolder'
     id_ = Column(String, primary_key=True)
-    Title = Column(String)
-    Body = Column(ARRAY(String))
-    date_created_utc = Column(DateTime)
-    date_lastmodified_utc = Column(DateTime)
+    title = Column(String)
+    body = Column(ARRAY(String))
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
     userroles = relationship("UserRoleFolder",
                              backref="cnxfolder",
@@ -310,7 +310,7 @@ class Folder(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.folder"
-        self.content = self.Body
+        self.content = self.body
         if creator_uuid:
             self.adduserrole(UserRoleFolder,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
@@ -322,10 +322,10 @@ class Folder(Base, CNXBase):
         else:
             self.id_ = "cnxfolder:" + str(uuid.uuid4())
 
-        self.date_created_utc = self.get_utcnow()
+        self.dateCreatedUTC = self.get_utcnow()
 
     def __repr__(self):
-        return "Folder:(%s)-%s" % (self.id_, self.Title)
+        return "Folder:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
@@ -436,7 +436,7 @@ def workspace_by_user(user_uri):
 
     qm = db_session.query(Module)
     qm = qm.join(Module.userroles)
-#    q = q.add_column(Module.id_).add_column(Module.Title)
+#    q = q.add_column(Module.id_).add_column(Module.title)
     qm = qm.filter(UserRoleModule.user_uri == user_uri)
     rs1 = qm.all()
 

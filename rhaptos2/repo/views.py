@@ -132,7 +132,7 @@ def workspaceGET():
         w = model.workspace_by_user(identity.authenticated_identifier)
         ## w is a list of models (folders, cols etc).
         ## it would require some flattening or a JSONEncoder but we just want short form for now
-        short_format_list = [{"id":i.id_, "Title":i.Title, "mediaType":i.mediaType} for i in w]
+        short_format_list = [{"id":i.id_, "title":i.title, "mediaType":i.mediaType} for i in w]
         flatten = json.dumps(short_format_list)
 
     resp = flask.make_response(flatten)
