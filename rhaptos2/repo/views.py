@@ -10,13 +10,9 @@
 ###
 
 
-"""views.py - View code for the repository application.
+"""
+views.py - View code for the repository application.
 
-Author: Paul Brian
-(C) 2012 Rice University
-
-This software is subject to the provisions of the GNU Lesser General
-Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 import os
 import json
