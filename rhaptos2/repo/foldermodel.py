@@ -324,6 +324,7 @@ class Folder(Base, CNXBase):
         db_session.add(self)
         db_session.commit()
 
+
 def get_by_id(klass, ID, useruri):
     """Here we show why we need each Klass to have a generic named id_
     I want to avoid overly comploex mapping and routing in class
@@ -429,26 +430,20 @@ def workspace_by_user(user_uri):
     qf = db_session.query(Folder)
     qf = qf.join(Folder.userroles)
     qf = qf.filter(UserRoleFolder.user_uri == user_uri)
-    rs2 =qf.all()
+    rs2 = qf.all()
 
     qc = db_session.query(Collection)
     qc = qc.join(Collection.userroles)
     qc = qc.filter(UserRoleCollection.user_uri == user_uri)
     rs3 = qc.all()
-    
-    
+
     return {
-        "Module":rs1,
-        "Folder":rs2,
-        "Collection":rs3
+        "Module": rs1,
+        "Folder": rs2,
+        "Collection": rs3
     }
 
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-
-
-
-
