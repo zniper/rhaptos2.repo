@@ -129,7 +129,9 @@ def workspaceGET():
         abort(403)
     else:
         wout = {}
-        w = model.workspace_by_user(identity.authenticated_identifier)
+        dolog("INFO", "Calling workspace with %s" % identity.userID)
+        w = model.workspace_by_user(identity.userID)
+        dolog("INFO", repr(w))
         ## w is a list of models (folders, cols etc).
         ## it would require some flattening or a JSONEncoder but we just want short form for now
         short_format_list = [{"id":i.id_, "title":i.title, "mediaType":i.mediaType} for i in w]
