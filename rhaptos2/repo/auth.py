@@ -123,7 +123,7 @@ class User(object):
 
         try:
             r = requests.get(user_server_url, params=payload)
-            userdetails = r.json
+            userdetails = r.json()
         except Exception, e:
             #.. todo:: not sure what to do here ... the user dbase is down
             dolog("INFO", e)
@@ -132,6 +132,8 @@ class User(object):
         dolog("INFO", "Got back %s " % str(userdetails))
         if userdetails and r.status_code == 200:
             ### todo:: better self update
+            dolog("INFO", type(userdetails))
+            dolog("INFO", repr(userdetails))
             self.__dict__.update(userdetails)
         else:
             ### we have a authenticated user but no name.
@@ -250,10 +252,19 @@ def whoami():
     ..  todo:: document fajkeuserID
     '''
     dolog("INFO", "Whoami called", caller=whoami)
+
     if HTTPHEADER_STORING_USERURI in request.headers and app.debug is True:
         fakeuserid = request.headers.get(HTTPHEADER_STORING_USERURI)
         g.user_id = fakeuserid
         return Identity(fakeuserid)
+
+    elif (HTTPHEADER_STORING_USERAUTH in request.headers
+          and app.debug is True
+          and 'authenticated_identifier' not in session):
+        fakeuserauth = request.headers.get(HTTPHEADER_STORING_USERAUTH)
+        after_authentication(fakeuserauth, "openid")
+        return Identity(fakeuserauth)
+
     elif 'authenticated_identifier' in session:
         user = Identity(session['authenticated_identifier'])
         g.user_id = user.userID

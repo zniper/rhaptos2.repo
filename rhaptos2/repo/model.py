@@ -452,6 +452,7 @@ def workspace_by_user(user_uri):
 
     rs1.extend(rs2)
     rs1.extend(rs3)
+    db_session.commit() #hail mary...
     return rs1
     
 
