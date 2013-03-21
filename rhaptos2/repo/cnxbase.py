@@ -21,7 +21,7 @@ multiple inheritence...
 import json
 import datetime
 from err import Rhaptos2Error
-
+from rhaptos2.repo import dolog ## depednacy?
 
 class CNXBase():
 
@@ -203,11 +203,12 @@ class CNXBase():
         False
 
         """
-        print "*****AUTH"
-        print "model", self
-        print "action", action
-        print "user", requesting_user_uri
-        print "*****/AUTH"
+        s =  "*****AUTH"
+        s += "model" +  str(self)
+        s += "action" + str(action)
+        s += "user" + str(requesting_user_uri)
+        s+= "*****/AUTH"
+        dolog("INFO",s)
         if action in ("GET", "HEAD", "OPTIONS"):
             valid_user_list = [u.user_uri for u in self.userroles
                                if u.role_type in ("aclro", "aclrw")]

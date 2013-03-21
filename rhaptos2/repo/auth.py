@@ -172,7 +172,7 @@ class Identity(object):
 
         self.authenticated_identifier = authenticated_identifier
         self.user = get_user_from_identifier(authenticated_identifier)
-
+        ### .. todo:: rename and refactor the different usaerid user auth etc in all pkgs
         if self.user:
             self.email = self.user.email
             self.name = self.user.fullname
