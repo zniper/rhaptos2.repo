@@ -222,10 +222,16 @@ def get_url(resourcetype, id_=None, method=None):
     return url
 
 
-def wapp_get(wapp, resourcetype, id_, owner):
+def wapp_get(wapp, resourcetype, id_, owner, URL=None):
     """ """
-    headers = {HTTPHEADER_STORING_USERURI: owner, }
-    URL = get_url(resourcetype, id_=id_, method="GET")
+    ## bit specific exceotion here todo:: fix this whole wappget approach
+    if URL is None:
+        headers = {HTTPHEADER_STORING_USERURI: owner, }
+        URL = get_url(resourcetype, id_=id_, method="GET")
+    else:
+        headers = {HTTPHEADER_STORING_USERAUTH: owner, }
+        #URL = get_url(resourcetype, id_=id_, method="GET")
+        
     try:
         resp = wapp.get(URL, status="*", headers=headers)
     except Exception, e:
@@ -455,7 +461,14 @@ def test_delete_folder_good():
     resp = wapp_delete(TESTAPP, "folder", folderuri, gooduseruri)
     assert resp.status_int == 200
 
-
+def test_whoami():
+    resp = wapp_get(TESTAPP, "-", None,
+                    "https://paulbrian.myopenid.com",
+                    URL="http://localhost:8000/me/"
+    )
+    assert resp.status_int == 200
+    assert resp.json["name"] == "Paul Brian" 
+    assert resp.json["id"] == "org.cnx.user-75e06194-baee-4395-8e1a-566b656f6920" 
 
 
 # import doctest

@@ -12,7 +12,7 @@
 
 sect1 = {"id_":  "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
          "title": "Introduction",
-         "body": """<h1>In CONGRESS, July 4, 1776.<h1>
+         "body": """<h1>In CONGRESS, July 4, 1776.</h1>
 <p>The unanimous Declaration of the thirteen united States of America,</p>
 
 <p>When in the Course of human events, it becomes necessary for one
