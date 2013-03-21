@@ -344,6 +344,7 @@ def folder_get(folderuri):
            mod  = model.get_by_id(model.Module, obj, g.user_id)
            foldbody.append({"id":mod.id_,"title":mod.title,"mediaType":mod.mediaType})
         except:  # FIXME want to catch no such object error
+           pass
     foldjson['body'] = foldbody
     foldjson['id'] = foldjson.pop('id_')
     
