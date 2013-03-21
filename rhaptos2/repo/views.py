@@ -327,12 +327,35 @@ def loginpersona():
 ###################### A custom converter in Flask is a better idea
 ### todo: custom convertor
 
+MEDIA_MODELS_BY_TYPE = { 
+        "application/vnd.org.cnx.collection":model.Collection,
+        "application/vnd.org.cnx.module":model.Module,
+        "application/vnd.org.cnx.folder":model.Folder
+}
+
+### FIXME the following needs to actually support both modules and collections in a folder als
 
 @app.route('/folder/<folderuri>', methods=['GET'])
 def folder_get(folderuri):
     """    """
-    return generic_get(model.Folder, folderuri, g.user_id)
+    foldbody=[]
+    fold = model.get_by_id(model.Folder, folderuri, g.user_id)
+    foldjson = fold.to_dict()
+    for obj in fold.body:
+        try:
+           mod  = model.get_by_id(model.Module, obj, g.user_id)
+           foldbody.append({"id":mod.id_,"title":mod.title,"mediaType":mod.mediaType})
+        except:  # FIXME want to catch no such object error
+           pass
+    foldjson['body'] = foldbody
+    foldjson['id'] = foldjson.pop('id_')
+    
+    resp = flask.make_response(json.dumps(foldjson))
+    resp.content_type = 'application/json'
+    resp.headers["Access-Control-Allow-Origin"] = "*"
 
+    auth.callstatsd('rhaptos2.e2repo.workspace.GET')
+    return resp
 
 @app.route('/collection/<collectionuri>', methods=['GET'])
 def collection_get(collectionuri):
