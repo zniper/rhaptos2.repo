@@ -154,31 +154,6 @@ class Collection(Base, CNXBase):
     def __repr__(self):
         return "Col:(%s)-%s" % (self.id_, self.title)
 
-    def to_dict(self):
-        d = {}
-        for col in self.__table__.columns:
-            d[col.name] = self.safe_type_out(col)
-        ###todo: fix hack
-        ###hack to output collections as li
-        ul = []
-        s = '<ul>'
-
-        for item in d["body"]:
-            ##FIXME in big letters 
-            pbrian = "cnxuser:75e06194-baee-4395-8e1a-566b656f6920"
-            obj = get_by_id(None, item, pbrian)
-            shortform = {"mediaType":obj.mediaType,
-                      "id":obj.id_,
-                      "title":obj.title}
-            txt = '<li><a href="%s">%s</a></li>' % (obj.id_, obj.title)
-            dolog("INFO", "************!!!" + repr(shortform))
-            ul.append(shortform)
-            s+=txt
-        d["body"] = s + "</ul>"
-        return d
-
-
-
     def set_acls(self, owner_uuid, aclsd):
         """ allow each Folder / collection class to have a set_acls call,
         but catch here and then pass generic function the right UserRoleX
@@ -371,20 +346,11 @@ def get_by_id(klass, ID, useruri):
     folderid) THis does very little.
 
     """
-    mapper = {"cnxfolder": Folder,
-              "cnxcollection": Collection,
-              "cnxmodule": Module
-    }
-    if klass is None: 
-        ns = ID.split(":")[0]
-        klass = mapper[ns]
- 
     q = db_session.query(klass)
     q = q.filter(klass.id_ == ID)
     rs = q.all()
     if len(rs) == 0:
 #        raise Rhaptos2Error("ID Not found in this repo")
-        dolog("INFO", "NOT FOUND-" + repr(klass) + ns + ID)
         abort(404)
     ### There is a uniq constraint on the table, but anyway...
     if len(rs) > 1:
