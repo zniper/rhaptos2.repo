@@ -97,9 +97,9 @@ moduleuri = "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126"
 collectionuri = "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7"
 folderuri = "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707"
 
-gooduseruri = decl.users['paul'].useruri
-rouseruri = decl.users['ed'].useruri
-baduseruri = decl.users['ross'].useruri
+gooduseruri = decl.users['paul'].openid
+rouseruri = decl.users['ed'].openid
+baduseruri = decl.users['ross'].openid
 
 userhost = "http://localhost:8000/"
 ### THis header is where we put the authenticated ID
@@ -226,7 +226,7 @@ def wapp_get(wapp, resourcetype, id_, owner, URL=None):
     """ """
     ## bit specific exceotion here todo:: fix this whole wappget approach
     if URL is None:
-        headers = {HTTPHEADER_STORING_USERURI: owner, }
+        headers = {HTTPHEADER_STORING_USERAUTH: owner, }
         URL = get_url(resourcetype, id_=id_, method="GET")
     else:
         headers = {HTTPHEADER_STORING_USERAUTH: owner, }
@@ -247,7 +247,7 @@ def wapp_post(wapp, resourcetype, data, owner):
     """ ?
     """
     URL = get_url(resourcetype, id_=None, method="POST")
-    headers = {HTTPHEADER_STORING_USERURI: owner, }
+    headers = {HTTPHEADER_STORING_USERAUTH: owner, }
 
     try:
         resp = wapp.post_json(URL, params=data, headers=headers, status="*")
@@ -265,14 +265,14 @@ def wapp_delete(wapp, resourcetype, id_, owner):
     """
     """
     URL = get_url(resourcetype, id_=id_, method="DELETE")
-    headers = {HTTPHEADER_STORING_USERURI: owner,
+    headers = {HTTPHEADER_STORING_USERAUTH: owner,
                }
     resp = wapp.delete(URL, headers=headers, status="*")
     return resp
 
 
 def wapp_put(wapp, resourcetype, data, owner, id_=None):
-    headers = {HTTPHEADER_STORING_USERURI: owner, }
+    headers = {HTTPHEADER_STORING_USERAUTH: owner, }
     URL = get_url(resourcetype, method="PUT", id_=id_)
     print "Putting to %s" % URL
     try:
@@ -410,7 +410,9 @@ def test_read_module_baduser():
     
 def test_get_workspace_good():
     resp = wapp_get(TESTAPP, "workspace", None, gooduseruri)
-    assert len(resp.json) == 3
+    print resp
+    print resp.json
+    assert len(resp.json) == 3   
     assert resp.status_int == 200
     simplelog(resp)
 
@@ -468,7 +470,7 @@ def test_whoami():
     )
     assert resp.status_int == 200
     assert resp.json["name"] == "Paul Brian" 
-    assert resp.json["id"] == "org.cnx.user-75e06194-baee-4395-8e1a-566b656f6920" 
+    assert resp.json["id"] == "cnxuser:75e06194-baee-4395-8e1a-566b656f6920" 
 
 
 # import doctest
@@ -486,7 +488,6 @@ def convert_config(config):
 
 
 def setup():
-
     global TESTCONFIG
     global TESTAPP
 
@@ -508,6 +509,9 @@ def setup():
         app.debug = True
         TESTAPP = TestApp(app.wsgi_app)
 
+
+    print "Running setup"
+    print "cookies", TESTAPP.cookies 
 
 def cleardown(config):
     backend.clean_dbase(config)

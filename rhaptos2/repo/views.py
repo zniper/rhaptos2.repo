@@ -339,11 +339,11 @@ MEDIA_MODELS_BY_TYPE = {
 def folder_get(folderuri):
     """    """
     foldbody=[]
-    fold = model.get_by_id(model.Folder, folderuri, g.user_id)
+    fold = model.get_by_id(model.Folder, folderuri, g.userID)
     foldjson = fold.to_dict()
     for obj in fold.body:
         try:
-           mod  = model.get_by_id(model.Module, obj, g.user_id)
+           mod  = model.get_by_id(model.Module, obj, g.userID)
            foldbody.append({"id":mod.id_,"title":mod.title,"mediaType":mod.mediaType})
         except:  # FIXME want to catch no such object error
            pass
@@ -360,13 +360,13 @@ def folder_get(folderuri):
 @app.route('/collection/<collectionuri>', methods=['GET'])
 def collection_get(collectionuri):
     """  """
-    return generic_get(model.Collection, collectionuri, g.user_id)
+    return generic_get(model.Collection, collectionuri, g.userID)
 
 
 @app.route('/module/<moduleuri>', methods=['GET'])
 def module_get(moduleuri):
     """    """
-    return generic_get(model.Module, moduleuri, g.user_id)
+    return generic_get(model.Module, moduleuri, g.userID)
 
 ######
 
@@ -381,7 +381,9 @@ def generic_get(klass, uri, requesting_user_uri):
 
 def generic_post(klass):
     """Temp fix till get regex working on routes """
-    owner = g.user_id  # loggedin user
+    dolog("INFO", "THIS US g")
+    dolog("INFO", repr(g.__dict__))
+    owner = g.userID  # loggedin user
     jsond = request.json  # flask autoconverts to dict ...
     fldr = model.post_o(klass, jsond, requesting_user_uri=owner)
     resp = flask.make_response(fldr.jsonify())
@@ -392,7 +394,7 @@ def generic_post(klass):
 
 def generic_put(klass, uri):
 
-    owner = g.user_id
+    owner = g.userID
     incomingjsond = request.json
     fldr = model.put_o(incomingjsond, klass, uri,
                              requesting_user_uri=owner)
@@ -404,7 +406,7 @@ def generic_put(klass, uri):
 
 def generic_delete(klass, uri):
     """ """
-    owner = g.user_id
+    owner = g.userID
     model.delete_o(klass, uri, requesting_user_uri=owner)
     resp = flask.make_response("%s is no more" % uri)
     resp.status_code = 200
@@ -413,7 +415,7 @@ def generic_delete(klass, uri):
 
 
 def generic_acl(klass, uri, acllist):
-    owner = g.user_id
+    owner = g.userID
     fldr = model.get_by_id(klass, uri, owner)
     fldr.set_acls(owner, acllist)
     resp = flask.make_response(fldr.jsonify())
@@ -462,7 +464,7 @@ def collection_put(collectionuri):
 @app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
 def collection_acl_put(collectionuri):
     """ """
-    requesting_user_uri = g.user_id
+    requesting_user_uri = g.userID
     if request.method == "PUT":
         jsond = request.json
         return generic_acl(model.Collection, collectionuri, jsond)
@@ -475,7 +477,7 @@ def collection_acl_put(collectionuri):
 @app.route('/folder/<path:uri>/acl/', methods=['PUT', 'GET'])
 def acl_folder_put(uri):
     """ """
-    requesting_user_uri = g.user_id
+    requesting_user_uri = g.userID
     if request.method == "PUT":
         jsond = request.json
         return generic_acl(model.Folder, uri, jsond)
@@ -488,7 +490,7 @@ def acl_folder_put(uri):
 @app.route('/module/<path:uri>/acl/', methods=['PUT', 'GET'])
 def acl_module_put(uri):
     """ """
-    requesting_user_uri = g.user_id
+    requesting_user_uri = g.userID
     if request.method == "PUT":
         jsond = request.json
         return generic_acl(model.Module, uri, jsond)
