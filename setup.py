@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 #! -*- coding: utf-8 -*-
 
+###
+# Copyright (c) Rice University 2012-13
+# This software is subject to
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
+# See LICENCE.txt for details.
+###
+
 
 """ setup.py - rhaptos2.repo package setup
 
@@ -43,19 +51,14 @@ setup(
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
     install_requires=[
-        "bamboo.setuptools_version", 
         "fabric >= 1.0.0",
         "flask >= 0.9",
         "statsd",
         "requests",
         "pylint",
         "Flask-OpenID==1.0.1",
-        "python-memcached",
         "nose",
-        "rhaptos2.common",
         "unittest-xml-reporting",
-        ##"mikado.oss.doctest_additions",
-        "python-memcached",
         ],
     include_package_data=True,
     package_data={'rhaptos2.repo': ['templates/*.*',
@@ -67,4 +70,5 @@ setup(
 rhaptos2_runrepo = rhaptos2.repo.run:main
 """,
     )
+
 

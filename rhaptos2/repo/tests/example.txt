@@ -1,0 +1,178 @@
+
+Discussion
+==========
+
+Basic idea:
+ 
+  I am using the postgres tables as a TEXT store for the whole JSON document.
+  The security setting for the document are altered with a seperate PUT/POST  (www.cnx.org/module/1234/acl)
+
+  I need to more properly integrate repose.who to make that seemless.
+
+
+  I tried to get one table / one security table to work for each type.
+  SQLAlchemy fought every step of the way, and it seemed like a Outlook style of approach so got rejected.
+
+Use of URN / URIs
+-----------------
+
+I have abstracted out a lot of the security, as ACLs are not supposed
+to be part of the document.  I am using the Unix style convention of
+owner-group-world to define ACLs, and using URNs to allow one
+centralised ACL application to control many resources.
+
+And yes I may be using URN wrongly - http://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn
+
+A resource has a URN of the following 
+
+============== ===================== ====================================================================
+Resource type   URN                   Example URI/URL
+============== ===================== ====================================================================
+Folder         urn:cnxfolder:<NSS>    urn:cnxfolder:529d7edc-63ee-40c6-a4be-5c7a94c7ed26   
+
+                                      http://www.cnx.org/folders/529d7edc-63ee-40c6-a4be-5c7a94c7ed26
+
+Collection     urn:cnxcol:<NSS>       urn:cnxcol:529d7edc-63ee-40c6-a4be-5c7a94c7ed26
+Module         urn:cnxmodule:<NSS>    urn:cnxmodule:529d7edc-63ee-40c6-a4be-5c7a94c7ed26
+User           urn:cnxuser:<NSS>      urn:cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26
+Blob           urn:cnxblog:<NSS>      urn:cnxblob:529d7edc-63ee-40c6-a4be-5c7a94c7ed26
+============== ===================== ====================================================================
+
+
+
+http://localhost:8000/folder/752419e8-2077-41ea-b950-b0e50262d019/
+psql -h www.frozone.mikadosoftware.com -U test1 -d dbtest
+
+
+Testing the Folder database 
+===========================
+
+Folder is a unordered list of modules and collections that the
+user may arbitrarily define.  This is represented as::
+
+   <link to decl json>
+
+THe test cycle shall consist of 
+
+0. "login" as a known user
+1. Create a new folder, ensuring folder is created as that user
+2. Give folder new user settings
+3. Update the contents of folder
+
+0. login as new user
+====================
+
+This is not currently enforced - in otherwords I can use any text string as my user identifier.
+I will use a URN that is set up in user database.
+.. todo:: enfirce relational check on user id to user dbase
+
+    >>> owner = "cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26"
+    >>> TESTFOLDERID = "002c7a02-fb4f-48de-bbf0-28e16d6dad3c"
+
+Yes that should be a URI...
+
+Setup ::
+
+    >>> import decl
+
+decl is where I am storing text for examples.
+
+    >>> import os, json
+    >>> import pprint
+    >>> from rhaptos2.repo import backend, model
+    >>> from rhaptos2.repo.backend import db_session
+    >>> from rhaptos2.common import conf
+
+I am unable to set __file__ in doctest - needs a fix
+
+    >>> HERE = "/usr/home/pbrian/src/public/Connexions/rhaptos2.repo/rhaptos2/repo"
+    >>> CONFD_PATH = os.path.join(HERE, "../../local.ini")
+    >>> confd = conf.get_config(CONFD_PATH)
+
+Initiallise the database session
+
+   bit of hack to get a clean dbase ready for testing.
+   need to get nose working and do proper transaction based tests.
+
+    
+    >>> backend.clean_dbase(confd['app'])
+    >>> backend.initdb(confd['app'])
+
+
+OK - we have a json onject coming in - which we represent here as a dictionary...
+We snaffle the folder used for declaration indp 
+
+    >>> incomingjsond = decl.declarationdict['folder']
+
+    >>> aclsd = [
+    ...              {'dateLastModifiedUTC': None, 
+    ...               'dateCreatedUTC': None, 
+    ...               'user_uri': owner, 
+    ...               'role_type': 'aclrw'}, 
+    ...              {'dateLastModifiedUTC': None, 
+    ...               'dateCreatedUTC': None, 
+    ...               'user_uri': u'testuser2', 
+    ...               'role_type': 'aclro'}
+    ...               ]
+    
+    >>> f2 = model.Folder(creator_uuid=owner)
+    >>> f2.id_ = TESTFOLDERID
+    >>> f2.populate_self(incomingjsond)
+    >>> print len(f2.userroles)
+    1
+    >>> f2.set_acls(owner, aclsd)
+    >>> print len(f2.userroles)
+    2
+    >>> del(f2)
+
+    >>> f2 = model.post_o(model.Folder, 
+    ...             incomingjsond, creator_uuid=owner)
+    >>> f2.set_acls(owner, aclsd)
+
+    >>> db_session.add(f2)
+    >>> db_session.commit()
+
+    >>> TESTFOLDERID = f2.id_
+    >>> f3 = model.get_by_id(model.Folder, TESTFOLDERID)
+    >>> assert f3.id_ == TESTFOLDERID
+
+    >>> incomingjsond3 = decl.declarationdict['folder']
+
+    >>> newf = model.put_o(incomingjsond3, 
+    ...                          model.Folder, TESTFOLDERID)
+    >>> print newf
+    Folder...
+
+    >>> model.delete_o(model.Folder,
+    ...  TESTFOLDERID)
+
+
+    >>> owner = "cnxuser:529d7edc-63ee-40c6-a4be-5c7a94c7ed26"
+    >>> EXAMPLEFOLDERID = "cnxfolder:102c7a02-fb4f-48de-bbf0-28e16d6dad3c"
+
+    temproary prepopulation fix
+
+    >>> f2 = model.Folder(creator_uuid=owner)
+    >>> f2.id_ = EXAMPLEFOLDERID
+    >>> f2.populate_self(incomingjsond3)
+    >>> f2.set_acls(owner, aclsd)
+    >>> db_session.add(f2)
+    >>> db_session.commit()
+    
+SHow that we put in and get out same content (list in list out)
+    >>> farr = model.get_by_id(model.Folder,EXAMPLEFOLDERID )
+    >>> assert decl.declarationdict['folder']['content'] == farr.content
+    
+    >>> c1 = model.post_o(model.Collection,
+    ...  decl.declarationdict['collection'],creator_uuid=owner )
+    >>> c1.set_acls(owner, aclsd)
+    
+    >>> m1 = model.post_o(model.Module,
+    ...  decl.declarationdict['sect1'],creator_uuid=owner )
+    >>> m1.set_acls(owner, aclsd)    
+
+
+notes
+after shell:
+
+m = model.workspace_by_user("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")

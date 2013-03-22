@@ -1,11 +1,13 @@
-// Copyright (c) Rice University 2012
-// This software is subject to
-// the provisions of the GNU Lesser General
-// Public License Version 2.1 (LGPL).
-// See LICENCE.txt for details.
-//
 
-//FIXME: References to this object should be removed
+// <!--
+// Copyright (c) Rice University 2012-3
+// This software is subject to
+// the provisions of the GNU Affero General
+// Public License Version 3 (AGPLv3).
+// See LICENCE.txt for details.
+// -->
+
+
 var FROZONE = {
 
     e2repoFQDN   : "http://{{ confd['www_server_name'] }}",
@@ -13,5 +15,6 @@ var FROZONE = {
 
 
 }
+
 
 

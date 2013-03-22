@@ -2,501 +2,459 @@
 #! -*- coding: utf-8 -*-
 
 ###
-# Copyright (c) Rice University 2012
+# Copyright (c) Rice University 2012-13
 # This software is subject to
-# the provisions of the GNU Lesser General
-# Public License Version 2.1 (LGPL).
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
 # See LICENCE.txt for details.
 ###
 
 
-import datetime
-import datetime
-import md5, random
-import os, sys
-import hashlib
-import statsd
+"""dbase-backed models for content on unpub repositories
+-----------------------------------------------------
+
+This module provides the class defintions for
+
+* :class:`Module`
+* :class:`Folder`
+* :class:`Collection`
+
+These are backd onto SQLAlchemy foundations and then onto PostgresQL
+database.  An explcit use of the ARRAY datatype in postgres limits the
+ability to swap out backends.
+
+Security
+--------
+
+We expect to receive a HTTP HEADER (REMOTE_USER / X-Fake-CNXUser) with
+a user-uri
+
+A cnx user-uri is in the glossary (!)
+
+.. todo::
+   We may need to write a custom handfler for sqlite3 to deal
+   with ARRAY typoes to make on local dev machine testing easier.
+
+
+
+
+models:  I am trying to keep things simple.  This may not be a good idea.
+
+each model is a class, based on a SQLAlchemy foundation with :class:CNXBase
+as a extra inheritence.  This CNXBase gives us to and from json capabilities,
+but each model has to manually override to and from json calls if
+
+
+What is the same about each model / class
+
+1. They have only themselves - there are no child tables needing
+   hierarchialcly handling.  If this was needed we should look at
+   rhaptos2.user for the approach - pretty simple, just modiufy the
+   from and to dict calls
+
+2. They are representing *resources* - that is a entity we want to have some
+   form of access control over.  So we use the generic-ish approach
+   of userroles - see below.
+
+
+3. THey are all ID'd by URI
+
+
+Note on json - the obvious generic approach, of traversing the SQLA
+model and converting to/from JSON automagically has so far failed.
+There are no sensible approaches "out there", seemingly because the
+obvious approaches (iter) have already been hijacked by SQLA and
+the edge cases are producing weird effects.
+
+
+So, this basically implies a protocol for objects / classes
+
+1. support creater_uri= in your constructor
+2. override fomr and to json SQLA where needed
+3. Support ACLs
+4. err ....
+
+"""
+
+from sqlalchemy import (ForeignKey,
+                        Column, String,
+                        Enum, DateTime,
+                        UniqueConstraint)
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
+import uuid
 import json
-from functools import wraps
-import urlparse
-import pprint
+from cnxbase import CNXBase
+from rhaptos2.repo.backend import Base, db_session
+from err import Rhaptos2Error  # Rhaptos2SecurityError
+# XXX - replace with catchall err handler - conflict5s with debug
+from flask import abort
 
-from rhaptos2.common import conf
-from rhaptos2.common import log
-from rhaptos2.common.err import Rhaptos2Error
-from rhaptos2.repo import get_app, dolog
-from rhaptos2.repo import files, security
-
-import flask
-from flask import Flask, render_template, request, g, session, flash, \
-     redirect, url_for, abort
-from flaskext.openid import OpenID
-import memcache
-import requests
-import urllib
-
-### XXX This needs to be wrapped in makeapp function ...
-app = get_app()
-
-app.config.update(
-    SECRET_KEY = app.config['openid_secretkey'],
-    DEBUG      = app.debug
-)
-RESOURCES_DIR_PATH = os.path.join(app.config['repodir'],
-                                  'resources')
-METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH, 'resource-metadata')
-
-# setup flask-openid
-oid = OpenID(app)
+################## COLLECTIONS #############################
 
 
-#def resp_as_json():
-#    '''decorator that will convert to json '''
-#    @wraps(f)
-#    def decorated_function(*args, **kwargs):
-#        resp = flask.make_response(f)
-#        resp.content_type='application/json'
-#        return resp
-#    return decorated_function
-
-'''
-
-Wanted:
-
-onbjects to standarse the things like username lookups, username to directory, etc etc
-
-Tests I want to see
--------------------
-
-* logging
-* message queueing
-* pygit - api
-
-
-
-API
----
-
-:Workspace:  a group of repos
-:collection: a group of files,
-             including ordering of modules
-             Effectively a repo
-:branch: branch of a single repo
-
-:fork: branch of a single repo, but placed under my workspace
-       github - ? clone?
-:pull request: how?
-
-
-
-
-ToDO:
-
-* better CORS handling - see http://flask.pocoo.org/snippets/56/
-* decorator info: http://flask.pocoo.org/docs/patterns/viewdecorators/
-  http://docs.python.org/library/functools.html#functools.wraps
-
-'''
-
-
-
-class User(object):
+class UserRoleCollection(Base, CNXBase):
+    """The roles and users assigned for a given folder
     """
-    represents the user as looked up by an authneticated identifer
-
-    .. todo:: this is a integration test !!! fix the nose test division stuff.
-
-    >>> u = User('ben@mikadosoftware.com')
-    >>> u.FullName
-    u'Benjamin Franklin'
-
-
-    """
-
-    def __init__(self, authenticated_identifier):
-        """initialise from a id we have had verified by third party
-
-        .. todo:: this is stubbed out - it should always go to user dbase and lookup fromidentifer
-        .. todo:: what should I do if user dbase is unavilable???
-        .. todo:: totally unsafe laoding of user details
-
-        """
-#        try:
-#        safe_auth_identifier = urllib.quote_plus(authenticated_identifier)
-
-        payload = {'user':authenticated_identifier}
-
-        user_server_url = app.config['globals']['bamboo_global']['userserver'].replace("/user", "/openid")
-
-        dolog("INFO", "requesting user info - from url %s and query string %s" %
-                       (user_server_url, repr(payload)))
-
-        try:
-            r = requests.get(user_server_url, params=payload)
-            userdetails = r.json
-        except Exception, e:
-            #.. todo:: not sure what to do here ... the user dbase is down
-            userdetails = None
-
-        dolog("INFO", "Got back %s " % str(userdetails))
-        if userdetails:
-            self.__dict__.update(r.json)
-        else:
-            ### needs rethinkgin - time of deamo dday too close
-            self.email = "Unknown User"
-            self.fullname = "Unknown User"
-            self.user_id = "Unknownuser"
-
+    __tablename__ = 'userrole_collection'
+    collection_uuid = Column(String, ForeignKey('cnxcollection.id_'),
+                             primary_key=True)
+    user_uri = Column(String, primary_key=True)
+    role_type = Column(Enum('aclrw', 'aclro', name="cnxrole_type"),
+                       primary_key=True)
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)  # noqa
 
     def __repr__(self):
-        return pprint.pformat(self.__dict__)
-
-    def load_JSON(self, jsondocstr):
-        """ parse and store details of properly formatted JSON doc
-        """
-        user_dict = json.loads(jsondocstr)
-        self.__dict__.update(user_dict)
+        return "%s-%s" % (self.role_type, self.user_uri)
 
 
-
-
-class Identity(object):
-    """ THis 'owns' User - its rubbish to have two clases doing the same basic thing.
-        I should merge them but need longer to test (demo day)
+class Collection(Base, CNXBase):
     """
+    """
+    __tablename__ = 'cnxcollection'
+    id_ = Column(String, primary_key=True)
+    title = Column(String)
+    language = Column(String)
+    subType = Column(String)
+    subjects = Column(ARRAY(String))
+    keywords = Column(ARRAY(String))
+    summary = Column(String)
+    authors = Column(ARRAY(String))
+    maintainers = Column(ARRAY(String))
+    copyrightHolders = Column(ARRAY(String))
 
-    def __init__(self, authenticated_identifier):
-        """placeholder - we want to store identiy values somewhere but
-           sqlite is limited to one server, so need move to network
-           aware storage
+    body = Column(ARRAY(String))
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
+    mediaType = Column(String)
+    
+    userroles = relationship("UserRoleCollection",
+                             backref="cnxcollection",
+                             cascade="all, delete-orphan")
 
-        .. todo:: rename FUllNAme to fullname
-        .. todo:: in fact fix whole user details
-        .. todo:: combine identiy and USer into one class !
-
-        """
-
-        self.authenticated_identifier = authenticated_identifier
-        self.user = get_user_from_identifier(authenticated_identifier)
-
-        if self.user:
-            self.email = self.user.email
-            self.name = self.user.fullname
-            self.userID = self.user.user_id
+    def __init__(self, id_=None, creator_uuid=None):
+        """ """
+        self.mediaType = "application/vnd.org.cnx.collection"
+        self.content = self.body
+        if creator_uuid:
+            self.adduserrole(UserRoleCollection,
+                             {'user_uri': creator_uuid, 'role_type': 'aclrw'})
         else:
-            self.email = None
-            self.name = None
-            self.userID = None
+            raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
 
-        self.user_id = self.userID
+        if id_:
+            self.id_ = id_
+        else:
+            self.id_ = "cnxcollection" + str(uuid.uuid4())
 
-    def user_as_dict(self):
-        return {"auth_identifier": self.authenticated_identifier,
-                "id": self.userID,
-                "email": self.email,
-                "name": self.name}
+        self.dateCreatedUTC = self.get_utcnow()
+
+    def __repr__(self):
+        return "Col:(%s)-%s" % (self.id_, self.title)
+
+    def set_acls(self, owner_uuid, aclsd):
+        """ allow each Folder / collection class to have a set_acls call,
+        but catch here and then pass generic function the right UserRoleX
+        klass.  Still want to find way to generically follow sqla"""
+        super(Collection, self).set_acls(owner_uuid,
+                                         aclsd, UserRoleCollection)
+        db_session.add(self)
+        db_session.commit()
 
 
-def after_authentication(authenticated_identifier, method):
-    """Called after a user has provided a validated ID (openid or peresons)
+################# Modules ##################################
 
-    method either openid, or persona
+class UserRoleModule(Base, CNXBase):
+    """The roles and users assigned for a given folder
+    """
+    __tablename__ = 'userrole_module'
+    module_uri = Column(String, ForeignKey('cnxmodule.id_'),
+                        primary_key=True)
+    user_uri = Column(String, primary_key=True)
+    role_type = Column(Enum('aclrw', 'aclro',
+                            name="cnxrole_type"),
+                       )
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
+    UniqueConstraint(module_uri, user_uri, name="uniq_mod_user")
+
+    def __repr__(self):
+        return "%s-%s" % (self.role_type, self.user_uri)
+
+
+class Module(Base, CNXBase):
+    """
+
+    >>> #test we can autogen a uuid
+    >>> m = Module(id_=None, creator_uuid="cnxuser:1234")
+    >>> m.mediaType
+    'application/vnd.org.cnx.module'
+    >>> j = m.jsonify()
+    >>> d = json.loads(j)
+    >>> assert 'id' in d.keys()
+    >>> assert 'mediaType' in d.keys()
+    
+    """
+    __tablename__ = 'cnxmodule'
+    id_ = Column(String, primary_key=True)
+    title = Column(String)
+    authors = Column(ARRAY(String))
+    maintainers = Column(ARRAY(String))
+    copyrightHolders = Column(ARRAY(String))
+    body = Column(String)
+    language = Column(String)
+    subType = Column(String)
+    subjects = Column(ARRAY(String))
+    keywords = Column(ARRAY(String))
+    summary = Column(String)
+
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
+    mediaType = Column(String)
+    
+    userroles = relationship("UserRoleModule",
+                             backref="cnxmodule",
+                             cascade="all, delete-orphan")
+
+    def __init__(self, id_=None, creator_uuid=None):
+        """ """
+        self.mediaType = "application/vnd.org.cnx.module"
+        
+        self.content = self.body
+        if not self.validateid(id_):
+            raise Rhaptos2Error("%s not valid id" % id_)
+
+        if creator_uuid:
+            self.adduserrole(UserRoleModule,
+                             {'user_uri': creator_uuid, 'role_type': 'aclrw'})
+        else:
+            raise Rhaptos2Error("Modules need owner provided at init ")
+
+        if id_:
+            self.id_ = id_
+        else:
+            self.id_ = "cnxmodule:" + str(uuid.uuid4())
+        self.dateCreatedUTC = self.get_utcnow()
+        super(Base, self).__init__()
+        db_session.commit()
+
+    def __repr__(self):
+        return "Module:(%s)-%s" % (self.id_, self.title)
+
+    def set_acls(self, owner_uuid, aclsd):
+        """ allow each Module class to have a set_acls call,
+            but catch here and then pass generic function the right UserRoleX
+            klass.  Still want to find way to generically follow sqla"""
+        super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
+        db_session.add(self)
+        db_session.commit()
+
+
+################## FOLDERS #################################
+
+class UserRoleFolder(Base, CNXBase):
+    """The roles and users assigned for a given folder
+
+    We have following Roles: Owner, Maintainer, XXX
+
+
+    :todo: storing timezones naively here needs fixing
+
 
     """
-    dolog("INFO", "in after auth - %s %s" % (authenticated_identifier, method))
-    dolog("INFO", "before session - %s" % repr(session))
-    userobj = get_user_from_identifier(authenticated_identifier)
+    __tablename__ = 'userrole_folder'
+    folder_uuid = Column(String, ForeignKey('cnxfolder.id_'),
+                         primary_key=True)
+    user_uri = Column(String, primary_key=True)
+    role_type = Column(Enum('aclrw', 'aclro',
+                            name="cnxrole_type"),
+                       primary_key=True)
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
 
-    ##set session, set g, set JS
-    #session update?
-    if method not in ('openid', 'persona'): raise Rhaptos2Error("Incorrect method of authenticating ID")
-    session['authenticated_identifier'] = authenticated_identifier
-    g.user = userobj
-
-    dolog("INFO", "ALLG:%s" % repr(g))
-    dolog("INFO", "ALLG.user:%s" % repr(g.user))
-    dolog("INFO", "AFTER session %s" % repr(session))
-
-    return userobj
+    def __repr__(self):
+        return "%s-%s" % (self.role_type, self.user_uri)
 
 
+class Folder(Base, CNXBase):
+    """FOlder Class inheriting from SQLAlchemy and from a CNXBase class
+    to get a few generic functions.
 
-def get_user_from_identifier(authenticated_identifier):
+    1. we define the table and columns
+    2. set a new unique ID if not already one (differen between PUT and POST)
+    3. from_dict - will receive a dictionary of keywords that map exactly
+       to column fields and will populate itself.
+    4. to_dict will emit a dictionary representing the object.
+       If this is a "leaf" table then it is entirely using CNXBase superclass
+       If this is table is PK for anothers FK then we need to manually
+       code a method to get the FK linked object.
+       There is no reliable generic way to do this in SQLALchemy afaik.
+       Frankly thats not a problem, as its pretty cut and paste.
+
+    5. jsonify - wrap to_dict in json.  In otherwords convert self to
+       a JSON doc
+
     """
+    __tablename__ = 'cnxfolder'
+    id_ = Column(String, primary_key=True)
+    title = Column(String)
+    body = Column(ARRAY(String))
+    dateCreatedUTC = Column(DateTime)
+    dateLastModifiedUTC = Column(DateTime)
+    mediaType = Column(String)
+    userroles = relationship("UserRoleFolder",
+                             backref="cnxfolder",
+                             cascade="all, delete-orphan")
+
+    def __init__(self, id_=None, creator_uuid=None):
+        """ """
+        self.mediaType = "application/vnd.org.cnx.folder"
+        self.content = self.body
+        if creator_uuid:
+            self.adduserrole(UserRoleFolder,
+                             {'user_uri': creator_uuid, 'role_type': 'aclrw'})
+        else:
+            raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
+
+        if id_:
+            self.id_ = id_
+        else:
+            self.id_ = "cnxfolder:" + str(uuid.uuid4())
+
+        self.dateCreatedUTC = self.get_utcnow()
+
+    def __repr__(self):
+        return "Folder:(%s)-%s" % (self.id_, self.title)
+
+    def set_acls(self, owner_uuid, aclsd):
+        """ allow each Folder / collection class to have a set_acls call,
+        but catch here and then pass generic function the right UserRoleX
+        klass.  Still want to find way to generically follow sqla.
+
+        convern - this is beginning to smell like java."""
+        super(Folder, self).set_acls(owner_uuid, aclsd, UserRoleFolder)
+        db_session.add(self)
+        db_session.commit()
+
+
+def get_by_id(klass, ID, useruri):
+    """Here we show why we need each Klass to have a generic named id_
+    I want to avoid overly comploex mapping and routing in class
+    calls.  However we could map internally in the class (id_ =
+    folderid) THis does very little.
+
     """
-    #supposed to be memcache lookup
-    return User(authenticated_identifier)
+    q = db_session.query(klass)
+    q = q.filter(klass.id_ == ID)
+    rs = q.all()
+    if len(rs) == 0:
+#        raise Rhaptos2Error("ID Not found in this repo")
+        abort(404)
+    ### There is a uniq constraint on the table, but anyway...
+    if len(rs) > 1:
+        raise Rhaptos2Error("Too many matches")
+
+    newu = rs[0]
+    if not change_approval(newu, {}, useruri, "GET"):
+        abort(403)
+    return newu
 
 
-def store_identity(identity_url, **kwds):
-    """no-op but would push idneity to backend storage ie memcvache """
-    pass
+def post_o(klass, incomingd, requesting_user_uri):
+    """Given a dict representing the complete set
+    of fields then create a new user and those fields
 
-def retrieve_identity(identity_url, **kwds):
-    """no-op but would pull idneity to backend storage ie memcvache """
-    pass
+    I am getting a dictionary direct form Flask request object - want
+    to handle that myself with parser.
+
+    returns User object, for later saveing to DB"""
+
+    u = klass(creator_uuid=requesting_user_uri)
+
+    # parser = verify_schema_version(None)
+    # incomingd = parser(json_str)
+    u.populate_self(incomingd)
+    if not change_approval(u, incomingd, requesting_user_uri, "POST"):
+        abort(403)
+    db_session.add(u)
+    db_session.commit()
+    return u
 
 
+def acl_setter(klass, uri, requesting_user_uri, acls_list):
+    """ """
+    obj = get_by_id(klass, uri, requesting_user_uri)
+    if not change_approval(obj, None, requesting_user_uri, "PUT"):
+        abort(403)
+    obj.set_acls(requesting_user_uri, acls_list)
+    return obj
 
-def whoami():
-    '''
-    return the identity url stored in session cookie
-    TODO: store the userid in session cookie too ?
 
-    .. todo:: session assumes there will be a key of 'authenticated_identifier'
-    .. todo:: I always go and look this up - decide if this is sensible / secure
-    .. todo:: use secure cookie
+def put_o(jsond, klass, ID, requesting_user_uri):
+    """Given a user_id, and a json_str representing the "Updated" fields
+       then update those fields for that user_id """
 
-    I really need to think about session cookies. Default for now.
-    '''
-    dolog("INFO", "Whoami called", caller=whoami)
-    if 'authenticated_identifier' in session:
-        user = Identity(session['authenticated_identifier'])
-        g.user_id = user.userID
-        return user
+    uobj = get_by_id(klass, ID, requesting_user_uri)
+    if not change_approval(uobj, jsond, requesting_user_uri, "PUT"):
+        abort(403)
+    #.. todo:: parser = verify_schema_version(None)
+    uobj.populate_self(jsond)
+    db_session.add(uobj)
+    db_session.commit()
+    return uobj
+
+
+def delete_o(klass, ID, requesting_user_uri):
+    """ """
+    fldr = get_by_id(klass, ID, requesting_user_uri)
+    if not change_approval(fldr, None, requesting_user_uri, "DELETE"):
+        abort(403)
     else:
-        callstatsd("rhaptos2.repo.notloggedin")
-        g.user_id = None
-        g.user = None
-        return None
-        #is this alwasys desrireed?
+        db_session.delete(fldr)
+        db_session.commit()
 
 
-## .. todo:: why is there a view in here??
-@app.route("/me/", methods=['GET'])
-def whoamiGET():
-    '''
-
-    returns
-    Either 401 if OpenID not available or JSON document of form
-
-    {"openid_url": "https://www.google.com/accounts/o8/id?id=AItOawlWRa8JTK7NyaAvAC4KrGaZik80gsKfe2U",
-     "email": "Not Implemented",
-     "name": "Not Implemented"}
-
-    I expect we shall want to shift to a User.JSON document...
+def close_session():
+    db_session.remove()
 
 
-    '''
-    ### todo: return 401 code and let ajax client put up login.
-    user =  whoami()
+def change_approval(uobj, jsond, requesting_user_uri, requesttype):
+    """Currently placeholder
 
-    if user:
-        d = user.user_as_dict()
-        jsond = asjson(d)
-        ### make decorators !!!
-        resp = flask.make_response(jsond)
-        resp.content_type='application/json'
-        resp = apply_cors(resp)
-        return resp
-    else:
-        return("Not logged in", 401)
+    Intended to parse json doc and validate version,
+    validate user can act upon object as requested etc.
+    def is_action_auth(self, action=None,
+                                   requesting_user_uri=None)
+     """
+    return uobj.is_action_auth(action=requesttype,
+                               requesting_user_uri=requesting_user_uri)
 
 
-def apply_cors(resp):
-    '''  '''
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    resp.headers["Access-Control-Allow-Credentials"]= "true"
-    return resp
+def workspace_by_user(user_uri):
+    """Its at times like these I just want to pass SQL in... """
 
+    qm = db_session.query(Module)
+    qm = qm.join(Module.userroles)
+#    q = q.add_column(Module.id_).add_column(Module.title)
+    qm = qm.filter(UserRoleModule.user_uri == user_uri)
+    rs1 = qm.all()
 
+    qf = db_session.query(Folder)
+    qf = qf.join(Folder.userroles)
+    qf = qf.filter(UserRoleFolder.user_uri == user_uri)
+    rs2 = qf.all()
 
-def add_location_header_to_response(fn):
-    ''' add Location: header
+    qc = db_session.query(Collection)
+    qc = qc.join(Collection.userroles)
+    qc = qc.filter(UserRoleCollection.user_uri == user_uri)
+    rs3 = qc.all()
 
-        from: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        For 201 (Created) responses, the Location is that of the new resource which was created by the request
-
-
-    decorator that assumes we are getting a flask response object'''
-
-    resp = fn()
-    resp.headers["Location"]= "URL NEEDED FROM HASHID"
-
-
-
-#@property ## need to evolve a class here I feel...
-def userspace():
-    ''' '''
-    userspace = app.config['repodir']
-
-    if os.path.isdir(userspace):
-        return userspace
-    else:
-       try:
-           os.makedirs(userspace)
-           return userspace
-       except Exception,e:
-           raise Rhaptos2Error('cannot create repo \
-                                or userspace %s - %s' % (
-                                 userspace, e))
-
-
-def callstatsd(dottedcounter):
-    ''' '''
-    # Try to call logging. If not connected to a network this throws
-    # "socket.gaierror: [Errno 8] nodename nor servname provided, or not known"
-    try:
-        c = statsd.StatsClient(app.config['globals']['bamboo_global']['statsd_host'],
-                           int(app.config['globals']['bamboo_global']['statsd_port']))
-        c.incr(dottedcounter)
-        #todo: really return c and keep elsewhere for efficieny I suspect
-    except:
-        pass
-
-
-def asjson(pyobj):
-    '''just placeholder
-
-
-    >>> x = {'a':1}
-    >>> asjson(x)
-    '{"a": 1}'
-
-    '''
-    return json.dumps(pyobj)
-
-def gettime():
-    return datetime.datetime.today().isoformat()
-
-def delete_module(modname):
-    '''delete reqd module
-
-
-    '''
-
-    folder = userspace()
-    try:
-        result = files.rhaptos_file_delete(modname, folder)
-    except IOError, e:
-        raise e
-    return ''
-
-
-def fetch_module(modname):
-    ''' retrieve module by name from current user store.
-
-    '''
-
-    folder = userspace()
-    json = open(os.path.join(folder, str(modname))).read()
-    return json
-
-def mod_from_json(jsondict):
-    """Given a JSON dict from a POST / PUT request
-       create and return a NodeDoc class """
-
-    n = security.NodeDoc()
-    n.load_from_djson(jsondict)
-    return n
-
-def mod_from_file(uid):
-    """ Given a uuid, pull the currently stored
-        and return as NodeDoc object"""
-    n = security.NodeDoc()
-    n.load_from_file(uid)
-    return n
-
-def create_or_update_module(uuid, data):
-    """Given a `uuid` and json `data`, this function will create or update the
-    stored conten and metadata.
-    """
-    filename = uuid
-    file_path = os.path.join(userspace(), filename)
-    stored_data = {}
-    # Grab the existing data if it exists.
-    if os.path.exists(file_path):
-        with open(file_path) as f:
-            stored_data = json.load(f)
-    # Update the data and write it back to disk.
-    stored_data.update(data)
-    with open(file_path, 'w') as f:
-        json.dump(stored_data, f)
-
-def create_or_update_metadata(uuid, data):
-    """Given a `uuid` and json `data`, this function will create or update the
-    stored metadata.
-    """
-    filename = "{0}.metadata".format(uuid)
-    file_path = os.path.join(userspace(), filename)
-    stored_data = {}
-    # Grab the existing data if it exists.
-    if os.path.exists(file_path):
-        with open(file_path) as f:
-            stored_data = json.load(f)
-    # Update the data and write it back to disk.
-    stored_data.update(data)
-    with open(file_path, 'w') as f:
-        json.dump(stored_data, f)
-
-def get_metadata(uuid):
-    """Given a `uuid`, return the metadata information in a json format."""
-    filename = "{0}.metadata".format(uuid)
-    file_path = os.path.join(userspace(), filename)
-    try:
-        with open(file_path) as f:
-            data = json.load(f)
-    except IOError:
-        data = {}
-    return json.dumps(data)
-
-def _xxx_get_resource_metadata(hash):
-    """XXX Temporary function to return the metadata for a specific resource.
-    This is temporary because we are working with the file system as storage.
-    """
-    metadata_file = os.path.join(RESOURCES_DIR_PATH, 'metadata')
-    with open(METADATA_FILE_PATH, 'r') as f:
-        metadata = json.load(f)
-    value = {'id': hash}
-    value.update(metadata[hash])
-    return value
-
-def _xxx_set_resource_metadata(hash, mimetype, **kwargs):
-    """XXX Temporary function to set the metadata for a specific resource.
-    This is temporary because we are working with the file system as storage.
-    """
-    metadata = {}
-    if os.path.exists(METADATA_FILE_PATH):
-        with open(METADATA_FILE_PATH, 'r') as f:
-            metadata = json.load(f)
-
-    value = {'mimetype': mimetype}
-    value.update(kwargs)
-    metadata[hash] = value
-    with open(METADATA_FILE_PATH, 'w') as f:
-        f.write(json.dumps(metadata))
-
-def create_or_update_resource(data, mimetype, name=None):
-    """Given a `uuid` and the file like object as `data`,
-    store the data. A mimetype should be provided to reliably adapt the
-    data at a later time. Optionally, a human readable `name` can be given.
-    with an optional `name`.
-    Information about the stored upload is returned.
-    """
-    data = data.read()
-    id = filename = hashlib.sha1(data).hexdigest()
-    file_path = os.path.join(RESOURCES_DIR_PATH, filename)
-
-    # Create the containing directory if necessary.
-    if not os.path.exists(RESOURCES_DIR_PATH):
-        os.mkdir(RESOURCES_DIR_PATH)
-
-    # Store the metadata about the resource metadata
-    _xxx_set_resource_metadata(id, mimetype=mimetype, name=name)
-
-    # Store the file data.
-    with open(file_path, 'wb') as f:
-        f.write(data)
-    return _xxx_get_resource_metadata(id)
-
-def obtain_resource(id):
-    """Given a `uuid` and a `filename`, return the contents of the
-    resource as a file like object / stream.
-    """
-    filename = id
-    file_path = os.path.join(RESOURCES_DIR_PATH, filename)
-    metadata = _xxx_get_resource_metadata(id)
-    return (open(file_path, 'rb'), metadata,)
+    rs1.extend(rs2)
+    rs1.extend(rs3)
+    db_session.commit() #hail mary...
+    return rs1
+    
 
 if __name__ == '__main__':
     import doctest

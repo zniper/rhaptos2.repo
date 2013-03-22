@@ -10,9 +10,10 @@
 ###
 
 
-try:
-    __import__('pkg_resources').declare_namespace(__name__)
-except ImportError:
-    from pkgutil import extend_path
-    __path__ = extend_path(__path__, __name__)
+class Rhaptos2Error(Exception):
+    pass
+
+
+class Rhaptos2SecurityError(Exception):
+    pass
 

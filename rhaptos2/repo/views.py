@@ -1,40 +1,45 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
 
-"""views.py - View code for the repository application.
+###
+# Copyright (c) Rice University 2012-13
+# This software is subject to
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
+# See LICENCE.txt for details.
+###
 
-Author: Paul Brian
-(C) 2012 Rice University
 
-This software is subject to the provisions of the GNU Lesser General
-Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
+"""
+views.py - View code for the repository application.
+
 """
 import os
-import sys
-import datetime
-import md5
-import random
 import json
 from functools import wraps
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO  # noqa
 except ImportError:
-    from StringIO import StringIO
+    from StringIO import StringIO  # noqa
 
 import uuid
 import requests
-import pprint
-import statsd
 import flask
 from flask import (
-    Flask, render_template,
+    render_template,
     request, g, session, flash,
-    redirect, url_for, abort,
+    redirect, abort,
     send_from_directory
-    )
+)
 
-from rhaptos2.common import log, err, conf
-from rhaptos2.repo import get_app, dolog, model, security, VERSION
+from rhaptos2.repo import (get_app, dolog,
+                           auth,
+                           VERSION, model,
+                           backend)
+from rhaptos2.common.err import Rhaptos2Error
+
 app = get_app()
+backend.initdb(app.config)
 
 
 @app.before_request
@@ -54,16 +59,15 @@ def apply_cors(fn):
     @wraps(fn)
     def newfn(*args, **kwds):
         resp = flask.make_response(fn(*args, **kwds))
-        resp.content_type='application/json'
-        resp.headers["Access-Control-Allow-Origin"]= "*"
-        resp.headers["Access-Control-Allow-Credentials"]= "true"
+        resp.content_type = 'application/json'
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Credentials"] = "true"
         return resp
 
     return newfn
 
 
 ##### route thridparty static files
-
 
 
 @app.route("/cdn/aloha/<path:filename>")
@@ -78,7 +82,7 @@ def serve_aloha(filename):
 
 
     """
-    #os.path.isfile is checked by the below function in Flask.
+    # os.path.isfile is checked by the below function in Flask.
     dolog("INFO", repr((app.config["aloha_staging_dir"], filename)))
     return send_from_directory(app.config["aloha_staging_dir"], filename)
 
@@ -102,8 +106,9 @@ def serve_other_thirdpartycss(filename):
 @app.route('/conf.js')
 def confjs():
     resp = flask.make_response(render_template("conf.js", confd=app.config))
-    resp.content_type='application/javascript'
+    resp.content_type = 'application/javascript'
     return resp
+
 
 @app.route('/')
 def index():
@@ -112,111 +117,31 @@ def index():
 
 
 # Content GET, POST (create), and PUT (change)
-
-@app.route("/content/<uuid>", methods=['GET'])
-def moduleGET(uuid):
-    dolog("INFO", 'MODULE GET CALLED on %s' % uuid, caller=moduleGET, statsd=['rhaptos2.repo.module.GET',])
-    try:
-        jsonstr = model.fetch_module(uuid)
-    except Exception, e:
-        raise e
-
-    resp = flask.make_response(jsonstr)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-    return resp
-
-
-@app.route("/content/", methods=['POST'])
-@apply_cors
-def modulePOST():
-    """
-    """
-    dolog("INFO", 'A Module POSTed', caller=modulePOST, statsd=['rhaptos2.repo.module.POST',])
-
-    # Autogenerate a new ID for the new content
-    uid = str(uuid.uuid4())
-
-    d = request.json
-    d['id'] = uid
-
-    #app.logger.info(repr(d))
-    ### maybe we know too much about nodedocs
-    nd = model.mod_from_json(d)
-    nd.save()
-    del(nd)
-
-    return json.dumps(d)
-
-
-@app.route("/content/<uuid>", methods=['PUT'])
-def modulePUT(uuid):
-    dolog("INFO", 'MODULE PUT CALLED', caller=modulePUT, statsd=['rhaptos2.repo.module.PUT',])
-
-    d = request.json
-
-    current_nd = model.mod_from_file(uuid)
-    current_nd.load_from_djson(d) #this checks permis
-    current_nd.save()
-
-    # FIXME: A response is not needed if the save is successful
-    s = model.asjson({'hashid':uuid})
-    resp = flask.make_response(s)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
-
-    return resp
-
-
-
 @app.route("/workspace/", methods=['GET'])
 def workspaceGET():
     ''' '''
-    ###TODO - should whoami redirect to a login page?
+    # TODO - should whoami redirect to a login page?
     ### yes the client should only expect to handle HTTP CODES
     ### compare on userID
 
-    identity = model.whoami()
+    identity = auth.whoami()
     if not identity:
-        json_dirlist = json.dumps([])
+        abort(403)
     else:
-        w = security.WorkSpace(identity.userID)
-        json_dirlist = json.dumps(w.annotatedfiles)
+        wout = {}
+        w = model.workspace_by_user(identity.authenticated_identifier)
+        ## w is a list of models (folders, cols etc).
+        ## it would require some flattening or a JSONEncoder but we just want short form for now
+        short_format_list = [{"id":i.id_, "title":i.title, "mediaType":i.mediaType} for i in w]
+        flatten = json.dumps(short_format_list)
 
-    resp = flask.make_response(json_dirlist)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
+    resp = flask.make_response(flatten)
+    resp.content_type = 'application/json'
+    resp.headers["Access-Control-Allow-Origin"] = "*"
 
-    model.callstatsd('rhaptos2.e2repo.workspace.GET')
+    auth.callstatsd('rhaptos2.e2repo.workspace.GET')
     return resp
 
-
-@app.route("/resource/", methods=['POST', 'PUT'])
-@apply_cors
-def post_resource():
-    """Receives file resource uploads."""
-    file = request.files['upload']
-    # FIXME We should use magic to determine the mimetype. See also,
-    #       https://github.com/Connexions/rhaptos2.repo/commit/7452bee85ecbbbec66232f3c04e4f2e40d72be1c
-    mimetype = file.mimetype
-    metadata = model.create_or_update_resource(file.stream, mimetype)
-
-    url = "/resource/{0}".format(metadata['id'])
-    resp = flask.make_response(url)
-    resp.status_code = 200
-    return resp
-
-@app.route("/resource/<id>/", methods=['GET'])
-def get_resource(id):
-    """Send the resource data in the response."""
-    data_stream, metadata = model.obtain_resource(id)
-
-    resp = flask.make_response(data_stream.read())
-    # XXX No mime-type headers... The following content-type
-    #     is strictly temporary.
-    resp.content_type = metadata['mimetype']
-    resp.status_code = 200
-    return resp
 
 @app.route("/keywords/", methods=["GET"])
 def keywords():
@@ -238,14 +163,15 @@ def keywords():
     resp.content_type = 'application/json'
     return resp
 
+
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
 def versionGET():
     ''' '''
     s = VERSION
     resp = flask.make_response(s)
-    resp.content_type='application/json'
-    resp.headers["Access-Control-Allow-Origin"]= "*"
+    resp.content_type = 'application/json'
+    resp.headers["Access-Control-Allow-Origin"] = "*"
 
     return resp
 
@@ -254,49 +180,53 @@ def versionGET():
 @app.route("/crash/", methods=["GET"])
 def crash():
     ''' '''
-    if app.debug == True:
-        dolog("INFO", 'crash command called', caller=crash, statsd=['rhaptos2.repo.crash',])
-        raise exceptions.Rhaptos2Error('Crashing on demand')
+    if app.debug:
+        dolog("INFO", 'crash command called', caller=crash, statsd=[
+              'rhaptos2.repo.crash', ])
+        raise Rhaptos2Error('Crashing on demand')
     else:
         abort(404)
+
 
 @app.route("/burn/", methods=["GET"])
 def burn():
     ''' '''
-    if app.debug == True:
-        dolog("INFO", 'burn command called - dying hard with os._exit'
-                      , caller=crash, statsd=['rhaptos2.repo.crash',])
-        #sys.exit(1)
-        #Flask traps sys.exit (threads?)
-        os._exit(1) #trap _this_
+    if app.debug:
+        dolog(
+            "INFO", 'burn command called - dying hard with os._exit',
+            caller=crash, statsd=['rhaptos2.repo.crash', ])
+        # sys.exit(1)
+        # Flask traps sys.exit (threads?)
+        os._exit(1)  # trap _this_
     else:
         abort(404)
 
-@app.route("/admin/config/", methods=["GET",])
+
+@app.route("/admin/config/", methods=["GET", ])
 def admin_config():
     """View the config we are using
 
     Clearly quick and dirty fix.
     Should create a common library for rhaptos2 and web framrwoe
     """
-    if app.debug == True:
+    if app.debug:
         outstr = "<table>"
         for k in sorted(app.config.keys()):
-            outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (str(k), str(app.config[k]))
+            outstr += "<tr><td>%s</td> <td>%s</td></tr>" % (
+                str(k), str(app.config[k]))
 
         outstr += "</table>"
 
-
         return outstr
     else:
-        abort(404)
+        abort(403)
 
 ################ openid views - from flask
 
 
 @app.before_request
 def before_request():
-    g.user = model.whoami()
+    g.user = auth.whoami()
 
 
 @app.after_request
@@ -304,6 +234,8 @@ def after_request(response):
     return response
 
 # XXX A temporary fix for the openid images.
+
+
 @app.route('/images/openid-providers-en.png')
 def temp_openid_image_url():
     """Provides a (temporary) fix for the openid images used
@@ -313,34 +245,35 @@ def temp_openid_image_url():
     resp = flask.redirect('/static/img/openid-providers-en.png')
     return resp
 
+
 @app.route('/login', methods=['GET', 'POST'])
-@model.oid.loginhandler
+@auth.oid.loginhandler
 def login():
-    """Does the login via OpenID.  Has to call into `model.oid.try_login`
+    """Does the login via OpenID.  Has to call into `auth.oid.try_login`
     to start the OpenID machinery.
     """
     # if we are already logged in, go back to were we came from
     if g.user is not None:
-        return redirect(model.oid.get_next_url())
+        return redirect(auth.oid.get_next_url())
     if request.method == 'POST':
         openid = request.form.get('openid')
         if openid:
-            return model.oid.try_login(openid, ask_for=['email', 'fullname',
-                                                  'nickname'])
-    return render_template('login.html', next=model.oid.get_next_url(),
-                           error=model.oid.fetch_error(),
+            return auth.oid.try_login(openid, ask_for=['email', 'fullname',
+                                                       'nickname'])
+    return render_template('login.html', next=auth.oid.get_next_url(),
+                           error=auth.oid.fetch_error(),
                            confd=app.config)
 
 
-@model.oid.after_login
+@auth.oid.after_login
 def create_or_login(resp):
     """This is called when login with OpenID succeeded and it's not
     necessary to figure out if this is the users's first login or not.
 
     """
 
-    model.after_authentication(resp.identity_url, 'openid')
-    return redirect(model.oid.get_next_url())
+    auth.after_authentication(resp.identity_url, 'openid')
+    return redirect(auth.oid.get_next_url())
 
 
 @app.route('/logout')
@@ -348,7 +281,7 @@ def logout():
     session.pop('openid', None)
     session.pop('authenticated_identifier', None)
     flash(u'You have been signed out')
-    return redirect(model.oid.get_next_url())
+    return redirect(auth.oid.get_next_url())
 
 
 ##############
@@ -356,6 +289,7 @@ def logout():
 def logoutpersona():
     dolog("INFO", "logoutpersona")
     return "Yes"
+
 
 @app.route('/persona/login/', methods=['POST'])
 def loginpersona():
@@ -366,9 +300,10 @@ def loginpersona():
         abort(400)
 
     # Send the assertion to Mozilla's verifier service.
-    audience="http://%s" % app.config['www_server_name']
-    data = {'assertion': request.form['assertion'], 'audience': audience }
-    resp = requests.post('https://verifier.login.persona.org/verify', data=data, verify=True)
+    audience = "http://%s" % app.config['www_server_name']
+    data = {'assertion': request.form['assertion'], 'audience': audience}
+    resp = requests.post(
+        'https://verifier.login.persona.org/verify', data=data, verify=True)
 
     # Did the verifier respond?
     if resp.ok:
@@ -376,13 +311,215 @@ def loginpersona():
         verification_data = json.loads(resp.content)
         dolog("INFO", "Verified persona:%s" % repr(verification_data))
 
-
         # Check if the assertion was valid
         if verification_data['status'] == 'okay':
             # Log the user in by setting a secure session cookie
 #            session.update({'email': verification_data['email']})
-            model.after_authentication(verification_data['email'], 'persona')
+            auth.after_authentication(verification_data['email'], 'persona')
             return resp.content
 
     # Oops, something failed. Abort.
     abort(500)
+
+# folders
+###################### A custom converter in Flask is a better idea
+### todo: custom convertor
+
+MEDIA_MODELS_BY_TYPE = { 
+        "application/vnd.org.cnx.collection":model.Collection,
+        "application/vnd.org.cnx.module":model.Module,
+        "application/vnd.org.cnx.folder":model.Folder
+}
+
+### FIXME the following needs to actually support both modules and collections in a folder als
+
+@app.route('/folder/<folderuri>', methods=['GET'])
+def folder_get(folderuri):
+    """    """
+    foldbody=[]
+    fold = model.get_by_id(model.Folder, folderuri, g.user_id)
+    foldjson = fold.to_dict()
+    for obj in fold.body:
+        try:
+           mod  = model.get_by_id(model.Module, obj, g.user_id)
+           foldbody.append({"id":mod.id_,"title":mod.title,"mediaType":mod.mediaType})
+        except:  # FIXME want to catch no such object error
+           pass
+    foldjson['body'] = foldbody
+    foldjson['id'] = foldjson.pop('id_')
+    
+    resp = flask.make_response(json.dumps(foldjson))
+    resp.content_type = 'application/json'
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+
+    auth.callstatsd('rhaptos2.e2repo.workspace.GET')
+    return resp
+
+@app.route('/collection/<collectionuri>', methods=['GET'])
+def collection_get(collectionuri):
+    """  """
+    return generic_get(model.Collection, collectionuri, g.user_id)
+
+
+@app.route('/module/<moduleuri>', methods=['GET'])
+def module_get(moduleuri):
+    """    """
+    return generic_get(model.Module, moduleuri, g.user_id)
+
+######
+
+
+def generic_get(klass, uri, requesting_user_uri):
+    mod = model.get_by_id(klass, uri, requesting_user_uri)
+    resp = flask.make_response(mod.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+
+def generic_post(klass):
+    """Temp fix till get regex working on routes """
+    owner = g.user_id  # loggedin user
+    jsond = request.json  # flask autoconverts to dict ...
+    fldr = model.post_o(klass, jsond, requesting_user_uri=owner)
+    resp = flask.make_response(fldr.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+
+def generic_put(klass, uri):
+
+    owner = g.user_id
+    incomingjsond = request.json
+    fldr = model.put_o(incomingjsond, klass, uri,
+                             requesting_user_uri=owner)
+    resp = flask.make_response(fldr.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+
+def generic_delete(klass, uri):
+    """ """
+    owner = g.user_id
+    model.delete_o(klass, uri, requesting_user_uri=owner)
+    resp = flask.make_response("%s is no more" % uri)
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+
+def generic_acl(klass, uri, acllist):
+    owner = g.user_id
+    fldr = model.get_by_id(klass, uri, owner)
+    fldr.set_acls(owner, acllist)
+    resp = flask.make_response(fldr.jsonify())
+    resp.status_code = 200
+    resp.content_type = 'application/json'
+    return resp
+
+
+@app.route('/folder/', methods=['POST'])
+def folder_post():
+    """ """
+    return generic_post(model.Folder)
+
+
+@app.route('/folder/<folderid>', methods=['PUT'])
+def folder_put(folderid):
+    """ """
+    return generic_put(model.Folder, folderid)
+
+
+@app.route('/module/', methods=['POST'])
+def module_post():
+    """ """
+    r = generic_post(model.Module)
+    return r
+
+
+@app.route('/module/<moduleuri>', methods=['PUT'])
+def module_put(moduleuri):
+    """ """
+    return generic_put(model.Module, moduleuri)
+
+
+@app.route('/collection/', methods=['POST'])
+def collection_post():
+    """ """
+    return generic_post(model.Collection)
+
+
+@app.route('/collection/<collectionuri>', methods=['PUT'])
+def collection_put(collectionuri):
+    """ """
+    return generic_put(model.Collection, collectionuri)
+
+
+@app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
+def collection_acl_put(collectionuri):
+    """ """
+    requesting_user_uri = g.user_id
+    if request.method == "PUT":
+        jsond = request.json
+        return generic_acl(model.Collection, collectionuri, jsond)
+    elif request.method == "GET":
+        obj = model.get_by_id(model.Collection,
+                                    collectionuri, requesting_user_uri)
+        return str(obj.userroles)
+
+
+@app.route('/folder/<path:uri>/acl/', methods=['PUT', 'GET'])
+def acl_folder_put(uri):
+    """ """
+    requesting_user_uri = g.user_id
+    if request.method == "PUT":
+        jsond = request.json
+        return generic_acl(model.Folder, uri, jsond)
+    elif request.method == "GET":
+        obj = model.get_by_id(model.Folder,
+                                    uri, requesting_user_uri)
+        return str(obj.userroles)
+
+
+@app.route('/module/<path:uri>/acl/', methods=['PUT', 'GET'])
+def acl_module_put(uri):
+    """ """
+    requesting_user_uri = g.user_id
+    if request.method == "PUT":
+        jsond = request.json
+        return generic_acl(model.Module, uri, jsond)
+    elif request.method == "GET":
+        obj = model.get_by_id(model.Module,
+                                    uri, requesting_user_uri)
+        return str(obj.userroles)
+
+
+@app.route('/collection/<collectionuri>', methods=['DELETE'])
+def collection_del(collectionuri):
+    """ """
+    return generic_delete(model.Collection, collectionuri)
+
+
+@app.route('/folder/<folderuri>', methods=['DELETE'])
+def folder_del(folderuri):
+    """ """
+    return generic_delete(model.Folder, folderuri)
+
+
+@app.route('/module/<moduleuri>', methods=['DELETE'])
+def module_del(moduleuri):
+    """ """
+    return generic_delete(model.Module, moduleuri)
+
+
+###############
+@app.errorhandler(Rhaptos2Error)
+def catchall(err):
+    return "Placeholder for better error handling..." + str(err)
+
+
+
+
+

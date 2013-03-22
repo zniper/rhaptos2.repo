@@ -1,11 +1,15 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+#! -*- coding: utf-8 -*-
+
 ###
-# Copyright (c) Rice University 2012
+# Copyright (c) Rice University 2012-13
 # This software is subject to
-# the provisions of the GNU Lesser General
-# Public License Version 2.1 (LGPL).
+# the provisions of the GNU Affero General
+# Public License version 3 (AGPLv3).
 # See LICENCE.txt for details.
 ###
+
+
 """Rhaptos Repo profile web application
 
 The application is initialized using the application factory (`make_app`).
@@ -19,43 +23,32 @@ Copyright (c) 2012 Rice University
 This software is subject to the provisions of the GNU Lesser General
 Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
-import os
-import sys
-import datetime
-import md5
-import random
-import statsd
-import json
 import logging
-import uuid
-import flask  # XXX Why is this imported twice (see 2 lines down)?
-from functools import wraps
 
-from flask import (
-    Flask, render_template,
-    request, g, session, flash,
-    redirect, url_for, abort,
-    )
+from flask import Flask, g
 
-from rhaptos2.common import conf, log, err
+from rhaptos2.common import log
 
-import pkg_resources  # part of setuptools
+import pkg_resources
 __version__ = pkg_resources.require("rhaptos2.repo")[0].version
 
 APPTYPE = 'rhaptos2repo'
 VERSION = __version__
 _app = None
 
+
 def get_app():
     """Get the application object"""
     global _app
     return _app
+
 
 def set_app(app):
     """Set the global application object"""
     global _app
     _app = app
     return _app
+
 
 def make_app(config):
     """Application factory"""
@@ -73,39 +66,39 @@ def make_app(config):
     app = set_app(app)
 
     # Initialize the views
-    from rhaptos2.repo import views
+    from rhaptos2.repo import views  # noqa
 
     return app
+
 
 def dolog(lvl, msg, caller=None, statsd=None):
     """wrapper function purely for adding context to log stmts
 
     I am trying to keep this simple, no parsing of the stack etc.
 
-    caller is the function passed when the dolog func is called.  We jsut grab its name
-    extras is likely to hold a list of strings that are the buckets
+    caller is the function passed when the dolog func is called.  We
+    jsut grab its name extras is likely to hold a list of strings that
+    are the buckets
 
 
     >>> dolog("ERROR", "whoops", os.path.isdir, ['a.b.c',])
 
-
     """
 
-
     lvls = {
-    "CRITICAL" : 50,
-    "ERROR"    : 40,
-    "WARNING"  : 30,
-    "INFO"     : 20,
-    "DEBUG"    : 10,
-    "NOTSET"   : 0
+        "CRITICAL": 50,
+        "ERROR": 40,
+        "WARNING": 30,
+        "INFO": 20,
+        "DEBUG": 10,
+        "NOTSET": 0
     }
     try:
         goodlvl = lvls[lvl]
     except:
-        goodlvl = 20 ###!!!
+        goodlvl = 20  # !!!
 
-    #create an extras dict, that holds curreent user, request and action notes
+    # create an extras dict, that holds curreent user, request and action notes
     if caller:
         calledby = "rhaptos2.loggedin." + str(caller.__name__)
     else:
@@ -114,7 +107,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
     if statsd:
         statsd.append(calledby)
     else:
-        statsd = [calledby,]
+        statsd = [calledby, ]
 
     try:
         request_id = g.request_id
@@ -130,11 +123,11 @@ def dolog(lvl, msg, caller=None, statsd=None):
              'user_id': user_id,
              'request_id': request_id}
 
-
     try:
         _app.logger.log(goodlvl, msg, extra=extra)
     except Exception, e:
         print extra, msg, e
+
 
 def set_up_logging(app):
     """Set up the logging within the application.
@@ -167,3 +160,4 @@ def set_up_logging(app):
     # Set the handlers on the application.
     for handler in (statsd_handler, stream_handler,):
         app.logger.addHandler(handler)
+
