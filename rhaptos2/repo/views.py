@@ -373,6 +373,7 @@ def module_get(moduleuri):
 
 def generic_get(klass, uri, requesting_user_uri):
     mod = model.get_by_id(klass, uri, requesting_user_uri)
+    dolog("INFO", "**!!getting:" + repr(mod) + mod.jsonify())
     resp = flask.make_response(mod.jsonify())
     resp.status_code = 200
     resp.content_type = 'application/json'
