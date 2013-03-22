@@ -125,7 +125,7 @@ class Collection(Base, CNXBase):
     maintainers = Column(ARRAY(String))
     copyrightHolders = Column(ARRAY(String))
 
-    body = Column(ARRAY(String))
+    body = Column(String)
     dateCreatedUTC = Column(DateTime)
     dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)

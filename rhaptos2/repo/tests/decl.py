@@ -9,6 +9,12 @@
 # See LICENCE.txt for details.
 ###
 
+import copy
+
+"""
+THis file suppplies fixed test data for use with finctional testing the
+unpub repo.
+"""
 
 sect1 = {"id_":  "cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
          "title": "Introduction",
@@ -267,7 +273,7 @@ fldr = {"id_":      "cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707",
 
 collection = {"id_": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
               "title": "United States Declaration Of Independance",
-              "language": "English",
+              "language": "en",
               "subtype":  "Other Report",
               "subjects": ["Social Sciences", ],
               "keywords": ["Life", "Liberty", "Happiness"],
@@ -277,19 +283,20 @@ collection = {"id_": "cnxcollection:be7790d1-9ee4-4b25-be84-30b7208f5db7",
               "copyrightHolders":
                          ["cnxuser:f9647df6-cc6e-4885-9b53-254aa55a3383", ],
 
-              ### Are these in the defintion going forward?
-              #              "parameters": {"style": "LaTeX",
-              #                            "font": "Times"
-              #                          },
-
-              "body": ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126",
-                          "cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b",
-                          "cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6",
-                          "cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae",
-                          "cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389",
-                          "cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8",
-                          ]
+              "body": '''<ul><li><a href="cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126">Introduction</li>
+<li><a href="cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b">Preamble</li>
+<li><a href="cnxmodule:4ba18842-1bf8-485b-a6c3-f6e15dd762f6">Indictment</li>
+<li><a href="cnxmodule:77a45e48-6e91-4814-9cca-0f28348a4aae">Denunciation</li>
+<li><a href="cnxmodule:e0c3cfeb-f2f2-41a0-8c3b-665d79b09389">Conclusion</li>
+<li><a href="cnxmodule:c0b149ec-8dd3-4978-9913-ac87c2770de8">Signatures</li>
+</ul>'''
+              
               }
+
+collection_small = copy.deepcopy(collection)
+collection_small['body'] = '''<ul><li><a href="cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126">Introduction</li>
+<li><a href="cnxmodule:350f7859-e6e7-11e1-928f-2c768ae4951b">Preamble</li>
+</ul>'''
 
 
 
@@ -297,7 +304,7 @@ declarationdict = {"sect1": sect1, "sect2": sect2,
                    "sect3": sect3, "sect4": sect4,
                    "sect5": sect5, "sect6": sect6,
                    "folder": fldr, "collection": collection,
-                   "module": sect1}
+                   "module": sect1, "collection_small": collection_small}
 # for s in l:
 #    print json.dumps(s,sort_keys=True, indent=4)
 
@@ -332,8 +339,4 @@ acllist = [
      'user_uri': users['ed'].useruri,
      'role_type': 'aclro'}
 ]
-
-
-
-
 

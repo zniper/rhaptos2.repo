@@ -327,10 +327,9 @@ def test_post_collection():
 
 
 def test_put_collection():
-    data = decl.declarationdict['collection']
-    data['body'] = ["cnxmodule:d3911c28-2a9e-4153-9546-f71d83e41126", ]
+    data = decl.declarationdict['collection_small']
     resp = wapp_put(TESTAPP, "collection", data, gooduseruri, collectionuri)
-    assert len(resp.json['body']) == 1
+    assert resp.json['body'].find('href="cnxmodule:d3911c28') > -1
 
 
 def test_put_collection_rouser():
