@@ -1,12 +1,13 @@
-This page holds autogenertated docs for all modules in the package
+Auto-generated Module Docs
+==========================
 
 
 
 
-foldermodel
------------
+model
+-----
 
-.. automodule:: rhaptos2.repo.foldermodel
+.. automodule:: rhaptos2.repo.model
    :members: 
 
 security
@@ -14,7 +15,7 @@ security
 
 .. automodule:: rhaptos2.repo.security
 .. automodule:: rhaptos2.repo.backend
-.. automodule:: rhaptos2.repo.usermodel
+.. automodule:: rhaptos2.repo.cnxbase
 
 Testing User Dbase
 ------------------
