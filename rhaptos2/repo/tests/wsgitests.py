@@ -400,6 +400,12 @@ def test_read_module_rouser():
     resp = wapp_get(TESTAPP, "module", moduleuri, rouseruri)
     assert resp.status_int == 200
 
+def test_read_folder_gooduser():
+    resp = wapp_get(TESTAPP, "folder", folderuri, gooduseruri)
+    assert resp.status_int == 200
+    simplelog(resp)
+
+    
 
 def test_read_module_baduser():
     resp = wapp_get(TESTAPP, "module", moduleuri, baduseruri)
