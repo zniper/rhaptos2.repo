@@ -103,9 +103,11 @@ class UserRoleCollection(Base, CNXBase):
     user_uri = Column(String, primary_key=True)
     role_type = Column(Enum('aclrw', 'aclro', name="cnxrole_type"),
                        primary_key=True)
-    dateCreatedUTC = Column(DateTime)
-    dateLastModifiedUTC = Column(DateTime)  # noqa
+    beginDateUTC = Column(DateTime)
+    endDateUTC = Column(DateTime)  # noqa
+    UniqueConstraint(collection_uuid, user_uri, name="uniq_collection_user")    
 
+    
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
 
@@ -176,9 +178,10 @@ class UserRoleModule(Base, CNXBase):
     role_type = Column(Enum('aclrw', 'aclro',
                             name="cnxrole_type"),
                        )
-    dateCreatedUTC = Column(DateTime)
-    dateLastModifiedUTC = Column(DateTime)
+    beginDateUTC = Column(DateTime)
+    endDateUTC = Column(DateTime)  # noqa
     UniqueConstraint(module_uri, user_uri, name="uniq_mod_user")
+    
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -269,11 +272,12 @@ class UserRoleFolder(Base, CNXBase):
                          primary_key=True)
     user_uri = Column(String, primary_key=True)
     role_type = Column(Enum('aclrw', 'aclro',
-                            name="cnxrole_type"),
+                       name="cnxrole_type"),
                        primary_key=True)
-    dateCreatedUTC = Column(DateTime)
-    dateLastModifiedUTC = Column(DateTime)
-
+    beginDateUTC = Column(DateTime)
+    endDateUTC = Column(DateTime)
+    UniqueConstraint(folder_uuid, user_uri, name="uniq_fldr_user")
+    
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
 
