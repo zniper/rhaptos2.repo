@@ -139,7 +139,6 @@ class Collection(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.collection"
-        self.content = self.body
         if creator_uuid:
             self.adduserrole(UserRoleCollection,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
@@ -224,8 +223,6 @@ class Module(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.module"
-        
-        self.content = self.body
         if not self.validateid(id_):
             raise Rhaptos2Error("%s not valid id" % id_)
 
@@ -315,7 +312,6 @@ class Folder(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.folder"
-        self.content = self.body
         if creator_uuid:
             self.adduserrole(UserRoleFolder,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
