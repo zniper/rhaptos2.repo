@@ -149,7 +149,7 @@ class Collection(Base, CNXBase):
         if id_:
             self.id_ = id_
         else:
-            self.id_ = "cnxcollection" + str(uuid.uuid4())
+            self.id_ = "cnxcollection:" + str(uuid.uuid4())
 
         self.dateCreatedUTC = self.get_utcnow()
 
