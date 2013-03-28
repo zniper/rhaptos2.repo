@@ -23,20 +23,60 @@ import datetime
 from err import Rhaptos2Error
 from rhaptos2.repo import dolog ## depednacy?
 
-class CNXBase():
+class CNXJSONEncoder(json.JSONEncoder):
+    """
+    Allow us to convert from a CNX object to json
+    It will look for a .jsonable callable, which should
+    return the object as std python types (dicts etc)
 
+
+    looking to have three encoders?
+    default - lazy evaluation - only return the pointers stored
+    full - evaluate and return as full dicts -> json
+    short form - evaluate, return full objects, and then filter into json
+    
+    """
+    def default(self, obj):
+        if hasattr(obj,'jsonable'):
+            return obj.jsonable() 
+        else:
+            return json.JSONEncoder.default(self, obj)
+
+class CNXBase():
+    """
+    
+    API
+    ---
+    The resources we use (Folder, Collection, Module) all adhere to a common access protocol
+    that is defined in :class:CNXBase.
+
+    POST PUT and PATCH
+    ------------------
+
+    Where incomingjsond is a python representation of a json object that
+    meets a folder jsonschema
+    
+    > f2 = model.Folder(creator_uuid=user_urn)
+    > f2.populate_self(incomingjsond)
+    f2 will now be populated
+
+    > f2.to_dict(requesting_user_urn)
+    Here I am getting the object to return as python std types,
+    so they can be easily jsonified at the last possible minute.
+
+    
+    """
     def validateid(self, id_):
         """Given a id_ check it is of correct uri format
 
         .. todo::
            validateid check really needs improving
-
+        
         >>> C = CNXBase()
         >>> C.validateid("cnxuser:1234")
         True
         >>> C.validateid("1234")
         False
-
         """
         if not id_:
             return True
@@ -44,12 +84,6 @@ class CNXBase():
             return True
         else:
             return False
-
-    def from_json(self, json_str):
-        """ Not used at moment - json conversion usually done in
-            web servers so this has little use for now."""
-        d = json.loads(json_str)
-        self.from_dict(d)
 
     def populate_self(self, d):
         ''' '''
@@ -68,24 +102,18 @@ class CNXBase():
             else:
                 setattr(self, k, d[k])
 
-    def to_dict(self):
+    def jsonable(self, requesting_user_uri):
         """Return self as a dict, suitable for jsonifying """
 
+        if not self.is_action_auth("GET", requesting_user_uri) :
+            raise Rhaptos2AccessNotAllowedError("user %s not allowed access to %s"
+                                             % (requesting_user_uri,
+                                                self.id_))
         d = {}
         for col in self.__table__.columns:
             d[col.name] = self.safe_type_out(col)
+        d["id"] = d["id_"] 
         return d
-
-    def jsonify(self):
-        """Helper function that returns simple json repr """
-        selfd = self.to_dict()
-        
-        ##hacky - change output to use id not id_(backbone.js issue)
-        ## .. todo:: validate broad assumptions about existence of these keys
-        selfd['id'] = selfd['id_']; del selfd['id_']
-        
-        jsonstr = json.dumps(selfd)  # here use the Json ENcoder???
-        return jsonstr
 
     def safe_type_out(self, col):
         """return the value of a coulmn field safely for json
@@ -125,8 +153,6 @@ class CNXBase():
           'dateCreatedUTC': None,
           'user_uri': u'testuser2',
           'role_type': 'author'}]
-
-
 
         """
         # is this authorised? - sep function?

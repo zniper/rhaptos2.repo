@@ -337,6 +337,16 @@ MEDIA_MODELS_BY_TYPE = {
 
 @app.route('/folder/<folderuri>', methods=['GET'])
 def folder_get(folderuri):
+    """  """
+    dolog("INFO", "genericget::%s %s %s" % (model.Folder, folderuri, g.userID))
+    try:
+        out = generic_get(model.Folder, folderuri, g.userID)
+        return out
+    except Exception, e:
+        dolog("INFO", e)
+        return "whoops"
+    
+def rossfolder_get(folderuri):
     """    """
     foldbody=[]
     fold = model.get_by_id(model.Folder, folderuri, g.userID)
@@ -372,8 +382,9 @@ def module_get(moduleuri):
 
 
 def generic_get(klass, uri, requesting_user_uri):
-    mod = model.get_by_id(klass, uri, requesting_user_uri)
-    resp = flask.make_response(mod.jsonify())
+    #mod = model.get_by_id(klass, uri, requesting_user_uri)
+    mod = model.obj_from_urn(uri, requesting_user_uri)
+    resp = flask.make_response(json.dumps(mod.jsonable(requesting_user_uri)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
@@ -386,7 +397,7 @@ def generic_post(klass):
     owner = g.userID  # loggedin user
     jsond = request.json  # flask autoconverts to dict ...
     fldr = model.post_o(klass, jsond, requesting_user_uri=owner)
-    resp = flask.make_response(fldr.jsonify())
+    resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
@@ -398,7 +409,7 @@ def generic_put(klass, uri):
     incomingjsond = request.json
     fldr = model.put_o(incomingjsond, klass, uri,
                              requesting_user_uri=owner)
-    resp = flask.make_response(fldr.jsonify())
+    resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
@@ -418,7 +429,7 @@ def generic_acl(klass, uri, acllist):
     owner = g.userID
     fldr = model.get_by_id(klass, uri, owner)
     fldr.set_acls(owner, acllist)
-    resp = flask.make_response(fldr.jsonify())
+    resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp

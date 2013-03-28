@@ -338,12 +338,115 @@ class Folder(Base, CNXBase):
         db_session.add(self)
         db_session.commit()
 
+    def jsonable(self, requesting_user_uri):
+        """
+        Folders are not allowed to hold other folders so no recursion needed (yet)
 
+        m = model.obj_from_urn("cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707", "cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
+        m.jsonable("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
+        
+        """
+        folderlist = []
+        short_format_list = []
+        d = {}
+        for col in self.__table__.columns:
+            if col.name == "body":
+                for urn in self.body:
+                    try:
+                        subfolder = obj_from_urn(urn, requesting_user_uri)
+                        short_format_list.append({"id":subfolder.id_,
+                                                  "title":subfolder.title,
+                                                  "mediaType":subfolder.mediaType})
+                    except Rhaptos2SecurityError:
+                        short_format_list.append({"id":"denied",
+                                                  "title":"denied",
+                                                  "mediaType":"Denied"})
+                    except Rhaptos2Error:
+                        short_format_list.append({"id":"noid",
+                                                  "title":"err",
+                                                  "mediaType":"err"})
+                        
+                d[col.name] = short_format_list
+                dolog("INFO", short_format_list)
+            else:
+                #todo: put the body fix above in safetypeout                                 
+                d[col.name] = self.safe_type_out(col)
+        d["id"] = d["id_"] #pop?
+        return d
+        
+def klass_from_uri(URI):
+    """Return the callable klass that corresponds to a URI
+
+    >>> c = klass_from_uri("cnxfolder:1234")
+    >>> c
+    <class '__main__.Folder'>
+    >>> c = klass_from_uri("cnxfolder:")
+    >>> c
+    <class '__main__.Folder'>
+    >>> c = klass_from_uri("cnxfolder:1234/acl/cnxuser:123456")
+    >>> c
+    <class '__main__.Folder'>
+    
+    
+    """
+    mapper = {"cnxfolder": Folder,
+              "cnxcollection": Collection,
+              "cnxmodule": Module,
+#              "cnxuser": User,              
+    }
+    ## get first part of uri even if :folder: or folfer:
+    val = [v for v in URI.split(":") if v != ""][0]
+    return mapper[val]  
+
+
+    
+def obj_from_urn(URN, requesting_user_uri, klass=None):
+    """
+    THis is the refactored version of get_by_id
+
+    URN
+      cnxmodule:1234-5678
+
+    requesting_user_urn
+      cnxuser:1234-5678      
+
+    I have reservations about encoding the type in the ID string.
+    But not many.
+    
+    """
+    if not klass:
+        try:
+            klass = klass_from_uri(URN)
+        except:
+            dolog("INFO", "Faioled getting klass %s" % URN)
+            abort(400)
+
+    q = db_session.query(klass)
+    q = q.filter(klass.id_ == URN)
+    rs = q.all()
+    if len(rs) == 0:
+        raise Rhaptos2Error("ID Not found in this repo")
+    ### There is  a uniq constraint on the table, but anyway...
+    if len(rs) > 1:
+        raise Rhaptos2Error("Too many matches")
+
+    newu = rs[0]
+    if not change_approval(newu, {}, requesting_user_uri, "GET"):
+        raise Rhaptos2AccessNotAllowedError("user %s not allowed access to %s"
+                                             % (requesting_user_uri,
+                                                URN))
+    return newu
+        
+    
+        
 def get_by_id(klass, ID, useruri):
-    """Here we show why we need each Klass to have a generic named id_
-    I want to avoid overly comploex mapping and routing in class
-    calls.  However we could map internally in the class (id_ =
-    folderid) THis does very little.
+    """
+
+    refactoring:
+    ID -> uri
+    Then use uri -> klass to get klass needed
+    Then do not abort but raise capturable error.
+    THen pass useruri all way through.
 
     """
     q = db_session.query(klass)
