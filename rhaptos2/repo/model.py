@@ -87,7 +87,7 @@ import json
 from cnxbase import CNXBase
 from rhaptos2.repo import dolog
 from rhaptos2.repo.backend import Base, db_session
-from err import Rhaptos2Error  # Rhaptos2SecurityError
+from err import Rhaptos2Error, Rhaptos2SecurityError, Rhaptos2AccessNotAllowedError
 # XXX - replace with catchall err handler - conflict5s with debug
 from flask import abort
 
@@ -437,7 +437,6 @@ def workspace_by_user(user_uri):
 
     qm = db_session.query(Module)
     qm = qm.join(Module.userroles)
-#    q = q.add_column(Module.id_).add_column(Module.title)
     qm = qm.filter(UserRoleModule.user_uri == user_uri)
     rs1 = qm.all()
 
