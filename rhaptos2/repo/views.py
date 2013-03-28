@@ -36,7 +36,7 @@ from rhaptos2.repo import (get_app, dolog,
                            auth,
                            VERSION, model,
                            backend)
-from rhaptos2.common.err import Rhaptos2Error
+from err import Rhaptos2Error, Rhaptos2SecurityError
 
 app = get_app()
 backend.initdb(app.config)
@@ -339,12 +339,33 @@ MEDIA_MODELS_BY_TYPE = {
 def folder_get(folderuri):
     """  """
     dolog("INFO", "genericget::%s %s %s" % (model.Folder, folderuri, g.userID))
-    try:
-        out = generic_get(model.Folder, folderuri, g.userID)
-        return out
-    except Exception, e:
-        dolog("INFO", e)
-        return "whoops"
+    fldr = model.obj_from_urn(folderuri, g.userID)
+    jsonable_fldr = fldr.jsonable(g.userID)
+    short_format_list = []    
+
+    for urn in jsonable_fldr['body']:
+        try:
+            subfolder = model.obj_from_urn(urn, g.userID)
+            short_format_list.append({"id":subfolder.id_,
+                                      "title":subfolder.title,
+                                      "mediaType":subfolder.mediaType})
+        except Rhaptos2SecurityError:
+            short_format_list.append({"id":"denied",
+                                      "title":"denied",
+                                      "mediaType":"Denied"})
+        except Rhaptos2Error:
+            short_format_list.append({"id":"noid",
+                                      "title":"err",
+                                      "mediaType":"err"})
+
+        jsonable_fldr['body'] = short_format_list
+        dolog("INFO", short_format_list)
+
+    resp = flask.make_response(json.dumps(jsonable_fldr))
+    resp.content_type = 'application/json'
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
+    
     
 def rossfolder_get(folderuri):
     """    """

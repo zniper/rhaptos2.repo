@@ -338,41 +338,50 @@ class Folder(Base, CNXBase):
         db_session.add(self)
         db_session.commit()
 
-    def jsonable(self, requesting_user_uri):
-        """
-        Folders are not allowed to hold other folders so no recursion needed (yet)
+    # def jsonable(self, requesting_user_uri):
+    #     """
+    #     Folders are not allowed to hold other folders so no recursion needed (yet)
 
-        m = model.obj_from_urn("cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707", "cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
-        m.jsonable("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
+    #     basic principles
+    #     Folders and collections are *groups of pointers* not holders of other objects.
+    #     Ideally a folder is provided to the client with pointers (uris) only.
+    #       The client would then make N further calls to retrieve details on each child of the folder.
+    #     This is likely to be undesirable.
+    #     As such the front end view will itself resolve the first layer of children and return those details
+    #     as json objects.
         
-        """
-        folderlist = []
-        short_format_list = []
-        d = {}
-        for col in self.__table__.columns:
-            if col.name == "body":
-                for urn in self.body:
-                    try:
-                        subfolder = obj_from_urn(urn, requesting_user_uri)
-                        short_format_list.append({"id":subfolder.id_,
-                                                  "title":subfolder.title,
-                                                  "mediaType":subfolder.mediaType})
-                    except Rhaptos2SecurityError:
-                        short_format_list.append({"id":"denied",
-                                                  "title":"denied",
-                                                  "mediaType":"Denied"})
-                    except Rhaptos2Error:
-                        short_format_list.append({"id":"noid",
-                                                  "title":"err",
-                                                  "mediaType":"err"})
+        
+    #     m = model.obj_from_urn("cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707", "cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
+    #     m.jsonable("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
+        
+    #     """
+    #     folderlist = []
+    #     short_format_list = []
+    #     d = {}
+    #     for col in self.__table__.columns:
+    #         if col.name == "body":
+    #             for urn in self.body:
+    #                 try:
+    #                     subfolder = obj_from_urn(urn, requesting_user_uri)
+    #                     short_format_list.append({"id":subfolder.id_,
+    #                                               "title":subfolder.title,
+    #                                               "mediaType":subfolder.mediaType})
+    #                 except Rhaptos2SecurityError:
+    #                     short_format_list.append({"id":"denied",
+    #                                               "title":"denied",
+    #                                               "mediaType":"Denied"})
+    #                 except Rhaptos2Error:
+    #                     short_format_list.append({"id":"noid",
+    #                                               "title":"err",
+    #                                               "mediaType":"err"})
                         
-                d[col.name] = short_format_list
-                dolog("INFO", short_format_list)
-            else:
-                #todo: put the body fix above in safetypeout                                 
-                d[col.name] = self.safe_type_out(col)
-        d["id"] = d["id_"] #pop?
-        return d
+    #             d[col.name] = short_format_list
+    #             dolog("INFO", short_format_list)
+    #         else:
+    #             #todo: put the body fix above in safetypeout                                 
+    #             d[col.name] = self.safe_type_out(col)
+    #     d["id"] = d["id_"] #pop?
+    #     return d
         
 def klass_from_uri(URI):
     """Return the callable klass that corresponds to a URI
