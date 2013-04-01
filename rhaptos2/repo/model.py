@@ -516,11 +516,12 @@ def put_o(jsond, klass, ID, requesting_user_uri):
     return uobj
 
 
-def delete_o(klass, ID, requesting_user_uri):
+def delete_o(resource_uri, requesting_user_uri):
     """ """
-    fldr = get_by_id(klass, ID, requesting_user_uri)
+    fldr = obj_from_urn(resource_uri, requesting_user_uri)
     if not change_approval(fldr, None, requesting_user_uri, "DELETE"):
-        abort(403)
+        raise Rhaptos2AccessNotAllowedError("User %s cannot delete %s" % (requesting_user_uri,
+                                                                          resource_uri))
     else:
         fldr.delete(db_session)
 

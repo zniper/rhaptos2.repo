@@ -36,7 +36,9 @@ from rhaptos2.repo import (get_app, dolog,
                            auth,
                            VERSION, model,
                            backend)
-from err import Rhaptos2Error, Rhaptos2SecurityError
+from err import (Rhaptos2Error,
+                 Rhaptos2SecurityError,
+                 Rhaptos2HTTPStatusError)
 
 app = get_app()
 backend.initdb(app.config)
@@ -68,8 +70,6 @@ def apply_cors(fn):
 
 
 ##### route thridparty static files
-
-
 @app.route("/cdn/aloha/<path:filename>")
 def serve_aloha(filename):
     """ serve static files for development purposes
@@ -323,9 +323,6 @@ def loginpersona():
     # Oops, something failed. Abort.
     abort(500)
 
-# folders
-###################### A custom converter in Flask is a better idea
-### todo: custom convertor
 
 MEDIA_MODELS_BY_TYPE = { 
         "application/vnd.org.cnx.collection":model.Collection,
@@ -333,10 +330,125 @@ MEDIA_MODELS_BY_TYPE = {
         "application/vnd.org.cnx.folder":model.Folder
 }
 
-### FIXME the following needs to actually support both modules and collections in a folder als
+def obtain_payload(werkzeug_request_obj):
+    """
+    .. todo::
+       expand this function to encompass various checks on incoming
+       payload of POST / PUT requests incl unicode,
+    
+    """
+    try:
+        jsond = werkzeug_request_obj.json
+    except:
+        jsond = None
+    return jsond
+    
+@app.route('/folder/', defaults={'folderuri': ''},
+                       methods=['GET', 'POST','PUT', 'DELETE'])
+@app.route('/folder/<path:folderuri>',
+                       methods=['GET', 'POST','PUT', 'DELETE'])
+def folder_router(folderuri):
+    """
+    """
+    dolog("INFO", "In folder router, %s" % request.method)
+    requesting_user_uri = g.userID
+    payload = obtain_payload(request)
 
-@app.route('/folder/<folderuri>', methods=['GET'])
-def folder_get(folderuri):
+    if request.method == "GET":
+        return folder_get(folderuri, requesting_user_uri)
+        
+    elif request.method == "POST":
+        if payload is None:
+            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
+                                          code=400)
+        else:
+            return generic_post(model.Folder, payload, requesting_user_uri)
+        
+    elif request.method == "PUT":
+        if payload is None:
+            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
+                                          code=400)
+        else:
+            return generic_put(model.Folder, folderuri, payload, requesting_user_uri)
+            
+    elif request.method == "DELETE":
+        return generic_delete(folderuri, requesting_user_uri)
+        
+    else:
+        return Rhaptos2HTTPStatusError("Methods supported are GET PUT POST DELETE.")
+
+        
+
+@app.route('/collection/', defaults={'collectionuri': ''},
+                       methods=['GET', 'POST','PUT', 'DELETE'])
+@app.route('/collection/<path:collectionuri>',
+                       methods=['GET', 'POST','PUT', 'DELETE'])
+def collection_router(collectionuri):
+    """
+    """
+    dolog("INFO", "In collection router, %s" % request.method)
+    requesting_user_uri = g.userID
+    payload = obtain_payload(request)
+
+    if request.method == "GET":
+        return generic_get(collectionuri, requesting_user_uri)
+        
+    elif request.method == "POST":
+        if payload is None:
+            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
+                                          code=400)
+        else:
+            return generic_post(model.Collection, payload, requesting_user_uri)
+        
+    elif request.method == "PUT":
+        if payload is None:
+            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
+                                          code=400)
+        else:
+            return generic_put(model.Collection, collectionuri, payload, requesting_user_uri)
+            
+    elif request.method == "DELETE":
+        return generic_delete(collectionuri, requesting_user_uri)
+        
+    else:
+        return Rhaptos2HTTPStatusError("Methods supported are GET PUT POST DELETE.")
+
+@app.route('/module/', defaults={'moduleuri': ''},
+                       methods=['GET', 'POST','PUT', 'DELETE'])
+@app.route('/module/<path:moduleuri>',
+                       methods=['GET', 'POST','PUT', 'DELETE'])
+def module_router(moduleuri):
+    """
+    """
+    dolog("INFO", "In module router, %s" % request.method)
+    requesting_user_uri = g.userID
+    payload = obtain_payload(request)
+
+    if request.method == "GET":
+        return generic_get(moduleuri, requesting_user_uri)
+        
+    elif request.method == "POST":
+        if payload is None:
+            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Module",
+                                          code=400)
+        else:
+            return generic_post(model.Module, payload, requesting_user_uri)
+        
+    elif request.method == "PUT":
+        if payload is None:
+            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Module",
+                                          code=400)
+        else:
+            return generic_put(model.Module, moduleuri, payload, requesting_user_uri)
+            
+    elif request.method == "DELETE":
+        return generic_delete(moduleuri, requesting_user_uri)
+        
+    else:
+        return Rhaptos2HTTPStatusError("Methods supported are GET PUT POST DELETE.")
+
+        
+def folder_get(folderuri, requesting_user_uri):
     """  """
     dolog("INFO", "genericget::%s %s %s" % (model.Folder, folderuri, g.userID))
     fldr = model.obj_from_urn(folderuri, g.userID)
@@ -365,44 +477,12 @@ def folder_get(folderuri):
     resp.content_type = 'application/json'
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
-    
-    
-def rossfolder_get(folderuri):
-    """    """
-    foldbody=[]
-    fold = model.get_by_id(model.Folder, folderuri, g.userID)
-    foldjson = fold.to_dict()
-    for obj in fold.body:
-        try:
-           mod  = model.get_by_id(model.Module, obj, g.userID)
-           foldbody.append({"id":mod.id_,"title":mod.title,"mediaType":mod.mediaType})
-        except:  # FIXME want to catch no such object error
-           pass
-    foldjson['body'] = foldbody
-    foldjson['id'] = foldjson.pop('id_')
-    
-    resp = flask.make_response(json.dumps(foldjson))
-    resp.content_type = 'application/json'
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-
-    auth.callstatsd('rhaptos2.e2repo.workspace.GET')
-    return resp
-
-@app.route('/collection/<collectionuri>', methods=['GET'])
-def collection_get(collectionuri):
-    """  """
-    return generic_get(model.Collection, collectionuri, g.userID)
 
 
-@app.route('/module/<moduleuri>', methods=['GET'])
-def module_get(moduleuri):
-    """    """
-    return generic_get(model.Module, moduleuri, g.userID)
-
-######
 
 
-def generic_get(klass, uri, requesting_user_uri):
+
+def generic_get(uri, requesting_user_uri):
     #mod = model.get_by_id(klass, uri, requesting_user_uri)
     mod = model.obj_from_urn(uri, requesting_user_uri)
     resp = flask.make_response(json.dumps(mod.jsonable(requesting_user_uri)))
@@ -411,24 +491,25 @@ def generic_get(klass, uri, requesting_user_uri):
     return resp
 
 
-def generic_post(klass):
-    """Temp fix till get regex working on routes """
-    dolog("INFO", "THIS US g")
-    dolog("INFO", repr(g.__dict__))
-    owner = g.userID  # loggedin user
-    jsond = request.json  # flask autoconverts to dict ...
-    fldr = model.post_o(klass, jsond, requesting_user_uri=owner)
+def generic_post(klass, payload_as_dict, requesting_user_uri):
+    """Post an appropriately formatted dict to klass
+
+    .. todo::
+       its very inefficient posting the folder, then asking for it to be
+       recreated.
+    """
+    owner = requesting_user_uri
+    fldr = model.post_o(klass, payload_as_dict, requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
 
 
-def generic_put(klass, uri):
+def generic_put(klass, resource_uri, payload_as_dict, requesting_user_uri):
 
-    owner = g.userID
-    incomingjsond = request.json
-    fldr = model.put_o(incomingjsond, klass, uri,
+    owner = requesting_user_uri
+    fldr = model.put_o(payload_as_dict, klass, resource_uri,
                              requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
@@ -436,10 +517,10 @@ def generic_put(klass, uri):
     return resp
 
 
-def generic_delete(klass, uri):
+def generic_delete(uri, requesting_user_uri):
     """ """
-    owner = g.userID
-    model.delete_o(klass, uri, requesting_user_uri=owner)
+    owner = requesting_user_uri
+    model.delete_o(uri, requesting_user_uri=owner)
     resp = flask.make_response("%s is no more" % uri)
     resp.status_code = 200
     resp.content_type = 'application/json'
@@ -455,42 +536,6 @@ def generic_acl(klass, uri, acllist):
     resp.content_type = 'application/json'
     return resp
 
-
-@app.route('/folder/', methods=['POST'])
-def folder_post():
-    """ """
-    return generic_post(model.Folder)
-
-
-@app.route('/folder/<folderid>', methods=['PUT'])
-def folder_put(folderid):
-    """ """
-    return generic_put(model.Folder, folderid)
-
-
-@app.route('/module/', methods=['POST'])
-def module_post():
-    """ """
-    r = generic_post(model.Module)
-    return r
-
-
-@app.route('/module/<moduleuri>', methods=['PUT'])
-def module_put(moduleuri):
-    """ """
-    return generic_put(model.Module, moduleuri)
-
-
-@app.route('/collection/', methods=['POST'])
-def collection_post():
-    """ """
-    return generic_post(model.Collection)
-
-
-@app.route('/collection/<collectionuri>', methods=['PUT'])
-def collection_put(collectionuri):
-    """ """
-    return generic_put(model.Collection, collectionuri)
 
 
 @app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
@@ -530,24 +575,6 @@ def acl_module_put(uri):
         obj = model.get_by_id(model.Module,
                                     uri, requesting_user_uri)
         return str(obj.userroles)
-
-
-@app.route('/collection/<collectionuri>', methods=['DELETE'])
-def collection_del(collectionuri):
-    """ """
-    return generic_delete(model.Collection, collectionuri)
-
-
-@app.route('/folder/<folderuri>', methods=['DELETE'])
-def folder_del(folderuri):
-    """ """
-    return generic_delete(model.Folder, folderuri)
-
-
-@app.route('/module/<moduleuri>', methods=['DELETE'])
-def module_del(moduleuri):
-    """ """
-    return generic_delete(model.Module, moduleuri)
 
 
 ###############
