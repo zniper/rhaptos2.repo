@@ -214,6 +214,23 @@ class CNXBase():
         """Eventually we shall handle TZones here too"""
         return datetime.datetime.utcnow()
 
+    def save(self, dbase_session):
+        """
+        Assumes we are working with sqlalchemy dbsessions
+        
+        """
+        dbase_session.add(self)
+        dbase_session.commit()
+        
+    def delete(self, dbase_session):
+        """
+        Assumes we are working with sqlalchemy dbsessions
+        
+        """
+        dbase_session.delete(self)
+        dbase_session.commit()
+        
+        
     def is_action_auth(self, action=None,
                        requesting_user_uri=None):
         """ Given a user and a action type, determine if it is

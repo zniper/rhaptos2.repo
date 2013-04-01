@@ -490,8 +490,7 @@ def post_o(klass, incomingd, requesting_user_uri):
     u.populate_self(incomingd)
     if not change_approval(u, incomingd, requesting_user_uri, "POST"):
         abort(403)
-    db_session.add(u)
-    db_session.commit()
+    u.save(db_session)
     return u
 
 
@@ -513,8 +512,7 @@ def put_o(jsond, klass, ID, requesting_user_uri):
         abort(403)
     #.. todo:: parser = verify_schema_version(None)
     uobj.populate_self(jsond)
-    db_session.add(uobj)
-    db_session.commit()
+    uobj.save(db_session)
     return uobj
 
 
@@ -524,8 +522,8 @@ def delete_o(klass, ID, requesting_user_uri):
     if not change_approval(fldr, None, requesting_user_uri, "DELETE"):
         abort(403)
     else:
-        db_session.delete(fldr)
-        db_session.commit()
+        fldr.delete(db_session)
+
 
 
 def close_session():
