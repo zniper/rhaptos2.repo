@@ -155,4 +155,3 @@ def set_up_logging(app):
     # Set the handlers on the application.
     for handler in (statsd_handler, stream_handler,):
         app.logger.addHandler(handler)
-

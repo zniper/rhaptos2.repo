@@ -21,7 +21,8 @@ multiple inheritence...
 import json
 import datetime
 from err import Rhaptos2Error
-from rhaptos2.repo import dolog ## depednacy?
+from rhaptos2.repo import dolog  # depednacy?
+
 
 class CNXJSONEncoder(json.JSONEncoder):
     """
@@ -34,17 +35,18 @@ class CNXJSONEncoder(json.JSONEncoder):
     default - lazy evaluation - only return the pointers stored
     full - evaluate and return as full dicts -> json
     short form - evaluate, return full objects, and then filter into json
-    
+
     """
     def default(self, obj):
-        if hasattr(obj,'jsonable'):
-            return obj.jsonable() 
+        if hasattr(obj, 'jsonable'):
+            return obj.jsonable()
         else:
             return json.JSONEncoder.default(self, obj)
 
+
 class CNXBase():
     """
-    
+
     API
     ---
     The resources we use (Folder, Collection, Module) all adhere to a common access protocol
@@ -55,7 +57,7 @@ class CNXBase():
 
     Where incomingjsond is a python representation of a json object that
     meets a folder jsonschema
-    
+
     > f2 = model.Folder(creator_uuid=user_urn)
     > f2.populate_self(incomingjsond)
     f2 will now be populated
@@ -64,14 +66,14 @@ class CNXBase():
     Here I am getting the object to return as python std types,
     so they can be easily jsonified at the last possible minute.
 
-    
+
     """
     def validateid(self, id_):
         """Given a id_ check it is of correct uri format
 
         .. todo::
            validateid check really needs improving
-        
+
         >>> C = CNXBase()
         >>> C.validateid("cnxuser:1234")
         True
@@ -105,14 +107,14 @@ class CNXBase():
     def jsonable(self, requesting_user_uri):
         """Return self as a dict, suitable for jsonifying """
 
-        if not self.is_action_auth("GET", requesting_user_uri) :
+        if not self.is_action_auth("GET", requesting_user_uri):
             raise Rhaptos2AccessNotAllowedError("user %s not allowed access to %s"
-                                             % (requesting_user_uri,
+                                                % (requesting_user_uri,
                                                 self.id_))
         d = {}
         for col in self.__table__.columns:
             d[col.name] = self.safe_type_out(col)
-        d["id"] = d["id_"] 
+        d["id"] = d["id_"]
         return d
 
     def safe_type_out(self, col):
@@ -217,20 +219,19 @@ class CNXBase():
     def save(self, dbase_session):
         """
         Assumes we are working with sqlalchemy dbsessions
-        
+
         """
         dbase_session.add(self)
         dbase_session.commit()
-        
+
     def delete(self, dbase_session):
         """
         Assumes we are working with sqlalchemy dbsessions
-        
+
         """
         dbase_session.delete(self)
         dbase_session.commit()
-        
-        
+
     def is_action_auth(self, action=None,
                        requesting_user_uri=None):
         """ Given a user and a action type, determine if it is
@@ -246,12 +247,12 @@ class CNXBase():
         False
 
         """
-        s =  "*****AUTH"
-        s += "model" +  str(self)
+        s = "*****AUTH"
+        s += "model" + str(self)
         s += "action" + str(action)
         s += "user" + str(requesting_user_uri)
-        s+= "*****/AUTH"
-        dolog("INFO",s)
+        s += "*****/AUTH"
+        dolog("INFO", s)
         if action in ("GET", "HEAD", "OPTIONS"):
             valid_user_list = [u.user_uri for u in self.userroles
                                if u.role_type in ("aclro", "aclrw")]
@@ -276,4 +277,3 @@ class CNXBase():
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-

@@ -207,7 +207,7 @@ def after_authentication(authenticated_identifier, method):
         raise Rhaptos2Error("Incorrect method of authenticating ID")
 #    session['authenticated_identifier'] = authenticated_identifier
 #    session['authenticated_identifier'] = u"e"
-    
+
     g.userID = ident.userID
 
     dolog("INFO", "ALLG:%s" % repr(g))
@@ -262,8 +262,8 @@ def whoami():
 #        return Identity(fakeuserid)  #and this ownt look it up
 
     if (HTTPHEADER_STORING_USERAUTH in request.headers
-          and app.debug is True):
-          #and 'authenticated_identifier' not in session):
+       and app.debug is True):
+          # and 'authenticated_identifier' not in session):
         fakeuserauth = request.headers.get(HTTPHEADER_STORING_USERAUTH)
         ident = after_authentication(fakeuserauth, "openid")
         return ident
@@ -276,7 +276,6 @@ def whoami():
         callstatsd("rhaptos2.repo.notloggedin")
         g.userID = None
         return None
-
 
 
 ## .. todo:: why is there a view in here??
@@ -382,4 +381,3 @@ def gettime():
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-

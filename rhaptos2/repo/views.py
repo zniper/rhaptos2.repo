@@ -69,8 +69,6 @@ def apply_cors(fn):
     return newfn
 
 
-
-
 @app.route('/')
 def index():
     dolog("INFO", "THis is request %s" % g.requestid)
@@ -94,8 +92,10 @@ def workspaceGET():
         w = model.workspace_by_user(identity.userID)
         dolog("INFO", repr(w))
         ## w is a list of models (folders, cols etc).
-        ## it would require some flattening or a JSONEncoder but we just want short form for now
-        short_format_list = [{"id":i.id_, "title":i.title, "mediaType":i.mediaType} for i in w]
+        # it would require some flattening or a JSONEncoder but we just want
+        # short form for now
+        short_format_list = [{
+            "id": i.id_, "title": i.title, "mediaType": i.mediaType} for i in w]
         flatten = json.dumps(short_format_list)
 
     resp = flask.make_response(flatten)
@@ -285,29 +285,31 @@ def loginpersona():
     abort(500)
 
 
-MEDIA_MODELS_BY_TYPE = { 
-        "application/vnd.org.cnx.collection":model.Collection,
-        "application/vnd.org.cnx.module":model.Module,
-        "application/vnd.org.cnx.folder":model.Folder
+MEDIA_MODELS_BY_TYPE = {
+    "application/vnd.org.cnx.collection": model.Collection,
+    "application/vnd.org.cnx.module": model.Module,
+    "application/vnd.org.cnx.folder": model.Folder
 }
+
 
 def obtain_payload(werkzeug_request_obj):
     """
     .. todo::
        expand this function to encompass various checks on incoming
        payload of POST / PUT requests incl unicode,
-    
+
     """
     try:
         jsond = werkzeug_request_obj.json
     except:
         jsond = None
     return jsond
-    
+
+
 @app.route('/folder/', defaults={'folderuri': ''},
-                       methods=['GET', 'POST','PUT', 'DELETE'])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/folder/<path:folderuri>',
-                       methods=['GET', 'POST','PUT', 'DELETE'])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 def folder_router(folderuri):
     """
     """
@@ -317,33 +319,36 @@ def folder_router(folderuri):
 
     if request.method == "GET":
         return folder_get(folderuri, requesting_user_uri)
-        
+
     elif request.method == "POST":
         if payload is None:
-            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
-                                          code=400)
+            raise Rhaptos2HTTPStatusError(
+                "Received a Null payload, expecting JSON ",
+                code=400)
         else:
-            return generic_post(model.Folder, payload, requesting_user_uri)
-        
+            return generic_post(model.Folder,
+                                payload, requesting_user_uri)
+
     elif request.method == "PUT":
         if payload is None:
-            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
-                                          code=400)
+            raise Rhaptos2HTTPStatusError(
+                "Received a Null payload, expecting JSON ",
+                code=400)
         else:
-            return generic_put(model.Folder, folderuri, payload, requesting_user_uri)
-            
+            return generic_put(model.Folder, folderuri,
+                               payload, requesting_user_uri)
+
     elif request.method == "DELETE":
         return generic_delete(folderuri, requesting_user_uri)
-        
-    else:
-        return Rhaptos2HTTPStatusError("Methods supported are GET PUT POST DELETE.")
 
-        
+    else:
+        return Rhaptos2HTTPStatusError("Methods:GET PUT POST DELETE.")
+
 
 @app.route('/collection/', defaults={'collectionuri': ''},
-                       methods=['GET', 'POST','PUT', 'DELETE'])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/collection/<path:collectionuri>',
-                       methods=['GET', 'POST','PUT', 'DELETE'])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 def collection_router(collectionuri):
     """
     """
@@ -353,31 +358,36 @@ def collection_router(collectionuri):
 
     if request.method == "GET":
         return generic_get(collectionuri, requesting_user_uri)
-        
+
     elif request.method == "POST":
         if payload is None:
-            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
-                                          code=400)
+            raise Rhaptos2HTTPStatusError(
+                "Received a Null payload, expecting JSON",
+                code=400)
         else:
-            return generic_post(model.Collection, payload, requesting_user_uri)
-        
+            return generic_post(model.Collection,
+                                payload, requesting_user_uri)
+
     elif request.method == "PUT":
         if payload is None:
-            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Folder",
-                                          code=400)
+            raise Rhaptos2HTTPStatusError(
+                "Received a Null payload, expecting JSON",
+                code=400)
         else:
-            return generic_put(model.Collection, collectionuri, payload, requesting_user_uri)
-            
+            return generic_put(model.Collection, collectionuri,
+                               payload, requesting_user_uri)
+
     elif request.method == "DELETE":
         return generic_delete(collectionuri, requesting_user_uri)
-        
+
     else:
-        return Rhaptos2HTTPStatusError("Methods supported are GET PUT POST DELETE.")
+        return Rhaptos2HTTPStatusError("Methods:GET PUT POST DELETE.")
+
 
 @app.route('/module/', defaults={'moduleuri': ''},
-                       methods=['GET', 'POST','PUT', 'DELETE'])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/module/<path:moduleuri>',
-                       methods=['GET', 'POST','PUT', 'DELETE'])
+           methods=['GET', 'POST', 'PUT', 'DELETE'])
 def module_router(moduleuri):
     """
     """
@@ -387,49 +397,52 @@ def module_router(moduleuri):
 
     if request.method == "GET":
         return generic_get(moduleuri, requesting_user_uri)
-        
+
     elif request.method == "POST":
         if payload is None:
-            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Module",
-                                          code=400)
+            raise Rhaptos2HTTPStatusError(
+                "Received a Null payload, expecting JSON",
+                code=400)
         else:
-            return generic_post(model.Module, payload, requesting_user_uri)
-        
+            return generic_post(model.Module,
+                                payload, requesting_user_uri)
+
     elif request.method == "PUT":
         if payload is None:
-            raise Rhaptos2HTTPStatusError("Received a Null payload, expecting JSON formatted for Module",
-                                          code=400)
+            raise Rhaptos2HTTPStatusError(
+                "Received a Null payload, expecting JSON",
+                code=400)
         else:
-            return generic_put(model.Module, moduleuri, payload, requesting_user_uri)
-            
+            return generic_put(model.Module, moduleuri,
+                               payload, requesting_user_uri)
+
     elif request.method == "DELETE":
         return generic_delete(moduleuri, requesting_user_uri)
-        
-    else:
-        return Rhaptos2HTTPStatusError("Methods supported are GET PUT POST DELETE.")
 
-        
+    else:
+        return Rhaptos2HTTPStatusError("Methods:GET PUT POST DELETE.")
+
+
 def folder_get(folderuri, requesting_user_uri):
     """  """
-    dolog("INFO", "genericget::%s %s %s" % (model.Folder, folderuri, g.userID))
     fldr = model.obj_from_urn(folderuri, g.userID)
     jsonable_fldr = fldr.jsonable(g.userID)
-    short_format_list = []    
+    short_format_list = []
 
     for urn in jsonable_fldr['body']:
         try:
             subfolder = model.obj_from_urn(urn, g.userID)
-            short_format_list.append({"id":subfolder.id_,
-                                      "title":subfolder.title,
-                                      "mediaType":subfolder.mediaType})
+            short_format_list.append({"id": subfolder.id_,
+                                      "title": subfolder.title,
+                                      "mediaType": subfolder.mediaType})
         except Rhaptos2SecurityError:
-            short_format_list.append({"id":"denied",
-                                      "title":"denied",
-                                      "mediaType":"Denied"})
+            short_format_list.append({"id": "denied",
+                                      "title": "denied",
+                                      "mediaType": "Denied"})
         except Rhaptos2Error:
-            short_format_list.append({"id":"noid",
-                                      "title":"err",
-                                      "mediaType":"err"})
+            short_format_list.append({"id": "noid",
+                                      "title": "err",
+                                      "mediaType": "err"})
 
         jsonable_fldr['body'] = short_format_list
         dolog("INFO", short_format_list)
@@ -440,13 +453,11 @@ def folder_get(folderuri, requesting_user_uri):
     return resp
 
 
-
-
-
 def generic_get(uri, requesting_user_uri):
-    #mod = model.get_by_id(klass, uri, requesting_user_uri)
+    # mod = model.get_by_id(klass, uri, requesting_user_uri)
     mod = model.obj_from_urn(uri, requesting_user_uri)
-    resp = flask.make_response(json.dumps(mod.jsonable(requesting_user_uri)))
+    resp = flask.make_response(json.dumps(
+                               mod.jsonable(requesting_user_uri)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
@@ -456,22 +467,25 @@ def generic_post(klass, payload_as_dict, requesting_user_uri):
     """Post an appropriately formatted dict to klass
 
     .. todo::
-       its very inefficient posting the folder, then asking for it to be
-       recreated.
+       its very inefficient posting the folder, then asking for
+       it to be recreated.
+
     """
     owner = requesting_user_uri
-    fldr = model.post_o(klass, payload_as_dict, requesting_user_uri=owner)
+    fldr = model.post_o(klass, payload_as_dict,
+                        requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
 
 
-def generic_put(klass, resource_uri, payload_as_dict, requesting_user_uri):
+def generic_put(klass, resource_uri, payload_as_dict,
+                       requesting_user_uri):
 
     owner = requesting_user_uri
     fldr = model.put_o(payload_as_dict, klass, resource_uri,
-                             requesting_user_uri=owner)
+                       requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
@@ -498,8 +512,8 @@ def generic_acl(klass, uri, acllist):
     return resp
 
 
-
-@app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
+@app.route('/collection/<path:collectionuri>/acl/',
+           methods=['PUT', 'GET'])
 def collection_acl_put(collectionuri):
     """ """
     requesting_user_uri = g.userID
@@ -508,7 +522,7 @@ def collection_acl_put(collectionuri):
         return generic_acl(model.Collection, collectionuri, jsond)
     elif request.method == "GET":
         obj = model.get_by_id(model.Collection,
-                                    collectionuri, requesting_user_uri)
+                              collectionuri, requesting_user_uri)
         return str(obj.userroles)
 
 
@@ -521,7 +535,7 @@ def acl_folder_put(uri):
         return generic_acl(model.Folder, uri, jsond)
     elif request.method == "GET":
         obj = model.get_by_id(model.Folder,
-                                    uri, requesting_user_uri)
+                              uri, requesting_user_uri)
         return str(obj.userroles)
 
 
@@ -534,16 +548,5 @@ def acl_module_put(uri):
         return generic_acl(model.Module, uri, jsond)
     elif request.method == "GET":
         obj = model.get_by_id(model.Module,
-                                    uri, requesting_user_uri)
+                              uri, requesting_user_uri)
         return str(obj.userroles)
-
-
-###############
-@app.errorhandler(Rhaptos2Error)
-def catchall(err):
-    return "Placeholder for better error handling..." + str(err)
-
-
-
-
-

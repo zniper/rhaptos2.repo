@@ -52,9 +52,9 @@ What is the same about each model / class
    rhaptos2.user for the approach - pretty simple, just modiufy the
    from and to dict calls
 
-2. They are representing *resources* - that is a entity we want to have some
-   form of access control over.  So we use the generic-ish approach
-   of userroles - see below.
+2. They are representing *resources* - that is a entity we want to
+   have some form of access control over.  So we use the generic-ish
+   approach of userroles - see below.
 
 
 3. THey are all ID'd by URI
@@ -83,12 +83,11 @@ from sqlalchemy import (ForeignKey,
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import uuid
-import json
 from cnxbase import CNXBase
 from rhaptos2.repo import dolog
 from rhaptos2.repo.backend import Base, db_session
-from err import Rhaptos2Error, Rhaptos2SecurityError, Rhaptos2AccessNotAllowedError
-# XXX - replace with catchall err handler - conflict5s with debug
+from err import (Rhaptos2Error,
+                 Rhaptos2AccessNotAllowedError)
 from flask import abort
 
 ################## COLLECTIONS #############################
@@ -105,9 +104,8 @@ class UserRoleCollection(Base, CNXBase):
                        primary_key=True)
     beginDateUTC = Column(DateTime)
     endDateUTC = Column(DateTime)  # noqa
-    UniqueConstraint(collection_uuid, user_uri, name="uniq_collection_user")    
+    UniqueConstraint(collection_uuid, user_uri, name="uniq_collection_user")
 
-    
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
 
@@ -131,7 +129,7 @@ class Collection(Base, CNXBase):
     dateCreatedUTC = Column(DateTime)
     dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
-    
+
     userroles = relationship("UserRoleCollection",
                              backref="cnxcollection",
                              cascade="all, delete-orphan")
@@ -156,11 +154,15 @@ class Collection(Base, CNXBase):
         return "Col:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Folder / collection class to have a set_acls call,
-        but catch here and then pass generic function the right UserRoleX
-        klass.  Still want to find way to generically follow sqla"""
-        super(Collection, self).set_acls(owner_uuid,
-                                         aclsd, UserRoleCollection)
+        """allow each Folder / collection class to have a set_acls
+        call, but catch here and then pass generic function the right
+        UserRoleX klass.  Still want to find way to generically follow
+        sqla
+
+        """
+
+        super(Collection, self).set_acls(owner_uuid, aclsd,
+                                         UserRoleCollection)
         db_session.add(self)
         db_session.commit()
 
@@ -180,7 +182,6 @@ class UserRoleModule(Base, CNXBase):
     beginDateUTC = Column(DateTime)
     endDateUTC = Column(DateTime)  # noqa
     UniqueConstraint(module_uri, user_uri, name="uniq_mod_user")
-    
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -197,7 +198,7 @@ class Module(Base, CNXBase):
     >>> d = json.loads(j)
     >>> assert 'id' in d.keys()
     >>> assert 'mediaType' in d.keys()
-    
+
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
@@ -215,7 +216,7 @@ class Module(Base, CNXBase):
     dateCreatedUTC = Column(DateTime)
     dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
-    
+
     userroles = relationship("UserRoleModule",
                              backref="cnxmodule",
                              cascade="all, delete-orphan")
@@ -244,9 +245,13 @@ class Module(Base, CNXBase):
         return "Module:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Module class to have a set_acls call,
-            but catch here and then pass generic function the right UserRoleX
-            klass.  Still want to find way to generically follow sqla"""
+        """allow each Module class to have a set_acls call, but catch
+            here and then pass generic function the right UserRoleX
+            klass.  Still want to find way to generically follow
+            sqla
+
+        """
+
         super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
         db_session.add(self)
         db_session.commit()
@@ -274,28 +279,14 @@ class UserRoleFolder(Base, CNXBase):
     beginDateUTC = Column(DateTime)
     endDateUTC = Column(DateTime)
     UniqueConstraint(folder_uuid, user_uri, name="uniq_fldr_user")
-    
+
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
 
 
 class Folder(Base, CNXBase):
-    """FOlder Class inheriting from SQLAlchemy and from a CNXBase class
-    to get a few generic functions.
-
-    1. we define the table and columns
-    2. set a new unique ID if not already one (differen between PUT and POST)
-    3. from_dict - will receive a dictionary of keywords that map exactly
-       to column fields and will populate itself.
-    4. to_dict will emit a dictionary representing the object.
-       If this is a "leaf" table then it is entirely using CNXBase superclass
-       If this is table is PK for anothers FK then we need to manually
-       code a method to get the FK linked object.
-       There is no reliable generic way to do this in SQLALchemy afaik.
-       Frankly thats not a problem, as its pretty cut and paste.
-
-    5. jsonify - wrap to_dict in json.  In otherwords convert self to
-       a JSON doc
+    """FOlder Class inheriting from SQLAlchemy and from a CNXBase
+    class to get a few generic functions.
 
     """
     __tablename__ = 'cnxfolder'
@@ -329,60 +320,17 @@ class Folder(Base, CNXBase):
         return "Folder:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Folder / collection class to have a set_acls call,
-        but catch here and then pass generic function the right UserRoleX
-        klass.  Still want to find way to generically follow sqla.
+        """allow each Folder / collection class to have a set_acls
+        call, but catch here and then pass generic function the right
+        UserRoleX klass.  Still want to find way to generically follow
+        sqla.
 
-        convern - this is beginning to smell like java."""
+        """
         super(Folder, self).set_acls(owner_uuid, aclsd, UserRoleFolder)
         db_session.add(self)
         db_session.commit()
 
-    # def jsonable(self, requesting_user_uri):
-    #     """
-    #     Folders are not allowed to hold other folders so no recursion needed (yet)
 
-    #     basic principles
-    #     Folders and collections are *groups of pointers* not holders of other objects.
-    #     Ideally a folder is provided to the client with pointers (uris) only.
-    #       The client would then make N further calls to retrieve details on each child of the folder.
-    #     This is likely to be undesirable.
-    #     As such the front end view will itself resolve the first layer of children and return those details
-    #     as json objects.
-        
-        
-    #     m = model.obj_from_urn("cnxfolder:c192bcaf-669a-44c5-b799-96ae00ef4707", "cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
-    #     m.jsonable("cnxuser:75e06194-baee-4395-8e1a-566b656f6920")
-        
-    #     """
-    #     folderlist = []
-    #     short_format_list = []
-    #     d = {}
-    #     for col in self.__table__.columns:
-    #         if col.name == "body":
-    #             for urn in self.body:
-    #                 try:
-    #                     subfolder = obj_from_urn(urn, requesting_user_uri)
-    #                     short_format_list.append({"id":subfolder.id_,
-    #                                               "title":subfolder.title,
-    #                                               "mediaType":subfolder.mediaType})
-    #                 except Rhaptos2SecurityError:
-    #                     short_format_list.append({"id":"denied",
-    #                                               "title":"denied",
-    #                                               "mediaType":"Denied"})
-    #                 except Rhaptos2Error:
-    #                     short_format_list.append({"id":"noid",
-    #                                               "title":"err",
-    #                                               "mediaType":"err"})
-                        
-    #             d[col.name] = short_format_list
-    #             dolog("INFO", short_format_list)
-    #         else:
-    #             #todo: put the body fix above in safetypeout                                 
-    #             d[col.name] = self.safe_type_out(col)
-    #     d["id"] = d["id_"] #pop?
-    #     return d
-        
 def klass_from_uri(URI):
     """Return the callable klass that corresponds to a URI
 
@@ -395,20 +343,19 @@ def klass_from_uri(URI):
     >>> c = klass_from_uri("cnxfolder:1234/acl/cnxuser:123456")
     >>> c
     <class '__main__.Folder'>
-    
-    
+
+
     """
     mapper = {"cnxfolder": Folder,
               "cnxcollection": Collection,
               "cnxmodule": Module,
-#              "cnxuser": User,              
-    }
+              #              "cnxuser": User,
+              }
     ## get first part of uri even if :folder: or folfer:
     val = [v for v in URI.split(":") if v != ""][0]
-    return mapper[val]  
+    return mapper[val]
 
 
-    
 def obj_from_urn(URN, requesting_user_uri, klass=None):
     """
     THis is the refactored version of get_by_id
@@ -417,11 +364,11 @@ def obj_from_urn(URN, requesting_user_uri, klass=None):
       cnxmodule:1234-5678
 
     requesting_user_urn
-      cnxuser:1234-5678      
+      cnxuser:1234-5678
 
     I have reservations about encoding the type in the ID string.
     But not many.
-    
+
     """
     if not klass:
         try:
@@ -442,12 +389,11 @@ def obj_from_urn(URN, requesting_user_uri, klass=None):
     newu = rs[0]
     if not change_approval(newu, {}, requesting_user_uri, "GET"):
         raise Rhaptos2AccessNotAllowedError("user %s not allowed access to %s"
-                                             % (requesting_user_uri,
+                                            % (requesting_user_uri,
                                                 URN))
     return newu
-        
-    
-        
+
+
 def get_by_id(klass, ID, useruri):
     """
 
@@ -520,11 +466,11 @@ def delete_o(resource_uri, requesting_user_uri):
     """ """
     fldr = obj_from_urn(resource_uri, requesting_user_uri)
     if not change_approval(fldr, None, requesting_user_uri, "DELETE"):
-        raise Rhaptos2AccessNotAllowedError("User %s cannot delete %s" % (requesting_user_uri,
-                                                                          resource_uri))
+        raise Rhaptos2AccessNotAllowedError(
+            "User %s cannot delete %s" % (requesting_user_uri,
+                                          resource_uri))
     else:
         fldr.delete(db_session)
-
 
 
 def close_session():
@@ -563,9 +509,9 @@ def workspace_by_user(user_uri):
 
     rs1.extend(rs2)
     rs1.extend(rs3)
-    db_session.commit() #hail mary...
+    db_session.commit()  # hail mary...
     return rs1
-    
+
 
 if __name__ == '__main__':
     import doctest
