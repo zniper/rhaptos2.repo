@@ -64,7 +64,7 @@ function inifile() {
 
 ### main:
 
-TGTDIR=$1
+TGTDIR=${1:-.}
 ABSDIR=$( cd $TGTDIR ; pwd -P )
 isempty $ABSDIR
 
