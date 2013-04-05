@@ -42,6 +42,8 @@ function download_src(){
     git clone https://github.com/Connexions/rhaptos2.repo.git
     git clone https://github.com/Connexions/rhaptos2.common.git
     git clone https://github.com/Connexions/atc.git
+    cd atc
+    npm install .
     cd $ABSDIR
 
 }
