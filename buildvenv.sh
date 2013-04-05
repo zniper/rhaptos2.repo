@@ -58,7 +58,7 @@ function buildv {
 
 venvpath=${ARRAY[0]}
 
-virtualenv $venvpath
+virtualenv --system-site-packages $venvpath
 
 for item in "${ARRAY[@]:1:$ELEMS}"
 do
