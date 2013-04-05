@@ -247,25 +247,33 @@ class CNXBase():
         False
 
         """
-        s = "*****AUTH"
+        s = "*****AUTH DECISION"
         s += "model" + str(self)
         s += "action" + str(action)
         s += "user" + str(requesting_user_uri)
         s += "*****/AUTH"
         dolog("INFO", s)
+        ### we are storing arrary of ['aclrw',"1234"], ['aclro','12345']
+        ### convert this to dict
+        d = {}
+        try:
+            aclro_list = d['aclro']
+        except:
+            aclro_list = []
+        
+        for roletype, useruri in self.userroles:
+            d.setdefault(roletype, []).append(useruri)
         if action in ("GET", "HEAD", "OPTIONS"):
-            valid_user_list = [u.user_uri for u in self.userroles
-                               if u.role_type in ("aclro", "aclrw")]
+            valid_user_list = d['aclrw'].extend(aclro_list)
         elif action in ("POST", "PUT", "DELETE"):
-            valid_user_list = [u.user_uri for u in self.userroles
-                               if u.role_type in ("aclrw",)]
+            valid_user_list = d['aclrw']
         else:
-            # raise Rhaptos2SecurityError("Unknown action type: %s" % action)
+            dolog("Unknown action type: %s" % action)
             return False
 
         if requesting_user_uri is None:
-            # raise Rhaptos2SecurityError("No user_uri supplied: %s" %
-            #                            requesting_user_uri)
+            dolog("No user_uri supplied: %s" %
+                    requesting_user_uri)
             return False
         else:
             if requesting_user_uri in valid_user_list:

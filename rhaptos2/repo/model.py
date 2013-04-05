@@ -93,21 +93,8 @@ from flask import abort
 ################## COLLECTIONS #############################
 
 
-class UserRoleCollection(Base, CNXBase):
-    """The roles and users assigned for a given folder
-    """
-    __tablename__ = 'userrole_collection'
-    collection_uuid = Column(String, ForeignKey('cnxcollection.id_'),
-                             primary_key=True)
-    user_uri = Column(String, primary_key=True)
-    role_type = Column(Enum('aclrw', 'aclro', name="cnxrole_type"),
-                       primary_key=True)
-    beginDateUTC = Column(DateTime)
-    endDateUTC = Column(DateTime)  # noqa
-    UniqueConstraint(collection_uuid, user_uri, name="uniq_collection_user")
 
-    def __repr__(self):
-        return "%s-%s" % (self.role_type, self.user_uri)
+ #(self.role_type, self.user_uri)
 
 
 class Collection(Base, CNXBase):
@@ -124,22 +111,24 @@ class Collection(Base, CNXBase):
     authors = Column(ARRAY(String))
     maintainers = Column(ARRAY(String))
     copyrightHolders = Column(ARRAY(String))
-
+#    ACLs = Column(ARRAY(String))
     body = Column(String)
     dateCreatedUTC = Column(DateTime)
     dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
 
-    userroles = relationship("UserRoleCollection",
-                             backref="cnxcollection",
-                             cascade="all, delete-orphan")
-
+#    userroles = relationship("UserRoleCollection",
+#                             backref="cnxcollection",
+#                             cascade="all, delete-orphan")
+    userroles = Column(ARRAY(String))
+    
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.collection"
         if creator_uuid:
-            self.adduserrole(UserRoleCollection,
-                             {'user_uri': creator_uuid, 'role_type': 'aclrw'})
+            self.userroles = []
+            self.userroles.append(['aclrw', creator_uuid])
+            #self.adduserrole({'user_uri': creator_uuid, 'role_type': 'aclrw'})
         else:
             raise Rhaptos2Error("Foldersmust be created with a creator UUID ")
 
@@ -154,10 +143,9 @@ class Collection(Base, CNXBase):
         return "Col:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """allow each Folder / collection class to have a set_acls
-        call, but catch here and then pass generic function the right
-        UserRoleX klass.  Still want to find way to generically follow
-        sqla
+        """allow each Folder / collection class to have a set_acls call, but
+        catch here and then pass generic function the right UserRoleX klass.
+        Still want to find way to generically follow sqla
 
         """
 
