@@ -66,54 +66,11 @@ def apply_cors(fn):
 
     return newfn
 
-
-##### route thridparty static files
-
-
-@app.route("/cdn/aloha/<path:filename>")
-def serve_aloha(filename):
-    """ serve static files for development purposes
-
-    We would expect that these routes would be "overwritten" by say
-    the front portion of the reverse proxy we expect flask to sit
-    behind.  So these will only ever be called by requests
-    during development, but the URL /cdn/aloha/... would still
-    exist, possibly on a CDN, certainly a good cache server.
-
-
-    """
-    # os.path.isfile is checked by the below function in Flask.
-    dolog("INFO", repr((app.config["aloha_staging_dir"], filename)))
-    return send_from_directory(app.config["aloha_staging_dir"], filename)
-
-
-@app.route("/cdn/js/<path:filename>/")
-def serve_other_thirdpartyjs(filename):
-    """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["js_staging_dir"], filename)))
-    return send_from_directory(app.config["js_staging_dir"], filename)
-
-
-@app.route("/cdn/css/<path:filename>/")
-def serve_other_thirdpartycss(filename):
-    """ see :def:serve_aloha """
-    dolog("INFO", repr((app.config["css_staging_dir"], filename)))
-    return send_from_directory(app.config["css_staging_dir"], filename)
-
-##### /thirdparty static files
-
-
 @app.route('/conf.js')
 def confjs():
     resp = flask.make_response(render_template("conf.js", confd=app.config))
     resp.content_type = 'application/javascript'
     return resp
-
-
-@app.route('/')
-def index():
-    dolog("INFO", "THis is request %s" % g.requestid)
-    return render_template('index.html', confd=app.config)
 
 
 # Content GET, POST (create), and PUT (change)
@@ -325,7 +282,7 @@ def loginpersona():
 ###################### A custom converter in Flask is a better idea
 ### todo: custom convertor
 
-MEDIA_MODELS_BY_TYPE = { 
+MEDIA_MODELS_BY_TYPE = {
         "application/vnd.org.cnx.collection":model.Collection,
         "application/vnd.org.cnx.module":model.Module,
         "application/vnd.org.cnx.folder":model.Folder
@@ -347,7 +304,7 @@ def folder_get(folderuri):
            pass
     foldjson['body'] = foldbody
     foldjson['id'] = foldjson.pop('id_')
-    
+
     resp = flask.make_response(json.dumps(foldjson))
     resp.content_type = 'application/json'
     resp.headers["Access-Control-Allow-Origin"] = "*"
@@ -518,8 +475,3 @@ def module_del(moduleuri):
 @app.errorhandler(Rhaptos2Error)
 def catchall(err):
     return "Placeholder for better error handling..." + str(err)
-
-
-
-
-

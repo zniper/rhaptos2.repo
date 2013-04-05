@@ -50,8 +50,14 @@ def set_app(app):
     return _app
 
 
-def make_app(config):
-    """Application factory"""
+def make_app(config, as_standalone=False):
+    """WSGI application factory
+    The ``with_static_atc`` parameter is used to tell the factory to serve the
+    static Authoring Tools Client (ATC) client JavaScript code from a
+    directory. In a deployed situation this would normally be configured
+    and served by the webserver.
+
+    """
     app = Flask(__name__)
     app.config.update(config)
 
@@ -64,6 +70,9 @@ def make_app(config):
 
     # Set the application
     app = set_app(app)
+
+    if as_standalone:
+        from rhaptos2.repo import _standalone
 
     # Initialize the views
     from rhaptos2.repo import views  # noqa
@@ -160,4 +169,3 @@ def set_up_logging(app):
     # Set the handlers on the application.
     for handler in (statsd_handler, stream_handler,):
         app.logger.addHandler(handler)
-
