@@ -350,10 +350,14 @@ def test_put_module():
     data = decl.declarationdict['module']
     data['body'] = "Declaration test text"
     resp = wapp_put(TESTAPP, "module", data, gooduseruri, moduleuri)
-    print resp
     assert resp.json['body'] == "Declaration test text"
 
-
+def test_dateModifiedStamp():
+    data = decl.declarationdict['module']
+    data['body'] = "Declaration test text"
+    resp = wapp_put(TESTAPP, "module", data, gooduseruri, moduleuri)
+    assert resp.json['dateLastModifiedUTC'] != resp.json['dateCreatedUTC']
+    
 def test_put_module_rouser():
     data = decl.declarationdict['module']
     data['body'] = "NEVER HIT DB"

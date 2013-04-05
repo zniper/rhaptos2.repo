@@ -91,6 +91,7 @@ class CNXBase():
         ''' '''
         self.from_dict(d)
 
+
     def from_dict(self, userprofile_dict):
         """
         SHould test for schema validity etc.
@@ -220,7 +221,11 @@ class CNXBase():
         """
         Assumes we are working with sqlalchemy dbsessions
 
+        This is a naive implementation of the dateModified field.
+        More sensitive approaches would include taking the timestamp of
+        a request as the point of all changes. FIXME
         """
+        self.dateLastModifiedUTC = self.get_utcnow()
         dbase_session.add(self)
         dbase_session.commit()
 
