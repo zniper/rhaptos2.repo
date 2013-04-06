@@ -51,14 +51,8 @@ setup(
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
     install_requires=[
-        "fabric >= 1.0.0",
         "flask >= 0.9",
-        "statsd",
-        "requests",
-        "pylint",
         "Flask-OpenID==1.0.1",
-        "nose",
-        "unittest-xml-reporting",
         ],
     include_package_data=True,
     package_data={'rhaptos2.repo': ['templates/*.*',
