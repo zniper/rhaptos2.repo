@@ -80,7 +80,7 @@ def serve_node_modules(filename):
     return send_from_directory(directory, filename)
 
 @app.route("/helpers/<path:filename>/")
-def serve_node_modules(filename):
+def serve_helpers(filename):
     directory = os.path.join(app.config["aloha_staging_dir"], 'helpers')
     filepath = os.path.join(directory, filename)
     dolog("INFO", filepath)
