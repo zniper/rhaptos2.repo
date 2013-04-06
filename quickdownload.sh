@@ -35,14 +35,13 @@ function download_src(){
     ### This is fantastically brittle but needs to exist to make the
     ### overall easy-to-install process work
 
-    mkdir -p -m 0755 $ABSDIR/src
-    mkdir -p -m 0755 $ABSDIR/venvs
-    cd $ABSDIR/src
-    curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/buildvenv.sh
+    mkdir -p -m 0755 $SRC
+    mkdir -p -m 0755 $VENVS
+    cd $SRC
     git clone https://github.com/Connexions/rhaptos2.repo.git
     git clone https://github.com/Connexions/rhaptos2.common.git
     git clone https://github.com/Connexions/atc.git
-    cd atc
+    cd $SRC/atc
     npm install .
     cd $ABSDIR
 
@@ -50,28 +49,39 @@ function download_src(){
 
 
 function inifile() {
-    echo ""
-    echo "*****************************"
-    echo ""
-    echo "You need to change the following parts of the ini file:"
-    echo "rhaptos2repo_aloha_staging_dir=$ABSDIR/src/aloha"
-    echo "then you can "
-    echo "cd $ABSDIR/venvs/vrepo; source bin/activate"
-    echo "cd $ABSDIR/src/rhaptos2.repo/rhaptos2/repo;"
-    echo "python run.py --debug --config=../../local.ini"
-    echo "At this point you should see a runing instance"
+    CONFIG=$VENV_REPO/develop.ini
+    cp $SRC/rhaptos2.repo/develop.ini $CONFIG
+    ATC_SRC=$SRC/atc
+    sed -i -e "s,atc_directory = .*,atc_directory = $ATC_SRC,g" $CONFIG
+    echo -e "========================================\n"
+    echo "Source at: $SRC"
+    echo "Virtual environment at: $VENV_REPO"
+    echo "Wrote configuration file to: $CONFIG"
+    echo -e "====================\n"
+    echo "The following command is used to activate your virtual environment:"
+    echo "cd $VENV_REPO; source bin/activate"
+    echo -e "====================\n"
+    echo "For future reference here are absolute paths to important resources:"
+    echo "run script: $VENV_REPO/bin/rhaptos2repo-run"
+    echo "config:     $CONFIG"
+    echo -e "====================\n"
+    echo "Use the following to run the repository:"
+    echo "rhaptos2repo-run --debug --config=$CONFIG"
+    echo -e "========================================\n"
 }
 
 ### main:
 
 TGTDIR=${1:-.}
 ABSDIR=$( cd $TGTDIR ; pwd -P )
+SRC=$ABSDIR/src
+VENVS=$ABSDIR/venvs
+VENV_REPO=$VENVS/vrepo
+
 isempty $ABSDIR
-
-
-echo "I shall now download the sources for RHAPTOS2 REPO and setup a venv for it"
+echo "Downloading and installing the application in a virtual environment."
 download_src
-
-. $ABSDIR/src/buildvenv.sh $ABSDIR/venvs/vrepo $ABSDIR/src/rhaptos2.common  $ABSDIR/src/rhaptos2.repo
-
+. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo
+# TODO We need to initialized the database. Is this in the scope of
+#      this script?
 inifile
