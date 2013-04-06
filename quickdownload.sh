@@ -41,9 +41,9 @@ function download_src(){
     curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/buildvenv.sh
     git clone https://github.com/Connexions/rhaptos2.repo.git
     git clone https://github.com/Connexions/rhaptos2.common.git
-    git clone https://github.com/wysiwhat/Aloha-Editor.git aloha
-    cd aloha
-    git checkout cnx-master
+    git clone https://github.com/Connexions/atc.git
+    cd atc
+    npm install .
     cd $ABSDIR
 
 }

@@ -197,3 +197,8 @@ $ nosetests --tc-file=../../testing.ini runtests.py
 $ python run.py --config=../../testing.ini --host=0.0.0.0 --port=8000
 $ nosetests --tc-file=../../testing.ini --tc=HTTPPROXY:http://localhost:8000
 
+License
+-------
+
+This software is subject to the provisions of the GNU Affero General Public License Version 3.0 (AGPL). See license.txt for details. Copyright (c) 2012 Rice University
+
