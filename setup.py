@@ -26,7 +26,7 @@ import os, glob
 
 def get_version():
     """ return a version number, or error string.
-    
+
     We are assuming a file version.txt always exists. By convention
     populate that file with output of git describe
     """
@@ -66,9 +66,8 @@ setup(
                                     'tests/*.*'],
                   },
     entry_points = """\
-[console_scripts]
-rhaptos2_runrepo = rhaptos2.repo.run:main
-""",
+    [console_scripts]
+    rhaptos2repo-run = rhaptos2.repo.run:main
+    rhaptos2repo-initdb = rhaptos2.repo.run:initialize_database
+    """,
     )
-
-

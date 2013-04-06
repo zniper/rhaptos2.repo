@@ -56,5 +56,13 @@ def main():
           port=opts.port
           )
 
+def initialize_database():
+    """Initialize the database tables."""
+    opts, args = parse_args()
+    config = Configuration.from_file(opts.conf)
+
+    from rhaptos2.repo.backend import initdb
+    initdb(config)
+
 if __name__ == '__main__':
     main()
