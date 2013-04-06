@@ -22,7 +22,8 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 from setuptools import setup, find_packages
 import os, glob
 
-
+here = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(here, 'README.rst')).read()
 
 def get_version():
     """ return a version number, or error string.
@@ -50,6 +51,7 @@ setup(
     license='LICENSE.txt',
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
+    long_description=README,
     install_requires=[
         "fabric >= 1.0.0",
         "flask >= 0.9",
