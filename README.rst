@@ -1,20 +1,15 @@
-.. Paul Brian, Michael Mulich, (C) 2012 Rice University
-
-   This software is subject to the provisions of the GNU Lesser General
-   Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
-
 =============
 rhaptos2.repo
 =============
 
-This is the repository for Connexions editor.  It is designed to work
-primarily as a web application in conjunction with multiple other systems
-deployed using the bamboo setup files.
+A content repository for storing unpublished works or works in
+progress. The purpose of this application is to provide
+individuals with a web interface to their content before. This
+includes capabilities for creating, editing, mixing and publication of
+content into a Connexions Archive (where publish works are stored).
 
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
-
-
 
 Quick developer install 
 -----------------------
