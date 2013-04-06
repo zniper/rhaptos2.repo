@@ -35,6 +35,8 @@ from rhaptos2.repo import make_app
 from rhaptos2.repo.configuration import Configuration
 from optparse import OptionParser
 
+from paste.urlmap import URLMap
+from paste.urlparser import StaticURLParser, make_static
 
 def main():
     """Run the application, to be used to start up one instance"""
@@ -42,13 +44,22 @@ def main():
 
 
 def main_2():
+    
     opts, args = parse_args()
     config = Configuration.from_file(opts.conf)
     app = make_app(config)
     app.debug = True
 
+    if opts.devserver:
+        s = StaticURLParser(opts.jslocation)
+        u = URLMap()
+        u['/js/'] = s
+        u['/api/'] = app.wsgi_app
+    else:
+        u = app.wsgi_app
+        
     from waitress import serve
-    serve(app.wsgi_app, host=opts.host,
+    serve(u, host=opts.host,
           port=opts.port
           )
 
@@ -67,6 +78,14 @@ def parse_args():
     parser.add_option("--config", dest="conf",
                       help="Path to config file.")
 
+    parser.add_option("--devserver", dest="devserver",
+                      action=store_true, default=False,
+                      help="run as devserver.")
+    parser.add_option("--jslocation", dest="jslocation",
+                      help="Path to config file.")
+
+
+    
     (options, args) = parser.parse_args()
     return (options, args)
 
