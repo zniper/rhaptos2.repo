@@ -11,7 +11,7 @@ content into a Connexions Archive (where publish works are stored).
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
-Quick install 
+Quick Install 
 -------------
 
 This will install the repsository, with simple defaults, ready for developer use.
@@ -51,102 +51,97 @@ Known Issues
 Install
 -------
 
+
 The following will setup a development install. For instructions about
 a production deployment, go to http://connexions.github.com/ .
 
 Pre-requisites::
 
      Python 2.7 (with header files)
-     Bash >=4.0      (system dependant)
-     Internet access (!)
+     Postgres 9.x
 
-Python setup::
+.. note:: It's recommended that you use a virtual environment to
+   install this application. The installation and usage of virtualenv
+   is out of scope for this document, but you can follow the
+   instructions at `http://www.virtualenv.org`_.
 
-   We will need the system version of Python to
-   have pip and virtualenv installed.
+.. note:: If you are working on a Debian distribution, it is probably
+   a good idea to use the native system packages for some of the
+   dependencies. Here are our recommendations::
+   
+       apt-get install libxml2-dev
+       apt-get install libxslt1-dev
+       apt-get install python-psycopg2
 
-   curl -O http://peak.telecommunity.com/dist/ez_setup.py
-   sudo python ez_setup.py
-   sudo easy_install pip      
-   sudo pip install virtualenv
-
-Doug Hellmans' virtualenvwrapper will make your life easier::
-
-   sudo pip install mkvirtualenv   
-   $ export WORKON_HOME=~/venvs
-   $ mkdir -p $WORKON_HOME
-   $ source /usr/local/bin/virtualenvwrapper.sh
-   $ mkvirtualenv env1
-   (This will create a venv in your ~/venvs
-   you can now bring up a venv wherever you are with workon <venvenmae>)
-
-
-Other things to check
+To install the package mananually, checkout this package,
+`rhaptos2.common <https://github.com/connexions/rhaptos2.common>`_,
+and
+`atc (authoring tools client) <https://github.com/connexions/atc>`_.
 
 ::
 
-   We need to build lxml - so we need headers for the below, as 
-   pip will compile. And easy_install not use requirements!
-   
-   apt-get install libxml2-dev
-   apt-get install libxslt1-dev
-   apt-get install python-psycopg2
+    git clone https://github.com/connexions/rhaptos2.repo.git
+    git clone https://github.com/connexions/rhaptos2.common.git
+    git clone https://github.com/connexions/atc.git
 
+The ``atc`` project is a ``node.js`` project that will need installed
+using ``npm`` as follows ::
 
+    cd atc
+    npm install .
 
-You should now have correct system environment, and we shall 
-build our own virtual environments to work on.
+(For more information and detailed instructions see the
+`ATC project's readme file <https://github.com/connexions/atc>`_.)
 
-1. Download source code
+Install these development packages into your Python environment::
+
+    cd rhatpos2.common
+    python setup.py develop
+    cd rhaptos2.repo
+    python setup.py develop
+
+The installation will have supplied two scripts:
+
+  * ``rhaptos2repo-run`` - a stand-alone server instance that
+    can be used to bring up the application without a production
+    worthy webserver.
+  * ``rhaptos2repo-initdb`` - a script used to initialize the
+    database tables.
+
+To install the database schema, setup the database and note the
+host, database name, user name and password in the applications
+configuration file. (An example configuration file can be found in in
+the root of the rhaptos2.repo project as ``develop.ini``.)
 
 ::
-   
-   cd ~
-   mkdir -p -m 0755 src
-   mkdir -p -m 0755 venvs
- 
-   (Of course where you put the above is a matter of personal choice)
 
-   cd src
-   git clone https://github.com/Connexions/rhaptos2.repo.git
-   git clone https://github.com/Connexions/rhaptos2.common.git
+    [app]
+    pghost = localhost
+    pgdbname = rhaptos2repo
+    pgusername = rhaptos2repo
+    pgpassword = rhaptos2repo
+    ...
 
-   $ ll
-   drwxr-xr-x  5 pbrian  pbrian  11 Oct 18 18:22 rhaptos2.common
-   drwxr-xr-x  6 pbrian  pbrian  15 Oct 18 18:22 rhaptos2.repo
+You will also need to tell the configuration where the copy of ``atc``
+has been installed::
 
-There is a "helper" script in rhaptos2.repo -> "buildvenv.sh"
+    [app]
+    atc_directory = <location you cloned to>
 
-It is explicitly designed to install a virtualenv and can be run as follows::
+Usage
+-----
 
-   $ bash buildenv.sh ~/venvs/myvenv ~/src/rhaptos2.common ~/src/rhaptos2.repo
+For general usage, you can use the stand-alone server
+implementation. This requires that you have cloned and configured a
+copy of the ``atc`` project (see the install instructions for more
+information). You will need to supply the command with a configuration
+file. An example configuration file can be found in the root of this
+project as the file named ``develop.ini``.
 
-This will create a virtualenv in ~/venvs/myenv and look for requirements.txt files in the folders pointed to by all subsequent arguments.  These requirements.txt will be installed in the venv.
+::
 
-FInally :command:`setup.py develop` will be run in the pkgdir argument locations (src/rhaptos2.common etc)
-
-2. ALter local.ini
-
- (TBC)
-
-
-lets run the repo::
-
-   cd ~/venvs/dev
-   . bin/activate
-   (dev) python run.py --debug --config=../../local.ini --port=8000
+   rhaptos2repo-run --debug --config=develop.ini --port=8000
    * Running on http://127.0.0.1:8000/
-
-So what just happend?
-
-1. We have created a venv for a developer, where the code they are
-   likely to change (rhaptos2.repo, common) are effectively symlinked
-   into the venv (not quite true - see setup.py develop)
-
-2. then we activate this venv
-
-4. run a script that instantiates the repo correctly.  Host and port are configurable.
-
 
 Deployment
 ----------
