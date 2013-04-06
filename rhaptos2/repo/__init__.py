@@ -52,7 +52,7 @@ def set_app(app):
 
 def make_app(config, as_standalone=False):
     """WSGI application factory
-    The ``with_static_atc`` parameter is used to tell the factory to serve the
+    The ``as_standalone`` parameter is used to tell the factory to serve the
     static Authoring Tools Client (ATC) client JavaScript code from a
     directory. In a deployed situation this would normally be configured
     and served by the webserver.
