@@ -11,31 +11,36 @@ content into a Connexions Archive (where publish works are stored).
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
-Quick developer install 
------------------------
+Quick install 
+-------------
 
-This will install repo, with simple defaults, ready for developer use
-Basically curl the startup script (quickdownload.sh).  Run that with 
-an argument of an *empty* dir you want to use for the source and repos.
-THen this will download the repo, and dependancies, setup the virtualenv
-and tell you what commands to then run.
+This will install the repsository, with simple defaults, ready for developer use.
+Download the Bash script
+`quickdownload.sh
+<https://raw.github.com/Connexions/rhaptos2.repo/master/quickdownload.sh>`_. 
+Run that with an argument of an *empty* dir you want to use for the
+source and repos.
+Then this will download the application code, dependancies and set up
+a Python virtual environment (an isolated Python environment).
 
 ::
 
-   $ cd ~
-   $ curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/quickdownload.sh
-   $ bash quickdownload.sh /tmp/testrepo1 # <- replace with any empty dir you like
- 
+    $ curl -O https://raw.github.com/Connexions/rhaptos2.repo/master/quickdownload.sh
+    $ bash quickdownload.sh /tmp/testrepo1 # <- replace with any empty dir you like
+
+.. If you need to make changes to quickdownload.sh, you will need to
+   stop the script just before the buildvenv.sh script is run. This is
+   a chicken and egg issue.
+   After you have stopped the script--by commenting probably--you need
+   to swap your local copy of the package in place of the cloned one
+   before continuing the script--again, probably through commenting.
+
 You will now be given a set of commands to run::
 
-    You need to change the following parts of the ini file:
-    rhaptos2repo_aloha_staging_dir=/tmp/testrepo1/src/aloha
-    then you can 
     cd /tmp/testrepo1/venvs/vrepo; source bin/activate
-    cd /tmp/testrepo1/src/rhaptos2.repo/rhaptos2/repo;
-    python run.py --debug config=../../local.ini
-    At this point you should see a runing instance
+    rhaptos2repo-run --debug --config=develop.ini
 
+At this point you should see a runing instance
 
 Known Issues
 ------------
