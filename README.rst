@@ -63,7 +63,7 @@ Pre-requisites::
 .. note:: It's recommended that you use a virtual environment to
    install this application. The installation and usage of virtualenv
    is out of scope for this document, but you can follow the
-   instructions at `http://www.virtualenv.org`_.
+   instructions at `virtualenv.org <http://www.virtualenv.org>`_.
 
 .. note:: If you are working on a Debian distribution, it is probably
    a good idea to use the native system packages for some of the
