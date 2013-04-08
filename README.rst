@@ -139,6 +139,15 @@ the root of the rhaptos2.repo project as ``develop.ini``.)
     pgpassword = rhaptos2repo
     ...
 
+After the database settings have been updated, you can call the
+``rhaptos2repo-initdb`` utility to initialize the database. The
+following command illustrates its usage. Make sure to swap in your
+configuration file in place of the develop.ini mentioned here.
+
+::
+
+    $ rhaptos2repo-initdb --config=develop.ini
+
 You will also need to tell the configuration where the copy of ``atc``
 has been installed::
 
