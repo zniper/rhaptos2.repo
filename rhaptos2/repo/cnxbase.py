@@ -26,9 +26,10 @@ from rhaptos2.repo import dolog  # depednacy?
 
 class CNXJSONEncoder(json.JSONEncoder):
     """
-    Allow us to convert from a CNX object to json
-    It will look for a .jsonable callable, which should
-    return the object as std python types (dicts etc)
+
+    Allow us to convert from a CNX object to json It will look for a
+    .jsonable callable, which should return the object as std python types
+    (dicts etc)
 
 
     looking to have three encoders?
@@ -46,14 +47,9 @@ class CNXJSONEncoder(json.JSONEncoder):
 
 class CNXBase():
     """
-
-    API
-    ---
-    The resources we use (Folder, Collection, Module) all adhere to a common access protocol
-    that is defined in :class:CNXBase.
-
-    POST PUT and PATCH
-    ------------------
+    
+    The resources we use (Folder, Collection, Module) all adhere to a common
+    access protocol that is defined in :class:CNXBase.
 
     Where incomingjsond is a python representation of a json object that
     meets a folder jsonschema
@@ -65,7 +61,6 @@ class CNXBase():
     > f2.to_dict(requesting_user_urn)
     Here I am getting the object to return as python std types,
     so they can be easily jsonified at the last possible minute.
-
 
     """
     def validateid(self, id_):
@@ -242,6 +237,7 @@ class CNXBase():
         """ Given a user and a action type, determine if it is
             authorised on this object
 
+        
         #unittest not available as setup is large.
         >> C = CNXBase()
         >> C.is_action_auth(action="PUT", requesting_user_uri="Fake1")

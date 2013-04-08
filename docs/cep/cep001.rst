@@ -1,0 +1,15 @@
+Migrate away from ORM
+=====================
+
+ORM's are not simple.  They can be easy. We should long-term aim for simple.
+(www.infoq.com/presentations/Simple-Made-Easy)
+
+Overview
+--------
+
+* Replace the SQLAlchemy ORM with direct SQL calls, mediated by a reliable
+  driver (psycopg2).  Ensure the management of calls is simple (ie all stmts
+  stored in single file etc etc)
+
+* Migrate to using Postgres' new JSON abilities including as a key-value store.
+

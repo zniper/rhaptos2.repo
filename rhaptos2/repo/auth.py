@@ -35,10 +35,10 @@ app.config.update(
     SECRET_KEY=app.config['openid_secretkey'],
     DEBUG=app.debug
 )
-RESOURCES_DIR_PATH = os.path.join(app.config['repodir'],
-                                  'resources')
-METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH,
-                                  'resource-metadata')
+#RESOURCES_DIR_PATH = os.path.join(app.config['repodir'],
+#                                  'resources')
+#METADATA_FILE_PATH = os.path.join(RESOURCES_DIR_PATH,
+#                                  'resource-metadata')
 
 # setup flask-openid
 oid = OpenID(app)

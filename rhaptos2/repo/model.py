@@ -478,13 +478,11 @@ def close_session():
 
 
 def change_approval(uobj, jsond, requesting_user_uri, requesttype):
-    """Currently placeholder
+    """
+    is the change valid for the given ACL context?
+    returns True / False
 
-    Intended to parse json doc and validate version,
-    validate user can act upon object as requested etc.
-    def is_action_auth(self, action=None,
-                                   requesting_user_uri=None)
-     """
+    """
     return uobj.is_action_auth(action=requesttype,
                                requesting_user_uri=requesting_user_uri)
 

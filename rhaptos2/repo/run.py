@@ -22,9 +22,8 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 run.py
 ------
 
-This is the suggested method for running a WSGI Server -
-we instantiate the repo app, and pass it to the waitress server
-(To be replaced by gunicorn)::
+This is the suggested method for running a WSGI Server - we instantiate the repo
+app, and pass it to the waitress server (To be replaced by gunicorn)::
 
   python run.py --config=../../testing.ini
 
