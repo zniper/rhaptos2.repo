@@ -11,8 +11,40 @@ content into a Connexions Archive (where publish works are stored).
 See the `Connexions development documentation
 <http://connexions.github.com/>`_ for more information.
 
-Quick Install 
--------------
+Install 
+-------
+
+The following will setup a development install. For instructions about
+a production deployment, go to http://connexions.github.com/ .
+
+Pre-requisites::
+
+     Python 2.7 (with header files)
+     Postgres >=8.4
+
+.. note:: There are various ways to install Postgres. Here are a few
+   recommendations:
+
+   - For Debian distributions use the following command
+     and see followup instructions for system specific configuration::
+
+         $ apt-get install postgresql
+
+   - On the Mac, it is recommended you use the `Postgres App at
+     postgresapp.com <http://postgresapp.com/>`_.
+
+To initialize your database to work with the default database
+settings (do not use these same instructions for a production install)::
+
+    $ createuser -W -s rhaptos2repo
+    Password: rhaptos2repo
+    $ createdb -O rhaptos2repo rhaptos2repo
+
+These commands setup a Postgres user named ``rhaptos2repo`` and made
+it the owner of the newly created ``rhaptos2repo`` database.
+
+Quick
+~~~~~
 
 This will install the repsository, with simple defaults, ready for developer use.
 Download the Bash script
@@ -42,23 +74,8 @@ You will now be given a set of commands to run::
 
 At this point you should see a runing instance
 
-Known Issues
-------------
-
-1. With a localhost install you cannot sign in with OpenID.  This will
-   need to be fixed with a workaround. TBD
-
-Install
--------
-
-
-The following will setup a development install. For instructions about
-a production deployment, go to http://connexions.github.com/ .
-
-Pre-requisites::
-
-     Python 2.7 (with header files)
-     Postgres 9.x
+Complete
+~~~~~~~~
 
 .. note:: It's recommended that you use a virtual environment to
    install this application. The installation and usage of virtualenv
