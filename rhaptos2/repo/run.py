@@ -34,9 +34,10 @@ from rhaptos2.common import runner
 from rhaptos2.repo import make_app
 from rhaptos2.repo.configuration import Configuration
 from optparse import OptionParser
-
+import os
 from paste.urlmap import URLMap
 from paste.urlparser import StaticURLParser, make_static
+
 
 def main():
     """Run the application, to be used to start up one instance"""
@@ -44,22 +45,50 @@ def main():
 
 
 def main_2():
-    
+    """
+    creates and sets up the app, *but does not run it through flask server*
+    This intends to return a valid WSGI app to later be called by say gunicorn
+
+    todo: I would like to use @pumazi approach of only importing _standalone server as needed
+
+    """
     opts, args = parse_args()
     config = Configuration.from_file(opts.conf)
     app = make_app(config)
     app.debug = True
 
     if opts.devserver:
+        ### Creating a mapping of URLS to file locations
+        ### TODO: simplify this - proabbly need change atc and this
         s = StaticURLParser(opts.jslocation)
+        s_config = StaticURLParser(os.path.join(opts.jslocation, "config"))
+        s_lib = StaticURLParser(os.path.join(opts.jslocation, "lib"))
+        s_bookish = StaticURLParser(os.path.join(opts.jslocation, "bookish"))
+        s_helpers = StaticURLParser(os.path.join(opts.jslocation, "helpers"))
+        s_node_modules = StaticURLParser(os.path.join(
+            opts.jslocation, "node_modules"))
+        m = {"/": s,
+             "/config/": s_config,
+             "/lib/": s_lib,
+             "/bookish/": s_bookish,
+             "/helpers/": s_helpers,
+             "/node_modules/": s_node_modules}
         u = URLMap()
-        u['/js/'] = s
+        for k in m:
+            u[k] = m[
+                k]  # do not kersplunk, URLMap is a dict-like obj, it may have sideeffects
+        ### give repo a simple response - /api/ will get rewritten
+        ### todo: can I force URLMap not to adjust PATH info etc?
         u['/api/'] = app.wsgi_app
     else:
         u = app.wsgi_app
-        
+    return (u, opts, args)
+
+
+def wsgi_run(app, opts, args):
+    """ """
     from waitress import serve
-    serve(u, host=opts.host,
+    serve(app, host=opts.host,
           port=opts.port
           )
 
@@ -79,16 +108,15 @@ def parse_args():
                       help="Path to config file.")
 
     parser.add_option("--devserver", dest="devserver",
-                      action=store_true, default=False,
+                      action="store_true", default=False,
                       help="run as devserver.")
     parser.add_option("--jslocation", dest="jslocation",
                       help="Path to config file.")
 
-
-    
     (options, args) = parser.parse_args()
     return (options, args)
 
 
 if __name__ == '__main__':
-    main_2()
+    app, opts, args = main_2()
+    wsgi_run(app, opts, args)
