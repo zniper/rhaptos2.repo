@@ -22,12 +22,11 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 from setuptools import setup, find_packages
 import os, glob
 
-here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.rst')).read()
+
 
 def get_version():
     """ return a version number, or error string.
-
+    
     We are assuming a file version.txt always exists. By convention
     populate that file with output of git describe
     """
@@ -51,16 +50,9 @@ setup(
     license='LICENSE.txt',
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
-    long_description=README,
     install_requires=[
-        "fabric >= 1.0.0",
         "flask >= 0.9",
-        "statsd",
-        "requests",
-        "pylint",
         "Flask-OpenID==1.0.1",
-        "nose",
-        "unittest-xml-reporting",
         ],
     include_package_data=True,
     package_data={'rhaptos2.repo': ['templates/*.*',
