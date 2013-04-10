@@ -1,17 +1,45 @@
-Flask
-Flask-OpenID
-SQLAlchemy
-WSGIProxy
-WebOb
-WebTest
-Werkzeug
-lxml
-psycopg2
-pycrypto
-python-openid
-requests
-six
-uWSGI
-waitress
-wsgiref
-zope.interface
+### requirements file - minimised for rhaptos2.repo *development* We are likely
+### able to reduce it further for production use (e.g. remove Sphinx etc) but
+### this is not currently a plan.  Major removals: Removing Jenkins specific
+### parts - these will be part of specific Jenkins build
+
+### Top level packages
+Flask==0.9
+SQLAlchemy==0.8.0b2
+Sphinx==1.1.3
+psycopg2==2.4.6
+
+
+### Flask deps:
+Jinja2==2.6
+Werkzeug==0.8.3
+#NB do not upgrade openid without testing 1.1 fails.
+Flask-OpenID==1.0.1
+python-openid==2.2.5
+
+### Sphinx deps:
+docutils==0.9.1
+Pygments==1.5
+
+## testing and so forth
+Paste==1.7.5.1
+six==1.2.0
+WSGIProxy==0.2.2
+WebOb==1.2.3
+WebTest==2.0
+autopep8==0.8.7
+flake8==2.0
+logilab-astng==0.24.1
+logilab-common==0.58.1
+mccabe==0.2
+nose==1.2.1
+nose-testconfig==0.8
+pep8==1.4.5
+pyflakes==0.6.1
+pylint==0.26.0
+beautifulsoup4==4.1.3
+requests==1.1.0
+statsd==1.0.0
+waitress==0.8.2
+wsgiref==0.1.2
+
