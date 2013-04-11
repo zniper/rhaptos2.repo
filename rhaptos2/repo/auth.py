@@ -199,20 +199,22 @@ def after_authentication(authenticated_identifier, method):
     """
     dolog("INFO", "in after auth - %s %s" % (authenticated_identifier, method))
     dolog("INFO", "before session - %s" % repr(session))
-    userobj = get_user_from_identifier(authenticated_identifier)
-
+#    userobj = get_user_from_identifier(authenticated_identifier)
+    ident = Identity(authenticated_identifier)
     # set session, set g, set JS
     # session update?
     if method not in ('openid', 'persona'):
         raise Rhaptos2Error("Incorrect method of authenticating ID")
-    session['authenticated_identifier'] = authenticated_identifier
-    g.user = userobj
+#    session['authenticated_identifier'] = authenticated_identifier
+#    session['authenticated_identifier'] = u"e"
+
+    g.userID = ident.userID
 
     dolog("INFO", "ALLG:%s" % repr(g))
-    dolog("INFO", "ALLG.user:%s" % repr(g.user))
+    dolog("INFO", "ALLG.user:%s" % repr(g.userID))
     dolog("INFO", "AFTER session %s" % repr(session))
 
-    return userobj
+    return ident
 
 
 def get_user_from_identifier(authenticated_identifier):
@@ -234,7 +236,7 @@ def retrieve_identity(identity_url, **kwds):
 
 def whoami():
     '''
-    return the identity url stored in session cookie
+    return the Identity object stored in session cookie
     TODO: store the userid in session cookie too ?
 
     .. todo::
@@ -253,28 +255,27 @@ def whoami():
     '''
     dolog("INFO", "Whoami called", caller=whoami)
 
-    if HTTPHEADER_STORING_USERURI in request.headers and app.debug is True:
-        fakeuserid = request.headers.get(HTTPHEADER_STORING_USERURI)
-        g.user_id = fakeuserid
-        return Identity(fakeuserid)
+    ### todo:  remvoe - we should never send in the userURI
+#    if HTTPHEADER_STORING_USERURI in request.headers and app.debug is True:
+#        fakeuserid = request.headers.get(HTTPHEADER_STORING_USERURI)
+#        g.userID = fakeuserid
+#        return Identity(fakeuserid)  #and this ownt look it up
 
-    elif (HTTPHEADER_STORING_USERAUTH in request.headers
-          and app.debug is True
-          and 'authenticated_identifier' not in session):
+    if (HTTPHEADER_STORING_USERAUTH in request.headers
+       and app.debug is True):
+          # and 'authenticated_identifier' not in session):
         fakeuserauth = request.headers.get(HTTPHEADER_STORING_USERAUTH)
-        after_authentication(fakeuserauth, "openid")
-        return Identity(fakeuserauth)
+        ident = after_authentication(fakeuserauth, "openid")
+        return ident
 
     elif 'authenticated_identifier' in session:
-        user = Identity(session['authenticated_identifier'])
-        g.user_id = user.userID
-        return user
+        ident = Identity(session['authenticated_identifier'])
+        g.userID = ident.userID
+        return ident
     else:
         callstatsd("rhaptos2.repo.notloggedin")
-        g.user_id = None
-        g.user = None
+        g.userID = None
         return None
-        # is this alwasys desrireed?
 
 
 ## .. todo:: why is there a view in here??

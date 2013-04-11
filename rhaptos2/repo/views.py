@@ -284,14 +284,11 @@ def loginpersona():
     # Oops, something failed. Abort.
     abort(500)
 
-# folders
-###################### A custom converter in Flask is a better idea
-### todo: custom convertor
 
 MEDIA_MODELS_BY_TYPE = {
-        "application/vnd.org.cnx.collection":model.Collection,
-        "application/vnd.org.cnx.module":model.Module,
-        "application/vnd.org.cnx.folder":model.Folder
+    "application/vnd.org.cnx.collection": model.Collection,
+    "application/vnd.org.cnx.module": model.Module,
+    "application/vnd.org.cnx.folder": model.Folder
 }
 
 ### FIXME the following needs to actually support both modules and collections in a folder als
