@@ -1,20 +1,38 @@
-This page holds autogenertated docs for all modules in the package
+Auto-generated Module Docs
+==========================
 
 
 
 
-foldermodel
------------
+model
+-----
 
-.. automodule:: rhaptos2.repo.foldermodel
+.. automodule:: rhaptos2.repo.model
    :members: 
+.. automodule:: rhaptos2.repo.views
 
 security
 --------
 
-.. automodule:: rhaptos2.repo.security
+.. automodule:: rhaptos2.repo.auth
 .. automodule:: rhaptos2.repo.backend
-.. automodule:: rhaptos2.repo.usermodel
+.. automodule:: rhaptos2.repo.cnxbase
+
+common
+------
+
+.. automodule:: rhaptos2.repo.configuration
+.. automodule:: rhaptos2.repo.err
+.. automodule:: rhaptos2.repo.log
+
+run
+---
+
+.. automodule:: rhaptos2.repo.run
+.. automodule:: rhaptos2.repo.shell
+
+
+
 
 Testing User Dbase
 ------------------
