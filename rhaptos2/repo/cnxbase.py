@@ -126,8 +126,6 @@ class CNXBase():
           'user_uri': u'testuser2',
           'role_type': 'author'}]
 
-
-
         """
         # is this authorised? - sep function?
         if (setter_user_uri, "aclrw") not in [(u.user_uri, u.role_type)
@@ -203,11 +201,12 @@ class CNXBase():
         False
 
         """
-        print "*****AUTH"
-        print "model", self
-        print "action", action
-        print "user", requesting_user_uri
-        print "*****/AUTH"
+        s = "*****AUTH"
+        s += "model" + str(self)
+        s += "action" + str(action)
+        s += "user" + str(requesting_user_uri)
+        s += "*****/AUTH"
+        dolog("INFO", s)
         if action in ("GET", "HEAD", "OPTIONS"):
             valid_user_list = [u.user_uri for u in self.userroles
                                if u.role_type in ("aclro", "aclrw")]
@@ -232,4 +231,3 @@ class CNXBase():
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
