@@ -68,11 +68,11 @@ def apply_cors(fn):
 
     return newfn
 
-@app.route('/conf.js')
-def confjs():
-    resp = flask.make_response(render_template("conf.js", confd=app.config))
-    resp.content_type = 'application/javascript'
-    return resp
+
+@app.route('/')
+def index():
+    dolog("INFO", "THis is request %s" % g.requestid)
+    return render_template('index.html', confd=app.config)
 
 
 # Content GET, POST (create), and PUT (change)
@@ -88,10 +88,14 @@ def workspaceGET():
         abort(403)
     else:
         wout = {}
-        w = model.workspace_by_user(identity.authenticated_identifier)
+        dolog("INFO", "Calling workspace with %s" % identity.userID)
+        w = model.workspace_by_user(identity.userID)
+        dolog("INFO", repr(w))
         ## w is a list of models (folders, cols etc).
-        ## it would require some flattening or a JSONEncoder but we just want short form for now
-        short_format_list = [{"id":i.id_, "title":i.title, "mediaType":i.mediaType} for i in w]
+        # it would require some flattening or a JSONEncoder but we just want
+        # short form for now
+        short_format_list = [{
+            "id": i.id_, "title": i.title, "mediaType": i.mediaType} for i in w]
         flatten = json.dumps(short_format_list)
 
     resp = flask.make_response(flatten)
@@ -370,110 +374,50 @@ def generic_delete(klass, uri):
 
 
 def generic_acl(klass, uri, acllist):
-    owner = g.user_id
+    owner = g.userID
     fldr = model.get_by_id(klass, uri, owner)
     fldr.set_acls(owner, acllist)
-    resp = flask.make_response(fldr.jsonify())
+    resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
     resp.content_type = 'application/json'
     return resp
 
 
-@app.route('/folder/', methods=['POST'])
-def folder_post():
-    """ """
-    return generic_post(model.Folder)
-
-
-@app.route('/folder/<folderid>', methods=['PUT'])
-def folder_put(folderid):
-    """ """
-    return generic_put(model.Folder, folderid)
-
-
-@app.route('/module/', methods=['POST'])
-def module_post():
-    """ """
-    r = generic_post(model.Module)
-    return r
-
-
-@app.route('/module/<moduleuri>', methods=['PUT'])
-def module_put(moduleuri):
-    """ """
-    return generic_put(model.Module, moduleuri)
-
-
-@app.route('/collection/', methods=['POST'])
-def collection_post():
-    """ """
-    return generic_post(model.Collection)
-
-
-@app.route('/collection/<collectionuri>', methods=['PUT'])
-def collection_put(collectionuri):
-    """ """
-    return generic_put(model.Collection, collectionuri)
-
-
-@app.route('/collection/<path:collectionuri>/acl/', methods=['PUT', 'GET'])
+@app.route('/collection/<path:collectionuri>/acl/',
+           methods=['PUT', 'GET'])
 def collection_acl_put(collectionuri):
     """ """
-    requesting_user_uri = g.user_id
+    requesting_user_uri = g.userID
     if request.method == "PUT":
         jsond = request.json
         return generic_acl(model.Collection, collectionuri, jsond)
     elif request.method == "GET":
         obj = model.get_by_id(model.Collection,
-                                    collectionuri, requesting_user_uri)
+                              collectionuri, requesting_user_uri)
         return str(obj.userroles)
 
 
 @app.route('/folder/<path:uri>/acl/', methods=['PUT', 'GET'])
 def acl_folder_put(uri):
     """ """
-    requesting_user_uri = g.user_id
+    requesting_user_uri = g.userID
     if request.method == "PUT":
         jsond = request.json
         return generic_acl(model.Folder, uri, jsond)
     elif request.method == "GET":
         obj = model.get_by_id(model.Folder,
-                                    uri, requesting_user_uri)
+                              uri, requesting_user_uri)
         return str(obj.userroles)
 
 
 @app.route('/module/<path:uri>/acl/', methods=['PUT', 'GET'])
 def acl_module_put(uri):
     """ """
-    requesting_user_uri = g.user_id
+    requesting_user_uri = g.userID
     if request.method == "PUT":
         jsond = request.json
         return generic_acl(model.Module, uri, jsond)
     elif request.method == "GET":
         obj = model.get_by_id(model.Module,
-                                    uri, requesting_user_uri)
+                              uri, requesting_user_uri)
         return str(obj.userroles)
-
-
-@app.route('/collection/<collectionuri>', methods=['DELETE'])
-def collection_del(collectionuri):
-    """ """
-    return generic_delete(model.Collection, collectionuri)
-
-
-@app.route('/folder/<folderuri>', methods=['DELETE'])
-def folder_del(folderuri):
-    """ """
-    return generic_delete(model.Folder, folderuri)
-
-
-@app.route('/module/<moduleuri>', methods=['DELETE'])
-def module_del(moduleuri):
-    """ """
-    return generic_delete(model.Module, moduleuri)
-
-
-###############
-@app.errorhandler(Rhaptos2Error)
-def catchall(err):
-    return "Placeholder for better error handling..." + str(err)
