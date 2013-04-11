@@ -119,7 +119,7 @@ def dolog(lvl, msg, caller=None, statsd=None):
         request_id = "no_request_id"
 
     try:
-        user_id = g.user_id
+        user_id = g.userID
     except:
         user_id = "no_user_id"
 
