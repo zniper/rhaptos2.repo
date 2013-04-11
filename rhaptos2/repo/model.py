@@ -83,11 +83,11 @@ from sqlalchemy import (ForeignKey,
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import uuid
-import json
 from cnxbase import CNXBase
+from rhaptos2.repo import dolog
 from rhaptos2.repo.backend import Base, db_session
-from err import Rhaptos2Error  # Rhaptos2SecurityError
-# XXX - replace with catchall err handler - conflict5s with debug
+from err import (Rhaptos2Error,
+                 Rhaptos2AccessNotAllowedError)
 from flask import abort
 
 ################## COLLECTIONS #############################

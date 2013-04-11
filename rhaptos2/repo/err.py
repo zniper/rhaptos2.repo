@@ -9,6 +9,8 @@
 # See LICENCE.txt for details.
 ###
 
+from werkzeug.exceptions import HTTPException
+
 
 class Rhaptos2Error(Exception):
     pass
@@ -17,3 +19,14 @@ class Rhaptos2Error(Exception):
 class Rhaptos2SecurityError(Exception):
     pass
 
+### To Be used for generioc raising of errors - expect to replace
+### most calls with more specific error
+
+
+class Rhaptos2HTTPStatusError(HTTPException):
+    pass
+
+
+class Rhaptos2AccessNotAllowedError(HTTPException):
+    code = 403
+    description = "Attempt to access a component you do not have access to"
