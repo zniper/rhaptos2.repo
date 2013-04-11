@@ -24,34 +24,46 @@ app, and pass it to the waitress server (To be replaced by gunicorn)::
 
 """
 
-from rhaptos2.common import runner
 from rhaptos2.repo import make_app
 from rhaptos2.repo.configuration import Configuration
 from optparse import OptionParser
 import os
 from paste.urlmap import URLMap
 from paste.urlparser import StaticURLParser, make_static
+from waitress import serve
 
 
 def main():
-    """Run the application, to be used to start up one instance"""
-    runner.main(make_app)
+    opts, args = parse_args()
+    config = Configuration.from_file(opts.conf)
+    if opts.devserver:
+        app = get_app(opts, args, config, as_standalone=True)
+    else:
+        app = get_app(opts, args, config, as_standalone=False)
+
+    wsgi_run(app, opts, args)
 
 
-def main_2():
+def get_app(opts, args, config, as_standalone=False):
     """
     creates and sets up the app, *but does not run it through flask server*
     This intends to return a valid WSGI app to later be called by say gunicorn
 
     todo: I would like to use @pumazi approach of only importing _standalone server as needed
 
+    returns a Flask app.wsgi_app, which can be passed into wsgi chain
+
     """
-    opts, args = parse_args()
-    config = Configuration.from_file(opts.conf)
+
     app = make_app(config)
     app.debug = True
 
-    if opts.devserver:
+    if as_standalone:
+
+        if not os.path.isdir(opts.jslocation):
+            raise IOError(
+                "dir to serve static files (%s) does not exist" % opts.jslocation)
+
         ### Creating a mapping of URLS to file locations
         ### TODO: simplify this - proabbly need change atc and this
         s = StaticURLParser(opts.jslocation)
@@ -74,16 +86,18 @@ def main_2():
         ### todo: can I force URLMap not to adjust PATH info etc?
         u['/'] = app.wsgi_app
     else:
-        u = app.wsgi_app
-    return (u, opts, args)
+        wrappedapp = app.wsgi_app
+
+    return wrappedapp
 
 
 def wsgi_run(app, opts, args):
     """ """
-    from waitress import serve
-    serve(app, host=opts.host,
+
+    serve(app,
+          host=opts.host,
           port=opts.port
-          )
+    )
 
 
 def parse_args():
@@ -111,5 +125,4 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    app, opts, args = main_2()
-    wsgi_run(app, opts, args)
+    main()
