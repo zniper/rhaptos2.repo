@@ -102,8 +102,9 @@ class UserRoleCollection(Base, CNXBase):
     user_uri = Column(String, primary_key=True)
     role_type = Column(Enum('aclrw', 'aclro', name="cnxrole_type"),
                        primary_key=True)
-    dateCreatedUTC = Column(DateTime)
-    dateLastModifiedUTC = Column(DateTime)  # noqa
+    beginDateUTC = Column(DateTime)
+    endDateUTC = Column(DateTime)  # noqa
+    UniqueConstraint(collection_uuid, user_uri, name="uniq_collection_user")
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -124,11 +125,11 @@ class Collection(Base, CNXBase):
     maintainers = Column(ARRAY(String))
     copyrightHolders = Column(ARRAY(String))
 
-    body = Column(ARRAY(String))
+    body = Column(String)
     dateCreatedUTC = Column(DateTime)
     dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
-    
+
     userroles = relationship("UserRoleCollection",
                              backref="cnxcollection",
                              cascade="all, delete-orphan")
@@ -136,7 +137,6 @@ class Collection(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.collection"
-        self.content = self.body
         if creator_uuid:
             self.adduserrole(UserRoleCollection,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
@@ -146,7 +146,7 @@ class Collection(Base, CNXBase):
         if id_:
             self.id_ = id_
         else:
-            self.id_ = "cnxcollection" + str(uuid.uuid4())
+            self.id_ = "cnxcollection:" + str(uuid.uuid4())
 
         self.dateCreatedUTC = self.get_utcnow()
 
@@ -175,8 +175,8 @@ class UserRoleModule(Base, CNXBase):
     role_type = Column(Enum('aclrw', 'aclro',
                             name="cnxrole_type"),
                        )
-    dateCreatedUTC = Column(DateTime)
-    dateLastModifiedUTC = Column(DateTime)
+    beginDateUTC = Column(DateTime)
+    endDateUTC = Column(DateTime)  # noqa
     UniqueConstraint(module_uri, user_uri, name="uniq_mod_user")
 
     def __repr__(self):
@@ -220,8 +220,6 @@ class Module(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.module"
-        
-        self.content = self.body
         if not self.validateid(id_):
             raise Rhaptos2Error("%s not valid id" % id_)
 
@@ -268,10 +266,11 @@ class UserRoleFolder(Base, CNXBase):
                          primary_key=True)
     user_uri = Column(String, primary_key=True)
     role_type = Column(Enum('aclrw', 'aclro',
-                            name="cnxrole_type"),
+                       name="cnxrole_type"),
                        primary_key=True)
-    dateCreatedUTC = Column(DateTime)
-    dateLastModifiedUTC = Column(DateTime)
+    beginDateUTC = Column(DateTime)
+    endDateUTC = Column(DateTime)
+    UniqueConstraint(folder_uuid, user_uri, name="uniq_fldr_user")
 
     def __repr__(self):
         return "%s-%s" % (self.role_type, self.user_uri)
@@ -310,7 +309,6 @@ class Folder(Base, CNXBase):
     def __init__(self, id_=None, creator_uuid=None):
         """ """
         self.mediaType = "application/vnd.org.cnx.folder"
-        self.content = self.body
         if creator_uuid:
             self.adduserrole(UserRoleFolder,
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
