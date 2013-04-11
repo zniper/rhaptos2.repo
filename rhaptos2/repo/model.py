@@ -52,9 +52,9 @@ What is the same about each model / class
    rhaptos2.user for the approach - pretty simple, just modiufy the
    from and to dict calls
 
-2. They are representing *resources* - that is a entity we want to have some
-   form of access control over.  So we use the generic-ish approach
-   of userroles - see below.
+2. They are representing *resources* - that is a entity we want to
+   have some form of access control over.  So we use the generic-ish
+   approach of userroles - see below.
 
 
 3. THey are all ID'd by URI
@@ -212,7 +212,7 @@ class Module(Base, CNXBase):
     dateCreatedUTC = Column(DateTime)
     dateLastModifiedUTC = Column(DateTime)
     mediaType = Column(String)
-    
+
     userroles = relationship("UserRoleModule",
                              backref="cnxmodule",
                              cascade="all, delete-orphan")
@@ -278,22 +278,8 @@ class UserRoleFolder(Base, CNXBase):
 
 
 class Folder(Base, CNXBase):
-    """FOlder Class inheriting from SQLAlchemy and from a CNXBase class
-    to get a few generic functions.
-
-    1. we define the table and columns
-    2. set a new unique ID if not already one (differen between PUT and POST)
-    3. from_dict - will receive a dictionary of keywords that map exactly
-       to column fields and will populate itself.
-    4. to_dict will emit a dictionary representing the object.
-       If this is a "leaf" table then it is entirely using CNXBase superclass
-       If this is table is PK for anothers FK then we need to manually
-       code a method to get the FK linked object.
-       There is no reliable generic way to do this in SQLALchemy afaik.
-       Frankly thats not a problem, as its pretty cut and paste.
-
-    5. jsonify - wrap to_dict in json.  In otherwords convert self to
-       a JSON doc
+    """FOlder Class inheriting from SQLAlchemy and from a CNXBase
+    class to get a few generic functions.
 
     """
     __tablename__ = 'cnxfolder'
@@ -328,21 +314,25 @@ class Folder(Base, CNXBase):
         return "Folder:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Folder / collection class to have a set_acls call,
-        but catch here and then pass generic function the right UserRoleX
-        klass.  Still want to find way to generically follow sqla.
+        """allow each Folder / collection class to have a set_acls
+        call, but catch here and then pass generic function the right
+        UserRoleX klass.  Still want to find way to generically follow
+        sqla.
 
-        convern - this is beginning to smell like java."""
+        """
         super(Folder, self).set_acls(owner_uuid, aclsd, UserRoleFolder)
         db_session.add(self)
         db_session.commit()
 
 
 def get_by_id(klass, ID, useruri):
-    """Here we show why we need each Klass to have a generic named id_
-    I want to avoid overly comploex mapping and routing in class
-    calls.  However we could map internally in the class (id_ =
-    folderid) THis does very little.
+    """
+
+    refactoring:
+    ID -> uri
+    Then use uri -> klass to get klass needed
+    Then do not abort but raise capturable error.
+    THen pass useruri all way through.
 
     """
     q = db_session.query(klass)
@@ -420,13 +410,11 @@ def close_session():
 
 
 def change_approval(uobj, jsond, requesting_user_uri, requesttype):
-    """Currently placeholder
+    """
+    is the change valid for the given ACL context?
+    returns True / False
 
-    Intended to parse json doc and validate version,
-    validate user can act upon object as requested etc.
-    def is_action_auth(self, action=None,
-                                   requesting_user_uri=None)
-     """
+    """
     return uobj.is_action_auth(action=requesttype,
                                requesting_user_uri=requesting_user_uri)
 

@@ -17,11 +17,6 @@ The application is initialized using the application factory (`make_app`).
 To acquire the application from anywhere in this package or extra packages,
 use the `get_app` function.
 
-Author: Paul Brian, Michael Mulich
-Copyright (c) 2012 Rice University
-
-This software is subject to the provisions of the GNU Lesser General
-Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 """
 import logging
 
