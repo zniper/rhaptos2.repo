@@ -66,19 +66,18 @@ def main_2():
         s_helpers = StaticURLParser(os.path.join(opts.jslocation, "helpers"))
         s_node_modules = StaticURLParser(os.path.join(
             opts.jslocation, "node_modules"))
-        m = {"/": s,
-             "/config/": s_config,
-             "/lib/": s_lib,
-             "/bookish/": s_bookish,
-             "/helpers/": s_helpers,
-             "/node_modules/": s_node_modules}
+        m = {"/js/": s,
+             "/js/config/": s_config,
+             "/js/lib/": s_lib,
+             "/js/bookish/": s_bookish,
+             "/js/helpers/": s_helpers,
+             "/js/node_modules/": s_node_modules}
         u = URLMap()
         for k in m:
-            u[k] = m[
-                k]  # do not kersplunk, URLMap is a dict-like obj, it may have sideeffects
+            u[k] = m[k]  # do not kersplunk, URLMap is a dict-like obj, it may have sideeffects
         ### give repo a simple response - /api/ will get rewritten
         ### todo: can I force URLMap not to adjust PATH info etc?
-        u['/api/'] = app.wsgi_app
+        u['/'] = app.wsgi_app
     else:
         u = app.wsgi_app
     return (u, opts, args)
