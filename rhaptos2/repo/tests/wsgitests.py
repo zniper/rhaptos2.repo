@@ -305,6 +305,14 @@ test_delete_module
  """
 
 
+def test_post_modules():
+    for sect in ["sect1","sect2","sect3","sect4","sect5","sect6"]:
+        resp = wapp_post(TESTAPP, "module",
+                         decl.declarationdict[sect],
+                         gooduseruri)
+        if resp.status_int != 200: assert 1 == 2
+    
+
 def test_post_module():
     resp = wapp_post(TESTAPP, "module", decl.declarationdict[
                      'module'], gooduseruri)
