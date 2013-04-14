@@ -97,9 +97,13 @@ class CNXBase():
         for k in d:
             if k in idnames and d[k] is None:
                 continue  # do not assign a id of None to the internal id
+            elif k == "authors":#get list of uris
+                self.update_userroles(d[k])
+                setattr(self, k, d[k])
             else:
                 setattr(self, k, d[k])
-
+        
+                
     def jsonable(self, requesting_user_uri):
         """Return self as a dict, suitable for jsonifying """
 

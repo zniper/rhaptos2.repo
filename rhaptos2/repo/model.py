@@ -232,7 +232,8 @@ class Module(Base, CNXBase):
                              {'user_uri': creator_uuid, 'role_type': 'aclrw'})
         else:
             raise Rhaptos2Error("Modules need owner provided at init ")
-
+            
+            
         if id_:
             self.id_ = id_
         else:
@@ -241,6 +242,14 @@ class Module(Base, CNXBase):
         super(Base, self).__init__()
         db_session.commit()
 
+    def update_userroles(self, proposed_acl_list):
+        """
+        """
+        for user_uri in proposed_acl_list:
+            self.adduserrole(UserRoleModule,
+                              {'user_uri': user_uri,
+                               'role_type': 'aclrw'})
+        
     def __repr__(self):
         return "Module:(%s)-%s" % (self.id_, self.title)
 
