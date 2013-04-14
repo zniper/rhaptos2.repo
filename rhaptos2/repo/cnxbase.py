@@ -180,8 +180,8 @@ class CNXBase():
             # UserID is not in any assoc. role - add a new one
             i = userrole_klass()
             i.from_dict(usrdict)
-            i.dateCreatedUTC = t
-            i.dateLastModifiedUTC = t
+            i.beginDateUTC = t
+            i.endDateUTC = t
             self.userroles.append(i)
 
         elif (user_uri, role_type) not in [(u.user_uri, u.role_type) for u
@@ -189,7 +189,7 @@ class CNXBase():
             # UserID has got a role, so *update*
             i = userrole_klass()
             i.from_dict(usrdict)
-            i.dateLastModifiedUTC = t
+            i.endDateUTC = t
             self.userroles.append(i)
         else:
             # user is there, user and role type is there, this is duplicate
