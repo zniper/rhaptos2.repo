@@ -162,6 +162,7 @@ class CNXBase():
                 # I am losing modified info...
                 self.adduserrole(userrole_klass, usrdict)
 
+
     def adduserrole(self, userrole_klass, usrdict):
         """ keeping a common funciton in one place
 
@@ -195,6 +196,24 @@ class CNXBase():
             # user is there, user and role type is there, this is duplicate
             pass
 
+    def prep_delete_userrole(self, user_uri, role_type=None):
+        """policy: we are ignoring role type for now.  Any delete will delete
+        the user, there should only be one roletype per user, and one user per
+        resource.  This is policy not enforced
+
+       *editing* a user's role is not transaction supported (del then add in one
+        trans).  If we ever change policy we need to fix that
+
+        """
+        
+        for usr in self.userroles:
+            if usr.user_uri == user_uri:
+                self.userroles.remove(usr)
+        
+        
+        
+
+    
     def parse_json(self, jsonstr):
         """Given a json-formatted string representing a folder, return a dict
 
@@ -273,6 +292,9 @@ class CNXBase():
                 return True
             else:
                 return False
+
+    ### FIXME - refactor this out
+    add_userole = adduserrole            
 
 
 if __name__ == '__main__':
