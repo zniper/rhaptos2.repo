@@ -61,13 +61,12 @@ def apply_cors(fn):
     @wraps(fn)
     def newfn(*args, **kwds):
         resp = flask.make_response(fn(*args, **kwds))
-        resp.content_type = 'application/json'
+        resp.content_type = 'application/json; charset=utf-8'
         resp.headers["Access-Control-Allow-Origin"] = "*"
         resp.headers["Access-Control-Allow-Credentials"] = "true"
         return resp
 
     return newfn
-
 
 @app.route('/')
 def index():
@@ -99,7 +98,7 @@ def workspaceGET():
         flatten = json.dumps(short_format_list)
 
     resp = flask.make_response(flatten)
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     resp.headers["Access-Control-Allow-Origin"] = "*"
 
     auth.callstatsd('rhaptos2.e2repo.workspace.GET')
@@ -123,7 +122,7 @@ def keywords():
                          )
     resp = flask.make_response(json.dumps(XXX_JUNK_KEYWORDS))
     resp.status_code = 200
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
@@ -133,7 +132,7 @@ def versionGET():
     ''' '''
     s = VERSION
     resp = flask.make_response(s)
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     resp.headers["Access-Control-Allow-Origin"] = "*"
 
     return resp
@@ -448,7 +447,7 @@ def folder_get(folderuri, requesting_user_uri):
         dolog("INFO", short_format_list)
 
     resp = flask.make_response(json.dumps(jsonable_fldr))
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
 
@@ -459,7 +458,7 @@ def generic_get(uri, requesting_user_uri):
     resp = flask.make_response(json.dumps(
                                mod.jsonable(requesting_user_uri)))
     resp.status_code = 200
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
@@ -476,7 +475,7 @@ def generic_post(klass, payload_as_dict, requesting_user_uri):
                         requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
@@ -488,7 +487,7 @@ def generic_put(klass, resource_uri, payload_as_dict,
                        requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
@@ -498,7 +497,7 @@ def generic_delete(uri, requesting_user_uri):
     model.delete_o(uri, requesting_user_uri=owner)
     resp = flask.make_response("%s is no more" % uri)
     resp.status_code = 200
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
@@ -508,7 +507,7 @@ def generic_acl(klass, uri, acllist):
     fldr.set_acls(owner, acllist)
     resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
     resp.status_code = 200
-    resp.content_type = 'application/json'
+    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
