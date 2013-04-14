@@ -4,6 +4,8 @@ from waitress import serve
 from paste.auth import open_id
 import paste.urlmap
 import pprint
+import restrest
+from webtest import TestApp
 
 app = Flask("test")
 
@@ -15,7 +17,8 @@ def htmlpprint(obj):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def hello(path):
-    r = make_response("hi" + path + ":::::::" +  htmlpprint(request.environ))
+    longstr = "0"*10024
+    r = make_response(path + ":::::::" +  htmlpprint(request.environ)+longstr)
     return r
 
 
@@ -27,4 +30,8 @@ def hello(path):
 m = paste.urlmap.URLMap()
 
 m['/api/'] = app.wsgi_app
-serve(m,host="0.0.0.0",port=8000)  
+TESTAPP = TestApp(m)
+resp = TESTAPP.get('/api/')
+
+print restrest.restrest(resp)
+#serve(m,host="0.0.0.0",port=8000)  

@@ -22,17 +22,29 @@
    *
 """
 import decl
-from rhaptos2.repo import make_app, backend
+from rhaptos2.repo import make_app, backend, restrest
 from webtest import TestApp
 from wsgiproxy.app import WSGIProxyApp
 from optparse import OptionParser
 import urlparse
 
+
+def capture_conversation(resp):
+    """Need to adapt the requests specicfic capture to WebTest """
+    rst = restrest.restrest(resp)
+    fo = open("/tmp/output.rst", "a")
+    fo.write(rst)
+    fo.close()
+
+
 def simplelog(r):
     fo = open("foo.log","a")
     fo.write(str(r.json))
     fo.close()
+    capture_conversation(r)
 
+
+    
 from rhaptos2.repo.configuration import (  # noqa
     Configuration,
 )
@@ -284,12 +296,6 @@ def wapp_put(wapp, resourcetype, data, owner, id_=None):
     return resp
 
 
-def capture_conversation(resp):
-    """Need to adapt the requests specicfic capture to WebTest """
-    rst = "adapt"  # restrest.restrest(resp)
-    fo = open("output.rst", "a")
-    fo.write(rst)
-    fo.close()
 
 help = """
 
@@ -330,7 +336,7 @@ def test_put_collection():
     data = decl.declarationdict['collection_small']
     resp = wapp_put(TESTAPP, "collection", data, gooduseruri, collectionuri)
     assert resp.json['body'].find('href="cnxmodule:d3911c28') > -1
-
+    simplelog(resp)
 
 def test_put_collection_rouser():
     data = decl.declarationdict['collection']
@@ -351,6 +357,7 @@ def test_put_module():
     data['body'] = "Declaration test text"
     resp = wapp_put(TESTAPP, "module", data, gooduseruri, moduleuri)
     assert resp.json['body'] == "Declaration test text"
+
 
 def test_dateModifiedStamp():
     data = decl.declarationdict['module']
@@ -408,14 +415,14 @@ def test_read_folder_gooduser():
     resp = wapp_get(TESTAPP, "folder", folderuri, gooduseruri)
     assert resp.status_int == 200
     simplelog(resp)
-
+    
     
 
 def test_read_module_baduser():
     resp = wapp_get(TESTAPP, "module", moduleuri, baduseruri)
     print resp, resp.status, baduseruri
     assert resp.status_int == 403
-
+    
     
 def test_get_workspace_good():
     resp = wapp_get(TESTAPP, "workspace", None, gooduseruri)
@@ -424,7 +431,8 @@ def test_get_workspace_good():
     assert len(resp.json) == 3   
     assert resp.status_int == 200
     simplelog(resp)
-
+    
+    
 ###############    
 
 def test_delete_module_baduser():
@@ -481,9 +489,8 @@ def test_whoami():
     assert resp.json["name"] == "Paul Brian" 
     assert resp.json["id"] == "cnxuser:75e06194-baee-4395-8e1a-566b656f6920" 
 
+    ########################################################################
 
-# import doctest
-# doctest.testmod()
 TESTCONFIG = None
 TESTAPP = None
 
@@ -506,14 +513,10 @@ def setup():
     ## now "convert" to app-style dict
     TESTCONFIG = convert_config(config)
 
-    # cleardown(TESTCONFIG)
-    # initdb(TESTCONFIG)
-
     if 'HTTPPROXY' in config.keys():
         app = WSGIProxyApp(config['HTTPPROXY'])
         TESTAPP = TestApp(app, extra_environ={'REMOTE_ADDR': '1.2.3.4'})
     else:
-#        cleardown(TESTCONFIG)  # use this in setup - via a renaming?
         app = make_app(TESTCONFIG)
         app.debug = True
         TESTAPP = TestApp(app.wsgi_app)
