@@ -423,28 +423,23 @@ def module_router(moduleuri):
 
 
 def folder_get(folderuri, requesting_user_uri):
-    """  """
+    """
+    return folder as an appropriate json based response string
+
+    .jsonable -> creates a version of an object that can be run through a std json.dump
+
+    Why am I passing in the same userid in two successive objects
+    
+    1. I am not maintaining any state in the object, not assuming any state in thread(*)
+    2. The first call returns the "hard" object (pointers only)
+       Thus it (rightly) has no knowledge of the user permissions of its children.
+       We will need to descend the hierarchy to 
+
+    (*) This may get complicated with thread-locals in Flask and scoped sessions. please see notes
+        on backend.py
+    """
     fldr = model.obj_from_urn(folderuri, g.userID)
     jsonable_fldr = fldr.jsonable(g.userID)
-    short_format_list = []
-
-    for urn in jsonable_fldr['body']:
-        try:
-            subfolder = model.obj_from_urn(urn, g.userID)
-            short_format_list.append({"id": subfolder.id_,
-                                      "title": subfolder.title,
-                                      "mediaType": subfolder.mediaType})
-            ### exceptions: if you cannot read a single child item
-            ### we still want to return rest of the folder
-        except Rhaptos2SecurityError, e:
-            pass
-        except Rhaptos2Error, e:
-            raise e
-        except Exception, e:
-            raise e
-            
-        jsonable_fldr['body'] = short_format_list
-        dolog("INFO", short_format_list)
 
     resp = flask.make_response(json.dumps(jsonable_fldr))
     resp.content_type = 'application/json; charset=utf-8'

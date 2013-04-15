@@ -87,7 +87,10 @@ from cnxbase import CNXBase
 from rhaptos2.repo import dolog
 from rhaptos2.repo.backend import Base, db_session
 from err import (Rhaptos2Error,
-                 Rhaptos2AccessNotAllowedError)
+                 Rhaptos2SecurityError,
+                 Rhaptos2AccessNotAllowedError,                 
+                 Rhaptos2HTTPStatusError)
+
 from flask import abort
 
 ################## COLLECTIONS #############################
@@ -330,6 +333,51 @@ class Folder(Base, CNXBase):
         db_session.add(self)
         db_session.commit()
 
+    def jsonable(self, requesting_user_uri, _softform=True):
+        """
+        overwrite the std jsonable, and become recursive
+
+        The "body" of a folder is a array of uris to other items (list of pointers)
+        we only care at this point
+
+        softform = returning not only the list of pointers, but also data
+                   about the items pointed to (ie title, mediatype)
+        
+                   This is the default for a folder, and is private
+                   to indicate we have no plans to change this for now.
+
+
+        CURRENTLY NOT RECURSIVE - folders are limited to one level by policy.
+        If this was a collection, and collections did not store body as 'li' then
+         would a recursive descnet beyond one level be appropriate?
+        FIXME - implement a recursive base class that folder and collection use.
+        
+        """
+                
+        short_format_list = []
+        for urn in self.body:
+            try:
+                subfolder = obj_from_urn(urn, requesting_user_uri)
+                short_format_list.append({"id": subfolder.id_,
+                                          "title": subfolder.title,
+                                          "mediaType": subfolder.mediaType})
+                ### exceptions: if you cannot read a single child item
+                ### we still want to return rest of the folder
+            except Rhaptos2SecurityError, e:
+                pass
+            except Rhaptos2Error, e:
+                pass
+                #todo: should we be ignoring bnroken links??
+            except Exception, e:
+                raise e
+
+        ## so get the object as a json-suitable python object
+        ## now alter the body to be the result of recursive ouutpu
+        jsonable_fldr = super(Folder, self).jsonable(requesting_user_uri)
+        jsonable_fldr['body'] = short_format_list
+        return jsonable_fldr
+
+        
 
 def klass_from_uri(URI):
     """Return the callable klass that corresponds to a URI

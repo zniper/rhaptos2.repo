@@ -17,6 +17,27 @@ SA does not support class based inheritence in the normal Python way
 for objects inheriting from Base.  Thus we have those objects perform
 multiple inheritence...
 
+security issues
+
+Discussion
+
+I see each resource (folder, module, collection) as a individual resource
+with individually managed permissions.
+
+Each function (GET PUT POST DELETE) should be requested through the API with
+a security "thing" (useruri).  This is to try and keep stateless end to end
+(ie not have to worry how we are handling sessions from the request point through the
+backend)
+
+
+
+Security use cases
+
+folder
+
+1. User has RW permission set on Folder F and children C1,C2
+
+
 """
 import json
 import datetime
@@ -101,7 +122,7 @@ class CNXBase():
                 setattr(self, k, d[k])
 
     def jsonable(self, requesting_user_uri):
-        """Return self as a dict, suitable for jsonifying """
+        """Return self as a dict, suitable for jsonifying     """
 
         if not self.is_action_auth("GET", requesting_user_uri):
             raise Rhaptos2AccessNotAllowedError("user %s not allowed access to %s"
