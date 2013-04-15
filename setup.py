@@ -22,6 +22,8 @@ Public License Version 2.1 (LGPL).  See LICENSE.txt for details.
 from setuptools import setup, find_packages
 import os, glob
 
+here = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(here, 'README.rst')).read()
 
 
 def get_version():
@@ -47,6 +49,7 @@ setup(
     author='See AUTHORS.txt',
     author_email='info@cnx.org',
     url='https://github.com/Connexions/rhaptos2.repo',
+    long_description=README,
     license='LICENSE.txt',
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
