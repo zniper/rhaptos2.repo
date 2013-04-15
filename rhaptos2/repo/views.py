@@ -486,8 +486,8 @@ def generic_put(klass, resource_uri, payload_as_dict,
     owner = requesting_user_uri
     fldr = model.put_o(payload_as_dict, klass, resource_uri,
                        requesting_user_uri=owner)
-#    resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
-    resp = flask.make_response(json.dumps({"id":fldr.id_}))
+    resp = flask.make_response(json.dumps(fldr.jsonable(owner)))
+#    resp = flask.make_response(json.dumps({"id":fldr.id_}))
     
     resp.status_code = 200
     resp.content_type = 'application/json; charset=utf-8'

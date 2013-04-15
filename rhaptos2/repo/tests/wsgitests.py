@@ -41,7 +41,13 @@ def simplelog(r):
     fo = open("foo.log","a")
     fo.write(str(r.json))
     fo.close()
-    capture_conversation(r)
+
+    ##FIXME - handle this problem then find out why it happens
+    ## suspect \n detection in webob.
+#     capture_conversation(r)
+#   File "build/bdist.freebsd-9.1-RC2-amd64/egg/webob/request.py", line 1528, in readinto
+#     + "(%d more bytes were expected)" % self.remaining
+# DisconnectionError: The client disconnected while sending the POST/PUT body (634 more bytes were expected)
 
 
     
