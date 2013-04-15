@@ -434,15 +434,15 @@ def folder_get(folderuri, requesting_user_uri):
             short_format_list.append({"id": subfolder.id_,
                                       "title": subfolder.title,
                                       "mediaType": subfolder.mediaType})
-        except Rhaptos2SecurityError:
-            short_format_list.append({"id": "denied",
-                                      "title": "denied",
-                                      "mediaType": "Denied"})
-        except Rhaptos2Error:
-            short_format_list.append({"id": "noid",
-                                      "title": "err",
-                                      "mediaType": "err"})
-
+            ### exceptions: if you cannot read a single child item
+            ### we still want to return rest of the folder
+        except Rhaptos2SecurityError, e:
+            pass
+        except Rhaptos2Error, e:
+            raise e
+        except Exception, e:
+            raise e
+            
         jsonable_fldr['body'] = short_format_list
         dolog("INFO", short_format_list)
 
