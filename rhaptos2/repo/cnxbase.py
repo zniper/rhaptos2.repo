@@ -86,7 +86,7 @@ class CNXBase():
         ''' '''
         self.from_dict(d)
 
-
+        
     def from_dict(self, userprofile_dict):
         """
         SHould test for schema validity etc.
@@ -100,20 +100,48 @@ class CNXBase():
             else:
                 setattr(self, k, d[k])
 
-    def jsonify(self, requesting_user_uri):
+                
+    def jsonify(self, requesting_user_uri, softform=True):
         """
         public method to return the object as a JSON formatted string.
+
+
+        form.  There are two types we *shall* support.  softform and hardform
+        A resource only contains links (pointers) to other resources - so
+        a container-type resource (folder, collection) will hold links only
+        such as
+         body = ["/folder/1234", "/module/5678"]
+
+        However if we returned that resource to the client, it would then need
+        to perform *n* more requests to get the title of each.
+
+        To avoid this we return a softform
+        
+         body = [{'id': '/folder/1234', 'title': 'foo', 'mediatype':'application/vnd.org.cnx.folder'},
+                 {'id': '/module/5678', 'title': 'bar', 'mediatype':'application/vnd.org.cnx.module'},
+
+        This however needs us to descend into the container, and requiores a security check at each
+        resource.  It also requires a flag for whih form.
+
+        At the moment only folder has any need for a softform approach and it is the default here
+
+        .. discussion::
+           There seems to be two distinctions, softform/hardform where a object must descend into
+           its own hierarchy and produce short-form versions of its children
+           And a short-form long-form approach that needs to produce either the whole object
+           or just a few items (title, id etc)
         
         """
         #get self as a (non-recursive) list of python types (ie json encodaeable)
-        self_as_complex = self.jsonable(requesting_user_uri)
+        self_as_complex = self.jsonable(requesting_user_uri, softform)
         jsonstr = json.dumps(self_as_complex)
         return jsonstr
         
-        
-    def jsonable(self, requesting_user_uri):
+    def jsonable(self, requesting_user_uri, softform=True):
         """Return self as a dict, suitable for jsonifying     """
 
+        #softform and hardform have no distinction if there are
+        #no child nodes
         if not self.is_action_auth("GET", requesting_user_uri):
             raise Rhaptos2AccessNotAllowedError("user %s not allowed access to %s"
                                                 % (requesting_user_uri,

@@ -334,7 +334,7 @@ class Folder(Base, CNXBase):
         db_session.add(self)
         db_session.commit()
 
-    def jsonable(self, requesting_user_uri, _softform=True):
+    def jsonable(self, requesting_user_uri, softform=True):
         """
         overwrite the std jsonable, and become recursive
 
@@ -354,7 +354,9 @@ class Folder(Base, CNXBase):
         FIXME - implement a recursive base class that folder and collection use.
         
         """
-                
+        if not softform:
+            return super(Folder, self).jsonable(requesting_user_uri, softform)
+        
         short_format_list = []
         for urn in self.body:
             try:
