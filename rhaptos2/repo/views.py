@@ -73,7 +73,8 @@ backend.initdb(app.config)
 def requestid():
     g.requestid = uuid.uuid4()
     g.request_id = g.requestid
-
+    g.user = auth.whoami()
+    
 ########################### views
 
 
@@ -209,11 +210,6 @@ def admin_config():
         abort(403)
 
 ################ openid views - from flask
-
-
-@app.before_request
-def before_request():
-    g.user = auth.whoami()
 
 
 @app.after_request
