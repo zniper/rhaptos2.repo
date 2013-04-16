@@ -90,7 +90,7 @@ from err import (Rhaptos2Error,
                  Rhaptos2SecurityError,
                  Rhaptos2AccessNotAllowedError,                 
                  Rhaptos2HTTPStatusError)
-
+import json
 from flask import abort
 
 ################## COLLECTIONS #############################
@@ -197,7 +197,8 @@ class Module(Base, CNXBase):
     >>> m = Module(id_=None, creator_uuid="cnxuser:1234")
     >>> m.mediaType
     'application/vnd.org.cnx.module'
-    >>> j = m.jsonify()
+    >>> j = m.jsonify("cnxuser:1234")
+    {...
     >>> d = json.loads(j)
     >>> assert 'id' in d.keys()
     >>> assert 'mediaType' in d.keys()
@@ -561,4 +562,4 @@ def workspace_by_user(user_uri):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.REPORT_ONLY_FIRST_FAILURE | doctest.ELLIPSIS)

@@ -13,6 +13,31 @@
 """
 views.py - View code for the repository application.
 
+Structure:
+We have three main view-areas.
+
+ 1. the models (Folder, Collection, Module)
+ 2. the helper views (workspace)
+ 3. binary uploads.
+ 4. openid and persona
+
+Protocols
+~~~~~~~~~
+I try to stick to these
+
+1. Every action (GET POST PUT DELETE) must have a useruri passed in to authorise
+2. views recevie back *either* a model.<> object or a json-encodeable version of that
+
+
+json-encoding
+~~~~~~~~~~~~~
+
+todo: convert to factory based app entirely
+todo: remove view / as thats now JS
+todo: remove apply_cors and apply internally. Or just use it?
+todo: remove crash and burn
+
+
 """
 import os
 import json

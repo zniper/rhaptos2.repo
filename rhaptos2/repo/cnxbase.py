@@ -121,6 +121,17 @@ class CNXBase():
             else:
                 setattr(self, k, d[k])
 
+    def jsonify(self, requesting_user_uri):
+        """
+        public method to return the object as a JSON formatted string.
+        
+        """
+        #get self as a (non-recursive) list of python types (ie json encodaeable)
+        self_as_complex = self.jsonable(requesting_user_uri)
+        jsonstr = json.dumps(self_as_complex)
+        return jsonstr
+        
+        
     def jsonable(self, requesting_user_uri):
         """Return self as a dict, suitable for jsonifying     """
 
