@@ -1,8 +1,0 @@
-branch: fix-restrest
-
-I wish to fix the restrest function so that it can use webob 
-request objects to output conversations over http
-
-THis should be done before the other fixes because we need to check that versions 
-running on beta.cnx and elsewhere are same - so dumping conversatiosn is perfect
-for that
