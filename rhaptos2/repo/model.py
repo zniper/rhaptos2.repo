@@ -334,9 +334,9 @@ class Folder(Base, CNXBase):
         db_session.add(self)
         db_session.commit()
 
-    def jsonable(self, requesting_user_uri, softform=True):
+    def __complex__(self, requesting_user_uri, softform=True):
         """
-        overwrite the std jsonable, and become recursive
+        overwrite the std __complex__, and become recursive
 
         The "body" of a folder is a array of uris to other items (list of pointers)
         we only care at this point
@@ -355,7 +355,7 @@ class Folder(Base, CNXBase):
         
         """
         if not softform:
-            return super(Folder, self).jsonable(requesting_user_uri, softform)
+            return super(Folder, self).__complex__(requesting_user_uri, softform)
         
         short_format_list = []
         for urn in self.body:
@@ -376,9 +376,9 @@ class Folder(Base, CNXBase):
 
         ## so get the object as a json-suitable python object
         ## now alter the body to be the result of recursive ouutpu
-        jsonable_fldr = super(Folder, self).jsonable(requesting_user_uri)
-        jsonable_fldr['body'] = short_format_list
-        return jsonable_fldr
+        fldr = super(Folder, self).__complex__(requesting_user_uri)
+        fldr['body'] = short_format_list
+        return fldr
 
         
 

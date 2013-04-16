@@ -133,11 +133,11 @@ class CNXBase():
         
         """
         #get self as a (non-recursive) list of python types (ie json encodaeable)
-        self_as_complex = self.jsonable(requesting_user_uri, softform)
+        self_as_complex = self.__complex__(requesting_user_uri, softform)
         jsonstr = json.dumps(self_as_complex)
         return jsonstr
         
-    def jsonable(self, requesting_user_uri, softform=True):
+    def __complex__(self, requesting_user_uri, softform=True):
         """Return self as a dict, suitable for jsonifying     """
 
         #softform and hardform have no distinction if there are
