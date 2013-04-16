@@ -45,27 +45,6 @@ from err import Rhaptos2Error
 from rhaptos2.repo import dolog  # depednacy?
 
 
-class CNXJSONEncoder(json.JSONEncoder):
-    """
-
-    Allow us to convert from a CNX object to json It will look for a
-    .jsonable callable, which should return the object as std python types
-    (dicts etc)
-
-
-    looking to have three encoders?
-    default - lazy evaluation - only return the pointers stored
-    full - evaluate and return as full dicts -> json
-    short form - evaluate, return full objects, and then filter into json
-
-    """
-    def default(self, obj):
-        if hasattr(obj, 'jsonable'):
-            return obj.jsonable()
-        else:
-            return json.JSONEncoder.default(self, obj)
-
-
 class CNXBase():
     """
     
