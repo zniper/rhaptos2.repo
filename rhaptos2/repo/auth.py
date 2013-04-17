@@ -199,7 +199,6 @@ def after_authentication(authenticated_identifier, method):
     """
     dolog("INFO", "in after auth - %s %s" % (authenticated_identifier, method))
     dolog("INFO", "before session - %s" % repr(session))
-#    userobj = get_user_from_identifier(authenticated_identifier)
     ident = Identity(authenticated_identifier)
     # set session, set g, set JS
     # session update?
