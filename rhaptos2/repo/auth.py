@@ -25,8 +25,8 @@ from flaskext.openid import OpenID
 import requests
 
 ### THis header is where we put the authenticated ID
-HTTPHEADER_STORING_USERAUTH = "REMOTE_AUTHID"
-HTTPHEADER_STORING_USERURI = "REMOTE_USERURI"
+HTTPHEADER_STORING_USERAUTH = "X-REMOTEAUTHID"
+HTTPHEADER_STORING_USERURI = "X-REMOTEUSERURI"
 
 
 app = get_app()
@@ -252,27 +252,26 @@ def whoami():
 
     ..  todo:: document fajkeuserID
     '''
-    dolog("INFO", "Whoami called", caller=whoami)
+    dolog("INFO", "request.headers %s" % (repr(request.headers)))
+    
 
-    ### todo:  remvoe - we should never send in the userURI
-#    if HTTPHEADER_STORING_USERURI in request.headers and app.debug is True:
-#        fakeuserid = request.headers.get(HTTPHEADER_STORING_USERURI)
-#        g.userID = fakeuserid
-#        return Identity(fakeuserid)  #and this ownt look it up
+    if ((HTTPHEADER_STORING_USERAUTH in request.headers
+         and app.debug is True):
 
-    if (HTTPHEADER_STORING_USERAUTH in request.headers
-       and app.debug is True):
           # and 'authenticated_identifier' not in session):
         fakeuserauth = request.headers.get(HTTPHEADER_STORING_USERAUTH)
         ident = after_authentication(fakeuserauth, "openid")
+        dolog("INFO", "FAKING USER LOGIN - %s" % fakeuserauth)
         return ident
 
     elif 'authenticated_identifier' in session:
         ident = Identity(session['authenticated_identifier'])
         g.userID = ident.userID
+        dolog("INFO", "Session active user is - %s" % ident.userID)
         return ident
     else:
         callstatsd("rhaptos2.repo.notloggedin")
+        dolog("INFO", "not headers, not session")        
         g.userID = None
         return None
 

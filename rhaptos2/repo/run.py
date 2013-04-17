@@ -86,11 +86,27 @@ def get_app(opts, args, config, as_standalone=False):
         ### todo: can I force URLMap not to adjust PATH info etc?
         u['/'] = app.wsgi_app
         wrappedapp = u
+        wrappedapp = AddTestUser(wrappedapp)
     else:
         wrappedapp = app.wsgi_app
 
     return wrappedapp
 
+class AddTestUser(object):
+    """
+    We are faking a user header to avoid onerous logins via openid
+    It may be a bad idea
+    """
+   
+    def __init__(self, app):
+        self.app = app
+        
+    def __call__(self, environ, start_response):
+        environ['HTTP_X-REMOTEAUTHID'] = 'https://paulbrian.myopenid.com'
+        
+        # Call the wrapped application onwards
+        return self.app(environ, start_response)
+        
 
 def wsgi_run(app, opts, args):
     """ """
