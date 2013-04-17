@@ -85,6 +85,7 @@ def get_app(opts, args, config, as_standalone=False):
         ### give repo a simple response - /api/ will get rewritten
         ### todo: can I force URLMap not to adjust PATH info etc?
         u['/'] = app.wsgi_app
+        wrappedapp = u
     else:
         wrappedapp = app.wsgi_app
 

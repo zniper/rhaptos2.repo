@@ -4,22 +4,22 @@
 ### parts - these will be part of specific Jenkins build
 
 ### Top level packages
-Flask==0.9
-SQLAlchemy==0.8.0b2
-Sphinx==1.1.3
-psycopg2==2.4.6
+Flask
+SQLAlchemy
+Sphinx
+psycopg2
 
 
 ### Flask deps:
-Jinja2==2.6
-Werkzeug==0.8.3
+Jinja2
+Werkzeug
 #NB do not upgrade openid without testing 1.1 fails.
 Flask-OpenID==1.0.1
 python-openid==2.2.5
 
 ### Sphinx deps:
-docutils==0.9.1
-Pygments==1.5
+docutils
+Pygments
 
 ## testing and so forth
 Paste==1.7.5.1
