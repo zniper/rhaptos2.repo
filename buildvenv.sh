@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Copyright (c) 2013 Rice University
+#
+# This software is subject to the provisions of the GNU AFFERO GENERAL PUBLIC LICENSE Version 3.0 (AGPL).
+# See LICENSE.txt for details.
+
 ### example:
 ## bash buildvenv.sh  ~/venvs/vuser ~/src/rhaptos2.common/ ~/src/rhaptos2.repo
 ##
