@@ -164,31 +164,6 @@ def versionGET():
     return resp
 
 
-### Below are for test /dev only.
-@app.route("/crash/", methods=["GET"])
-def crash():
-    ''' '''
-    if app.debug:
-        dolog("INFO", 'crash command called', caller=crash, statsd=[
-              'rhaptos2.repo.crash', ])
-        raise Rhaptos2Error('Crashing on demand')
-    else:
-        abort(404)
-
-
-@app.route("/burn/", methods=["GET"])
-def burn():
-    ''' '''
-    if app.debug:
-        dolog(
-            "INFO", 'burn command called - dying hard with os._exit',
-            caller=crash, statsd=['rhaptos2.repo.crash', ])
-        # sys.exit(1)
-        # Flask traps sys.exit (threads?)
-        os._exit(1)  # trap _this_
-    else:
-        abort(404)
-
 
 @app.route("/admin/config/", methods=["GET", ])
 def admin_config():
@@ -217,8 +192,6 @@ def after_request(response):
     return response
 
 # XXX A temporary fix for the openid images.
-
-
 @app.route('/images/openid-providers-en.png')
 def temp_openid_image_url():
     """Provides a (temporary) fix for the openid images used
@@ -268,42 +241,6 @@ def logout():
 
 
 ##############
-@app.route('/persona/logout/', methods=['POST'])
-def logoutpersona():
-    dolog("INFO", "logoutpersona")
-    return "Yes"
-
-
-@app.route('/persona/login/', methods=['POST'])
-def loginpersona():
-    """Taken mostly from mozilla quickstart """
-    dolog("INFO", "loginpersona")
-    # The request has to have an assertion for us to verify
-    if 'assertion' not in request.form:
-        abort(400)
-
-    # Send the assertion to Mozilla's verifier service.
-    audience = "http://%s" % app.config['www_server_name']
-    data = {'assertion': request.form['assertion'], 'audience': audience}
-    resp = requests.post(
-        'https://verifier.login.persona.org/verify', data=data, verify=True)
-
-    # Did the verifier respond?
-    if resp.ok:
-        # Parse the response
-        verification_data = json.loads(resp.content)
-        dolog("INFO", "Verified persona:%s" % repr(verification_data))
-
-        # Check if the assertion was valid
-        if verification_data['status'] == 'okay':
-            # Log the user in by setting a secure session cookie
-#            session.update({'email': verification_data['email']})
-            auth.after_authentication(verification_data['email'], 'persona')
-            return resp.content
-
-    # Oops, something failed. Abort.
-    abort(500)
-
 
 MEDIA_MODELS_BY_TYPE = {
     "application/vnd.org.cnx.collection": model.Collection,
