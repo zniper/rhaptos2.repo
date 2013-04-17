@@ -43,6 +43,7 @@ function download_src(){
     cd $SRC
     git clone https://github.com/Connexions/rhaptos2.repo.git
     git clone https://github.com/Connexions/rhaptos2.common.git
+    git clone https://github.com/Connexions/rhaptos2.user.git
     git clone https://github.com/Connexions/atc.git
     cd $SRC/atc
     npm install .
@@ -84,7 +85,8 @@ VENV_REPO=$VENVS/vrepo
 isempty $ABSDIR
 echo "Downloading and installing the application in a virtual environment."
 download_src
-. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo
+
+. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo $SRC/rhaptos2.user
 # TODO We need to initialized the database. Is this in the scope of
 #      this script?
 inifile
