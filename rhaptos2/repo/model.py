@@ -154,11 +154,15 @@ class Collection(Base, CNXBase):
         return "Col:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Folder / collection class to have a set_acls call,
-        but catch here and then pass generic function the right UserRoleX
-        klass.  Still want to find way to generically follow sqla"""
-        super(Collection, self).set_acls(owner_uuid,
-                                         aclsd, UserRoleCollection)
+        """allow each Folder / collection class to have a set_acls
+        call, but catch here and then pass generic function the right
+        UserRoleX klass.  Still want to find way to generically follow
+        sqla
+
+        """
+
+        super(Collection, self).set_acls(owner_uuid, aclsd,
+                                         UserRoleCollection)
         db_session.add(self)
         db_session.commit()
 
@@ -194,7 +198,7 @@ class Module(Base, CNXBase):
     >>> d = json.loads(j)
     >>> assert 'id' in d.keys()
     >>> assert 'mediaType' in d.keys()
-    
+
     """
     __tablename__ = 'cnxmodule'
     id_ = Column(String, primary_key=True)
@@ -241,9 +245,13 @@ class Module(Base, CNXBase):
         return "Module:(%s)-%s" % (self.id_, self.title)
 
     def set_acls(self, owner_uuid, aclsd):
-        """ allow each Module class to have a set_acls call,
-            but catch here and then pass generic function the right UserRoleX
-            klass.  Still want to find way to generically follow sqla"""
+        """allow each Module class to have a set_acls call, but catch
+            here and then pass generic function the right UserRoleX
+            klass.  Still want to find way to generically follow
+            sqla
+
+        """
+
         super(Module, self).set_acls(owner_uuid, aclsd, UserRoleModule)
         db_session.add(self)
         db_session.commit()
@@ -365,8 +373,7 @@ def post_o(klass, incomingd, requesting_user_uri):
     u.populate_self(incomingd)
     if not change_approval(u, incomingd, requesting_user_uri, "POST"):
         abort(403)
-    db_session.add(u)
-    db_session.commit()
+    u.save(db_session)
     return u
 
 
@@ -388,19 +395,19 @@ def put_o(jsond, klass, ID, requesting_user_uri):
         abort(403)
     #.. todo:: parser = verify_schema_version(None)
     uobj.populate_self(jsond)
-    db_session.add(uobj)
-    db_session.commit()
+    uobj.save(db_session)
     return uobj
 
 
-def delete_o(klass, ID, requesting_user_uri):
+def delete_o(resource_uri, requesting_user_uri):
     """ """
-    fldr = get_by_id(klass, ID, requesting_user_uri)
+    fldr = obj_from_urn(resource_uri, requesting_user_uri)
     if not change_approval(fldr, None, requesting_user_uri, "DELETE"):
-        abort(403)
+        raise Rhaptos2AccessNotAllowedError(
+            "User %s cannot delete %s" % (requesting_user_uri,
+                                          resource_uri))
     else:
-        db_session.delete(fldr)
-        db_session.commit()
+        fldr.delete(db_session)
 
 
 def close_session():
@@ -422,7 +429,6 @@ def workspace_by_user(user_uri):
 
     qm = db_session.query(Module)
     qm = qm.join(Module.userroles)
-#    q = q.add_column(Module.id_).add_column(Module.title)
     qm = qm.filter(UserRoleModule.user_uri == user_uri)
     rs1 = qm.all()
 
@@ -438,9 +444,9 @@ def workspace_by_user(user_uri):
 
     rs1.extend(rs2)
     rs1.extend(rs3)
-    db_session.commit() #hail mary...
+    db_session.commit()  # hail mary...
     return rs1
-    
+
 
 if __name__ == '__main__':
     import doctest
