@@ -86,7 +86,6 @@ class CNXBase():
         ''' '''
         self.from_dict(d)
 
-        
     def from_dict(self, userprofile_dict):
         """
         SHould test for schema validity etc.
