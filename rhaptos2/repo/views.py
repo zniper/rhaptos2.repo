@@ -78,22 +78,20 @@ def requestid():
 ########################### views
 
 
-def apply_cors(fn):
-    '''decorator to apply the correct CORS friendly header
 
-       I am assuming all view functions return
-       just text ..  hmmm
-    '''
-    @wraps(fn)
-    def newfn(*args, **kwds):
-        resp = flask.make_response(fn(*args, **kwds))
-        resp.content_type = 'application/json; charset=utf-8'
-        resp.headers["Access-Control-Allow-Origin"] = "*"
-        resp.headers["Access-Control-Allow-Credentials"] = "true"
-        return resp
 
-    return newfn
-
+def mkjsonresponse(jstr):
+    """
+    given a jsonstring, format a response using the
+    Flask formatting styles
+    """
+    resp = flask.make_response(jstr)
+    resp.content_type = 'application/json; charset=utf-8'
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Credentials"] = "true"
+    return resp
+    
+    
 @app.route('/')
 def index():
     dolog("INFO", "THis is request %s" % g.requestid)
@@ -123,12 +121,8 @@ def workspaceGET():
             "id": i.id_, "title": i.title, "mediaType": i.mediaType} for i in w]
         flatten = json.dumps(short_format_list)
 
-    resp = flask.make_response(flatten)
-    resp.content_type = 'application/json; charset=utf-8'
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-
     auth.callstatsd('rhaptos2.e2repo.workspace.GET')
-    return resp
+    return mkjsonresponse(flatten)
 
 
 @app.route("/keywords/", methods=["GET"])
@@ -146,24 +140,14 @@ def keywords():
                          "Programming", "Window Washing", "Cooking", "Hunting",
                          "Fishing", "Surfing",
                          )
-    resp = flask.make_response(json.dumps(XXX_JUNK_KEYWORDS))
-    resp.status_code = 200
-    resp.content_type = 'application/json; charset=utf-8'
-    return resp
-
+    return mkjsonresponse(json.dumps(XXX_JUNK_KEYWORDS))
 
 @app.route("/version/", methods=["GET"])
 #@resp_as_json()
 def versionGET():
     ''' '''
     s = VERSION
-    resp = flask.make_response(s)
-    resp.content_type = 'application/json; charset=utf-8'
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-
-    return resp
-
-
+    return mkjsonresponse(s)
 
 @app.route("/admin/config/", methods=["GET", ])
 def admin_config():
@@ -263,6 +247,12 @@ def obtain_payload(werkzeug_request_obj):
     return jsond
 
 
+### There is a hell of a lot of duplicated code here.
+### I am uncertain at what point I am simply replicating the
+### routing modules in Flask though.  I could capture
+### all the PATH_INFO and deal with in tighter loops,
+### but that seems... silly.  Yet I end up with this 
+    
 @app.route('/folder/', defaults={'folderuri': ''},
            methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/folder/<path:folderuri>',
@@ -399,19 +389,15 @@ def folder_get(folderuri, requesting_user_uri):
     fldr = model.obj_from_urn(folderuri, g.userID)
     fldr_complex = fldr.__complex__(g.userID)
 
-    resp = flask.make_response(json.dumps(fldr_complex))
-    resp.content_type = 'application/json; charset=utf-8'
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    return resp
+    return mkjsonresponse(json.dumps(fldr_complex))
+    
 
 
 def generic_get(uri, requesting_user_uri):
     # mod = model.get_by_id(klass, uri, requesting_user_uri)
     mod = model.obj_from_urn(uri, requesting_user_uri)
-    resp = flask.make_response(json.dumps(
+    resp = mkjsonresponse(json.dumps(
                                mod.__complex__(requesting_user_uri)))
-    resp.status_code = 200
-    resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
@@ -426,11 +412,8 @@ def generic_post(klass, payload_as_dict, requesting_user_uri):
     owner = requesting_user_uri
     fldr = model.post_o(klass, payload_as_dict,
                         requesting_user_uri=owner)
-#    resp = flask.make_response(json.dumps(fldr.__complex__(owner)))
-    resp = flask.make_response(json.dumps({"id":fldr.id_}))    
-    resp.status_code = 200
-    resp.content_type = 'application/json; charset=utf-8'
-    return resp
+    return mkjsonresponse(json.dumps(fldr.__complex__(owner)))
+
 
 
 def generic_put(klass, resource_uri, payload_as_dict,
@@ -439,32 +422,22 @@ def generic_put(klass, resource_uri, payload_as_dict,
     owner = requesting_user_uri
     fldr = model.put_o(payload_as_dict, klass, resource_uri,
                        requesting_user_uri=owner)
-    resp = flask.make_response(json.dumps(fldr.__complex__(owner)))
-#    resp = flask.make_response(json.dumps({"id":fldr.id_}))
-    
-    resp.status_code = 200
-    resp.content_type = 'application/json; charset=utf-8'
-    return resp
+    return mkjsonresponse(json.dumps(fldr.__complex__(owner)))
+
 
 
 def generic_delete(uri, requesting_user_uri):
     """ """
     owner = requesting_user_uri
     model.delete_o(uri, requesting_user_uri=owner)
-    resp = flask.make_response("%s is no more" % uri)
-    resp.status_code = 200
-    resp.content_type = 'application/json; charset=utf-8'
-    return resp
+    return mkjsonresponse("%s is no more" % uri)
 
-
+### these can all go when we merge acl fixes    
 def generic_acl(klass, uri, acllist):
     owner = g.userID
     fldr = model.get_by_id(klass, uri, owner)
     fldr.set_acls(owner, acllist)
-    resp = flask.make_response(json.dumps(fldr.__complex__(owner)))
-    resp.status_code = 200
-    resp.content_type = 'application/json; charset=utf-8'
-    return resp
+    return mkresponse(json.dumps(fldr.__complex__(owner)))
 
 
 @app.route('/collection/<path:collectionuri>/acl/',
