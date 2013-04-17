@@ -364,7 +364,6 @@ def test_put_module():
     resp = wapp_put(TESTAPP, "module", data, gooduseruri, moduleuri)
     assert resp.json['body'] == "Declaration test text"
 
-
 def test_dateModifiedStamp():
     data = decl.declarationdict['module']
     data['body'] = "Declaration test text"
@@ -421,8 +420,6 @@ def test_read_folder_gooduser():
     resp = wapp_get(TESTAPP, "folder", folderuri, gooduseruri)
     assert resp.status_int == 200
     simplelog(resp)
-    
-    
 
 def test_read_module_baduser():
     resp = wapp_get(TESTAPP, "module", moduleuri, baduseruri)

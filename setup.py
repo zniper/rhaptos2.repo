@@ -20,6 +20,7 @@ import os, glob
 
 
 
+
 def get_version():
     """ return a version number, or error string.
     
@@ -43,6 +44,7 @@ setup(
     author='See AUTHORS.txt',
     author_email='info@cnx.org',
     url='https://github.com/Connexions/rhaptos2.repo',
+    long_description=README,
     license='LICENSE.txt',
     description="New editor / repo / system for cnx.org " \
                 "-rhaptos2.readthedocs.org",
