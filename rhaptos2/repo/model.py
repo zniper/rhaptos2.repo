@@ -358,21 +358,22 @@ class Folder(Base, CNXBase):
             return super(Folder, self).__complex__(requesting_user_uri, softform)
         
         short_format_list = []
-        for urn in self.body:
-            try:
-                subfolder = obj_from_urn(urn, requesting_user_uri)
-                short_format_list.append({"id": subfolder.id_,
-                                          "title": subfolder.title,
-                                          "mediaType": subfolder.mediaType})
-                ### exceptions: if you cannot read a single child item
-                ### we still want to return rest of the folder
-            except Rhaptos2SecurityError, e:
-                pass
-            except Rhaptos2Error, e:
-                pass
-                #todo: should we be ignoring bnroken links??
-            except Exception, e:
-                raise e
+	if self.body:
+            for urn in self.body:
+                try:
+                    subfolder = obj_from_urn(urn, requesting_user_uri)
+                    short_format_list.append({"id": subfolder.id_,
+                                              "title": subfolder.title,
+                                              "mediaType": subfolder.mediaType})
+                    ### exceptions: if you cannot read a single child item
+                    ### we still want to return rest of the folder
+                except Rhaptos2SecurityError, e:
+                    pass
+                except Rhaptos2Error, e:
+                    pass
+                    #todo: should we be ignoring bnroken links??
+                except Exception, e:
+                    raise e
 
         ## so get the object as a json-suitable python object
         ## now alter the body to be the result of recursive ouutpu
