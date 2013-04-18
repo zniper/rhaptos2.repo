@@ -36,17 +36,16 @@ from waitress import serve
 def main():
     opts, args = parse_args()
     config = Configuration.from_file(opts.conf)
-    if opts.devserver:
-        app = get_app(opts, args, config, as_standalone=True)
-    else:
-        app = get_app(opts, args, config, as_standalone=False)
+    app = get_app(opts, args, config, 
+                  as_standalone = opts.devserver, 
+                  with_testuser = opts.testuser)
 
     wsgi_run(app, opts, args)
 
 
-def get_app(opts, args, config, as_standalone=False):
+def get_app(opts, args, config, as_standalone = False, with_testuser = False):
     """
-    creates and sets up the app, *but does not run it through flask server*
+    creates and sets up the app, *but does not run it through flask server unless told to*
     This intends to return a valid WSGI app to later be called by say gunicorn
 
     todo: I would like to use @pumazi approach of only importing _standalone server as needed
@@ -89,16 +88,18 @@ def get_app(opts, args, config, as_standalone=False):
         urlmap = URLMap()
         urlmap.update(mymaps)
 	# Need a fake user for testing, especially in the standalone case
-        wrappedapp = AddTestUser(urlmap)
+        wrappedapp = urlmap
     else:
         wrappedapp = app.wsgi_app
+
+    if with_testuser:
+        wrappedapp = AddTestUser(wrappedapp)
 
     return wrappedapp
 
 class AddTestUser(object):
     """
-    We are faking a user header to avoid onerous logins via openid
-    It may be a bad idea
+    We are faking a user header to avoid onerous logins via openid for test situations
     """
    
     def __init__(self, app):
@@ -137,6 +138,9 @@ def parse_args():
     parser.add_option("--devserver", dest="devserver",
                       action="store_true", default=False,
                       help="run as devserver.")
+    parser.add_option("--testuser", dest="testuser",
+                      action="store_true", default=False,
+                      help="Add a fake openid authenticated testuser")
     parser.add_option("--jslocation", dest="jslocation",
                       help="Path to config file.")
 
