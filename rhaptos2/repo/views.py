@@ -74,7 +74,7 @@ def requestid():
     g.requestid = uuid.uuid4()
     g.request_id = g.requestid
     g.user = auth.whoami()
-    
+
 ########################### views
 
 
@@ -94,11 +94,12 @@ def apply_cors(fn):
 
     return newfn
 
+
 @app.route('/')
 def index():
     """
     .. dicussion::
-    
+
     The index page for an api.cnx.org might point to say docs
     The index page here is the index of www.cnx, so it should serve
      the workspace.
@@ -109,7 +110,6 @@ def index():
     """
     dolog("INFO", "THis is request %s" % g.requestid)
     return redirect("/js/test/test-atc.html")
-
 
 
 # Content GET, POST (create), and PUT (change)
@@ -467,11 +467,11 @@ def folder_get(folderuri, requesting_user_uri):
     .__complex__ -> creates a version of an object that can be run through a std json.dump
 
     Why am I passing in the same userid in two successive objects
-    
+
     1. I am not maintaining any state in the object, not assuming any state in thread(*)
     2. The first call returns the "hard" object (pointers only)
        Thus it (rightly) has no knowledge of the user permissions of its children.
-       We will need to descend the hierarchy to 
+       We will need to descend the hierarchy to
 
     (*) This may get complicated with thread-locals in Flask and scoped sessions. please see notes
         on backend.py
@@ -507,21 +507,21 @@ def generic_post(klass, payload_as_dict, requesting_user_uri):
     fldr = model.post_o(klass, payload_as_dict,
                         requesting_user_uri=owner)
 #    resp = flask.make_response(json.dumps(fldr.__complex__(owner)))
-    resp = flask.make_response(json.dumps({"id":fldr.id_}))    
+    resp = flask.make_response(json.dumps({"id": fldr.id_}))
     resp.status_code = 200
     resp.content_type = 'application/json; charset=utf-8'
     return resp
 
 
 def generic_put(klass, resource_uri, payload_as_dict,
-                       requesting_user_uri):
+                requesting_user_uri):
 
     owner = requesting_user_uri
     fldr = model.put_o(payload_as_dict, klass, resource_uri,
                        requesting_user_uri=owner)
     resp = flask.make_response(json.dumps(fldr.__complex__(owner)))
 #    resp = flask.make_response(json.dumps({"id":fldr.id_}))
-    
+
     resp.status_code = 200
     resp.content_type = 'application/json; charset=utf-8'
     return resp
