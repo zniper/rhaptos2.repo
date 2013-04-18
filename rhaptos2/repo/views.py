@@ -109,7 +109,7 @@ def index():
     TODO: either use a config value, or bring a index template in here
     """
     dolog("INFO", "THis is request %s" % g.requestid)
-    return redirect("/js/test/test-atc.html")
+    return redirect("/js/")
 
 
 # Content GET, POST (create), and PUT (change)
