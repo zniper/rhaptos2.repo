@@ -43,6 +43,7 @@ function download_src(){
     cd $SRC
     git clone https://github.com/Connexions/rhaptos2.repo.git
     git clone https://github.com/Connexions/rhaptos2.common.git
+    git clone https://github.com/Connexions/rhaptos2.user.git
     git clone https://github.com/Connexions/atc.git
     cd $SRC/atc
     npm install .
@@ -61,14 +62,17 @@ function inifile() {
     echo "Virtual environment at: $VENV_REPO"
     echo "Wrote configuration file to: $CONFIG"
     echo -e "====================\n"
-    echo "The following command is used to activate your virtual environment:"
-    echo "cd $VENV_REPO; source bin/activate"
-    echo -e "====================\n"
     echo "For future reference here are absolute paths to important resources:"
     echo "run script: $VENV_REPO/bin/rhaptos2repo-run"
     echo "config:     $CONFIG"
     echo -e "====================\n"
-    echo "Use the following to run the repository:"
+    echo "The following command is used to activate your virtual environment:"
+    echo "cd $VENV_REPO; source bin/activate"
+    echo -e "====================\n"
+    echo "You'll need to launch the user server"
+    echo "With virtualenv active, cd $SRC/rhaptos2.user; python rhaptos2/user/run.py  --config local.ini --port 8001"
+    echo -e "========================================\n"
+    echo "In another shell, with virtualenv active, use the following to run the repository:"
     echo "rhaptos2repo-run --debug --config=$CONFIG"
     echo -e "========================================\n"
 }
@@ -84,7 +88,8 @@ VENV_REPO=$VENVS/vrepo
 isempty $ABSDIR
 echo "Downloading and installing the application in a virtual environment."
 download_src
-. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo
+
+. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo $SRC/rhaptos2.user
 # TODO We need to initialized the database. Is this in the scope of
 #      this script?
 inifile
