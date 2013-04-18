@@ -66,27 +66,30 @@ def get_app(opts, args, config, as_standalone=False):
 
         ### Creating a mapping of URLS to file locations
         ### TODO: simplify this - proabbly need change atc and this
-        s = StaticURLParser(opts.jslocation)
-        s_config = StaticURLParser(os.path.join(opts.jslocation, "config"))
-        s_lib = StaticURLParser(os.path.join(opts.jslocation, "lib"))
-        s_bookish = StaticURLParser(os.path.join(opts.jslocation, "bookish"))
-        s_helpers = StaticURLParser(os.path.join(opts.jslocation, "helpers"))
-        s_node_modules = StaticURLParser(os.path.join(
-            opts.jslocation, "node_modules"))
-        m = {"/js/": s,
-             "/js/config/": s_config,
-             "/js/lib/": s_lib,
-             "/js/bookish/": s_bookish,
-             "/js/helpers/": s_helpers,
-             "/js/node_modules/": s_node_modules}
-        u = URLMap()
-        for k in m:
-            u[k] = m[k]  # do not kersplunk, URLMap is a dict-like obj, it may have sideeffects
+        ### may want to consider a config list of dirs, or grab
+        ### list of dirs from FS (at jslocation) at startup time
+        sloc = opts.jslocation
+        stat = StaticURLParser(sloc)
+        stat_config = StaticURLParser(os.path.join(sloc, "config"))
+        stat_lib = StaticURLParser(os.path.join(sloc, "lib"))
+        stat_bookish = StaticURLParser(os.path.join(sloc, "bookish"))
+        stat_helpers = StaticURLParser(os.path.join(sloc, "helpers"))
+        stat_node_modules = StaticURLParser(os.path.join(sloc, "node_modules"))
+
         ### give repo a simple response - /api/ will get rewritten
         ### todo: can I force URLMap not to adjust PATH info etc?
-        u['/'] = app.wsgi_app
-        wrappedapp = u
-        wrappedapp = AddTestUser(wrappedapp)
+        mymaps = {"/": app.wsgi_app,
+             "/js/": stat,
+             "/js/config/": stat_config,
+             "/js/lib/": stat_lib,
+             "/js/bookish/": stat_bookish,
+             "/js/helpers/": stat_helpers,
+             "/js/node_modules/": stat_node_modules}
+
+        urlmap = URLMap()
+        urlmap.update(mymaps)
+	# Need a fake user for testing, especially in the standalone case
+        wrappedapp = AddTestUser(urlmap)
     else:
         wrappedapp = app.wsgi_app
 
