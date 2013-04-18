@@ -200,8 +200,7 @@ def after_authentication(authenticated_identifier, method):
     # session update?
     if method not in ('openid', 'persona'):
         raise Rhaptos2Error("Incorrect method of authenticating ID")
-#    session['authenticated_identifier'] = authenticated_identifier
-#    session['authenticated_identifier'] = u"e"
+    session['authenticated_identifier'] = authenticated_identifier
 
     g.userID = ident.userID
 
