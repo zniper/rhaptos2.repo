@@ -57,24 +57,25 @@ function inifile() {
     cp $SRC/rhaptos2.repo/develop.ini $CONFIG
     ATC_SRC=$SRC/atc
     sed -i -e "s,atc_directory = .*,atc_directory = $ATC_SRC,g" $CONFIG
-    echo -e "========================================\n"
-    echo "Source at: $SRC"
-    echo "Virtual environment at: $VENV_REPO"
-    echo "Wrote configuration file to: $CONFIG"
-    echo -e "====================\n"
-    echo "For future reference here are absolute paths to important resources:"
-    echo "run script: $VENV_REPO/bin/rhaptos2repo-run"
-    echo "config:     $CONFIG"
-    echo -e "====================\n"
-    echo "The following command is used to activate your virtual environment:"
-    echo "cd $VENV_REPO; source bin/activate"
-    echo -e "====================\n"
-    echo "You'll need to launch the user server"
-    echo "With virtualenv active, cd $SRC/rhaptos2.user; python rhaptos2/user/run.py  --config local.ini --port 8001"
-    echo -e "========================================\n"
-    echo "In another shell, with virtualenv active, use the following to run the repository:"
-    echo "rhaptos2repo-run --debug --config=$CONFIG"
-    echo -e "========================================\n"
+    echo -e "========================================
+Source at: $SRC
+Virtual environment at: $VENV_REPO
+Wrote configuration file to: $CONFIG
+====================
+For future reference here are absolute paths to important resources:
+run script: $VENV_REPO/bin/rhaptos2repo-run
+config:     $CONFIG
+====================
+The following command is used to activate your virtual environment:
+cd $VENV_REPO; source bin/activate
+====================
+You'll need to launch the user server
+With virtualenv active, cd $SRC/rhaptos2.user; python rhaptos2/user/run.py  --config local.ini --port 8001
+========================================
+In another shell, with virtualenv active, use the following to run the repository:
+rhaptos2repo-run --debug --devserver --jslocation=$SRC/atc --config=$CONFIG
+========================================
+" | tee README.config
 }
 
 ### main:
@@ -89,7 +90,7 @@ isempty $ABSDIR
 echo "Downloading and installing the application in a virtual environment."
 download_src
 
-. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo $SRC/rhaptos2.user
+#. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo $SRC/rhaptos2.user
 # TODO We need to initialized the database. Is this in the scope of
 #      this script?
 inifile
