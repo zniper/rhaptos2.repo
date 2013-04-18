@@ -96,8 +96,20 @@ def apply_cors(fn):
 
 @app.route('/')
 def index():
+    """
+    .. dicussion::
+    
+    The index page for an api.cnx.org might point to say docs
+    The index page here is the index of www.cnx, so it should serve
+     the workspace.
+    Which is not something "known" by the repo, hence the redirect.
+    It may be neater to bring the index.html page into here later on.
+
+    TODO: either use a config value, or bring a index template in here
+    """
     dolog("INFO", "THis is request %s" % g.requestid)
-    return render_template('index.html', confd=app.config)
+    return redirect("/js/test/test-atc.html")
+
 
 
 # Content GET, POST (create), and PUT (change)
