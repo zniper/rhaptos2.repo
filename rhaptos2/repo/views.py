@@ -261,9 +261,14 @@ def create_or_login(resp):
 
 @app.route('/logout')
 def logout():
+    """
+
+    TODO: It seems the local client cache holds data still.
+    It appears you are still logged in but no session info is held.
+    issue:#123
+    """
     session.pop('openid', None)
     session.pop('authenticated_identifier', None)
-    flash(u'You have been signed out')
     return redirect(auth.oid.get_next_url())
 
 

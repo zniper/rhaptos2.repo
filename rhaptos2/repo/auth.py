@@ -252,13 +252,9 @@ def whoami():
 
     ..  todo:: document fajkeuserID
     '''
-    dolog("INFO", "request.headers %s" % (repr(request.headers)))
-    
-
-    if ((HTTPHEADER_STORING_USERAUTH in request.headers
-         and app.debug is True):
-
-          # and 'authenticated_identifier' not in session):
+    if (HTTPHEADER_STORING_USERAUTH in request.headers
+         and app.debug is True
+           and 'authenticated_identifier' not in session):
         fakeuserauth = request.headers.get(HTTPHEADER_STORING_USERAUTH)
         ident = after_authentication(fakeuserauth, "openid")
         dolog("INFO", "FAKING USER LOGIN - %s" % fakeuserauth)
