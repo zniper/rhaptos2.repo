@@ -132,12 +132,16 @@ def workspaceGET():
         # it would require some flattening or a JSONEncoder but we just want
         # short form for now
         short_format_list = [{
-            "id": i.id_, "title": i.title, "mediaType": i.mediaType} for i in w]
+            "id": i.id_, 
+            "title": i.title, 
+            "mediaType": i.mediaType,
+            "dateLastModifiedUTC": i.dateLastModifiedUTC.isoformat()} for i in w]
+            ## todo:: the isoformat is hacky - i.safe_type_out(i.datelast) is too awkward
         ### sort by title
         ### todo: we should pass a value into model.workspace and sort there.
         ### That would increase flexibility.  This is a quick solution
         ### to see if it usefully affects atc.
-        short_format_list.sort(key=lambda x: x['title'])
+        short_format_list.sort(key=lambda x: x['dateLastModifiedUTC'])
         flatten = json.dumps(short_format_list)
 
     resp = flask.make_response(flatten)
