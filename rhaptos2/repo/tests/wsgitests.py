@@ -317,6 +317,19 @@ test_delete_module
  """
 
 
+def test_post_moby():
+    modmoby = decl.declarationdict['module']
+    modmoby['id_'] = None
+    txt = open("MobyDickChp1.html").read().decode("latin-1")
+    
+    modmoby['body'] = txt.encode("utf-8")
+    modmoby['title'] = "Chapter 1"
+    
+    resp = wapp_post(TESTAPP, "module", modmoby, gooduseruri)
+    returned_module_uri = resp.json['id']
+    assert resp.status_int == 200
+
+
 def test_post_module():
     resp = wapp_post(TESTAPP, "module", decl.declarationdict[
                      'module'], gooduseruri)
