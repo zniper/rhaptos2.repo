@@ -74,7 +74,7 @@ def requestid():
     g.requestid = uuid.uuid4()
     g.request_id = g.requestid
     g.user = auth.whoami()
-
+    dolog("INFO", repr(request.headers))
 ########################### views
 
 

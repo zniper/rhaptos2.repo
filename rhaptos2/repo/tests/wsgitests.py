@@ -121,8 +121,8 @@ baduseruri = decl.users['ross'].openid
 
 userhost = "http://localhost:8000/"
 ### THis header is where we put the authenticated ID
-HTTPHEADER_STORING_USERAUTH = "REMOTE_AUTHID"
-HTTPHEADER_STORING_USERURI = "REMOTE_USERURI"
+HTTPHEADER_STORING_USERAUTH = "X-REMOTEAUTHID"
+HTTPHEADER_STORING_USERURI = "X-REMOTEUSERURI"
 ###
 
 
