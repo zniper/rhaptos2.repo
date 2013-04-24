@@ -90,7 +90,7 @@ isempty $ABSDIR
 echo "Downloading and installing the application in a virtual environment."
 download_src
 
-#. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo $SRC/rhaptos2.user
+. $SRC/rhaptos2.repo/buildvenv.sh $VENV_REPO $SRC/rhaptos2.common  $SRC/rhaptos2.repo $SRC/rhaptos2.user
 # TODO We need to initialized the database. Is this in the scope of
 #      this script?
 inifile
