@@ -45,6 +45,7 @@ settings (do not use these same instructions for a production install)::
     $ createuser -W -s rhaptos2repo
     Password: rhaptos2repo
     $ createdb -O rhaptos2repo rhaptos2repo
+    $ createdb -O rhaptos2repo rhaptos2users
 
 These commands setup a Postgres user named ``rhaptos2repo`` and made
 it the owner of the newly created ``rhaptos2repo`` database.
